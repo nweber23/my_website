@@ -117,18 +117,27 @@
   display: flex;
   height: 100vh;
   background-color: var(--bg-primary);
+  overflow: hidden;
+  position: relative;
+  width: 100vw;
 }
 
 .admin-nav {
   width: 260px;
+  min-width: 260px;
+  max-width: 260px;
   background-color: var(--bg-secondary);
   border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   position: fixed;
   height: 100vh;
-  z-index: var(--z-sticky);
+  left: 0;
+  top: 0;
+  z-index: 10;
   transition: transform var(--transition-normal);
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .nav-header {
@@ -280,6 +289,14 @@
   background-color: var(--bg-primary);
   overflow-y: auto;
   height: 100vh;
+  width: calc(100vw - 260px);
+  max-width: calc(100vw - 260px);
+  min-width: calc(100vw - 260px);
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .admin-header {
@@ -291,7 +308,9 @@
   border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
-  z-index: var(--z-sticky);
+  z-index: 5;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .page-title {
@@ -310,6 +329,9 @@
 .admin-section {
   display: none;
   padding: var(--spacing-2xl);
+  max-width: 100%;
+  overflow-x: auto;
+  box-sizing: border-box;
 }
 
 .admin-section.active {
@@ -322,6 +344,9 @@
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: var(--spacing-lg);
   margin-bottom: var(--spacing-2xl);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .stat-card {
@@ -493,10 +518,15 @@
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-lg);
   overflow: hidden;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .messages-table-wrapper {
   overflow-x: auto;
+  max-width: 100%;
+  width: 100%;
 }
 
 .messages-table {
@@ -577,6 +607,9 @@
 .analytics-grid {
   display: grid;
   gap: var(--spacing-2xl);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .analytics-card {

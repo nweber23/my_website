@@ -54,16 +54,18 @@ class StorageManager {
       skills: [
         { name: 'C', level: 90, category: 'languages' },
         { name: 'C++', level: 75, category: 'languages' },
-        { name: 'Java', level: 70, category: 'languages' },
+        { name: 'Java', level: 90, category: 'languages' },
         { name: 'TypeScript', level: 80, category: 'languages' },
         { name: 'HTML5', level: 85, category: 'languages' },
         { name: 'System Programming', level: 85, category: 'concepts' },
         { name: 'Algorithms & Data Structures', level: 80, category: 'concepts' },
         { name: 'Concurrent Programming', level: 70, category: 'concepts' },
         { name: 'Performance Optimization', level: 75, category: 'concepts' },
-        { name: 'Git', level: 85, category: 'tools' },
-        { name: 'Linux/Unix', level: 80, category: 'tools' },
-        { name: 'GDB', level: 70, category: 'tools' }
+        { name: 'Git', level: 95, category: 'tools' },
+        { name: 'Linux/Unix', level: 92, category: 'tools' },
+        { name: 'GDB', level: 88, category: 'tools' },
+        { name: 'Makefile', level: 90, category: 'tools' },
+        { name: 'Valgrind', level: 85, category: 'tools' }
       ],
       adminAuth: {
         hashedPassword: '', // Will be set on first run
@@ -125,6 +127,13 @@ class StorageManager {
       this.defaultData.adminAuth.hashedPassword = defaultPasswordHash;
       this.saveData(this.defaultData);
       console.log('Storage initialized successfully');
+    } else {
+      // Force update skills data if it's outdated
+      if (!existingData.skills.find(s => s.name === 'Makefile' && s.level === 90)) {
+        console.log('Updating skills data with new values...');
+        existingData.skills = this.defaultData.skills;
+        this.saveData(existingData);
+      }
     }
   }
 
