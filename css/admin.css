@@ -116,27 +116,20 @@
 .admin-panel {
   display: flex;
   height: 100vh;
+  width: 100vw;
   background-color: var(--bg-primary);
   overflow: hidden;
-  position: relative;
-  width: 100vw;
 }
 
 .admin-nav {
   width: 260px;
   min-width: 260px;
-  max-width: 260px;
   background-color: var(--bg-secondary);
   border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  position: fixed;
   height: 100vh;
-  left: 0;
-  top: 0;
-  z-index: 10;
-  transition: transform var(--transition-normal);
-  box-sizing: border-box;
+  overflow-y: auto;
   flex-shrink: 0;
 }
 
@@ -284,19 +277,12 @@
 /* Main Content */
 .admin-main {
   flex: 1;
-  margin-left: 260px;
-  padding: 0;
-  background-color: var(--bg-primary);
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   height: 100vh;
-  width: calc(100vw - 260px);
-  max-width: calc(100vw - 260px);
-  min-width: calc(100vw - 260px);
-  box-sizing: border-box;
-  position: relative;
-  z-index: 1;
-  min-height: 100vh;
-  overflow-x: hidden;
+  min-width: 0;
+  background-color: var(--bg-primary);
+  overflow: hidden;
 }
 
 .admin-header {
@@ -306,11 +292,8 @@
   padding: var(--spacing-lg) var(--spacing-2xl);
   background-color: var(--bg-primary);
   border-bottom: 1px solid var(--border-color);
-  position: sticky;
-  top: 0;
+  flex-shrink: 0;
   z-index: 5;
-  width: 100%;
-  box-sizing: border-box;
 }
 
 .page-title {
@@ -328,10 +311,10 @@
 /* Sections */
 .admin-section {
   display: none;
+  flex: 1;
+  overflow-y: auto;
   padding: var(--spacing-2xl);
-  max-width: 100%;
-  overflow-x: auto;
-  box-sizing: border-box;
+  min-height: 0;
 }
 
 .admin-section.active {
@@ -532,6 +515,7 @@
 .messages-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .messages-table th,
@@ -539,6 +523,47 @@
   padding: var(--spacing-md) var(--spacing-lg);
   text-align: left;
   border-bottom: 1px solid var(--border-color);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.messages-table th:first-child,
+.messages-table td:first-child {
+  width: 40px;
+}
+
+.messages-table th:nth-child(2),
+.messages-table td:nth-child(2) {
+  width: 60px;
+}
+
+.messages-table th:nth-child(3),
+.messages-table td:nth-child(3) {
+  width: 15%;
+  min-width: 120px;
+}
+
+.messages-table th:nth-child(4),
+.messages-table td:nth-child(4) {
+  width: 20%;
+  min-width: 150px;
+}
+
+.messages-table th:nth-child(5),
+.messages-table td:nth-child(5) {
+  width: 25%;
+  min-width: 150px;
+}
+
+.messages-table th:nth-child(6),
+.messages-table td:nth-child(6) {
+  width: 15%;
+  min-width: 100px;
+}
+
+.messages-table th:last-child,
+.messages-table td:last-child {
+  width: 100px;
 }
 
 .messages-table th {
@@ -553,6 +578,21 @@
 .messages-table td {
   color: var(--text-secondary);
   font-size: var(--font-size-sm);
+  vertical-align: top;
+}
+
+.subject-cell {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.no-data {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--text-muted);
+  font-style: italic;
 }
 
 .messages-table tr:hover {
@@ -878,8 +918,13 @@
 /* Responsive Design */
 @media screen and (max-width: 768px) {
   .admin-nav {
+    position: fixed;
+    left: 0;
+    top: 0;
     transform: translateX(-100%);
     width: 280px;
+    z-index: 1000;
+    transition: transform var(--transition-normal);
   }
 
   .admin-nav.active {
@@ -891,7 +936,7 @@
   }
 
   .admin-main {
-    margin-left: 0;
+    width: 100%;
   }
 
   .admin-header {
@@ -918,6 +963,16 @@
   .messages-table th,
   .messages-table td {
     padding: var(--spacing-sm);
+    font-size: var(--font-size-xs);
+  }
+
+  .messages-table th:nth-child(4),
+  .messages-table td:nth-child(4) {
+    display: none;
+  }
+
+  .subject-cell {
+    max-width: 150px;
   }
 
   .modal-content {
