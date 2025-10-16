@@ -1,5 +1,4 @@
-import { auth } from './auth.js';
-import { storage } from './storage.js';
+import { apiClient } from './api-client.js';
 
 class AdminPanel {
   constructor() {
@@ -10,13 +9,12 @@ class AdminPanel {
   }
 
   async init() {
-    await storage.initializeStorage();
     this.checkAuthStatus();
     this.setupEventListeners();
   }
 
   checkAuthStatus() {
-    if (auth.isLoggedIn()) {
+    if (apiClient.isAuthenticated()) {
       this.showAdminPanel();
       this.loadDashboard();
     } else {
@@ -108,13 +106,9 @@ class AdminPanel {
 
     // Data management
     const exportBtn = document.getElementById('export-data');
-    const importBtn = document.getElementById('import-data');
-    const importFile = document.getElementById('import-file');
     const clearDataBtn = document.getElementById('clear-data');
 
     exportBtn?.addEventListener('click', () => this.exportData());
-    importBtn?.addEventListener('click', () => importFile?.click());
-    importFile?.addEventListener('change', (e) => this.handleImportData(e));
     clearDataBtn?.addEventListener('click', () => this.confirmClearData());
   }
 
@@ -172,7 +166,7 @@ class AdminPanel {
 
     try {
       console.log('Attempting login with admin panel...');
-      const result = await auth.login(password);
+      const result = await apiClient.login(password);
       
       if (result.success) {
         console.log('Login successful, showing admin panel');
@@ -194,8 +188,8 @@ class AdminPanel {
     }
   }
 
-  handleLogout() {
-    auth.logout();
+  async handleLogout() {
+    await apiClient.logout();
     this.showLoginScreen();
   }
 
@@ -221,7 +215,6 @@ class AdminPanel {
     
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('portfolio-theme', newTheme);
-    storage.updateSettings({ darkMode: newTheme === 'dark' });
   }
 
   // Navigation
@@ -284,18 +277,39 @@ class AdminPanel {
   }
 
   // Dashboard
-  loadDashboard() {
-    const stats = storage.getDashboardStats();
-    this.updateDashboardStats(stats);
-    this.loadRecentMessages();
-    this.updateUnreadBadge(stats.unreadMessages);
+  async loadDashboard() {
+    try {
+      // Load message stats
+      const statsResult = await apiClient.getMessageStats();
+      if (statsResult.success) {
+        this.updateDashboardStats(statsResult.data);
+        this.updateUnreadBadge(statsResult.data.unread_messages);
+      }
+
+      // Load analytics dashboard
+      const analyticsResult = await apiClient.getAnalyticsDashboard();
+      if (analyticsResult.success) {
+        this.updateAnalyticsStats(analyticsResult.data);
+      }
+
+      // Load recent messages
+      await this.loadRecentMessages();
+    } catch (error) {
+      console.error('Error loading dashboard:', error);
+    }
   }
 
   updateDashboardStats(stats) {
-    document.getElementById('total-messages').textContent = stats.totalMessages.toString();
-    document.getElementById('unread-messages').textContent = stats.unreadMessages.toString();
-    document.getElementById('total-views').textContent = stats.totalViews.toString();
-    document.getElementById('weekly-views').textContent = stats.weeklyViews.toString();
+    document.getElementById('total-messages').textContent = stats.total_messages.toString();
+    document.getElementById('unread-messages').textContent = stats.unread_messages.toString();
+    document.getElementById('total-views').textContent = '0'; // Will be updated by analytics
+    document.getElementById('weekly-views').textContent = '0'; // Will be updated by analytics
+  }
+
+  updateAnalyticsStats(data) {
+    const stats = data.summary;
+    document.getElementById('total-views').textContent = stats.page_views.toString();
+    document.getElementById('weekly-views').textContent = stats.weekly_events.toString();
   }
 
   updateUnreadBadge(count) {
@@ -310,24 +324,29 @@ class AdminPanel {
     }
   }
 
-  loadRecentMessages() {
-    const data = storage.getData();
-    if (!data) return;
+  async loadRecentMessages() {
+    try {
+      const result = await apiClient.getMessages({ limit: 5, sort: 'created_at', order: 'desc' });
+      
+      if (result.success) {
+        this.renderRecentMessages(result.data.messages);
+      }
+    } catch (error) {
+      console.error('Error loading recent messages:', error);
+    }
+  }
 
-    const recentMessages = data.messages
-      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
-      .slice(0, 5);
-
+  renderRecentMessages(messages) {
     const container = document.getElementById('recent-messages-list');
     if (!container) return;
 
-    if (recentMessages.length === 0) {
+    if (messages.length === 0) {
       container.innerHTML = '<p class="no-data">No messages yet</p>';
       return;
     }
 
-    container.innerHTML = recentMessages.map(message => `
-      <div class="activity-item ${!message.isRead ? 'unread' : ''}" data-message-id="${message.id}">
+    container.innerHTML = messages.map(message => `
+      <div class="activity-item ${!message.is_read ? 'unread' : ''}" data-message-id="${message.id}">
         <div class="activity-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
             <path d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4C22,2.89 21.1,2 20,2Z"/>
@@ -335,7 +354,7 @@ class AdminPanel {
         </div>
         <div class="activity-content">
           <div class="activity-title">${message.subject}</div>
-          <div class="activity-meta">From ${message.name} • ${this.formatDate(message.timestamp)}</div>
+          <div class="activity-meta">From ${message.name} • ${this.formatDate(new Date(message.created_at))}</div>
         </div>
       </div>
     `).join('');
@@ -350,12 +369,36 @@ class AdminPanel {
   }
 
   // Messages
-  loadMessages() {
-    const data = storage.getData();
-    if (!data) return;
+  async loadMessages() {
+    try {
+      const params = {
+        page: 1,
+        limit: 50,
+        sort: 'created_at',
+        order: 'desc'
+      };
 
-    this.renderMessagesTable(data.messages);
-    this.updateUnreadBadge(data.messages.filter(m => !m.isRead).length);
+      // Add search and filter parameters
+      const searchInput = document.getElementById('messages-search');
+      const filterSelect = document.getElementById('messages-filter');
+      
+      if (searchInput?.value) {
+        params.search = searchInput.value;
+      }
+      
+      if (filterSelect?.value && filterSelect.value !== 'all') {
+        params.filter = filterSelect.value;
+      }
+
+      const result = await apiClient.getMessages(params);
+      
+      if (result.success) {
+        this.renderMessagesTable(result.data.messages);
+        this.updateUnreadBadge(result.data.messages.filter(m => !m.is_read).length);
+      }
+    } catch (error) {
+      console.error('Error loading messages:', error);
+    }
   }
 
   renderMessagesTable(messages) {
@@ -367,43 +410,41 @@ class AdminPanel {
       return;
     }
 
-    tbody.innerHTML = messages
-      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
-      .map(message => `
-        <tr class="${!message.isRead ? 'unread' : ''}" data-message-id="${message.id}">
-          <td>
-            <input type="checkbox" class="message-checkbox" data-message-id="${message.id}" ${this.selectedMessages.has(message.id) ? 'checked' : ''}>
-          </td>
-          <td>
-            <span class="status-indicator ${!message.isRead ? 'unread' : 'read'}"></span>
-          </td>
-          <td>${this.escapeHtml(message.name)}</td>
-          <td>${this.escapeHtml(message.email)}</td>
-          <td class="subject-cell" title="${this.escapeHtml(message.subject)}">${this.truncateText(message.subject, 30)}</td>
-          <td>${this.formatDate(message.timestamp)}</td>
-          <td>
-            <div class="message-actions">
-              <button class="action-btn" title="View" onclick="adminPanel.showMessageModal('${message.id}')">
+    tbody.innerHTML = messages.map(message => `
+      <tr class="${!message.is_read ? 'unread' : ''}" data-message-id="${message.id}">
+        <td>
+          <input type="checkbox" class="message-checkbox" data-message-id="${message.id}" ${this.selectedMessages.has(message.id) ? 'checked' : ''}>
+        </td>
+        <td>
+          <span class="status-indicator ${!message.is_read ? 'unread' : 'read'}"></span>
+        </td>
+        <td>${this.escapeHtml(message.name)}</td>
+        <td>${this.escapeHtml(message.email)}</td>
+        <td class="subject-cell" title="${this.escapeHtml(message.subject)}">${this.truncateText(message.subject, 30)}</td>
+        <td>${this.formatDate(new Date(message.created_at))}</td>
+        <td>
+          <div class="message-actions">
+            <button class="action-btn" title="View" onclick="adminPanel.showMessageModal('${message.id}')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/>
+              </svg>
+            </button>
+            ${!message.is_read ? `
+              <button class="action-btn" title="Mark as read" onclick="adminPanel.markMessageAsRead('${message.id}')">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/>
+                  <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
                 </svg>
               </button>
-              ${!message.isRead ? `
-                <button class="action-btn" title="Mark as read" onclick="adminPanel.markMessageAsRead('${message.id}')">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
-                  </svg>
-                </button>
-              ` : ''}
-              <button class="action-btn danger" title="Delete" onclick="adminPanel.deleteMessage('${message.id}')">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
-                </svg>
-              </button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
+            ` : ''}
+            <button class="action-btn danger" title="Delete" onclick="adminPanel.deleteMessage('${message.id}')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+              </svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
 
     // Add event listeners for checkboxes
     tbody.querySelectorAll('.message-checkbox').forEach(checkbox => {
@@ -423,33 +464,8 @@ class AdminPanel {
     });
   }
 
-  filterMessages() {
-    const searchInput = document.getElementById('messages-search');
-    const filterSelect = document.getElementById('messages-filter');
-    
-    if (!searchInput || !filterSelect) return;
-
-    const data = storage.getData();
-    if (!data) return;
-
-    const searchTerm = searchInput.value.toLowerCase();
-    const filterValue = filterSelect.value;
-
-    let filteredMessages = data.messages.filter(message => {
-      const matchesSearch = !searchTerm || 
-        message.name.toLowerCase().includes(searchTerm) ||
-        message.email.toLowerCase().includes(searchTerm) ||
-        message.subject.toLowerCase().includes(searchTerm) ||
-        message.message.toLowerCase().includes(searchTerm);
-
-      const matchesFilter = filterValue === 'all' ||
-        (filterValue === 'read' && message.isRead) ||
-        (filterValue === 'unread' && !message.isRead);
-
-      return matchesSearch && matchesFilter;
-    });
-
-    this.renderMessagesTable(filteredMessages);
+  async filterMessages() {
+    await this.loadMessages();
   }
 
   toggleAllMessages(isChecked) {
@@ -487,63 +503,81 @@ class AdminPanel {
     }
   }
 
-  deleteSelectedMessages() {
+  async deleteSelectedMessages() {
     if (this.selectedMessages.size === 0) return;
 
     this.showConfirmDialog(
       'Delete Messages',
       `Are you sure you want to delete ${this.selectedMessages.size} message(s)? This action cannot be undone.`,
-      () => {
-        this.selectedMessages.forEach(messageId => {
-          storage.deleteMessage(messageId);
-        });
-        this.selectedMessages.clear();
-        this.loadMessages();
+      async () => {
+        try {
+          const result = await apiClient.deleteMessages(Array.from(this.selectedMessages));
+          if (result.success) {
+            this.selectedMessages.clear();
+            await this.loadMessages();
+            await this.loadDashboard();
+          } else {
+            alert('Failed to delete messages: ' + result.error);
+          }
+        } catch (error) {
+          console.error('Error deleting messages:', error);
+          alert('An error occurred while deleting messages');
+        }
       }
     );
   }
 
-  // Message Modal
-  showMessageModal(messageId) {
-    const data = storage.getData();
-    if (!data) return;
+  // Message Modal and Actions
+  async showMessageModal(messageId) {
+    try {
+      const result = await apiClient.getMessage(messageId);
+      
+      if (result.success) {
+        const message = result.data;
+        
+        // Update modal content
+        document.getElementById('modal-subject').textContent = message.subject;
+        document.getElementById('modal-sender').textContent = message.name;
+        document.getElementById('modal-email').textContent = message.email;
+        document.getElementById('modal-date').textContent = this.formatDate(new Date(message.created_at));
+        document.getElementById('modal-message').textContent = message.message;
 
-    const message = data.messages.find(m => m.id === messageId);
-    if (!message) return;
+        // Update modal buttons
+        const markReadBtn = document.getElementById('modal-mark-read');
+        markReadBtn.style.display = message.is_read ? 'none' : 'inline-flex';
+        markReadBtn.setAttribute('data-message-id', messageId);
 
-    // Update modal content
-    document.getElementById('modal-subject').textContent = message.subject;
-    document.getElementById('modal-sender').textContent = message.name;
-    document.getElementById('modal-email').textContent = message.email;
-    document.getElementById('modal-date').textContent = this.formatDate(message.timestamp);
-    document.getElementById('modal-message').textContent = message.message;
+        const deleteBtn = document.getElementById('modal-delete');
+        deleteBtn?.setAttribute('data-message-id', messageId);
 
-    // Update modal buttons
-    const markReadBtn = document.getElementById('modal-mark-read');
-    markReadBtn.style.display = message.isRead ? 'none' : 'inline-flex';
-    markReadBtn.setAttribute('data-message-id', messageId);
+        const replyBtn = document.getElementById('modal-reply');
+        replyBtn?.setAttribute('data-message-id', messageId);
 
-    const deleteBtn = document.getElementById('modal-delete');
-    deleteBtn?.setAttribute('data-message-id', messageId);
+        // Show modal
+        this.showModal('message-modal');
 
-    const replyBtn = document.getElementById('modal-reply');
-    replyBtn?.setAttribute('data-message-id', messageId);
-
-    // Show modal
-    this.showModal('message-modal');
-
-    // Mark as read automatically
-    if (!message.isRead) {
-      storage.markMessageAsRead(messageId);
-      this.loadDashboard();
-      this.loadMessages();
+        // Mark as read automatically if not already read
+        if (!message.is_read) {
+          await apiClient.markMessageAsRead(messageId);
+          await this.loadDashboard();
+          await this.loadMessages();
+        }
+      }
+    } catch (error) {
+      console.error('Error showing message modal:', error);
     }
   }
 
-  markMessageAsRead(messageId) {
-    storage.markMessageAsRead(messageId);
-    this.loadMessages();
-    this.loadDashboard();
+  async markMessageAsRead(messageId) {
+    try {
+      const result = await apiClient.markMessageAsRead(messageId);
+      if (result.success) {
+        await this.loadMessages();
+        await this.loadDashboard();
+      }
+    } catch (error) {
+      console.error('Error marking message as read:', error);
+    }
   }
 
   markModalMessageAsRead() {
@@ -554,14 +588,23 @@ class AdminPanel {
     }
   }
 
-  deleteMessage(messageId) {
+  async deleteMessage(messageId) {
     this.showConfirmDialog(
       'Delete Message',
       'Are you sure you want to delete this message? This action cannot be undone.',
-      () => {
-        storage.deleteMessage(messageId);
-        this.loadMessages();
-        this.loadDashboard();
+      async () => {
+        try {
+          const result = await apiClient.deleteMessage(messageId);
+          if (result.success) {
+            await this.loadMessages();
+            await this.loadDashboard();
+          } else {
+            alert('Failed to delete message: ' + result.error);
+          }
+        } catch (error) {
+          console.error('Error deleting message:', error);
+          alert('An error occurred while deleting the message');
+        }
       }
     );
   }
@@ -576,35 +619,42 @@ class AdminPanel {
 
   replyToMessage() {
     const messageId = document.getElementById('modal-reply')?.getAttribute('data-message-id');
-    const data = storage.getData();
-    if (!messageId || !data) return;
+    if (!messageId) return;
 
-    const message = data.messages.find(m => m.id === messageId);
-    if (!message) return;
+    // Get message data from modal
+    const subject = document.getElementById('modal-subject')?.textContent;
+    const email = document.getElementById('modal-email')?.textContent;
 
-    const subject = `Re: ${message.subject}`;
-    const mailtoUrl = `mailto:${message.email}?subject=${encodeURIComponent(subject)}`;
-    window.open(mailtoUrl);
+    if (subject && email) {
+      const replySubject = `Re: ${subject}`;
+      const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(replySubject)}`;
+      window.open(mailtoUrl);
+    }
   }
 
   // Analytics
-  loadAnalytics() {
-    const data = storage.getData();
-    if (!data) return;
-
-    this.renderSectionStats(data.analytics.sectionViews);
-    this.renderDailyChart(data.analytics.dailyViews);
+  async loadAnalytics() {
+    try {
+      const dashboardResult = await apiClient.getAnalyticsDashboard();
+      
+      if (dashboardResult.success) {
+        this.renderSectionStats(dashboardResult.data.section_views);
+        this.renderDailyChart(dashboardResult.data.daily_views);
+      }
+    } catch (error) {
+      console.error('Error loading analytics:', error);
+    }
   }
 
   renderSectionStats(sectionViews) {
     const container = document.getElementById('section-stats');
-    if (!container) return;
+    if (!container || !sectionViews) return;
 
-    const maxViews = Math.max(...Object.values(sectionViews));
+    const maxViews = Math.max(...sectionViews.map(s => s.views), 1);
     
-    container.innerHTML = Object.entries(sectionViews)
-      .map(([section, views]) => {
-        const percentage = maxViews > 0 ? (views / maxViews) * 100 : 0;
+    container.innerHTML = sectionViews
+      .map(({section, views}) => {
+        const percentage = (views / maxViews) * 100;
         return `
           <div class="stat-row">
             <div class="stat-info">
@@ -622,19 +672,17 @@ class AdminPanel {
 
   renderDailyChart(dailyViews) {
     const container = document.getElementById('daily-chart');
-    if (!container) return;
+    if (!container || !dailyViews) return;
 
-    const last7Days = this.getLast7Days();
-    const maxViews = Math.max(...last7Days.map(date => dailyViews[date] || 0), 1);
+    const maxViews = Math.max(...dailyViews.map(d => d.views), 1);
 
-    container.innerHTML = last7Days
-      .map(date => {
-        const views = dailyViews[date] || 0;
-        const height = (views / maxViews) * 100;
+    container.innerHTML = dailyViews
+      .map(({date, views}) => {
+        const height = Math.max((views / maxViews) * 100, 2);
         const dayName = new Date(date).toLocaleDateString('en-US', { weekday: 'short' });
         return `
           <div class="chart-bar" 
-               style="height: ${Math.max(height, 2)}%" 
+               style="height: ${height}%" 
                data-value="${views} views on ${dayName}"
                title="${dayName}: ${views} views">
           </div>
@@ -643,30 +691,13 @@ class AdminPanel {
       .join('');
   }
 
-  getLast7Days() {
-    const days = [];
-    const today = new Date();
-    
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(today.getDate() - i);
-      days.push(date.toISOString().split('T')[0]);
-    }
-    
-    return days;
-  }
-
   // Settings
   loadSettings() {
-    const data = storage.getData();
-    if (!data) return;
-
     // System information
     document.getElementById('last-updated').textContent = 
-      this.formatDate(data.analytics.lastUpdated);
+      this.formatDate(new Date());
     
-    document.getElementById('data-size').textContent = 
-      this.formatFileSize(JSON.stringify(data).length);
+    document.getElementById('data-size').textContent = 'API-based';
     
     document.getElementById('browser-info').textContent = 
       `${navigator.userAgent.match(/(Firefox|Chrome|Safari|Edge)/)?.[0] || 'Unknown'} ${navigator.appVersion.match(/[\d.]+/)?.[0] || ''}`;
@@ -687,7 +718,7 @@ class AdminPanel {
     }
 
     try {
-      const result = await auth.changePassword(currentPassword, newPassword);
+      const result = await apiClient.changePassword(currentPassword, newPassword);
       
       if (result.success) {
         alert('Password changed successfully');
@@ -701,53 +732,30 @@ class AdminPanel {
     }
   }
 
-  exportData() {
-    const jsonData = storage.exportData();
-    const blob = new Blob([jsonData], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `portfolio-data-${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-    
-    URL.revokeObjectURL(url);
-  }
-
-  async handleImportData(e) {
-    const input = e.target;
-    const file = input.files?.[0];
-    
-    if (!file) return;
-
+  async exportData() {
     try {
-      const text = await file.text();
-      const success = await storage.importData(text);
-      
-      if (success) {
-        alert('Data imported successfully');
-        this.loadDashboard();
-      } else {
-        alert('Failed to import data. Please check the file format.');
+      // For API-based system, we'll just download the messages
+      const result = await apiClient.getMessages({ limit: 1000 });
+      if (result.success) {
+        const jsonData = JSON.stringify(result.data, null, 2);
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `portfolio-messages-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        
+        URL.revokeObjectURL(url);
       }
     } catch (error) {
-      console.error('Import error:', error);
-      alert('An error occurred while importing data');
+      console.error('Export error:', error);
+      alert('Failed to export data');
     }
-
-    input.value = ''; // Reset file input
   }
 
   confirmClearData() {
-    this.showConfirmDialog(
-      'Clear All Data',
-      'Are you sure you want to clear all data? This will delete all messages, settings, and analytics. This action cannot be undone.',
-      () => {
-        storage.clearAllData();
-        alert('All data has been cleared');
-        this.handleLogout();
-      }
-    );
+    alert('Data clearing is not supported in API mode. Please contact the administrator.');
   }
 
   // Modal management
@@ -790,14 +798,6 @@ class AdminPanel {
       hour: '2-digit',
       minute: '2-digit'
     }).format(date);
-  }
-
-  formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
   escapeHtml(text) {
