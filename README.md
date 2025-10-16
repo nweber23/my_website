@@ -1,11 +1,15 @@
-# Personal Portfolio Website with Admin Panel
+# Niklas Weber - Portfolio Website
 
-A modern, professional personal portfolio website with an integrated admin panel for managing content and messages. Built with vanilla HTML, CSS, and TypeScript for optimal performance and simplicity.
+A modern, full-stack personal portfolio website with an integrated admin panel. Built with Node.js, Express, PostgreSQL backend and vanilla JavaScript frontend, containerized with Docker for easy deployment.
 
 ![Portfolio Preview](https://img.shields.io/badge/Portfolio-Live-brightgreen)
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-43853D?logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express.js-404D59?logo=express&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?logo=postgresql&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 
 ## ✨ Features
 
@@ -18,137 +22,161 @@ A modern, professional personal portfolio website with an integrated admin panel
 - **SEO Optimized**: Proper meta tags, semantic HTML, and accessibility features
 
 ### 🔒 Admin Panel
-- **Secure Authentication**: Password-protected access with session management
-- **Dashboard**: Overview of messages, analytics, and key metrics
-- **Message Management**: View, search, filter, and manage contact form submissions
-- **Analytics**: Track page views, section visits, and user engagement
-- **Data Management**: Export/import functionality and system settings
-- **Mobile Friendly**: Responsive admin interface for on-the-go management
+- **JWT Authentication**: Secure token-based authentication with session management
+- **Dashboard**: Real-time overview of messages, analytics, and key metrics
+- **Message Management**: Full CRUD operations with search, filtering, and pagination
+- **Analytics Tracking**: Server-side analytics with PostgreSQL persistence
+- **Data Management**: Export/import functionality and system administration
+- **Mobile Responsive**: Professional admin interface optimized for all devices
+
+### 🏗️ Backend Features
+- **RESTful API**: Clean API architecture with Express.js
+- **PostgreSQL Database**: Robust data persistence with proper schema design
+- **JWT Security**: Secure authentication with token expiration
+- **Rate Limiting**: Built-in protection against spam and abuse
+- **Input Validation**: Server-side validation for all endpoints
+- **CORS Support**: Configurable cross-origin resource sharing
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- A modern web browser that supports ES6 modules
-- A local web server (for development)
+- **Node.js** 16+ and npm
+- **PostgreSQL** 12+ (or use Docker)
+- **Docker** (optional, for containerized deployment)
+- Modern web browser with ES6 module support
 
-### Installation
+### Development Setup
 
-1. **Clone or download** this repository to your desired directory:
+1. **Clone the repository:**
    ```bash
-   cd "/path/to/your/projects"
-   git clone <your-repo-url> my_website
-   # OR download and extract the files
+   git clone https://github.com/nweber23/portfolio-website.git
+   cd portfolio-website
    ```
 
-2. **Start a local web server** in the project directory:
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables:**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your database credentials and JWT secret
+   ```
+
+4. **Start PostgreSQL database:**
    
-   **Using Python:**
+   **Using Docker (recommended):**
    ```bash
-   cd my_website
-   python -m http.server 8000
+   docker-compose up -d postgres
    ```
    
-   **Using Node.js (npx):**
+   **Or use your local PostgreSQL installation**
+
+5. **Run database migrations:**
    ```bash
-   cd my_website
-   npx serve .
-   ```
-   
-   **Using PHP:**
-   ```bash
-   cd my_website
-   php -S localhost:8000
+   npm run db:setup
    ```
 
-3. **Open your browser** and navigate to:
-   - Portfolio: `http://localhost:8000`
-   - Admin Panel: `http://localhost:8000/admin.html`
+6. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+
+7. **Open your browser:**
+   - Portfolio: `http://localhost:3000`
+   - Admin Panel: `http://localhost:3000/admin.html`
+
+### Docker Deployment
+
+1. **Build and start all services:**
+   ```bash
+   docker-compose up --build
+   ```
+
+2. **For production deployment:**
+   ```bash
+   docker-compose -f docker-compose.prod.yml up --build -d
+   ```
 
 ### First-Time Setup
 
-1. **Access the Admin Panel**: 
-   - Go to `http://localhost:8000/admin.html`
-   - Use the default password: `admin123`
-   - **Important**: Change this password immediately after first login
+1. **Default admin credentials:**
+   - Email: `niklasweber610@gmail.com`
+   - Password: `admin123`
+   - **Important**: Change password immediately after first login
 
-2. **Customize Your Content**:
-   - Update personal information in the TypeScript files
-   - Replace placeholder GitHub URLs with your actual repositories
-   - Add your real email address and contact information
+2. **Access the application:**
+   - Portfolio: `http://localhost:3000`
+   - Admin Panel: `http://localhost:3000/admin.html`
 
 ## 📁 Project Structure
 
 ```
-my_website/
-├── index.html              # Main portfolio page
-├── admin.html              # Admin panel interface
+portfolio-website/
+├── server.js              # Express server entry point
+├── package.json           # Node.js dependencies and scripts
+├── .env                   # Environment configuration
+├── Dockerfile             # Docker container configuration
+├── docker-compose.yml     # Docker services orchestration
+├── index.html             # Main portfolio page
+├── admin.html             # Admin panel interface
 ├── css/
-│   ├── style.css          # Main styles and CSS variables
+│   ├── style.css          # Main styles and design system
 │   ├── admin.css          # Admin panel specific styles
 │   └── responsive.css     # Mobile and tablet responsive styles
-├── ts/
-│   ├── types.ts           # TypeScript interface definitions
-│   ├── storage.ts         # Local storage utilities and data management
-│   ├── auth.ts            # Authentication and session management
-│   ├── main.ts            # Portfolio functionality
-│   └── admin.ts           # Admin panel functionality
-├── assets/
-│   └── images/            # Image assets (add your own)
-└── README.md              # This file
+├── js/
+│   ├── api-client.js      # Frontend API communication
+│   ├── main.js            # Portfolio functionality
+│   └── admin.js           # Admin panel functionality
+├── routes/
+│   ├── auth.js            # Authentication endpoints
+│   ├── messages.js        # Contact messages API
+│   └── analytics.js       # Analytics tracking API
+├── database/
+│   ├── db.js              # Database connection and utilities
+│   └── schema.sql         # Database schema and migrations
+├── utils/
+│   └── validation.js      # Input validation utilities
+└── README.md              # This documentation
 ```
 
 ## 🎨 Customization
 
-### Personal Information
-Edit the default data in `/ts/storage.ts`:
+### Environment Configuration
+Edit `.env` file for your setup:
 
-```typescript
-aboutMe: {
-  intro: "Your introduction text here...",
-  quote: "Your personal quote",
-  focusAreas: ["Your", "Focus", "Areas"],
-  interests: ["Your", "Personal", "Interests"]
-}
+```bash
+# Database Configuration
+DB_HOST=localhost
+DB_NAME=portfolio_db
+DB_USER=your_username
+DB_PASSWORD=your_password
+
+# JWT Secret (use a strong secret in production)
+JWT_SECRET=your-strong-jwt-secret
+
+# Admin Configuration
+ADMIN_EMAIL=your.email@example.com
+DEFAULT_ADMIN_PASSWORD=your_secure_password
 ```
 
-### Projects
-Update the projects array in `/ts/storage.ts`:
-
-```typescript
-projects: [
-  {
-    name: 'Your Project Name',
-    description: 'Project description...',
-    techStack: ['Tech1', 'Tech2'],
-    highlights: ['Feature 1', 'Feature 2'],
-    githubUrl: 'https://github.com/yourusername/project',
-    featured: true,
-    order: 1
-  }
-]
-```
-
-### Styling
+### Styling & Branding
 Customize colors and design in `/css/style.css`:
 
 ```css
 :root {
-  --primary-color: #00599C;    /* Your brand color */
+  --primary-color: #6879F2;    /* Your brand color */
   --secondary-color: #ff6b6b;  /* Accent color */
   --accent-color: #4ecdc4;     /* Additional accent */
   /* ... */
 }
 ```
 
-### Contact Information
-Update contact details in `/index.html`:
-
-```html
-<div class="contact-details">
-  <h4>Email</h4>
-  <p>your.email@example.com</p>
-</div>
-```
+### Content Management
+- Use the admin panel to update projects, skills, and personal information
+- Access at `/admin.html` after authentication
+- All content is managed through the web interface
 
 ## 🔐 Security
 
@@ -159,64 +187,48 @@ Update contact details in `/index.html`:
 - **Rate Limiting**: Built-in protection against brute force attacks
 
 ### Data Storage
-- All data is stored locally in the browser's localStorage
-- No server-side storage or external dependencies
-- Data persists between browser sessions
-- Export functionality for backup purposes
+- **PostgreSQL Database**: All data stored in robust relational database
+- **JWT Authentication**: Secure token-based session management
+- **API-First Architecture**: RESTful endpoints for all operations
+- **Data Persistence**: Reliable server-side data storage
+- **Backup Support**: Database backup and restore capabilities
 
-## 📱 Browser Compatibility
+## 🔠 Development
 
-- **Chrome/Chromium**: 88+
-- **Firefox**: 85+
-- **Safari**: 14+
-- **Edge**: 88+
+### Available Scripts
 
-### Required Browser Features
-- ES6 Module support
-- CSS Grid and Flexbox
-- Local Storage API
-- Fetch API
-- CSS Custom Properties
-
-## 🛠️ Development
-
-### TypeScript Compilation
-This project uses TypeScript with ES6 modules. For development:
-
-1. **Install TypeScript** (optional, for type checking):
-   ```bash
-   npm install -g typescript
-   ```
-
-2. **Type Check** (optional):
-   ```bash
-   tsc --noEmit --checkJs ts/*.ts
-   ```
-
-### File Serving Requirements
-- Must be served over HTTP/HTTPS (not file://)
-- Required for ES6 module imports to work
-- Use any local development server
-
-## 📊 Analytics & Data
-
-### Local Storage Schema
-```typescript
-{
-  messages: ContactMessage[],        // Contact form submissions
-  projects: Project[],              // Portfolio projects
-  skills: Skill[],                  // Technical skills
-  adminAuth: AdminAuth,             // Authentication data
-  analytics: Analytics,             // Page view statistics
-  settings: Settings,               // User preferences
-  aboutMe: AboutMe                  // Personal information
-}
+```bash
+npm run dev          # Start development server with hot reload
+npm run start        # Start production server
+npm run db:setup     # Initialize database schema
+npm run db:migrate   # Run database migrations
+npm run test         # Run test suite (if available)
 ```
 
-### Data Export/Import
-- **Export**: Download all data as JSON file
-- **Import**: Upload previously exported JSON file
-- **Clear**: Remove all stored data (requires confirmation)
+### API Endpoints
+
+**Authentication:**
+- `POST /api/auth/login` - Admin login
+- `POST /api/auth/logout` - Admin logout
+- `POST /api/auth/change-password` - Change admin password
+
+**Messages:**
+- `GET /api/messages` - Get all messages (admin only)
+- `POST /api/messages` - Submit contact form
+- `PUT /api/messages/:id` - Update message status
+- `DELETE /api/messages/:id` - Delete message
+
+**Analytics:**
+- `POST /api/analytics/track` - Track page view
+- `GET /api/analytics/stats` - Get analytics data (admin only)
+
+## 📈 Database Schema
+
+### Core Tables
+- **messages**: Contact form submissions
+- **analytics_events**: Page view and interaction tracking
+- **admin_sessions**: JWT session management
+- **settings**: Application configuration
 
 ## 🎯 Performance
 
@@ -242,26 +254,31 @@ This project uses TypeScript with ES6 modules. For development:
 - Check browser console for JavaScript errors
 - Verify all files are in the correct directory structure
 
-**2. Admin Panel Login Issues**
-- Try the default password: `admin123`
-- Clear browser localStorage if corrupted
-- Check for JavaScript errors in browser console
+**2. Database Connection Issues**
+- Ensure PostgreSQL is running and accessible
+- Verify database credentials in `.env` file
+- Check if database schema has been initialized with `npm run db:setup`
 
-**3. Styles Not Loading**
-- Verify CSS files are in the `/css/` directory
-- Check browser network tab for 404 errors
-- Clear browser cache
+**3. Admin Panel Login Issues**
+- Try the default credentials: `niklasweber610@gmail.com` / `admin123`
+- Verify JWT_SECRET is set in `.env` file
+- Check server logs for authentication errors
 
-**4. Contact Form Not Working**
-- Ensure JavaScript is enabled
-- Check browser localStorage permissions
-- Verify form validation in browser console
+**4. API Errors**
+- Ensure backend server is running on correct port
+- Check CORS configuration in environment variables
+- Verify API endpoints are accessible
 
-### Reset Everything
-If you need to start fresh:
-1. Clear browser localStorage for the site
-2. Or use the "Clear All Data" button in admin settings
-3. Refresh the page
+**5. Styles Not Loading**
+- Verify CSS files are being served correctly
+- Check network tab for 404 errors
+- Clear browser cache and refresh
+
+### Development Reset
+To reset development environment:
+1. Stop all services: `docker-compose down`
+2. Remove volumes: `docker-compose down -v`
+3. Rebuild: `docker-compose up --build`
 
 ## 📄 License
 
@@ -273,14 +290,14 @@ Feel free to fork this project and customize it for your own portfolio needs. If
 
 ## 📞 Support
 
-If you encounter any issues or have questions:
+If you encounter any issues:
 1. Check the troubleshooting section above
-2. Review browser console for error messages
-3. Ensure all files are properly structured
-4. Verify you're using a supported browser
+2. Review server and browser console logs
+3. Ensure all environment variables are properly configured
+4. Verify database connectivity
 
 ---
 
-**Made with ❤️ for the 42 Heilbronn community**
+**Built with ❤️ by Niklas Weber**
 
-*"The best way to learn is to build, break, and rebuild."*
+*Personal portfolio showcasing systems programming expertise*
