@@ -1,20 +1,18 @@
 import { storage } from './storage.js';
-import { NavigationSection, FormValidationResult } from './types.js';
 
 class PortfolioApp {
-  private currentSection: NavigationSection = 'home';
-  private isNavToggleOpen = false;
-  private typingTimeout: NodeJS.Timeout | null = null;
-  private observerOptions: IntersectionObserverInit = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-  };
-
   constructor() {
+    this.currentSection = 'home';
+    this.isNavToggleOpen = false;
+    this.typingTimeout = null;
+    this.observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
     this.init();
   }
 
-  private async init(): Promise<void> {
+  async init() {
     await this.initializeStorage();
     this.setupTheme();
     this.setupNavigation();
@@ -27,16 +25,16 @@ class PortfolioApp {
     this.trackPageView();
   }
 
-  private async initializeStorage(): Promise<void> {
+  async initializeStorage() {
     await storage.initializeStorage();
   }
 
-  private trackPageView(): void {
+  trackPageView() {
     storage.trackPageView();
   }
 
   // Theme Management
-  private setupTheme(): void {
+  setupTheme() {
     const themeToggle = document.getElementById('theme-toggle');
     const savedTheme = localStorage.getItem('portfolio-theme') || 'light';
     
@@ -54,7 +52,7 @@ class PortfolioApp {
   }
 
   // Navigation
-  private setupNavigation(): void {
+  setupNavigation() {
     const navToggle = document.getElementById('nav-toggle');
     const navMenu = document.getElementById('nav-menu');
     const navLinks = document.querySelectorAll('.nav-link');
@@ -83,7 +81,7 @@ class PortfolioApp {
         e.preventDefault();
         const targetId = link.getAttribute('href')?.substring(1);
         if (targetId) {
-          this.scrollToSection(targetId as NavigationSection);
+          this.scrollToSection(targetId);
         }
       });
     });
@@ -95,7 +93,7 @@ class PortfolioApp {
     });
   }
 
-  private scrollToSection(section: NavigationSection): void {
+  scrollToSection(section) {
     const element = document.getElementById(section);
     if (element) {
       const navbarHeight = 70; // Navbar height
@@ -111,7 +109,7 @@ class PortfolioApp {
     }
   }
 
-  private updateActiveNavLink(): void {
+  updateActiveNavLink() {
     const sections = ['home', 'about', 'skills', 'projects', 'contact'];
     const navLinks = document.querySelectorAll('.nav-link');
     const scrollPosition = window.scrollY + 100;
@@ -129,14 +127,14 @@ class PortfolioApp {
               link.classList.add('active');
             }
           });
-          this.currentSection = section as NavigationSection;
+          this.currentSection = section;
           break;
         }
       }
     }
   }
 
-  private updateNavbarBackground(): void {
+  updateNavbarBackground() {
     const navbar = document.getElementById('navbar');
     if (navbar) {
       navbar.classList.toggle('scrolled', window.scrollY > 50);
@@ -144,7 +142,7 @@ class PortfolioApp {
   }
 
   // Typing Effect
-  private setupTypingEffect(): void {
+  setupTypingEffect() {
     const typingElement = document.getElementById('typing-text');
     if (!typingElement) return;
 
@@ -191,15 +189,15 @@ class PortfolioApp {
   }
 
   // Animations
-  private setupAnimations(): void {
-    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+  setupAnimations() {
+    const observerCallback = (entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('animate');
           
           // Special handling for skill bars
           if (entry.target.classList.contains('skill-item')) {
-            this.animateSkillBar(entry.target as HTMLElement);
+            this.animateSkillBar(entry.target);
           }
         }
       });
@@ -215,8 +213,8 @@ class PortfolioApp {
     animatedElements.forEach(el => observer.observe(el));
   }
 
-  private animateSkillBar(skillItem: HTMLElement): void {
-    const skillFill = skillItem.querySelector('.skill-fill') as HTMLElement;
+  animateSkillBar(skillItem) {
+    const skillFill = skillItem.querySelector('.skill-fill');
     if (skillFill) {
       const level = skillFill.getAttribute('data-level') || '0';
       setTimeout(() => {
@@ -225,12 +223,12 @@ class PortfolioApp {
     }
   }
 
-  private setupScrollEffects(): void {
+  setupScrollEffects() {
     let ticking = false;
 
     const updateParallax = () => {
       const scrolled = window.pageYOffset;
-      const hero = document.querySelector('.hero') as HTMLElement;
+      const hero = document.querySelector('.hero');
       
       if (hero) {
         // Subtle parallax effect for hero background
@@ -249,9 +247,9 @@ class PortfolioApp {
   }
 
   // Contact Form
-  private setupContactForm(): void {
-    const form = document.getElementById('contact-form') as HTMLFormElement;
-    const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+  setupContactForm() {
+    const form = document.getElementById('contact-form');
+    const submitBtn = document.getElementById('submit-btn');
     const successMessage = document.getElementById('form-success');
 
     if (!form) return;
@@ -261,10 +259,10 @@ class PortfolioApp {
       
       const formData = new FormData(form);
       const data = {
-        name: formData.get('name') as string,
-        email: formData.get('email') as string,
-        subject: formData.get('subject') as string,
-        message: formData.get('message') as string
+        name: formData.get('name'),
+        email: formData.get('email'),
+        subject: formData.get('subject'),
+        message: formData.get('message')
       };
 
       // Validate form
@@ -311,14 +309,14 @@ class PortfolioApp {
       input.addEventListener('blur', () => {
         const fieldName = input.getAttribute('name');
         if (fieldName) {
-          this.validateField(fieldName, input as HTMLInputElement);
+          this.validateField(fieldName, input);
         }
       });
     });
   }
 
-  private validateContactForm(data: { name: string; email: string; subject: string; message: string }): FormValidationResult {
-    const errors: { [key: string]: string } = {};
+  validateContactForm(data) {
+    const errors = {};
 
     if (!data.name.trim()) {
       errors.name = 'Name is required';
@@ -350,7 +348,7 @@ class PortfolioApp {
     };
   }
 
-  private validateField(fieldName: string, input: HTMLInputElement): void {
+  validateField(fieldName, input) {
     const value = input.value;
     let error = '';
 
@@ -382,10 +380,10 @@ class PortfolioApp {
     input.classList.toggle('error', !!error);
   }
 
-  private displayValidationErrors(validation: FormValidationResult): void {
+  displayValidationErrors(validation) {
     Object.keys(validation.errors).forEach(field => {
       const errorElement = document.getElementById(`${field}-error`);
-      const inputElement = document.getElementById(field) as HTMLInputElement;
+      const inputElement = document.getElementById(field);
       
       if (errorElement && inputElement) {
         errorElement.textContent = validation.errors[field];
@@ -395,7 +393,7 @@ class PortfolioApp {
     });
   }
 
-  private clearValidationErrors(): void {
+  clearValidationErrors() {
     const errorElements = document.querySelectorAll('.error-message');
     const inputElements = document.querySelectorAll('.form-group input, .form-group textarea');
     
@@ -407,13 +405,13 @@ class PortfolioApp {
     inputElements.forEach(el => el.classList.remove('error'));
   }
 
-  private isValidEmail(email: string): boolean {
+  isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
 
   // Content Loading
-  private loadContent(): void {
+  loadContent() {
     const data = storage.getData();
     if (!data) return;
 
@@ -427,7 +425,7 @@ class PortfolioApp {
     this.loadProjects(data.projects);
   }
 
-  private loadAboutContent(aboutMe: any): void {
+  loadAboutContent(aboutMe) {
     const introElement = document.getElementById('about-intro');
     const quoteElement = document.getElementById('about-quote');
     const focusListElement = document.getElementById('focus-list');
@@ -438,18 +436,18 @@ class PortfolioApp {
     
     if (focusListElement) {
       focusListElement.innerHTML = aboutMe.focusAreas
-        .map((area: string) => `<li>${area}</li>`)
+        .map((area) => `<li>${area}</li>`)
         .join('');
     }
     
     if (interestsListElement) {
       interestsListElement.innerHTML = aboutMe.interests
-        .map((interest: string) => `<li>${interest}</li>`)
+        .map((interest) => `<li>${interest}</li>`)
         .join('');
     }
   }
 
-  private loadSkills(skills: any[]): void {
+  loadSkills(skills) {
     const languagesContainer = document.getElementById('languages-skills');
     const conceptsContainer = document.getElementById('concepts-skills');
     const toolsContainer = document.getElementById('tools-skills');
@@ -465,11 +463,11 @@ class PortfolioApp {
       if (!acc[skill.category]) acc[skill.category] = [];
       acc[skill.category].push(skill);
       return acc;
-    }, {} as { [key: string]: any[] });
+    }, {});
 
     // Render skills in each category
     Object.keys(skillsByCategory).forEach(category => {
-      const container = containers[category as keyof typeof containers];
+      const container = containers[category];
       if (!container) return;
 
       container.innerHTML = skillsByCategory[category]
@@ -488,7 +486,7 @@ class PortfolioApp {
     });
   }
 
-  private loadProjects(projects: any[]): void {
+  loadProjects(projects) {
     const projectsGrid = document.getElementById('projects-grid');
     if (!projectsGrid) return;
 
@@ -501,10 +499,10 @@ class PortfolioApp {
             <h3 class="project-title">${project.name}</h3>
             <p class="project-description">${project.description}</p>
             <div class="project-tech">
-              ${project.techStack.map((tech: string) => `<span class="tech-tag">${tech}</span>`).join('')}
+              ${project.techStack.map((tech) => `<span class="tech-tag">${tech}</span>`).join('')}
             </div>
             <ul class="project-highlights">
-              ${project.highlights.map((highlight: string) => `<li>${highlight}</li>`).join('')}
+              ${project.highlights.map((highlight) => `<li>${highlight}</li>`).join('')}
             </ul>
           </div>
           <div class="project-footer">
@@ -531,7 +529,7 @@ class PortfolioApp {
   }
 
   // Particles Effect
-  private setupParticles(): void {
+  setupParticles() {
     const particlesContainer = document.getElementById('particles');
     if (!particlesContainer) return;
 
@@ -580,7 +578,7 @@ class PortfolioApp {
   }
 
   // Cleanup method
-  public cleanup(): void {
+  cleanup() {
     if (this.typingTimeout) {
       clearTimeout(this.typingTimeout);
     }

@@ -1,11 +1,13 @@
 import { storage } from './storage.js';
 
 class AuthManager {
-  private readonly MAX_LOGIN_ATTEMPTS = 5;
-  private readonly LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
-  private readonly SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+  constructor() {
+    this.MAX_LOGIN_ATTEMPTS = 5;
+    this.LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
+    this.SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+  }
 
-  private async hashPassword(password: string): Promise<string> {
+  async hashPassword(password) {
     const encoder = new TextEncoder();
     const data = encoder.encode(password);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
@@ -13,18 +15,22 @@ class AuthManager {
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   }
 
-  private generateSessionToken(): string {
+  generateSessionToken() {
     return crypto.getRandomValues(new Uint32Array(4)).join('');
   }
 
-  async login(password: string): Promise<{ success: boolean; error?: string }> {
+  async login(password) {
+    console.log('Attempting login...');
     const data = storage.getData();
     if (!data) {
+      console.error('No data found in storage');
       return { success: false, error: 'System not initialized' };
     }
 
     const auth = data.adminAuth;
     const now = new Date();
+
+    console.log('Auth data:', { hasPassword: !!auth.hashedPassword, attempts: auth.loginAttempts });
 
     // Check if account is locked
     if (auth.loginAttempts >= this.MAX_LOGIN_ATTEMPTS) {
@@ -42,8 +48,10 @@ class AuthManager {
     }
 
     const hashedInput = await this.hashPassword(password);
+    console.log('Comparing passwords...');
     
     if (hashedInput === auth.hashedPassword) {
+      console.log('Login successful');
       // Successful login
       auth.loginAttempts = 0;
       auth.sessionToken = this.generateSessionToken();
@@ -52,6 +60,7 @@ class AuthManager {
       
       return { success: true };
     } else {
+      console.log('Login failed - wrong password');
       // Failed login
       auth.loginAttempts++;
       auth.lastLoginAttempt = now;
@@ -72,7 +81,7 @@ class AuthManager {
     }
   }
 
-  isLoggedIn(): boolean {
+  isLoggedIn() {
     const data = storage.getData();
     if (!data || !data.adminAuth.sessionToken || !data.adminAuth.sessionExpiry) {
       return false;
@@ -82,7 +91,7 @@ class AuthManager {
     return now < data.adminAuth.sessionExpiry;
   }
 
-  logout(): void {
+  logout() {
     const data = storage.getData();
     if (data) {
       data.adminAuth.sessionToken = undefined;
@@ -91,7 +100,7 @@ class AuthManager {
     }
   }
 
-  async changePassword(currentPassword: string, newPassword: string): Promise<{ success: boolean; error?: string }> {
+  async changePassword(currentPassword, newPassword) {
     if (!this.isLoggedIn()) {
       return { success: false, error: 'Not authenticated' };
     }
@@ -117,13 +126,13 @@ class AuthManager {
     return { success: true };
   }
 
-  getSessionInfo(): { isLoggedIn: boolean; expiryTime?: Date; remainingTime?: number } {
+  getSessionInfo() {
     const data = storage.getData();
     if (!data || !this.isLoggedIn()) {
       return { isLoggedIn: false };
     }
 
-    const expiryTime = data.adminAuth.sessionExpiry!;
+    const expiryTime = data.adminAuth.sessionExpiry;
     const remainingTime = expiryTime.getTime() - new Date().getTime();
 
     return {
@@ -133,7 +142,7 @@ class AuthManager {
     };
   }
 
-  extendSession(): void {
+  extendSession() {
     if (!this.isLoggedIn()) return;
 
     const data = storage.getData();

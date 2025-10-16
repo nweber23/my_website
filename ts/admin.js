@@ -1,23 +1,21 @@
 import { auth } from './auth.js';
 import { storage } from './storage.js';
-import { ContactMessage, DashboardStats } from './types.js';
 
 class AdminPanel {
-  private currentSection: string = 'dashboard';
-  private selectedMessages: Set<string> = new Set();
-  private isNavOpen: boolean = false;
-
   constructor() {
+    this.currentSection = 'dashboard';
+    this.selectedMessages = new Set();
+    this.isNavOpen = false;
     this.init();
   }
 
-  private async init(): Promise<void> {
+  async init() {
     await storage.initializeStorage();
     this.checkAuthStatus();
     this.setupEventListeners();
   }
 
-  private checkAuthStatus(): void {
+  checkAuthStatus() {
     if (auth.isLoggedIn()) {
       this.showAdminPanel();
       this.loadDashboard();
@@ -26,10 +24,14 @@ class AdminPanel {
     }
   }
 
-  private setupEventListeners(): void {
+  setupEventListeners() {
     // Login form
     const loginForm = document.getElementById('login-form');
     loginForm?.addEventListener('submit', (e) => this.handleLogin(e));
+
+    // Password toggle
+    const passwordToggle = document.getElementById('password-toggle');
+    passwordToggle?.addEventListener('click', () => this.togglePasswordVisibility());
 
     // Logout button
     const logoutBtn = document.getElementById('logout-btn');
@@ -66,18 +68,31 @@ class AdminPanel {
     this.setupModalEventListeners();
   }
 
-  private setupMessagesEventListeners(): void {
+  togglePasswordVisibility() {
+    const passwordInput = document.getElementById('password');
+    const toggleButton = document.getElementById('password-toggle');
+    
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      toggleButton.classList.add('visible');
+    } else {
+      passwordInput.type = 'password';
+      toggleButton.classList.remove('visible');
+    }
+  }
+
+  setupMessagesEventListeners() {
     // Search and filter
-    const searchInput = document.getElementById('messages-search') as HTMLInputElement;
-    const filterSelect = document.getElementById('messages-filter') as HTMLSelectElement;
+    const searchInput = document.getElementById('messages-search');
+    const filterSelect = document.getElementById('messages-filter');
     
     searchInput?.addEventListener('input', () => this.filterMessages());
     filterSelect?.addEventListener('change', () => this.filterMessages());
 
     // Select all checkbox
-    const selectAllCheckbox = document.getElementById('select-all-messages') as HTMLInputElement;
+    const selectAllCheckbox = document.getElementById('select-all-messages');
     selectAllCheckbox?.addEventListener('change', (e) => {
-      const isChecked = (e.target as HTMLInputElement).checked;
+      const isChecked = e.target.checked;
       this.toggleAllMessages(isChecked);
     });
 
@@ -86,7 +101,7 @@ class AdminPanel {
     deleteSelectedBtn?.addEventListener('click', () => this.deleteSelectedMessages());
   }
 
-  private setupSettingsEventListeners(): void {
+  setupSettingsEventListeners() {
     // Password form
     const passwordForm = document.getElementById('password-form');
     passwordForm?.addEventListener('submit', (e) => this.handlePasswordChange(e));
@@ -94,7 +109,7 @@ class AdminPanel {
     // Data management
     const exportBtn = document.getElementById('export-data');
     const importBtn = document.getElementById('import-data');
-    const importFile = document.getElementById('import-file') as HTMLInputElement;
+    const importFile = document.getElementById('import-file');
     const clearDataBtn = document.getElementById('clear-data');
 
     exportBtn?.addEventListener('click', () => this.exportData());
@@ -103,12 +118,12 @@ class AdminPanel {
     clearDataBtn?.addEventListener('click', () => this.confirmClearData());
   }
 
-  private setupDashboardEventListeners(): void {
+  setupDashboardEventListeners() {
     const viewAllMessagesBtn = document.getElementById('view-all-messages');
     viewAllMessagesBtn?.addEventListener('click', () => this.switchSection('messages'));
   }
 
-  private setupModalEventListeners(): void {
+  setupModalEventListeners() {
     // Message modal
     const messageModal = document.getElementById('message-modal');
     const modalClose = document.getElementById('modal-close');
@@ -138,66 +153,69 @@ class AdminPanel {
   }
 
   // Authentication
-  private async handleLogin(e: Event): Promise<void> {
+  async handleLogin(e) {
     e.preventDefault();
     
-    const form = e.target as HTMLFormElement;
+    const form = e.target;
     const formData = new FormData(form);
-    const password = formData.get('password') as string;
-    const loginBtn = document.getElementById('login-btn') as HTMLButtonElement;
+    const password = formData.get('password');
+    const loginBtn = document.getElementById('login-btn');
     const errorElement = document.getElementById('password-error');
 
     // Clear previous errors
-    errorElement!.textContent = '';
-    errorElement!.classList.remove('show');
+    errorElement.textContent = '';
+    errorElement.classList.remove('show');
 
     // Show loading state
     loginBtn.classList.add('loading');
     loginBtn.disabled = true;
 
     try {
+      console.log('Attempting login with admin panel...');
       const result = await auth.login(password);
       
       if (result.success) {
+        console.log('Login successful, showing admin panel');
         this.showAdminPanel();
         this.loadDashboard();
         form.reset();
       } else {
-        errorElement!.textContent = result.error || 'Login failed';
-        errorElement!.classList.add('show');
+        console.log('Login failed:', result.error);
+        errorElement.textContent = result.error || 'Login failed';
+        errorElement.classList.add('show');
       }
     } catch (error) {
       console.error('Login error:', error);
-      errorElement!.textContent = 'An error occurred during login';
-      errorElement!.classList.add('show');
+      errorElement.textContent = 'An error occurred during login';
+      errorElement.classList.add('show');
     } finally {
       loginBtn.classList.remove('loading');
       loginBtn.disabled = false;
     }
   }
 
-  private handleLogout(): void {
+  handleLogout() {
     auth.logout();
     this.showLoginScreen();
   }
 
-  private showLoginScreen(): void {
-    document.getElementById('login-container')!.style.display = 'flex';
-    document.getElementById('admin-panel')!.style.display = 'none';
+  showLoginScreen() {
+    document.getElementById('login-container').style.display = 'flex';
+    document.getElementById('admin-panel').style.display = 'none';
   }
 
-  private showAdminPanel(): void {
-    document.getElementById('login-container')!.style.display = 'none';
-    document.getElementById('admin-panel')!.style.display = 'flex';
+  showAdminPanel() {
+    document.getElementById('login-container').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'flex';
     this.setupTheme();
   }
 
-  private setupTheme(): void {
+  setupTheme() {
     const savedTheme = localStorage.getItem('portfolio-theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
   }
 
-  private toggleTheme(): void {
+  toggleTheme() {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     
@@ -207,7 +225,7 @@ class AdminPanel {
   }
 
   // Navigation
-  private switchSection(section: string): void {
+  switchSection(section) {
     // Update navigation
     document.querySelectorAll('.nav-link').forEach(link => {
       link.classList.remove('active');
@@ -221,7 +239,7 @@ class AdminPanel {
     document.getElementById(`${section}-section`)?.classList.add('active');
 
     // Update page title
-    const titles: { [key: string]: string } = {
+    const titles = {
       dashboard: 'Dashboard',
       messages: 'Messages',
       analytics: 'Analytics',
@@ -253,34 +271,34 @@ class AdminPanel {
     this.closeMobileNav();
   }
 
-  private toggleMobileNav(): void {
+  toggleMobileNav() {
     const nav = document.querySelector('.admin-nav');
     this.isNavOpen = !this.isNavOpen;
     nav?.classList.toggle('active', this.isNavOpen);
   }
 
-  private closeMobileNav(): void {
+  closeMobileNav() {
     const nav = document.querySelector('.admin-nav');
     this.isNavOpen = false;
     nav?.classList.remove('active');
   }
 
   // Dashboard
-  private loadDashboard(): void {
+  loadDashboard() {
     const stats = storage.getDashboardStats();
     this.updateDashboardStats(stats);
     this.loadRecentMessages();
     this.updateUnreadBadge(stats.unreadMessages);
   }
 
-  private updateDashboardStats(stats: DashboardStats): void {
-    document.getElementById('total-messages')!.textContent = stats.totalMessages.toString();
-    document.getElementById('unread-messages')!.textContent = stats.unreadMessages.toString();
-    document.getElementById('total-views')!.textContent = stats.totalViews.toString();
-    document.getElementById('weekly-views')!.textContent = stats.weeklyViews.toString();
+  updateDashboardStats(stats) {
+    document.getElementById('total-messages').textContent = stats.totalMessages.toString();
+    document.getElementById('unread-messages').textContent = stats.unreadMessages.toString();
+    document.getElementById('total-views').textContent = stats.totalViews.toString();
+    document.getElementById('weekly-views').textContent = stats.weeklyViews.toString();
   }
 
-  private updateUnreadBadge(count: number): void {
+  updateUnreadBadge(count) {
     const badge = document.getElementById('unread-badge');
     if (badge) {
       if (count > 0) {
@@ -292,7 +310,7 @@ class AdminPanel {
     }
   }
 
-  private loadRecentMessages(): void {
+  loadRecentMessages() {
     const data = storage.getData();
     if (!data) return;
 
@@ -332,7 +350,7 @@ class AdminPanel {
   }
 
   // Messages
-  private loadMessages(): void {
+  loadMessages() {
     const data = storage.getData();
     if (!data) return;
 
@@ -340,7 +358,7 @@ class AdminPanel {
     this.updateUnreadBadge(data.messages.filter(m => !m.isRead).length);
   }
 
-  private renderMessagesTable(messages: ContactMessage[]): void {
+  renderMessagesTable(messages) {
     const tbody = document.getElementById('messages-tbody');
     if (!tbody) return;
 
@@ -390,8 +408,8 @@ class AdminPanel {
     // Add event listeners for checkboxes
     tbody.querySelectorAll('.message-checkbox').forEach(checkbox => {
       checkbox.addEventListener('change', (e) => {
-        const messageId = (e.target as HTMLInputElement).getAttribute('data-message-id')!;
-        const isChecked = (e.target as HTMLInputElement).checked;
+        const messageId = e.target.getAttribute('data-message-id');
+        const isChecked = e.target.checked;
         
         if (isChecked) {
           this.selectedMessages.add(messageId);
@@ -405,9 +423,9 @@ class AdminPanel {
     });
   }
 
-  private filterMessages(): void {
-    const searchInput = document.getElementById('messages-search') as HTMLInputElement;
-    const filterSelect = document.getElementById('messages-filter') as HTMLSelectElement;
+  filterMessages() {
+    const searchInput = document.getElementById('messages-search');
+    const filterSelect = document.getElementById('messages-filter');
     
     if (!searchInput || !filterSelect) return;
 
@@ -434,12 +452,12 @@ class AdminPanel {
     this.renderMessagesTable(filteredMessages);
   }
 
-  private toggleAllMessages(isChecked: boolean): void {
-    const checkboxes = document.querySelectorAll('.message-checkbox') as NodeListOf<HTMLInputElement>;
+  toggleAllMessages(isChecked) {
+    const checkboxes = document.querySelectorAll('.message-checkbox');
     
     checkboxes.forEach(checkbox => {
       checkbox.checked = isChecked;
-      const messageId = checkbox.getAttribute('data-message-id')!;
+      const messageId = checkbox.getAttribute('data-message-id');
       
       if (isChecked) {
         this.selectedMessages.add(messageId);
@@ -451,16 +469,16 @@ class AdminPanel {
     this.updateDeleteSelectedButton();
   }
 
-  private updateDeleteSelectedButton(): void {
-    const deleteBtn = document.getElementById('delete-selected') as HTMLButtonElement;
+  updateDeleteSelectedButton() {
+    const deleteBtn = document.getElementById('delete-selected');
     if (deleteBtn) {
       deleteBtn.disabled = this.selectedMessages.size === 0;
     }
   }
 
-  private updateSelectAllCheckbox(): void {
-    const selectAllCheckbox = document.getElementById('select-all-messages') as HTMLInputElement;
-    const checkboxes = document.querySelectorAll('.message-checkbox') as NodeListOf<HTMLInputElement>;
+  updateSelectAllCheckbox() {
+    const selectAllCheckbox = document.getElementById('select-all-messages');
+    const checkboxes = document.querySelectorAll('.message-checkbox');
     
     if (selectAllCheckbox && checkboxes.length > 0) {
       const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
@@ -469,7 +487,7 @@ class AdminPanel {
     }
   }
 
-  private deleteSelectedMessages(): void {
+  deleteSelectedMessages() {
     if (this.selectedMessages.size === 0) return;
 
     this.showConfirmDialog(
@@ -486,7 +504,7 @@ class AdminPanel {
   }
 
   // Message Modal
-  public showMessageModal(messageId: string): void {
+  showMessageModal(messageId) {
     const data = storage.getData();
     if (!data) return;
 
@@ -494,14 +512,14 @@ class AdminPanel {
     if (!message) return;
 
     // Update modal content
-    document.getElementById('modal-subject')!.textContent = message.subject;
-    document.getElementById('modal-sender')!.textContent = message.name;
-    document.getElementById('modal-email')!.textContent = message.email;
-    document.getElementById('modal-date')!.textContent = this.formatDate(message.timestamp);
-    document.getElementById('modal-message')!.textContent = message.message;
+    document.getElementById('modal-subject').textContent = message.subject;
+    document.getElementById('modal-sender').textContent = message.name;
+    document.getElementById('modal-email').textContent = message.email;
+    document.getElementById('modal-date').textContent = this.formatDate(message.timestamp);
+    document.getElementById('modal-message').textContent = message.message;
 
     // Update modal buttons
-    const markReadBtn = document.getElementById('modal-mark-read') as HTMLButtonElement;
+    const markReadBtn = document.getElementById('modal-mark-read');
     markReadBtn.style.display = message.isRead ? 'none' : 'inline-flex';
     markReadBtn.setAttribute('data-message-id', messageId);
 
@@ -522,13 +540,13 @@ class AdminPanel {
     }
   }
 
-  public markMessageAsRead(messageId: string): void {
+  markMessageAsRead(messageId) {
     storage.markMessageAsRead(messageId);
     this.loadMessages();
     this.loadDashboard();
   }
 
-  private markModalMessageAsRead(): void {
+  markModalMessageAsRead() {
     const messageId = document.getElementById('modal-mark-read')?.getAttribute('data-message-id');
     if (messageId) {
       this.markMessageAsRead(messageId);
@@ -536,7 +554,7 @@ class AdminPanel {
     }
   }
 
-  public deleteMessage(messageId: string): void {
+  deleteMessage(messageId) {
     this.showConfirmDialog(
       'Delete Message',
       'Are you sure you want to delete this message? This action cannot be undone.',
@@ -548,7 +566,7 @@ class AdminPanel {
     );
   }
 
-  private deleteModalMessage(): void {
+  deleteModalMessage() {
     const messageId = document.getElementById('modal-delete')?.getAttribute('data-message-id');
     if (messageId) {
       this.closeModal('message-modal');
@@ -556,7 +574,7 @@ class AdminPanel {
     }
   }
 
-  private replyToMessage(): void {
+  replyToMessage() {
     const messageId = document.getElementById('modal-reply')?.getAttribute('data-message-id');
     const data = storage.getData();
     if (!messageId || !data) return;
@@ -570,7 +588,7 @@ class AdminPanel {
   }
 
   // Analytics
-  private loadAnalytics(): void {
+  loadAnalytics() {
     const data = storage.getData();
     if (!data) return;
 
@@ -578,7 +596,7 @@ class AdminPanel {
     this.renderDailyChart(data.analytics.dailyViews);
   }
 
-  private renderSectionStats(sectionViews: { [key: string]: number }): void {
+  renderSectionStats(sectionViews) {
     const container = document.getElementById('section-stats');
     if (!container) return;
 
@@ -602,7 +620,7 @@ class AdminPanel {
       .join('');
   }
 
-  private renderDailyChart(dailyViews: { [date: string]: number }): void {
+  renderDailyChart(dailyViews) {
     const container = document.getElementById('daily-chart');
     if (!container) return;
 
@@ -625,7 +643,7 @@ class AdminPanel {
       .join('');
   }
 
-  private getLast7Days(): string[] {
+  getLast7Days() {
     const days = [];
     const today = new Date();
     
@@ -639,29 +657,29 @@ class AdminPanel {
   }
 
   // Settings
-  private loadSettings(): void {
+  loadSettings() {
     const data = storage.getData();
     if (!data) return;
 
     // System information
-    document.getElementById('last-updated')!.textContent = 
+    document.getElementById('last-updated').textContent = 
       this.formatDate(data.analytics.lastUpdated);
     
-    document.getElementById('data-size')!.textContent = 
+    document.getElementById('data-size').textContent = 
       this.formatFileSize(JSON.stringify(data).length);
     
-    document.getElementById('browser-info')!.textContent = 
+    document.getElementById('browser-info').textContent = 
       `${navigator.userAgent.match(/(Firefox|Chrome|Safari|Edge)/)?.[0] || 'Unknown'} ${navigator.appVersion.match(/[\d.]+/)?.[0] || ''}`;
   }
 
-  private async handlePasswordChange(e: Event): Promise<void> {
+  async handlePasswordChange(e) {
     e.preventDefault();
     
-    const form = e.target as HTMLFormElement;
+    const form = e.target;
     const formData = new FormData(form);
-    const currentPassword = formData.get('currentPassword') as string;
-    const newPassword = formData.get('newPassword') as string;
-    const confirmPassword = formData.get('confirmPassword') as string;
+    const currentPassword = formData.get('currentPassword');
+    const newPassword = formData.get('newPassword');
+    const confirmPassword = formData.get('confirmPassword');
 
     if (newPassword !== confirmPassword) {
       alert('New passwords do not match');
@@ -683,7 +701,7 @@ class AdminPanel {
     }
   }
 
-  private exportData(): void {
+  exportData() {
     const jsonData = storage.exportData();
     const blob = new Blob([jsonData], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -696,8 +714,8 @@ class AdminPanel {
     URL.revokeObjectURL(url);
   }
 
-  private async handleImportData(e: Event): Promise<void> {
-    const input = e.target as HTMLInputElement;
+  async handleImportData(e) {
+    const input = e.target;
     const file = input.files?.[0];
     
     if (!file) return;
@@ -720,7 +738,7 @@ class AdminPanel {
     input.value = ''; // Reset file input
   }
 
-  private confirmClearData(): void {
+  confirmClearData() {
     this.showConfirmDialog(
       'Clear All Data',
       'Are you sure you want to clear all data? This will delete all messages, settings, and analytics. This action cannot be undone.',
@@ -733,23 +751,23 @@ class AdminPanel {
   }
 
   // Modal management
-  private showModal(modalId: string): void {
+  showModal(modalId) {
     const modal = document.getElementById(modalId);
     modal?.classList.add('show');
   }
 
-  private closeModal(modalId: string): void {
+  closeModal(modalId) {
     const modal = document.getElementById(modalId);
     modal?.classList.remove('show');
   }
 
-  private showConfirmDialog(title: string, message: string, onConfirm: () => void): void {
-    document.getElementById('confirm-title')!.textContent = title;
-    document.getElementById('confirm-message')!.textContent = message;
+  showConfirmDialog(title, message, onConfirm) {
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-message').textContent = message;
     
     const confirmOkBtn = document.getElementById('confirm-ok');
-    const newBtn = confirmOkBtn!.cloneNode(true) as HTMLElement;
-    confirmOkBtn!.parentNode!.replaceChild(newBtn, confirmOkBtn);
+    const newBtn = confirmOkBtn.cloneNode(true);
+    confirmOkBtn.parentNode.replaceChild(newBtn, confirmOkBtn);
     
     newBtn.addEventListener('click', () => {
       this.closeModal('confirm-modal');
@@ -759,12 +777,12 @@ class AdminPanel {
     this.showModal('confirm-modal');
   }
 
-  private handleConfirmAction(): void {
+  handleConfirmAction() {
     // This will be overridden by showConfirmDialog
   }
 
   // Utility functions
-  private formatDate(date: Date): string {
+  formatDate(date) {
     return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
       month: 'short',
@@ -774,7 +792,7 @@ class AdminPanel {
     }).format(date);
   }
 
-  private formatFileSize(bytes: number): string {
+  formatFileSize(bytes) {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
@@ -782,28 +800,23 @@ class AdminPanel {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
-  private escapeHtml(text: string): string {
+  escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
   }
 
-  private truncateText(text: string, maxLength: number): string {
+  truncateText(text, maxLength) {
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
   }
 
-  private capitalizeFirst(str: string): string {
+  capitalizeFirst(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 }
 
 // Global instance for onclick handlers
-declare global {
-  var adminPanel: AdminPanel;
-}
-
-// Initialize admin panel
 const adminPanel = new AdminPanel();
-(globalThis as any).adminPanel = adminPanel;
+globalThis.adminPanel = adminPanel;
 
 export default AdminPanel;
