@@ -19,15 +19,29 @@ const authLimiter = rateLimit({
 // Login endpoint
 router.post('/login', authLimiter, async (req, res) => {
   try {
-    const { error, value } = validateLogin(req.body);
-    if (error) {
+    // Handle both email+password and password-only login
+    let email, password;
+    
+    if (req.body.email && req.body.password) {
+      // Standard email+password login
+      const { error, value } = validateLogin(req.body);
+      if (error) {
+        return res.status(400).json({
+          error: 'Invalid input',
+          details: error.details.map(d => d.message)
+        });
+      }
+      ({ email, password } = value);
+    } else if (req.body.password && !req.body.email) {
+      // Admin panel password-only login - use default admin email
+      email = process.env.ADMIN_EMAIL || 'niklasweber610@gmail.com';
+      password = req.body.password;
+    } else {
       return res.status(400).json({
-        error: 'Invalid input',
-        details: error.details.map(d => d.message)
+        success: false,
+        error: 'Password is required'
       });
     }
-
-    const { email, password } = value;
     
     // Get admin user
     const userResult = await query(
@@ -36,7 +50,7 @@ router.post('/login', authLimiter, async (req, res) => {
     );
 
     if (userResult.rows.length === 0) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ success: false, error: 'Invalid credentials' });
     }
 
     const user = userResult.rows[0];
@@ -44,6 +58,7 @@ router.post('/login', authLimiter, async (req, res) => {
     // Check if account is locked
     if (user.locked_until && new Date() < new Date(user.locked_until)) {
       return res.status(423).json({ 
+        success: false,
         error: 'Account temporarily locked due to too many failed attempts' 
       });
     }
@@ -61,7 +76,7 @@ router.post('/login', authLimiter, async (req, res) => {
         [newAttempts, lockUntil, user.id]
       );
 
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ success: false, error: 'Invalid credentials' });
     }
 
     // Reset login attempts and update last login
@@ -85,6 +100,7 @@ router.post('/login', authLimiter, async (req, res) => {
     );
 
     res.json({
+      success: true,
       message: 'Login successful',
       token,
       user: {

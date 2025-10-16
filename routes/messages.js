@@ -1,8 +1,8 @@
 const express = require('express');
-const { body, query, param } = require('express-validator');
+const { body, query, param, validationResult } = require('express-validator');
 const rateLimit = require('express-rate-limit');
-const { db } = require('../database/db');
-const { validateRequest, validateMessage, validatePagination } = require('../utils/validation');
+const { query: dbQuery } = require('../database/db');
+const { validateMessage, validatePagination } = require('../utils/validation');
 const { authenticateToken } = require('./auth');
 
 const router = express.Router();
@@ -35,30 +35,33 @@ router.post('/', submitMessageLimit, [
   body('message').trim().isLength({ min: 10, max: 2000 }).escape(),
 ], async (req, res) => {
   try {
-    const validation = validateRequest(req);
-    if (!validation.isValid) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
         message: 'Validation failed',
-        errors: validation.errors
+        errors: errors.array().map(error => ({
+          field: error.path,
+          message: error.msg
+        }))
       });
     }
 
     const { name, email, subject, message } = req.body;
     const clientIp = req.ip || req.connection.remoteAddress;
 
-    const query = `
-      INSERT INTO messages (name, email, subject, message, client_ip)
+    const insertQuery = `
+      INSERT INTO messages (name, email, subject, message, ip_address)
       VALUES ($1, $2, $3, $4, $5)
       RETURNING id, name, email, subject, message, created_at, is_read
     `;
 
-    const result = await db.query(query, [name, email, subject, message, clientIp]);
+    const result = await dbQuery(insertQuery, [name, email, subject, message, clientIp]);
     const newMessage = result.rows[0];
 
     // Log analytics event
-    await db.query(
-      'INSERT INTO analytics (event_type, event_data) VALUES ($1, $2)',
+    await dbQuery(
+      'INSERT INTO analytics_events (event_type, event_data) VALUES ($1, $2)',
       ['message_submitted', { message_id: newMessage.id }]
     );
 
@@ -96,12 +99,15 @@ router.get('/', authenticateToken, adminLimit, [
   query('order').optional().isIn(['asc', 'desc'])
 ], async (req, res) => {
   try {
-    const validation = validateRequest(req);
-    if (!validation.isValid) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
         message: 'Invalid parameters',
-        errors: validation.errors
+        errors: errors.array().map(error => ({
+          field: error.path,
+          message: error.msg
+        }))
       });
     }
 
@@ -140,12 +146,12 @@ router.get('/', authenticateToken, adminLimit, [
 
     // Get total count for pagination
     const countQuery = `SELECT COUNT(*) FROM messages WHERE ${whereClause}`;
-    const countResult = await db.query(countQuery, queryParams);
+    const countResult = await dbQuery(countQuery, queryParams);
     const totalMessages = parseInt(countResult.rows[0].count);
 
     // Get messages with pagination
     const messagesQuery = `
-      SELECT id, name, email, subject, message, created_at, updated_at, is_read, client_ip
+      SELECT id, name, email, subject, message, created_at, updated_at, is_read, ip_address
       FROM messages 
       WHERE ${whereClause}
       ORDER BY ${sort} ${order.toUpperCase()}
@@ -153,7 +159,7 @@ router.get('/', authenticateToken, adminLimit, [
     `;
     queryParams.push(limit, offset);
 
-    const messagesResult = await db.query(messagesQuery, queryParams);
+    const messagesResult = await dbQuery(messagesQuery, queryParams);
 
     res.json({
       success: true,
@@ -192,24 +198,27 @@ router.get('/:id', authenticateToken, adminLimit, [
   param('id').isUUID()
 ], async (req, res) => {
   try {
-    const validation = validateRequest(req);
-    if (!validation.isValid) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
         message: 'Invalid message ID',
-        errors: validation.errors
+        errors: errors.array().map(error => ({
+          field: error.path,
+          message: error.msg
+        }))
       });
     }
 
     const { id } = req.params;
 
     const query = `
-      SELECT id, name, email, subject, message, created_at, updated_at, is_read, client_ip
+      SELECT id, name, email, subject, message, created_at, updated_at, is_read, ip_address
       FROM messages 
       WHERE id = $1
     `;
 
-    const result = await db.query(query, [id]);
+    const result = await dbQuery(query, [id]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({
@@ -241,12 +250,15 @@ router.patch('/:id/read', authenticateToken, adminLimit, [
   param('id').isUUID()
 ], async (req, res) => {
   try {
-    const validation = validateRequest(req);
-    if (!validation.isValid) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
         message: 'Invalid message ID',
-        errors: validation.errors
+        errors: errors.array().map(error => ({
+          field: error.path,
+          message: error.msg
+        }))
       });
     }
 
@@ -259,7 +271,7 @@ router.patch('/:id/read', authenticateToken, adminLimit, [
       RETURNING id, is_read, updated_at
     `;
 
-    const result = await db.query(query, [id]);
+    const result = await dbQuery(query, [id]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({
@@ -293,12 +305,15 @@ router.patch('/bulk-read', authenticateToken, adminLimit, [
   body('messageIds.*').isUUID()
 ], async (req, res) => {
   try {
-    const validation = validateRequest(req);
-    if (!validation.isValid) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
         message: 'Invalid message IDs',
-        errors: validation.errors
+        errors: errors.array().map(error => ({
+          field: error.path,
+          message: error.msg
+        }))
       });
     }
 
@@ -311,7 +326,7 @@ router.patch('/bulk-read', authenticateToken, adminLimit, [
       RETURNING id
     `;
 
-    const result = await db.query(query, [messageIds]);
+    const result = await dbQuery(query, [messageIds]);
 
     res.json({
       success: true,
@@ -340,19 +355,22 @@ router.delete('/:id', authenticateToken, adminLimit, [
   param('id').isUUID()
 ], async (req, res) => {
   try {
-    const validation = validateRequest(req);
-    if (!validation.isValid) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
         message: 'Invalid message ID',
-        errors: validation.errors
+        errors: errors.array().map(error => ({
+          field: error.path,
+          message: error.msg
+        }))
       });
     }
 
     const { id } = req.params;
 
     const query = 'DELETE FROM messages WHERE id = $1 RETURNING id';
-    const result = await db.query(query, [id]);
+    const result = await dbQuery(query, [id]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({
@@ -385,19 +403,22 @@ router.delete('/bulk', authenticateToken, adminLimit, [
   body('messageIds.*').isUUID()
 ], async (req, res) => {
   try {
-    const validation = validateRequest(req);
-    if (!validation.isValid) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
         message: 'Invalid message IDs',
-        errors: validation.errors
+        errors: errors.array().map(error => ({
+          field: error.path,
+          message: error.msg
+        }))
       });
     }
 
     const { messageIds } = req.body;
 
     const query = 'DELETE FROM messages WHERE id = ANY($1) RETURNING id';
-    const result = await db.query(query, [messageIds]);
+    const result = await dbQuery(query, [messageIds]);
 
     res.json({
       success: true,
@@ -433,7 +454,7 @@ router.get('/stats/summary', authenticateToken, adminLimit, async (req, res) => 
       FROM messages
     `;
 
-    const result = await db.query(statsQuery);
+    const result = await dbQuery(statsQuery);
     const stats = result.rows[0];
 
     // Convert string counts to integers
