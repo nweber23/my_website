@@ -8,7 +8,7 @@ const path = require('path');
 require('dotenv').config();
 
 const { initializeDatabase } = require('./database/db');
-const authRoutes = require('./routes/auth');
+const { router: authRoutes } = require('./routes/auth');
 const messagesRoutes = require('./routes/messages');
 const analyticsRoutes = require('./routes/analytics');
 const settingsRoutes = require('./routes/settings');
