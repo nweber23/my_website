@@ -35,7 +35,13 @@
             <form class="login-form" id="login-form">
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required autocomplete="current-password">
+                    <div class="password-input-container">
+                        <input type="password" id="password" name="password" required autocomplete="current-password">
+                        <button type="button" class="password-toggle" id="password-toggle" aria-label="Toggle password visibility">
+                            <span class="show-icon">👁️</span>
+                            <span class="hide-icon">🙈</span>
+                        </button>
+                    </div>
                     <span class="error-message" id="password-error"></span>
                 </div>
                 

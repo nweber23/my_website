@@ -70,6 +70,48 @@
   color: var(--primary-color);
 }
 
+/* Password Input Container */
+.password-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-container input {
+  padding-right: 50px;
+  flex: 1;
+}
+
+.password-toggle {
+  position: absolute;
+  right: var(--spacing-sm);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  color: var(--text-secondary);
+  border-radius: var(--border-radius-sm);
+  transition: all var(--transition-fast);
+  font-size: var(--font-size-sm);
+}
+
+.password-toggle:hover {
+  color: var(--primary-color);
+  background-color: var(--bg-tertiary);
+}
+
+.password-toggle .hide-icon {
+  display: none;
+}
+
+.password-toggle.visible .show-icon {
+  display: none;
+}
+
+.password-toggle.visible .hide-icon {
+  display: inline;
+}
+
 /* Admin Panel Layout */
 .admin-panel {
   display: flex;
