@@ -49,7 +49,7 @@ A modern, full-stack personal portfolio website with an integrated admin panel. 
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/nweber23/portfolio-website.git
+   git clone https://github.com/nweber23/my_website.git
    cd portfolio-website
    ```
 
