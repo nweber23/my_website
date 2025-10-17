@@ -18,8 +18,8 @@ ENV NODE_ENV=development
 # Copy package files
 COPY package*.json ./
 
-# Install all dependencies (including devDependencies)
-RUN npm ci --include=dev
+# Install deps (use ci if lockfile exists, otherwise install)
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
 # Copy source code
 COPY . .
@@ -40,14 +40,11 @@ FROM base AS build
 # Copy package files
 COPY package*.json ./
 
-# Install all dependencies for building
-RUN npm ci --include=dev
+# Install deps for building (ci if lockfile exists)
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
 # Copy source code
 COPY . .
-
-# Build if needed (for TypeScript or other build steps)
-# RUN npm run build
 
 # Production stage
 FROM base AS production
@@ -56,8 +53,8 @@ ENV NODE_ENV=production
 # Copy package files
 COPY package*.json ./
 
-# Install only production dependencies
-RUN npm ci --only=production && npm cache clean --force
+# Install only production deps (fallback if no lockfile)
+RUN if [ -f package-lock.json ]; then npm ci --omit=dev; else npm install --omit=dev; fi && npm cache clean --force
 
 # Copy built application
 COPY --from=build /app .
