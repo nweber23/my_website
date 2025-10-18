@@ -430,7 +430,7 @@ class PortfolioApp {
     // About content
     const aboutContent = {
         intro: "Welcome to my world of code and innovation! I'm a systems programming student at 42 Heilbronn, where I embrace the peer-to-peer learning philosophy. My journey is driven by curiosity, determination, and a passion for creating efficient, elegant solutions to complex problems.",
-        
+
         focusAreas: [
             "Systems Programming & Memory Management",
             "Algorithm Design & Optimization",
@@ -438,7 +438,7 @@ class PortfolioApp {
             "Clean Code Architecture",
             "Problem-Solving Methodologies"
         ],
-        
+
         interests: [
             "FC Bayern Munich - Official Member & Passionate Fan",
             "Automotive Technology & Innovation",
@@ -446,8 +446,8 @@ class PortfolioApp {
             "Continuous Learning & Growth",
             "Music & Creative Expression"
         ],
-        
-        quote: "Code is poetry written in logic, where every semicolon tells a story and every function has a purpose."
+
+        quote: "The best way to learn is to build, break, and rebuild."
     };
 
     // Populate about content
@@ -455,15 +455,15 @@ class PortfolioApp {
     const aboutQuote = document.getElementById('about-quote');
     const focusList = document.getElementById('focus-list');
     const interestsList = document.getElementById('interests-list');
-    
+
     if (aboutIntro) {
         aboutIntro.textContent = aboutContent.intro;
     }
-    
+
     if (aboutQuote) {
         aboutQuote.textContent = aboutContent.quote;
     }
-    
+
     if (focusList) {
         aboutContent.focusAreas.forEach(area => {
             const li = document.createElement('li');
@@ -471,7 +471,7 @@ class PortfolioApp {
             focusList.appendChild(li);
         });
     }
-    
+
     if (interestsList) {
         aboutContent.interests.forEach(interest => {
             const li = document.createElement('li');
@@ -703,7 +703,7 @@ class PortfolioApp {
   // Animate stats numbers
   animateStats() {
     const statsNumbers = document.querySelectorAll('.stat-number');
-    
+
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -713,10 +713,10 @@ class PortfolioApp {
         }
       });
     });
-    
+
     statsNumbers.forEach(stat => observer.observe(stat));
   }
-  
+
   animateNumber(element, target) {
     let current = 0;
     const increment = target / 50;
