@@ -203,6 +203,11 @@ class PortfolioApp {
           if (entry.target.classList.contains('skill-item')) {
             this.animateSkillBar(entry.target);
           }
+
+          // Animate stat numbers in profile card
+          if (entry.target.classList.contains('profile-stats')) {
+            this.animateProfileStats(entry.target);
+          }
         }
       });
     };
@@ -210,7 +215,7 @@ class PortfolioApp {
     const observer = new IntersectionObserver(observerCallback, this.observerOptions);
 
     const animatedElements = document.querySelectorAll(
-      '.fade-in, .fade-in-left, .fade-in-right, .skill-item, .project-card, .exploring-item'
+      '.fade-in, .fade-in-left, .fade-in-right, .skill-item, .project-card, .exploring-item, .profile-stats'
     );
 
     animatedElements.forEach(el => observer.observe(el));
@@ -224,6 +229,16 @@ class PortfolioApp {
         skillFill.style.width = `${level}%`;
       }, 200);
     }
+  }
+
+  animateProfileStats(statsContainer) {
+    const statValues = statsContainer.querySelectorAll('.stat-value');
+    statValues.forEach(stat => {
+      const target = stat.getAttribute('data-target');
+      if (target && !isNaN(target)) {
+        this.animateNumber(stat, parseInt(target));
+      }
+    });
   }
 
   setupScrollEffects() {
