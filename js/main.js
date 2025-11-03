@@ -9,6 +9,7 @@ class PortfolioApp {
       threshold: 0.1,
       rootMargin: '0px 0px -50px 0px'
     };
+    this._intersectionObserver = null;
     this.init();
   }
 
@@ -35,9 +36,11 @@ class PortfolioApp {
   // Theme Management
   setupTheme() {
     const themeToggle = document.getElementById('theme-toggle');
-    const savedTheme = localStorage.getItem('portfolio-theme') || 'light';
+    const savedTheme = localStorage.getItem('portfolio-theme');
+    const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
 
-    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.documentElement.setAttribute('data-theme', initialTheme);
 
     themeToggle?.addEventListener('click', () => {
       const currentTheme = document.documentElement.getAttribute('data-theme');
@@ -197,7 +200,7 @@ class PortfolioApp {
     const observerCallback = (entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add('animate');
+          entry.target.classList.add('in-view');
 
           // Special handling for skill bars
           if (entry.target.classList.contains('skill-item')) {
@@ -212,13 +215,16 @@ class PortfolioApp {
       });
     };
 
-    const observer = new IntersectionObserver(observerCallback, this.observerOptions);
+    this._intersectionObserver = new IntersectionObserver(observerCallback, this.observerOptions);
+    this.observeAnimatedElements();
+  }
 
+  observeAnimatedElements() {
+    if (!this._intersectionObserver) return;
     const animatedElements = document.querySelectorAll(
-      '.fade-in, .fade-in-left, .fade-in-right, .skill-item, .project-card, .exploring-item, .profile-stats'
+      '.fade-in, .fade-in-left, .fade-in-right, .skill-item, .skill-tag, .project-card, .exploring-item, .profile-stats'
     );
-
-    animatedElements.forEach(el => observer.observe(el));
+    animatedElements.forEach(el => this._intersectionObserver.observe(el));
   }
 
   animateSkillBar(skillItem) {
@@ -541,26 +547,26 @@ class PortfolioApp {
       return acc;
     }, {});
 
-    // Render skills in each category without percentage text
+    // Render skills as simple tags (icon + name), no rankings
     Object.keys(skillsByCategory).forEach(category => {
       const container = containers[category];
       if (!container) return;
 
       container.innerHTML = skillsByCategory[category]
         .map(skill => `
-          <div class="skill-item fade-in">
-            <div class="skill-info">
-              <div class="skill-logo">${this.getTechLogo(skill.name)}</div>
-              <span class="skill-name">${skill.name}</span>
-            </div>
-            <div class="skill-bar">
-              <div class="skill-fill" data-level="${skill.level}"></div>
-            </div>
+          <div class="skill-tag fade-in" aria-label="${skill.name}">
+            <span class="skill-logo">${this.getTechLogo(skill.name)}</span>
+            <span class="skill-name">${skill.name}</span>
           </div>
         `)
         .join('');
     });
+
+  // Observe newly inserted animated elements
+  this.observeAnimatedElements();
   }
+
+  // rankings removed by request; no level labels
 
   getTechLogo(techName) {
     const logos = {
@@ -585,51 +591,55 @@ class PortfolioApp {
   }
 
   loadProjects() {
+    const esc = (s) => String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+
     const projects = [
       {
         id: '1',
-        name: 'fract-ol',
-        description: 'Interactive fractal visualizer built with C and MLX42. Features real-time zooming, multiple fractal types (Mandelbrot, Julia, Burning Ship), and smooth color gradients.',
-        techStack: ['C', 'MLX42', 'Mathematics', 'Computer Graphics'],
+        name: 'minishell',
+        description: 'A custom Unix shell with advanced parsing and execution: pipelines, logical operators (&&, ||), subshells, redirections, heredocs, environment expansion, and robust signal handling.',
+        techStack: ['C', 'Readline', 'POSIX', 'Unix System Calls', 'Makefile'],
         highlights: [
-          'Real-time fractal rendering',
-          'Interactive zoom and navigation',
-          'Multiple fractal algorithms',
-          'Optimized for performance'
+          'Lexer, parser, and AST-based execution',
+          'Pipes, redirections, and heredocs',
+          'Built-in commands (cd, echo, env, export, unset, exit)',
+          'Signal-safe interactive prompt with history'
         ],
-        githubUrl: 'https://github.com/nweber23/fract-ol',
-        featured: true,
-        order: 1
+        githubUrl: 'https://github.com/nweber23/minishell',
+        featured: true
       },
       {
         id: '2',
-        name: 'libunit',
-        description: 'Minimalist unit testing framework for C projects. Provides simple assertion macros, test organization, and detailed output formatting.',
-        techStack: ['C', 'Makefile', 'Testing Framework'],
+        name: 'base42',
+        description: 'A full‑stack platform for 42 students to connect, collaborate, and manage projects with dashboards, peers, chat, calendar, and 42 OAuth.',
+        techStack: ['React', 'TypeScript', 'Tailwind CSS', 'Node.js', 'Express', 'PostgreSQL', 'Redis', 'Docker'],
         highlights: [
-          'Lightweight and fast',
-          'Simple macro-based API',
-          'Colored output',
-          'Memory leak detection'
+          'Dashboard, Peers, Projects, Messages, Calendar, Profile',
+          '42 OAuth authentication',
+          'Dockerized dev and prod workflows',
+          'Responsive UI with Tailwind'
         ],
-        githubUrl: 'https://github.com/nweber23/libunit',
-        featured: true,
-        order: 2
+        githubUrl: 'https://github.com/nweber23/base42',
+        featured: true
       },
       {
         id: '3',
-        name: 'minishell',
-        description: 'Custom Unix shell implementation with built-in commands, pipe handling, environment variables, and signal management.',
-        techStack: ['C', 'Unix System Calls', 'Process Management'],
+        name: '2048 in Java',
+        description: 'Console-based 2048 game with ANSI color themes, ASCII tile rendering, menu system, and persistent high scores. Supports 4×4 and 5×5 boards.',
+        techStack: ['Java', 'Gradle', 'Terminal/ANSI'],
         highlights: [
-          'Built-in commands (cd, echo, pwd, etc.)',
-          'Pipe and redirection support',
-          'Environment variable handling',
-          'Signal processing'
+          'WASD/Arrow key controls',
+          'Color and ASCII art modes',
+          'High score saving',
+          'CLI options and resize handling'
         ],
-        githubUrl: 'https://github.com/nweber23/minishell',
-        featured: true,
-        order: 3
+        githubUrl: 'https://github.com/nweber23/2048_in_java',
+        featured: true
       }
     ];
 
@@ -637,33 +647,61 @@ class PortfolioApp {
     if (!projectsGrid) return;
 
     projectsGrid.innerHTML = projects
-      .filter(project => project.featured)
-      .sort((a, b) => a.order - b.order)
+      .filter(p => p.featured)
       .map(project => `
-        <div class="project-card fade-in">
-          <div class="project-header">
-            <h3 class="project-title">${project.name}</h3>
-            <p class="project-description">${project.description}</p>
+        <div class="project-card fade-in" data-expanded="false">
+          <div class="project-content">
+            <h3 class="project-title">${esc(project.name)}</h3>
+            <p class="project-description">${esc(project.description)}</p>
             <div class="project-tech">
-              ${project.techStack.map(tech => `<span class="tech-tag">${tech}</span>`).join('')}
+              ${project.techStack.map(tech => `<span class="tech-tag">${esc(tech)}</span>`).join('')}
             </div>
-            <ul class="project-highlights">
-              ${project.highlights.map(highlight => `<li>${highlight}</li>`).join('')}
-            </ul>
           </div>
-          <div class="project-footer">
-            <div class="project-links">
-              <a href="${project.githubUrl}" target="_blank" rel="noopener noreferrer" class="project-link" onclick="apiClient.trackEvent('project_click', { project: '${project.name}', action: 'github' })">
-                <span>GitHub</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                </svg>
-              </a>
+          
+          <div class="project-actions">
+            <a href="${esc(project.githubUrl)}" target="_blank" rel="noopener noreferrer" class="project-btn" onclick="apiClient.trackEvent('project_click', { project: '${esc(project.name)}', action: 'github' })">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+              </svg>
+              GitHub
+            </a>
+            <button type="button" class="project-btn toggle-details-btn" data-project-id="${esc(project.id)}">
+              <span>View Details</span>
+              <span class="arrow">▼</span>
+            </button>
+          </div>
+          
+          <div class="project-details">
+            <div class="project-details-content">
+              <div class="project-details-section">
+                <h4>Key Features</h4>
+                <ul class="project-highlights">
+                  ${project.highlights.map(h => `<li>${esc(h)}</li>`).join('')}
+                </ul>
+              </div>
             </div>
           </div>
         </div>
       `)
       .join('');
+
+    // Observe animated elements
+    this.observeAnimatedElements();
+
+    // Toggle details
+    projectsGrid.addEventListener('click', (e) => {
+      const toggleBtn = e.target.closest('.toggle-details-btn');
+      if (toggleBtn) {
+        const card = toggleBtn.closest('.project-card');
+        const isExpanded = card.getAttribute('data-expanded') === 'true';
+        card.setAttribute('data-expanded', (!isExpanded).toString());
+        
+        const btnText = toggleBtn.querySelector('span:first-child');
+        if (btnText) {
+          btnText.textContent = isExpanded ? 'View Details' : 'Hide Details';
+        }
+      }
+    });
   }
 
   // Particles Effect
