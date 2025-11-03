@@ -666,7 +666,7 @@ class PortfolioApp {
               ${project.techStack.map(tech => `<span class="tech-tag">${tech}</span>`).join('')}
             </div>
             <ul class="project-highlights">
-              ${project.highlights.map(highlight => `<li>${highlight}</li>`).join('')}
+              ${project.highlights.slice(0, 3).map(highlight => `<li>${highlight}</li>`).join('')}
             </ul>
           </div>
           <div class="project-footer">
