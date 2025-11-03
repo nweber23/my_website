@@ -1,7 +1,7 @@
 const express = require('express');
-const { body, query, param } = require('express-validator');
+const { body, query: validateQuery, param } = require('express-validator');
 const rateLimit = require('express-rate-limit');
-const { db } = require('../database/db');
+const { query } = require('../database/db');
 const { validateRequest } = require('../utils/validation');
 const { authenticateToken } = require('./auth');
 
@@ -68,13 +68,13 @@ router.post('/track', trackingLimit, [
       timestamp: new Date().toISOString()
     };
 
-    const query = `
+    const insertQuery = `
       INSERT INTO analytics (event_type, event_data, client_ip, user_agent, referrer)
       VALUES ($1, $2, $3, $4, $5)
       RETURNING id, event_type, created_at
     `;
 
-    const result = await db.query(query, [
+    const result = await query(insertQuery, [
       event_type,
       JSON.stringify(enhancedEventData),
       clientIp,
@@ -121,7 +121,7 @@ router.get('/dashboard', authenticateToken, adminLimit, async (req, res) => {
       FROM analytics
     `;
 
-    const statsResult = await db.query(statsQuery);
+    const statsResult = await query(statsQuery);
     const stats = statsResult.rows[0];
 
     // Convert string counts to integers
@@ -142,7 +142,7 @@ router.get('/dashboard', authenticateToken, adminLimit, async (req, res) => {
       ORDER BY views DESC
     `;
 
-    const sectionResult = await db.query(sectionQuery);
+    const sectionResult = await query(sectionQuery);
     const sectionViews = sectionResult.rows.map(row => ({
       section: row.section_name,
       views: parseInt(row.views)
@@ -159,7 +159,7 @@ router.get('/dashboard', authenticateToken, adminLimit, async (req, res) => {
       ORDER BY date DESC
     `;
 
-    const dailyViewsResult = await db.query(dailyViewsQuery);
+    const dailyViewsResult = await query(dailyViewsQuery);
     const dailyViews = dailyViewsResult.rows.map(row => ({
       date: row.date,
       views: parseInt(row.views)
@@ -178,7 +178,7 @@ router.get('/dashboard', authenticateToken, adminLimit, async (req, res) => {
       LIMIT 10
     `;
 
-    const referrersResult = await db.query(referrersQuery);
+    const referrersResult = await query(referrersQuery);
     const topReferrers = referrersResult.rows.map(row => ({
       referrer: row.referrer,
       visits: parseInt(row.visits)
@@ -209,11 +209,11 @@ router.get('/dashboard', authenticateToken, adminLimit, async (req, res) => {
  * @access  Private (admin)
  */
 router.get('/events', authenticateToken, adminLimit, [
-  query('page').optional().isInt({ min: 1 }),
-  query('limit').optional().isInt({ min: 1, max: 100 }),
-  query('event_type').optional().isIn(['page_view', 'section_view', 'contact_form_submit', 'project_click', 'all']),
-  query('start_date').optional().isISO8601(),
-  query('end_date').optional().isISO8601()
+  validateQuery('page').optional().isInt({ min: 1 }),
+  validateQuery('limit').optional().isInt({ min: 1, max: 100 }),
+  validateQuery('event_type').optional().isIn(['page_view', 'section_view', 'contact_form_submit', 'project_click', 'all']),
+  validateQuery('start_date').optional().isISO8601(),
+  validateQuery('end_date').optional().isISO8601()
 ], async (req, res) => {
   try {
     const validation = validateRequest(req);
@@ -260,7 +260,7 @@ router.get('/events', authenticateToken, adminLimit, [
 
     // Get total count
     const countQuery = `SELECT COUNT(*) FROM analytics WHERE ${whereClause}`;
-    const countResult = await db.query(countQuery, queryParams);
+    const countResult = await query(countQuery, queryParams);
     const totalEvents = parseInt(countResult.rows[0].count);
 
     // Get events with pagination
@@ -280,7 +280,7 @@ router.get('/events', authenticateToken, adminLimit, [
     `;
     queryParams.push(limit, offset);
 
-    const eventsResult = await db.query(eventsQuery, queryParams);
+    const eventsResult = await query(eventsQuery, queryParams);
 
     res.json({
       success: true,
@@ -316,9 +316,9 @@ router.get('/events', authenticateToken, adminLimit, [
  */
 router.get('/charts/:type', authenticateToken, adminLimit, [
   param('type').isIn(['daily', 'weekly', 'monthly', 'sections', 'browsers', 'devices']),
-  query('days').optional().isInt({ min: 1, max: 365 }),
-  query('start_date').optional().isISO8601(),
-  query('end_date').optional().isISO8601()
+  validateQuery('days').optional().isInt({ min: 1, max: 365 }),
+  validateQuery('start_date').optional().isISO8601(),
+  validateQuery('end_date').optional().isISO8601()
 ], async (req, res) => {
   try {
     const validation = validateRequest(req);
@@ -333,12 +333,12 @@ router.get('/charts/:type', authenticateToken, adminLimit, [
     const { type } = req.params;
     const { days = 30, start_date, end_date } = req.query;
 
-    let query = '';
+    let sqlQuery = '';
     let queryParams = [];
 
     switch (type) {
       case 'daily':
-        query = `
+        sqlQuery = `
           SELECT 
             DATE(created_at) as date,
             COUNT(*) FILTER (WHERE event_type = 'page_view') as page_views,
@@ -352,7 +352,7 @@ router.get('/charts/:type', authenticateToken, adminLimit, [
         break;
 
       case 'sections':
-        query = `
+        sqlQuery = `
           SELECT 
             COALESCE(event_data->>'section', 'unknown') as section,
             COUNT(*) as views
@@ -365,7 +365,7 @@ router.get('/charts/:type', authenticateToken, adminLimit, [
         break;
 
       case 'browsers':
-        query = `
+        sqlQuery = `
           SELECT 
             CASE 
               WHEN user_agent ILIKE '%Chrome%' THEN 'Chrome'
@@ -384,7 +384,7 @@ router.get('/charts/:type', authenticateToken, adminLimit, [
         break;
 
       case 'devices':
-        query = `
+        sqlQuery = `
           SELECT 
             CASE 
               WHEN user_agent ILIKE '%Mobile%' THEN 'Mobile'
@@ -407,7 +407,7 @@ router.get('/charts/:type', authenticateToken, adminLimit, [
         });
     }
 
-    const result = await db.query(query, queryParams);
+    const result = await query(sqlQuery, queryParams);
     
     // Convert numeric strings to numbers
     const chartData = result.rows.map(row => {
@@ -448,7 +448,7 @@ router.get('/charts/:type', authenticateToken, adminLimit, [
  * @access  Private (admin)
  */
 router.delete('/events', authenticateToken, adminLimit, [
-  query('older_than_days').isInt({ min: 1, max: 365 })
+  validateQuery('older_than_days').isInt({ min: 1, max: 365 })
 ], async (req, res) => {
   try {
     const validation = validateRequest(req);
@@ -462,13 +462,13 @@ router.delete('/events', authenticateToken, adminLimit, [
 
     const { older_than_days } = req.query;
 
-    const query = `
+    const deleteQuery = `
       DELETE FROM analytics 
       WHERE created_at < CURRENT_DATE - INTERVAL '${older_than_days} days'
       RETURNING id
     `;
 
-    const result = await db.query(query);
+    const result = await query(deleteQuery);
 
     res.json({
       success: true,
