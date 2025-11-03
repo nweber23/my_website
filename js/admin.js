@@ -115,6 +115,20 @@ class AdminPanel {
   setupDashboardEventListeners() {
     const viewAllMessagesBtn = document.getElementById('view-all-messages');
     viewAllMessagesBtn?.addEventListener('click', () => this.switchSection('messages'));
+    
+    // Analytics retry button
+    const retryAnalyticsBtn = document.getElementById('retry-analytics');
+    retryAnalyticsBtn?.addEventListener('click', () => this.loadAnalytics());
+    
+    // Quick actions navigation
+    const quickActions = document.querySelectorAll('.quick-action-item[data-section]');
+    quickActions.forEach(action => {
+      action.addEventListener('click', (e) => {
+        e.preventDefault();
+        const section = action.getAttribute('data-section');
+        if (section) this.switchSection(section);
+      });
+    });
   }
 
   setupModalEventListeners() {
@@ -656,35 +670,107 @@ class AdminPanel {
 
   // Analytics
   async loadAnalytics() {
+    const loadingEl = document.getElementById('analytics-loading');
+    const errorEl = document.getElementById('analytics-error');
+    const statsGrid = document.querySelector('.analytics-stats-grid');
+    const chartsGrid = document.querySelector('.analytics-charts-grid');
+    
     try {
+      // Show loading state
+      if (loadingEl) loadingEl.style.display = 'flex';
+      if (errorEl) errorEl.style.display = 'none';
+      if (statsGrid) statsGrid.style.display = 'none';
+      if (chartsGrid) chartsGrid.style.display = 'none';
+      
       const dashboardResult = await apiClient.getAnalyticsDashboard();
       
       if (dashboardResult.success) {
-        this.renderSectionStats(dashboardResult.data.section_views);
-        this.renderDailyChart(dashboardResult.data.daily_views);
+        const data = dashboardResult.data;
+        
+        // Hide loading, show content
+        if (loadingEl) loadingEl.style.display = 'none';
+        if (statsGrid) statsGrid.style.display = 'grid';
+        if (chartsGrid) chartsGrid.style.display = 'grid';
+        
+        // Update overview stats
+        this.updateAnalyticsOverview(data.summary);
+        
+        // Render charts
+        this.renderSectionStats(data.section_views || []);
+        this.renderDailyChart(data.daily_views || []);
+        this.renderReferrers(data.top_referrers || []);
+      } else {
+        throw new Error(dashboardResult.error || 'Failed to load analytics');
       }
     } catch (error) {
       console.error('Error loading analytics:', error);
+      
+      // Show error state
+      if (loadingEl) loadingEl.style.display = 'none';
+      if (statsGrid) statsGrid.style.display = 'none';
+      if (chartsGrid) chartsGrid.style.display = 'none';
+      if (errorEl) {
+        errorEl.style.display = 'flex';
+        const errorMsg = document.getElementById('analytics-error-message');
+        if (errorMsg) errorMsg.textContent = error.message || 'Please try again later.';
+      }
     }
+  }
+  
+  updateAnalyticsOverview(summary) {
+    // Total Views
+    const totalViews = summary.page_views || 0;
+    const totalViewsEl = document.getElementById('analytics-total-views');
+    if (totalViewsEl) totalViewsEl.textContent = totalViews.toLocaleString();
+    
+    // Unique Visitors
+    const uniqueVisitors = summary.unique_visitors || 0;
+    const uniqueVisitorsEl = document.getElementById('analytics-unique-visitors');
+    if (uniqueVisitorsEl) uniqueVisitorsEl.textContent = uniqueVisitors.toLocaleString();
+    
+    // Weekly Views
+    const weeklyViews = summary.weekly_events || 0;
+    const weeklyViewsEl = document.getElementById('analytics-weekly-views');
+    if (weeklyViewsEl) weeklyViewsEl.textContent = weeklyViews.toLocaleString();
+    
+    // Daily Views
+    const dailyViews = summary.daily_events || 0;
+    const dailyViewsEl = document.getElementById('analytics-daily-views');
+    if (dailyViewsEl) dailyViewsEl.textContent = dailyViews.toLocaleString();
+    
+    // Update change indicators (hide for now since we don't have historical data)
+    ['views', 'visitors', 'weekly', 'daily'].forEach(type => {
+      const changeEl = document.getElementById(`analytics-${type}-change`);
+      if (changeEl) {
+        changeEl.querySelector('span').textContent = '';
+        changeEl.querySelector('svg')?.remove();
+      }
+    });
   }
 
   renderSectionStats(sectionViews) {
     const container = document.getElementById('section-stats');
-    if (!container || !sectionViews) return;
+    if (!container) return;
+    
+    if (!sectionViews || sectionViews.length === 0) {
+      container.innerHTML = '<p class="no-data" style="text-align: center; color: var(--text-secondary); padding: 2rem;">No section data available</p>';
+      return;
+    }
 
     const maxViews = Math.max(...sectionViews.map(s => s.views), 1);
     
     container.innerHTML = sectionViews
+      .slice(0, 5) // Show top 5
       .map(({section, views}) => {
         const percentage = (views / maxViews) * 100;
         return `
-          <div class="stat-row">
-            <div class="stat-info">
-              <span class="stat-name">${this.capitalizeFirst(section)}</span>
-              <span class="stat-value">${views} views</span>
+          <div class="section-stat-item">
+            <div class="section-stat-header">
+              <span class="section-stat-name">${this.capitalizeFirst(section || 'Unknown')}</span>
+              <span class="section-stat-value">${views.toLocaleString()} views</span>
             </div>
-            <div class="stat-bar">
-              <div class="stat-bar-fill" style="width: ${percentage}%"></div>
+            <div class="section-stat-bar">
+              <div class="section-stat-fill" style="width: ${percentage}%"></div>
             </div>
           </div>
         `;
@@ -694,19 +780,53 @@ class AdminPanel {
 
   renderDailyChart(dailyViews) {
     const container = document.getElementById('daily-chart');
-    if (!container || !dailyViews) return;
+    if (!container) return;
+    
+    if (!dailyViews || dailyViews.length === 0) {
+      container.innerHTML = '<p class="no-data" style="text-align: center; color: var(--text-secondary); padding: 2rem;">No daily data available</p>';
+      return;
+    }
 
     const maxViews = Math.max(...dailyViews.map(d => d.views), 1);
 
     container.innerHTML = dailyViews
+      .slice(-7) // Last 7 days
       .map(({date, views}) => {
-        const height = Math.max((views / maxViews) * 100, 2);
+        const height = Math.max((views / maxViews) * 100, 4);
         const dayName = new Date(date).toLocaleDateString('en-US', { weekday: 'short' });
         return `
           <div class="chart-bar" 
                style="height: ${height}%" 
-               data-value="${views} views on ${dayName}"
+               data-value="${views}"
+               data-label="${dayName}"
                title="${dayName}: ${views} views">
+          </div>
+        `;
+      })
+      .join('');
+  }
+  
+  renderReferrers(referrers) {
+    const container = document.getElementById('referrers-list');
+    if (!container) return;
+    
+    if (!referrers || referrers.length === 0) {
+      container.innerHTML = '<p class="no-data" style="text-align: center; color: var(--text-secondary); padding: 2rem; grid-column: 1 / -1;">No referrer data available</p>';
+      return;
+    }
+    
+    container.innerHTML = referrers
+      .slice(0, 10) // Top 10
+      .map(({referrer, visits}) => {
+        const displayName = referrer === 'Direct' ? 'Direct' : new URL(referrer || 'https://direct').hostname.replace('www.', '');
+        const initial = displayName.charAt(0).toUpperCase();
+        return `
+          <div class="referrer-item">
+            <div class="referrer-icon">${initial}</div>
+            <div class="referrer-details">
+              <div class="referrer-name" title="${referrer}">${displayName}</div>
+              <div class="referrer-visits">${visits.toLocaleString()} visits</div>
+            </div>
           </div>
         `;
       })
