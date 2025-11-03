@@ -222,7 +222,7 @@ class PortfolioApp {
   observeAnimatedElements() {
     if (!this._intersectionObserver) return;
     const animatedElements = document.querySelectorAll(
-      '.fade-in, .fade-in-left, .fade-in-right, .skill-item, .project-card, .exploring-item, .profile-stats'
+      '.fade-in, .fade-in-left, .fade-in-right, .skill-item, .skill-tag, .project-card, .exploring-item, .profile-stats'
     );
     animatedElements.forEach(el => this._intersectionObserver.observe(el));
   }
@@ -547,21 +547,16 @@ class PortfolioApp {
       return acc;
     }, {});
 
-    // Render skills in each category without percentage text
+    // Render skills as simple tags (icon + name), no rankings
     Object.keys(skillsByCategory).forEach(category => {
       const container = containers[category];
       if (!container) return;
 
       container.innerHTML = skillsByCategory[category]
         .map(skill => `
-          <div class="skill-item fade-in">
-            <div class="skill-info">
-              <div class="skill-logo">${this.getTechLogo(skill.name)}</div>
-              <span class="skill-name">${skill.name}</span>
-            </div>
-            <div class="skill-bar">
-              <div class="skill-fill" data-level="${skill.level}"></div>
-            </div>
+          <div class="skill-tag fade-in" aria-label="${skill.name}">
+            <span class="skill-logo">${this.getTechLogo(skill.name)}</span>
+            <span class="skill-name">${skill.name}</span>
           </div>
         `)
         .join('');
@@ -570,6 +565,8 @@ class PortfolioApp {
   // Observe newly inserted animated elements
   this.observeAnimatedElements();
   }
+
+  // rankings removed by request; no level labels
 
   getTechLogo(techName) {
     const logos = {
