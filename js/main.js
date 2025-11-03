@@ -9,6 +9,7 @@ class PortfolioApp {
       threshold: 0.1,
       rootMargin: '0px 0px -50px 0px'
     };
+    this._intersectionObserver = null;
     this.init();
   }
 
@@ -35,9 +36,11 @@ class PortfolioApp {
   // Theme Management
   setupTheme() {
     const themeToggle = document.getElementById('theme-toggle');
-    const savedTheme = localStorage.getItem('portfolio-theme') || 'light';
+    const savedTheme = localStorage.getItem('portfolio-theme');
+    const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
 
-    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.documentElement.setAttribute('data-theme', initialTheme);
 
     themeToggle?.addEventListener('click', () => {
       const currentTheme = document.documentElement.getAttribute('data-theme');
@@ -197,7 +200,7 @@ class PortfolioApp {
     const observerCallback = (entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add('animate');
+          entry.target.classList.add('in-view');
 
           // Special handling for skill bars
           if (entry.target.classList.contains('skill-item')) {
@@ -212,13 +215,16 @@ class PortfolioApp {
       });
     };
 
-    const observer = new IntersectionObserver(observerCallback, this.observerOptions);
+    this._intersectionObserver = new IntersectionObserver(observerCallback, this.observerOptions);
+    this.observeAnimatedElements();
+  }
 
+  observeAnimatedElements() {
+    if (!this._intersectionObserver) return;
     const animatedElements = document.querySelectorAll(
       '.fade-in, .fade-in-left, .fade-in-right, .skill-item, .project-card, .exploring-item, .profile-stats'
     );
-
-    animatedElements.forEach(el => observer.observe(el));
+    animatedElements.forEach(el => this._intersectionObserver.observe(el));
   }
 
   animateSkillBar(skillItem) {
@@ -560,6 +566,9 @@ class PortfolioApp {
         `)
         .join('');
     });
+
+  // Observe newly inserted animated elements
+  this.observeAnimatedElements();
   }
 
   getTechLogo(techName) {
@@ -664,6 +673,9 @@ class PortfolioApp {
         </div>
       `)
       .join('');
+
+    // Observe newly inserted animated elements
+    this.observeAnimatedElements();
   }
 
   // Particles Effect

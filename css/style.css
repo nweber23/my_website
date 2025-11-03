@@ -108,6 +108,10 @@ body {
   overflow-x: hidden;
 }
 
+/* Let the browser render native form controls appropriately in light/dark */
+html { color-scheme: light dark; }
+[data-theme="dark"] { color-scheme: dark; }
+
 /* Subtle global background - only a hint */
 body::before {
   content: '';
@@ -187,6 +191,14 @@ a {
 
 a:hover {
   color: var(--primary-dark);
+}
+
+/* Better focus styles for accessibility */
+:where(a, button, [role="button"], input, textarea, select).focus-visible,
+:where(a, button, [role="button"], input, textarea, select):focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary-color) 60%, transparent);
+  outline-offset: 2px;
+  border-radius: 8px;
 }
 
 /* ==========================================================================
@@ -315,6 +327,30 @@ a:hover {
   color: var(--primary-color);
   background-color: var(--bg-tertiary);
 }
+
+/* Modern underline indicator on hover/active */
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 6px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-normal);
+  border-radius: 2px;
+}
+.nav-link:hover::after,
+.nav-link.active::after { transform: scaleX(1); }
+
+/* Condense navbar when scrolled */
+.navbar.scrolled {
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  border-bottom-color: transparent;
+}
+.navbar.scrolled .nav-container { padding-top: 6px; padding-bottom: 6px; }
 
 .nav-toggle {
   display: none;
@@ -468,6 +504,7 @@ a:hover {
   overflow: hidden;
   transform: perspective(1000px) rotateY(-5deg) rotateX(5deg);
   transition: transform var(--transition-normal);
+  will-change: transform;
 }
 
 .code-window:hover {
@@ -1213,6 +1250,7 @@ a:hover {
   transition: all var(--transition-normal);
   position: relative;
   overflow: hidden;
+  will-change: transform, opacity;
 }
 
 .skill-category-card::before {
@@ -1394,6 +1432,7 @@ a:hover {
   line-height: 1.6;
   min-height: 3.6em;
   display: -webkit-box;
+  line-clamp: 3;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
@@ -1685,23 +1724,14 @@ a:hover {
     transform: translateX(0);
   }
 }
+.fade-in,
+.fade-in-left,
+.fade-in-right { opacity: 0; }
+.fade-in.in-view { animation: fadeInUp 0.8s ease-out forwards; }
+.fade-in-left.in-view { animation: fadeInLeft 0.8s ease-out forwards; }
+.fade-in-right.in-view { animation: fadeInRight 0.8s ease-out forwards; }
 
-.fade-in {
-  opacity: 0;
-  animation: fadeInUp 0.8s ease-out forwards;
-}
-
-.fade-in-left {
-  opacity: 0;
-  animation: fadeInLeft 0.8s ease-out forwards;
-}
-
-.fade-in-right {
-  opacity: 0;
-  animation: fadeInRight 0.8s ease-out forwards;
-}
-
-/* Animation delays */
+/* Animation delays (applied when element also has .in-view) */
 .delay-100 { animation-delay: 0.1s; }
 .delay-200 { animation-delay: 0.2s; }
 .delay-300 { animation-delay: 0.3s; }
