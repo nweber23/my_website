@@ -41,6 +41,17 @@ CREATE TABLE IF NOT EXISTS analytics_events (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Analytics Table (for admin dashboard)
+CREATE TABLE IF NOT EXISTS analytics (
+    id SERIAL PRIMARY KEY,
+    event_type VARCHAR(50) NOT NULL,
+    event_data JSONB,
+    client_ip INET,
+    user_agent TEXT,
+    referrer TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Page Views Table (for quick analytics)
 CREATE TABLE IF NOT EXISTS page_views (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -75,6 +86,9 @@ CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_messages_is_read ON messages(is_read);
 CREATE INDEX IF NOT EXISTS idx_analytics_events_type ON analytics_events(event_type);
 CREATE INDEX IF NOT EXISTS idx_analytics_events_created_at ON analytics_events(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_analytics_type ON analytics(event_type);
+CREATE INDEX IF NOT EXISTS idx_analytics_created_at ON analytics(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_analytics_client_ip ON analytics(client_ip);
 CREATE INDEX IF NOT EXISTS idx_page_views_created_at ON page_views(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_page_views_page ON page_views(page);
 CREATE INDEX IF NOT EXISTS idx_admin_sessions_expires_at ON admin_sessions(expires_at);
