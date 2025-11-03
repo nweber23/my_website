@@ -1862,10 +1862,22 @@ a:hover {
 .fade-in,
 .fade-in-left,
 .fade-in-right { opacity: 0; }
-.fade-in.in-view { animation: fadeInUp 0.8s ease-out forwards; }
-.fade-in-left.in-view { animation: fadeInLeft 0.8s ease-out forwards; }
-.fade-in-right.in-view { animation: fadeInRight 0.8s ease-out forwards; }
 
+@media (prefers-reduced-motion: no-preference) {
+  .fade-in.in-view { animation: fadeInUp 0.8s ease-out forwards; }
+  .fade-in-left.in-view { animation: fadeInLeft 0.8s ease-out forwards; }
+  .fade-in-right.in-view { animation: fadeInRight 0.8s ease-out forwards; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in.in-view,
+  .fade-in-left.in-view,
+  .fade-in-right.in-view {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
 /* Animation delays (applied when element also has .in-view) */
 .delay-100 { animation-delay: 0.1s; }
 .delay-200 { animation-delay: 0.2s; }
