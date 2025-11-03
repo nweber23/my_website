@@ -594,46 +594,58 @@ class PortfolioApp {
     const projects = [
       {
         id: '1',
-        name: 'fract-ol',
-        description: 'Interactive fractal visualizer built with C and MLX42. Features real-time zooming, multiple fractal types (Mandelbrot, Julia, Burning Ship), and smooth color gradients.',
-        techStack: ['C', 'MLX42', 'Mathematics', 'Computer Graphics'],
+        name: 'minishell',
+        description:
+          'A custom Unix shell with advanced parsing and execution: pipelines, logical operators (&&, ||), subshells, redirections, heredocs, environment expansion, and robust signal handling.',
+        techStack: ['C', 'Readline', 'POSIX', 'Unix System Calls', 'Makefile'],
         highlights: [
-          'Real-time fractal rendering',
-          'Interactive zoom and navigation',
-          'Multiple fractal algorithms',
-          'Optimized for performance'
+          'Lexer, parser, and AST-based execution',
+          'Pipes, redirections, and heredocs',
+          'Built-in commands (cd, echo, env, export, unset, exit)',
+          'Signal-safe interactive prompt with history'
         ],
-        githubUrl: 'https://github.com/nweber23/fract-ol',
+        githubUrl: 'https://github.com/nweber23/minishell',
         featured: true,
         order: 1
       },
       {
         id: '2',
-        name: 'libunit',
-        description: 'Minimalist unit testing framework for C projects. Provides simple assertion macros, test organization, and detailed output formatting.',
-        techStack: ['C', 'Makefile', 'Testing Framework'],
-        highlights: [
-          'Lightweight and fast',
-          'Simple macro-based API',
-          'Colored output',
-          'Memory leak detection'
+        name: 'base42',
+        description:
+          'A full‑stack platform for 42 students to connect, collaborate, and manage projects with dashboards, peers, chat, calendar, and 42 OAuth.',
+        techStack: [
+          'React',
+          'TypeScript',
+          'Tailwind CSS',
+          'Node.js',
+          'Express',
+          'PostgreSQL',
+          'Redis',
+          'Docker'
         ],
-        githubUrl: 'https://github.com/nweber23/libunit',
+        highlights: [
+          'Dashboard, Peers, Projects, Messages, Calendar, Profile',
+          '42 OAuth authentication',
+          'Dockerized dev and prod workflows',
+          'Responsive UI with Tailwind'
+        ],
+        githubUrl: 'https://github.com/nweber23/base42',
         featured: true,
         order: 2
       },
       {
         id: '3',
-        name: 'minishell',
-        description: 'Custom Unix shell implementation with built-in commands, pipe handling, environment variables, and signal management.',
-        techStack: ['C', 'Unix System Calls', 'Process Management'],
+        name: '2048 in Java',
+        description:
+          'Console-based 2048 game with ANSI color themes, ASCII tile rendering, menu system, and persistent high scores. Supports 4×4 and 5×5 boards.',
+        techStack: ['Java', 'Gradle', 'Terminal/ANSI'],
         highlights: [
-          'Built-in commands (cd, echo, pwd, etc.)',
-          'Pipe and redirection support',
-          'Environment variable handling',
-          'Signal processing'
+          'WASD/Arrow key controls',
+          'Color and ASCII art modes',
+          'High score saving',
+          'CLI options and resize handling'
         ],
-        githubUrl: 'https://github.com/nweber23/minishell',
+        githubUrl: 'https://github.com/nweber23/2048_in_java',
         featured: true,
         order: 3
       }
