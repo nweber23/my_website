@@ -1,4 +1,5 @@
 import { apiClient } from './api-client.js';
+import xpTracker from './xpTracker.js';
 
 class PortfolioApp {
   constructor() {
@@ -23,6 +24,17 @@ class PortfolioApp {
     this.loadStaticContent(); // Load static content immediately
     this.setupParticles();
     this.trackPageView();
+    
+    // Initialize XP gamification system
+    this.setupXPSystem();
+  }
+  
+  setupXPSystem() {
+    // Initialize XP tracker after a short delay to ensure DOM is ready
+    setTimeout(() => {
+      xpTracker.init();
+      console.log('✨ XP Gamification System Active');
+    }, 500);
   }
 
   trackPageView() {

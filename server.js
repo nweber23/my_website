@@ -12,6 +12,7 @@ const { router: authRoutes } = require('./routes/auth');
 const messagesRoutes = require('./routes/messages');
 const analyticsRoutes = require('./routes/analytics');
 const settingsRoutes = require('./routes/settings');
+const xpRoutes = require('./routes/xp');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -71,6 +72,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/messages', messagesRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/xp', xpRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
