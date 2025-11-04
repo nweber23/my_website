@@ -92,7 +92,7 @@ app.use(express.static('.', {
 
 // API Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/messages', contactLimiter, messagesRoutes); // Apply stricter limit to contact form
+app.use('/api/messages', messagesRoutes); // Has its own rate limiter in the route
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/xp', xpLimiter, xpRoutes); // Apply lenient limit to XP events
