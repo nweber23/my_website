@@ -38,6 +38,19 @@ class ApiClient {
     try {
       const response = await fetch(`${this.apiBase}${endpoint}`, config);
       
+      // Handle 401 Unauthorized - token expired
+      if (response.status === 401) {
+        console.warn('Authentication token expired or invalid');
+        this.setToken(null);
+        
+        // Redirect to login if on admin page
+        if (window.location.pathname.includes('/admin')) {
+          window.location.reload();
+        }
+        
+        throw new Error('Authentication required. Please log in again.');
+      }
+      
       // Handle non-JSON responses
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
@@ -48,7 +61,7 @@ class ApiClient {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || `HTTP error! status: ${response.status}`);
+        throw new Error(data.error || data.message || `HTTP error! status: ${response.status}`);
       }
 
       return data;

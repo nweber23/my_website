@@ -141,3 +141,33 @@ SELECT
     COUNT(CASE WHEN created_at >= NOW() - INTERVAL '7 days' THEN 1 END) as recent_messages,
     COUNT(CASE WHEN created_at >= NOW() - INTERVAL '1 day' THEN 1 END) as today_messages
 FROM messages;
+
+-- XP Events Table (for gamification system)
+CREATE TABLE IF NOT EXISTS xp_events (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    event VARCHAR(100) NOT NULL,
+    xp INTEGER NOT NULL,
+    session_id VARCHAR(255),
+    ip_address INET,
+    user_agent TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create indexes for XP events
+CREATE INDEX IF NOT EXISTS idx_xp_events_created_at ON xp_events(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_xp_events_event ON xp_events(event);
+CREATE INDEX IF NOT EXISTS idx_xp_events_session_id ON xp_events(session_id);
+
+-- Create view for daily XP summary
+CREATE OR REPLACE VIEW xp_daily_summary AS
+SELECT 
+    DATE(created_at) as date,
+    COUNT(*) as total_events,
+    SUM(xp) as total_xp,
+    COUNT(DISTINCT session_id) as unique_sessions,
+    event,
+    AVG(xp) as avg_xp_per_event
+FROM xp_events 
+WHERE created_at >= NOW() - INTERVAL '30 days'
+GROUP BY DATE(created_at), event
+ORDER BY date DESC, total_xp DESC;

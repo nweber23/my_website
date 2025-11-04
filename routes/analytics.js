@@ -10,8 +10,8 @@ const router = express.Router();
 // Rate limiting for analytics tracking
 const trackingLimit = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 100, // 100 events per minute per IP
-  message: 'Too many tracking requests',
+  max: 200, // Increased to 200 events per minute per IP
+  message: { success: false, error: 'Too many tracking requests' },
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -19,8 +19,11 @@ const trackingLimit = rateLimit({
 // Rate limiting for admin analytics access
 const adminLimit = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 30, // 30 requests per minute for admin
+  max: 200, // Increased from 30 to 200 requests per minute for admin
   skipSuccessfulRequests: true,
+  message: { success: false, error: 'Too many requests. Please slow down.' },
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 /**

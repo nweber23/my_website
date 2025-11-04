@@ -9,18 +9,22 @@ const router = express.Router();
 
 // Rate limiting for message submission
 const submitMessageLimit = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 3, // 3 messages per 15 minutes
-  message: 'Too many messages submitted. Please try again later.',
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 20, // 20 messages per hour (generous for testing/development)
+  message: { success: false, error: 'Too many messages submitted. Please try again in an hour.' },
   standardHeaders: true,
   legacyHeaders: false,
+  skipFailedRequests: true, // Don't count failed requests
 });
 
 // Rate limiting for admin operations
 const adminLimit = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 60, // 60 requests per minute for admin
+  max: 200, // Increased from 60 to 200 requests per minute for admin
   skipSuccessfulRequests: true,
+  message: { success: false, error: 'Too many requests. Please slow down.' },
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 /**
