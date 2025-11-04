@@ -31,13 +31,36 @@ app.use(helmet({
   }
 }));
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100,
-  message: 'Too many requests from this IP, please try again later.'
+// Rate limiting - Different limits for different routes
+const generalLimiter = rateLimit({
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 500, // Increased from 100 to 500
+  message: { error: 'Too many requests from this IP, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
 });
-app.use('/api', limiter);
+
+// Stricter limit for public endpoints like contact form
+const contactLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10, // 10 submissions per hour
+  message: { error: 'Too many contact submissions. Please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Very lenient limit for XP system (it's frequent)
+const xpLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 100, // 100 XP events per minute
+  message: { error: 'Too many XP events. Please slow down.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: false,
+});
+
+// Apply general rate limiting to all API routes
+app.use('/api', generalLimiter);
 
 // CORS configuration
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'];
@@ -69,10 +92,10 @@ app.use(express.static('.', {
 
 // API Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/messages', messagesRoutes);
+app.use('/api/messages', contactLimiter, messagesRoutes); // Apply stricter limit to contact form
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/settings', settingsRoutes);
-app.use('/api/xp', xpRoutes);
+app.use('/api/xp', xpLimiter, xpRoutes); // Apply lenient limit to XP events
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
