@@ -69,7 +69,7 @@ class AdminPanel {
   togglePasswordVisibility() {
     const passwordInput = document.getElementById('password');
     const toggleButton = document.getElementById('password-toggle');
-    
+
     if (passwordInput.type === 'password') {
       passwordInput.type = 'text';
       toggleButton.classList.add('visible');
@@ -83,7 +83,7 @@ class AdminPanel {
     // Search and filter
     const searchInput = document.getElementById('messages-search');
     const filterSelect = document.getElementById('messages-filter');
-    
+
     searchInput?.addEventListener('input', () => this.filterMessages());
     filterSelect?.addEventListener('change', () => this.filterMessages());
 
@@ -115,11 +115,11 @@ class AdminPanel {
   setupDashboardEventListeners() {
     const viewAllMessagesBtn = document.getElementById('view-all-messages');
     viewAllMessagesBtn?.addEventListener('click', () => this.switchSection('messages'));
-    
+
     // Analytics retry button
     const retryAnalyticsBtn = document.getElementById('retry-analytics');
     retryAnalyticsBtn?.addEventListener('click', () => this.loadAnalytics());
-    
+
     // Quick actions navigation
     const quickActions = document.querySelectorAll('.quick-action-item[data-section]');
     quickActions.forEach(action => {
@@ -163,7 +163,7 @@ class AdminPanel {
   // Authentication
   async handleLogin(e) {
     e.preventDefault();
-    
+
     const form = e.target;
     const formData = new FormData(form);
     const password = formData.get('password');
@@ -181,7 +181,7 @@ class AdminPanel {
     try {
       console.log('Attempting login with admin panel...');
       const result = await apiClient.login(password);
-      
+
       if (result.success) {
         console.log('Login successful, showing admin panel');
         this.showAdminPanel();
@@ -226,7 +226,7 @@ class AdminPanel {
   toggleTheme() {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    
+
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('portfolio-theme', newTheme);
   }
@@ -252,7 +252,7 @@ class AdminPanel {
       analytics: 'Analytics',
       settings: 'Settings'
     };
-    
+
     const pageTitle = document.getElementById('page-title');
     if (pageTitle) pageTitle.textContent = titles[section] || section;
 
@@ -341,7 +341,7 @@ class AdminPanel {
   async loadRecentMessages() {
     try {
       const result = await apiClient.getMessages({ limit: 5, sort: 'created_at', order: 'desc' });
-      
+
       if (result.success) {
         this.renderRecentMessages(result.data.messages);
       }
@@ -367,8 +367,8 @@ class AdminPanel {
           </svg>
         </div>
         <div class="activity-content">
-          <div class="activity-title">${message.subject}</div>
-          <div class="activity-meta">From ${message.name} • ${this.formatDate(new Date(message.created_at))}</div>
+          <div class="activity-title">${this.escapeHtml(message.subject)}</div>
+          <div class="activity-meta">From ${this.escapeHtml(message.name)} • ${this.formatDate(new Date(message.created_at))}</div>
         </div>
       </div>
     `).join('');
@@ -395,17 +395,17 @@ class AdminPanel {
       // Add search and filter parameters
       const searchInput = document.getElementById('messages-search');
       const filterSelect = document.getElementById('messages-filter');
-      
+
       if (searchInput?.value) {
         params.search = searchInput.value;
       }
-      
+
       if (filterSelect?.value && filterSelect.value !== 'all') {
         params.filter = filterSelect.value;
       }
 
       const result = await apiClient.getMessages(params);
-      
+
       if (result.success) {
         this.renderMessagesTable(result.data.messages);
         this.updateUnreadBadge(result.data.messages.filter(m => !m.is_read).length);
@@ -465,13 +465,13 @@ class AdminPanel {
       checkbox.addEventListener('change', (e) => {
         const messageId = e.target.getAttribute('data-message-id');
         const isChecked = e.target.checked;
-        
+
         if (isChecked) {
           this.selectedMessages.add(messageId);
         } else {
           this.selectedMessages.delete(messageId);
         }
-        
+
         this.updateDeleteSelectedButton();
         this.updateSelectAllCheckbox();
       });
@@ -506,18 +506,18 @@ class AdminPanel {
 
   toggleAllMessages(isChecked) {
     const checkboxes = document.querySelectorAll('.message-checkbox');
-    
+
     checkboxes.forEach(checkbox => {
       checkbox.checked = isChecked;
       const messageId = checkbox.getAttribute('data-message-id');
-      
+
       if (isChecked) {
         this.selectedMessages.add(messageId);
       } else {
         this.selectedMessages.delete(messageId);
       }
     });
-    
+
     this.updateDeleteSelectedButton();
   }
 
@@ -531,7 +531,7 @@ class AdminPanel {
   updateSelectAllCheckbox() {
     const selectAllCheckbox = document.getElementById('select-all-messages');
     const checkboxes = document.querySelectorAll('.message-checkbox');
-    
+
     if (selectAllCheckbox && checkboxes.length > 0) {
       const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
       selectAllCheckbox.checked = checkedCount === checkboxes.length;
@@ -567,10 +567,10 @@ class AdminPanel {
   async showMessageModal(messageId) {
     try {
       const result = await apiClient.getMessage(messageId);
-      
+
       if (result.success) {
         const message = result.data;
-        
+
         // Update modal content
         document.getElementById('modal-subject').textContent = message.subject;
         document.getElementById('modal-sender').textContent = message.name;
@@ -674,27 +674,27 @@ class AdminPanel {
     const errorEl = document.getElementById('analytics-error');
     const statsGrid = document.querySelector('.analytics-stats-grid');
     const chartsGrid = document.querySelector('.analytics-charts-grid');
-    
+
     try {
       // Show loading state
       if (loadingEl) loadingEl.style.display = 'flex';
       if (errorEl) errorEl.style.display = 'none';
       if (statsGrid) statsGrid.style.display = 'none';
       if (chartsGrid) chartsGrid.style.display = 'none';
-      
+
       const dashboardResult = await apiClient.getAnalyticsDashboard();
-      
+
       if (dashboardResult.success) {
         const data = dashboardResult.data;
-        
+
         // Hide loading, show content
         if (loadingEl) loadingEl.style.display = 'none';
         if (statsGrid) statsGrid.style.display = 'grid';
         if (chartsGrid) chartsGrid.style.display = 'grid';
-        
+
         // Update overview stats
         this.updateAnalyticsOverview(data.summary);
-        
+
         // Render charts
         this.renderSectionStats(data.section_views || []);
         this.renderDailyChart(data.daily_views || []);
@@ -704,7 +704,7 @@ class AdminPanel {
       }
     } catch (error) {
       console.error('Error loading analytics:', error);
-      
+
       // Show error state
       if (loadingEl) loadingEl.style.display = 'none';
       if (statsGrid) statsGrid.style.display = 'none';
@@ -716,28 +716,28 @@ class AdminPanel {
       }
     }
   }
-  
+
   updateAnalyticsOverview(summary) {
     // Total Views
     const totalViews = summary.page_views || 0;
     const totalViewsEl = document.getElementById('analytics-total-views');
     if (totalViewsEl) totalViewsEl.textContent = totalViews.toLocaleString();
-    
+
     // Unique Visitors
     const uniqueVisitors = summary.unique_visitors || 0;
     const uniqueVisitorsEl = document.getElementById('analytics-unique-visitors');
     if (uniqueVisitorsEl) uniqueVisitorsEl.textContent = uniqueVisitors.toLocaleString();
-    
+
     // Weekly Views
     const weeklyViews = summary.weekly_events || 0;
     const weeklyViewsEl = document.getElementById('analytics-weekly-views');
     if (weeklyViewsEl) weeklyViewsEl.textContent = weeklyViews.toLocaleString();
-    
+
     // Daily Views
     const dailyViews = summary.daily_events || 0;
     const dailyViewsEl = document.getElementById('analytics-daily-views');
     if (dailyViewsEl) dailyViewsEl.textContent = dailyViews.toLocaleString();
-    
+
     // Update change indicators (hide for now since we don't have historical data)
     ['views', 'visitors', 'weekly', 'daily'].forEach(type => {
       const changeEl = document.getElementById(`analytics-${type}-change`);
@@ -751,14 +751,14 @@ class AdminPanel {
   renderSectionStats(sectionViews) {
     const container = document.getElementById('section-stats');
     if (!container) return;
-    
+
     if (!sectionViews || sectionViews.length === 0) {
       container.innerHTML = '<p class="no-data" style="text-align: center; color: var(--text-secondary); padding: 2rem;">No section data available</p>';
       return;
     }
 
     const maxViews = Math.max(...sectionViews.map(s => s.views), 1);
-    
+
     container.innerHTML = sectionViews
       .slice(0, 5) // Show top 5
       .map(({section, views}) => {
@@ -781,7 +781,7 @@ class AdminPanel {
   renderDailyChart(dailyViews) {
     const container = document.getElementById('daily-chart');
     if (!container) return;
-    
+
     if (!dailyViews || dailyViews.length === 0) {
       container.innerHTML = '<p class="no-data" style="text-align: center; color: var(--text-secondary); padding: 2rem;">No daily data available</p>';
       return;
@@ -795,8 +795,8 @@ class AdminPanel {
         const height = Math.max((views / maxViews) * 100, 4);
         const dayName = new Date(date).toLocaleDateString('en-US', { weekday: 'short' });
         return `
-          <div class="chart-bar" 
-               style="height: ${height}%" 
+          <div class="chart-bar"
+               style="height: ${height}%"
                data-value="${views}"
                data-label="${dayName}"
                title="${dayName}: ${views} views">
@@ -805,16 +805,16 @@ class AdminPanel {
       })
       .join('');
   }
-  
+
   renderReferrers(referrers) {
     const container = document.getElementById('referrers-list');
     if (!container) return;
-    
+
     if (!referrers || referrers.length === 0) {
       container.innerHTML = '<p class="no-data" style="text-align: center; color: var(--text-secondary); padding: 2rem; grid-column: 1 / -1;">No referrer data available</p>';
       return;
     }
-    
+
     container.innerHTML = referrers
       .slice(0, 10) // Top 10
       .map(({referrer, visits}) => {
@@ -836,18 +836,18 @@ class AdminPanel {
   // Settings
   loadSettings() {
     // System information
-    document.getElementById('last-updated').textContent = 
+    document.getElementById('last-updated').textContent =
       this.formatDate(new Date());
-    
+
     document.getElementById('data-size').textContent = 'API-based';
-    
-    document.getElementById('browser-info').textContent = 
+
+    document.getElementById('browser-info').textContent =
       `${navigator.userAgent.match(/(Firefox|Chrome|Safari|Edge)/)?.[0] || 'Unknown'} ${navigator.appVersion.match(/[\d.]+/)?.[0] || ''}`;
   }
 
   async handlePasswordChange(e) {
     e.preventDefault();
-    
+
     const form = e.target;
     const formData = new FormData(form);
     const currentPassword = formData.get('currentPassword');
@@ -861,7 +861,7 @@ class AdminPanel {
 
     try {
       const result = await apiClient.changePassword(currentPassword, newPassword);
-      
+
       if (result.success) {
         alert('Password changed successfully');
         form.reset();
@@ -882,12 +882,12 @@ class AdminPanel {
         const jsonData = JSON.stringify(result.data, null, 2);
         const blob = new Blob([jsonData], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
-        
+
         const a = document.createElement('a');
         a.href = url;
         a.download = `portfolio-messages-${new Date().toISOString().split('T')[0]}.json`;
         a.click();
-        
+
         URL.revokeObjectURL(url);
       }
     } catch (error) {
@@ -914,16 +914,16 @@ class AdminPanel {
   showConfirmDialog(title, message, onConfirm) {
     document.getElementById('confirm-title').textContent = title;
     document.getElementById('confirm-message').textContent = message;
-    
+
     const confirmOkBtn = document.getElementById('confirm-ok');
     const newBtn = confirmOkBtn.cloneNode(true);
     confirmOkBtn.parentNode.replaceChild(newBtn, confirmOkBtn);
-    
+
     newBtn.addEventListener('click', () => {
       this.closeModal('confirm-modal');
       onConfirm();
     });
-    
+
     this.showModal('confirm-modal');
   }
 
