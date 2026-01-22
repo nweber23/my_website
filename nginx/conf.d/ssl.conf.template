@@ -1,0 +1,58 @@
+# HTTPS server - main production traffic
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name ${DOMAIN_NAME};
+
+    # SSL certificate paths
+    ssl_certificate /etc/letsencrypt/live/${DOMAIN_NAME}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${DOMAIN_NAME}/privkey.pem;
+
+    # Include SSL parameters
+    include /etc/nginx/snippets/ssl-params.conf;
+
+    # Document root
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Security headers
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    # Main location block
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # Cache static assets
+    location ~* \.(jpg|jpeg|png|gif|ico|svg|webp)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    location ~* \.(css|js)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    location ~* \.(woff|woff2|ttf|otf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header Access-Control-Allow-Origin "*";
+    }
+
+    # Deny access to hidden files
+    location ~ /\. {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+
+    # ACME challenge location (for renewals)
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+}

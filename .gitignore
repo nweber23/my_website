@@ -1,0 +1,12 @@
+# Environment variables
+.env
+
+# Certbot certificates and challenges
+certbot/
+
+# Nginx logs
+nginx/logs/
+*.log
+
+# Docker volumes
+volumes/

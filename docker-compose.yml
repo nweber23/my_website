@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  nginx:
+    build: .
+    container_name: portfolio-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - DOMAIN_NAME=${DOMAIN_NAME}
+    volumes:
+      # Certbot certificates (read-only)
+      - certbot-conf:/etc/letsencrypt:ro
+      - certbot-www:/var/www/certbot:ro
+      # Nginx logs
+      - ./nginx/logs:/var/log/nginx
+    depends_on:
+      - certbot
+    networks:
+      - web
+
+  certbot:
+    image: certbot/certbot:latest
+    container_name: portfolio-certbot
+    volumes:
+      - certbot-conf:/etc/letsencrypt
+      - certbot-www:/var/www/certbot
+    command: >
+      certonly --webroot
+      --webroot-path=/var/www/certbot
+      --email ${EMAIL}
+      --agree-tos
+      --no-eff-email
+      ${STAGING:+--staging}
+      -d ${DOMAIN_NAME}
+    networks:
+      - web
+
+  certbot-renewer:
+    image: certbot/certbot:latest
+    container_name: portfolio-certbot-renewer
+    restart: unless-stopped
+    volumes:
+      - certbot-conf:/etc/letsencrypt
+      - certbot-www:/var/www/certbot
+    entrypoint: /bin/sh -c "trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;"
+    depends_on:
+      - nginx
+    networks:
+      - web
+
+volumes:
+  certbot-conf:
+    name: portfolio-certbot-conf
+  certbot-www:
+    name: portfolio-certbot-www
+
+networks:
+  web:
+    name: portfolio-web
