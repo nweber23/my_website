@@ -3,277 +3,291 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Niklas Weber | Systems Developer</title>
+    <title>Niklas Weber — Systems Developer</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
-    <canvas id="grain-canvas"></canvas>
-    <div class="cursor"></div>
-    <div class="cursor-follower"></div>
+    <div class="frame">
+        <div class="frame-line frame-line--top"></div>
+        <div class="frame-line frame-line--bottom"></div>
+        <div class="frame-line frame-line--left"></div>
+        <div class="frame-line frame-line--right"></div>
+    </div>
 
-    <nav class="nav">
-        <div class="nav-logo">
-            <span class="logo-text">NW</span>
-            <span class="logo-dot"></span>
+    <nav class="nav" aria-label="Main navigation">
+        <div class="nav__index">
+            <span class="nav__index-label">Index</span>
+            <span class="nav__index-number">01</span>
         </div>
-        <div class="nav-links">
-            <a href="#work" class="nav-link" data-text="Work">Work</a>
-            <a href="#about" class="nav-link" data-text="About">About</a>
-            <a href="#contact" class="nav-link" data-text="Contact">Contact</a>
+        <ul class="nav__list">
+            <li><a href="#work" class="nav__link" data-index="01">Work</a></li>
+            <li><a href="#about" class="nav__link" data-index="02">About</a></li>
+            <li><a href="#contact" class="nav__link" data-index="03">Contact</a></li>
+        </ul>
+        <div class="nav__meta">
+            <span class="nav__time"></span>
+            <span class="nav__location">Heilbronn, DE</span>
         </div>
-        <div class="nav-time"></div>
     </nav>
 
-    <main>
-        <section class="hero">
-            <div class="hero-content">
-                <div class="hero-label">
-                    <span class="label-line"></span>
-                    <span>Systems Developer @ 42 Heilbronn</span>
+    <main class="main">
+        <header class="header">
+            <div class="header__intro">
+                <p class="header__context">Systems Developer at 42 Heilbronn</p>
+                <p class="header__context header__context--secondary">Building from first principles</p>
+            </div>
+
+            <h1 class="header__title">
+                <span class="header__title-line">Niklas</span>
+                <span class="header__title-line header__title-line--indent">Weber</span>
+            </h1>
+
+            <div class="header__description">
+                <p>I write software that operates close to the metal. My work focuses on systems programming, low-level optimization, and understanding how things work beneath the abstraction layers.</p>
+            </div>
+
+            <aside class="header__aside">
+                <span class="header__aside-label">Status</span>
+                <span class="header__aside-value">Available for collaboration</span>
+            </aside>
+
+            <div class="header__scroll">
+                <span>Scroll</span>
+                <svg width="12" height="32" viewBox="0 0 12 32" fill="none">
+                    <path d="M6 0V30M6 30L1 25M6 30L11 25" stroke="currentColor" stroke-width="1"/>
+                </svg>
+            </div>
+        </header>
+
+        <section class="section section--work" id="work">
+            <div class="section__header">
+                <span class="section__number">01</span>
+                <h2 class="section__title">Selected Work</h2>
+                <span class="section__count">3 Projects</span>
+            </div>
+
+            <article class="project project--featured">
+                <div class="project__meta">
+                    <span class="project__index">01</span>
+                    <span class="project__year">2024</span>
                 </div>
-                <h1 class="hero-title">
-                    <span class="title-line">
-                        <span class="word" data-char="I">I</span>
-                        <span class="word" data-char="build">build</span>
-                    </span>
-                    <span class="title-line">
-                        <span class="word italic" data-char="low-level">low-level</span>
-                        <span class="word" data-char="systems">systems</span>
-                    </span>
-                    <span class="title-line">
-                        <span class="word" data-char="from">from</span>
-                        <span class="word underline-squiggle" data-char="scratch">scratch</span>
-                    </span>
-                </h1>
-                <div class="hero-footer">
-                    <div class="scroll-indicator">
-                        <div class="scroll-line"></div>
-                        <span>Scroll to explore</span>
+
+                <div class="project__content">
+                    <h3 class="project__title">42 ELO Leaderboard</h3>
+                    <p class="project__subtitle">Competitive Rankings System</p>
+
+                    <div class="project__description">
+                        <p>A ranking platform for 42 students implementing the ELO rating algorithm. Features real-time leaderboards, match history, and statistical analysis of player performance over time.</p>
                     </div>
-                    <div class="hero-status">
-                        <span class="status-dot"></span>
-                        <span>Open to collaborate</span>
+
+                    <dl class="project__details">
+                        <div class="project__detail">
+                            <dt>Stack</dt>
+                            <dd>TypeScript, React, PostgreSQL</dd>
+                        </div>
+                        <div class="project__detail">
+                            <dt>Role</dt>
+                            <dd>Full implementation</dd>
+                        </div>
+                        <div class="project__detail">
+                            <dt>Demo</dt>
+                            <dd><a href="https://eloleaderboard.de" target="_blank" rel="noopener">Live demo</a></dd>
+                        </div>
+                        <div class="project__detail">
+                            <dt>Link</dt>
+                            <dd><a href="https://github.com/nweber23/42_ELO_Leaderboard" target="_blank" rel="noopener">View source</a></dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <figure class="project__figure">
+                    <img src="assets/42_ELO_Leaderboard.png" alt="ELO Leaderboard interface showing player rankings" class="project__image">
+                    <figcaption class="project__caption">Fig. 1 — Leaderboard interface</figcaption>
+                </figure>
+            </article>
+
+            <div class="divider">
+                <span class="divider__text">continued</span>
+            </div>
+
+            <article class="project project--split">
+                <div class="project__meta">
+                    <span class="project__index">02</span>
+                    <span class="project__year">2024</span>
+                </div>
+
+                <div class="project__content">
+                    <h3 class="project__title">miniRT</h3>
+                    <p class="project__subtitle">Raytracer Implementation</p>
+
+                    <div class="project__description">
+                        <p>A raytracer written entirely in C, implementing the fundamental algorithms of computer graphics from scratch. Handles multiple light sources, shadows, reflections, and various geometric primitives.</p>
+
+                        <p class="project__note">The challenge was implementing mathematical concepts—vector operations, ray-sphere intersections, Phong lighting—without relying on graphics libraries.</p>
                     </div>
+
+                    <dl class="project__details">
+                        <div class="project__detail">
+                            <dt>Language</dt>
+                            <dd>C</dd>
+                        </div>
+                        <div class="project__detail">
+                            <dt>Concepts</dt>
+                            <dd>Linear algebra, optics simulation</dd>
+                        </div>
+                        <div class="project__detail">
+                            <dt>Link</dt>
+                            <dd><a href="https://github.com/nweber23/miniRT" target="_blank" rel="noopener">View source</a></dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <figure class="project__figure project__figure--offset">
+                    <img src="assets/minirt.png" alt="Raytraced scene with spheres and lighting" class="project__image">
+                    <figcaption class="project__caption">Fig. 2 — Rendered output</figcaption>
+                </figure>
+            </article>
+
+            <article class="project project--compact">
+                <div class="project__meta">
+                    <span class="project__index">03</span>
+                    <span class="project__year">2024</span>
+                </div>
+
+                <div class="project__content">
+                    <h3 class="project__title">minishell</h3>
+                    <p class="project__subtitle">Shell Implementation</p>
+
+                    <div class="project__description">
+                        <p>A bash-like shell built in C. Implements the complete pipeline: lexical analysis, parsing, and execution of commands with pipes, redirections, environment variables, and signal handling.</p>
+                    </div>
+
+                    <dl class="project__details project__details--inline">
+                        <div class="project__detail">
+                            <dt>Focus</dt>
+                            <dd>Unix internals, process management</dd>
+                        </div>
+                        <div class="project__detail">
+                            <dt>Link</dt>
+                            <dd><a href="https://github.com/nweber23/minishell" target="_blank" rel="noopener">View source</a></dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <aside class="project__aside">
+                    <span class="project__aside-quote">"The shell is a window into the operating system's soul."</span>
+                </aside>
+            </article>
+        </section>
+
+        <section class="section section--about" id="about">
+            <div class="section__header">
+                <span class="section__number">02</span>
+                <h2 class="section__title">About</h2>
+            </div>
+
+            <div class="about__layout">
+                <div class="about__primary">
+                    <p class="about__lead">I'm currently at 42 Heilbronn, a peer-to-peer programming school where learning happens through building.</p>
+
+                    <p class="about__text">My focus is systems programming—the layer where software meets hardware. I find satisfaction in understanding how things work at their most fundamental level, whether that's memory management, process scheduling, or network protocols.</p>
+
+                    <p class="about__text">Beyond C and Unix internals, I work with Go for concurrent systems, and TypeScript for web applications when the problem calls for it.</p>
+                </div>
+
+                <aside class="about__secondary">
+                    <div class="about__block">
+                        <h3 class="about__block-title">Current Focus</h3>
+                        <p class="about__block-text">Concurrency patterns in Go. Distributed systems. Performance optimization.</p>
+                    </div>
+
+                    <div class="about__block">
+                        <h3 class="about__block-title">Approach</h3>
+                        <p class="about__block-text">Build to understand. Understand to build better.</p>
+                    </div>
+                </aside>
+
+                <div class="about__skills">
+                    <h3 class="about__skills-title">Technical Vocabulary</h3>
+                    <ul class="about__skills-list">
+                        <li class="about__skill">
+                            <span class="about__skill-category">Systems</span>
+                            <span class="about__skill-items">C, C++, Go</span>
+                        </li>
+                        <li class="about__skill">
+                            <span class="about__skill-category">Web</span>
+                            <span class="about__skill-items">TypeScript, React, Node</span>
+                        </li>
+                        <li class="about__skill">
+                            <span class="about__skill-category">Data</span>
+                            <span class="about__skill-items">PostgreSQL, Redis</span>
+                        </li>
+                        <li class="about__skill">
+                            <span class="about__skill-category">Tools</span>
+                            <span class="about__skill-items">Linux, Docker, Git</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
-            <div class="hero-shapes">
-                <div class="shape shape-1"></div>
-                <div class="shape shape-2"></div>
-                <div class="shape shape-3"></div>
+
+            <div class="about__aside-full">
+                <blockquote class="about__quote">
+                    <p>"The best way to learn is to build, break, and rebuild."</p>
+                </blockquote>
             </div>
         </section>
 
-        <section class="work" id="work">
-            <div class="section-header">
-                <span class="section-number">01</span>
-                <h2 class="section-title">Selected Projects</h2>
-                <div class="section-line"></div>
+        <section class="section section--contact" id="contact">
+            <div class="section__header">
+                <span class="section__number">03</span>
+                <h2 class="section__title">Contact</h2>
             </div>
 
-            <div class="projects">
-                <article class="project" data-project="1">
-                    <div class="project-index">01</div>
-                    <div class="project-content">
-                        <h3 class="project-title">
-                            <span class="project-title-main">42 ELO Leaderboard</span>
-                            <span class="project-title-sub">Competitive Rankings</span>
-                        </h3>
-                        <p class="project-desc">A ranking system for 42 students featuring ELO-based matchmaking, real-time leaderboards, and competitive statistics tracking.</p>
-                        <div class="project-tags">
-                            <span>TypeScript</span>
-                            <span>React</span>
-                            <span>PostgreSQL</span>
-                        </div>
-                    </div>
-                    <div class="project-visual">
-                        <div class="project-image-wrapper">
-                            <img class="project-image" src="assets/42_ELO_Leaderboard.png" alt="42 ELO Leaderboard Screenshot">
-                            <div class="project-image-overlay"></div>
-                        </div>
-                    </div>
-                    <a href="https://github.com/nweber23/42_ELO_Leaderboard" target="_blank" class="project-link magnetic">View on GitHub</a>
-                </article>
+            <div class="contact__layout">
+                <div class="contact__primary">
+                    <h3 class="contact__heading">
+                        <span class="contact__heading-line">Let's discuss</span>
+                        <span class="contact__heading-line contact__heading-line--emphasis">your project</span>
+                    </h3>
 
-                <article class="project" data-project="2">
-                    <div class="project-index">02</div>
-                    <div class="project-content">
-                        <h3 class="project-title">
-                            <span class="project-title-main">miniRT</span>
-                            <span class="project-title-sub">Raytracer from Scratch</span>
-                        </h3>
-                        <p class="project-desc">A fully functional raytracer built in C. Renders 3D scenes with lighting, shadows, reflections, and multiple geometric primitives.</p>
-                        <div class="project-tags">
-                            <span>C</span>
-                            <span>Graphics</span>
-                            <span>Math</span>
-                        </div>
-                    </div>
-                    <div class="project-visual">
-                        <div class="project-image-wrapper">
-                            <img class="project-image" src="assets/minirt.png" alt="miniRT Raytracer Screenshot">
-                            <div class="project-image-overlay"></div>
-                        </div>
-                    </div>
-                    <a href="https://github.com/nweber23/miniRT" target="_blank" class="project-link magnetic">View on GitHub</a>
-                </article>
+                    <p class="contact__text">I'm interested in systems work, performance-critical applications, and projects where understanding the fundamentals matters.</p>
+                </div>
 
-                <article class="project" data-project="3">
-                    <div class="project-index">03</div>
-                    <div class="project-content">
-                        <h3 class="project-title">
-                            <span class="project-title-main">minishell</span>
-                            <span class="project-title-sub">Shell Implementation</span>
-                        </h3>
-                        <p class="project-desc">A bash-like shell written in C. Features pipes, redirections, environment variables, signal handling, and built-in commands.</p>
-                        <div class="project-tags">
-                            <span>C</span>
-                            <span>Unix</span>
-                            <span>Systems</span>
-                        </div>
+                <address class="contact__info">
+                    <div class="contact__item">
+                        <span class="contact__label">Email</span>
+                        <a href="mailto:niklasweber610@gmail.com" class="contact__value">niklasweber610@gmail.com</a>
                     </div>
-                    <div class="project-visual">
-                        <div class="project-image-wrapper">
-                            <div class="project-image" style="background: linear-gradient(135deg, #533483 0%, #1a1a2e 100%);"></div>
-                            <div class="project-image-overlay"></div>
-                        </div>
-                    </div>
-                    <a href="https://github.com/nweber23/minishell" target="_blank" class="project-link magnetic">View on GitHub</a>
-                </article>
-            </div>
-        </section>
 
-        <section class="about" id="about">
-            <div class="section-header">
-                <span class="section-number">02</span>
-                <h2 class="section-title">About Me</h2>
-                <div class="section-line"></div>
+                    <div class="contact__item">
+                        <span class="contact__label">GitHub</span>
+                        <a href="https://github.com/nweber23" target="_blank" rel="noopener" class="contact__value">github.com/nweber23</a>
+                    </div>
+
+                    <div class="contact__item">
+                        <span class="contact__label">42 Intra</span>
+                        <a href="https://profile.intra.42.fr/users/nweber" target="_blank" rel="noopener" class="contact__value">profile.intra.42.fr/nweber</a>
+                    </div>
+                </address>
             </div>
 
-            <div class="about-content">
-                <div class="about-text">
-                    <p class="about-intro">
-                        Currently at <span class="highlight">42 Heilbronn</span>, diving deep into systems programming
-                        and exploring how things work <span class="highlight">under the hood</span>.
-                    </p>
-                    <p class="about-body">
-                        I'm passionate about low-level computing, performance optimization, and building
-                        efficient solutions to complex problems. From raytracers to shell implementations,
-                        I love understanding every layer of the stack.
-                    </p>
-                    <div class="about-philosophy">
-                        <span class="philosophy-label">Philosophy</span>
-                        <blockquote>
-                            "The best way to learn is to build, break, and rebuild."
-                        </blockquote>
-                    </div>
-                </div>
-
-                <div class="skills-orbit">
-                    <div class="orbit-center">
-                        <span>Skills</span>
-                    </div>
-                    <div class="orbit-ring orbit-ring-1">
-                        <span class="skill-node" style="--angle: 0deg;">C</span>
-                        <span class="skill-node" style="--angle: 90deg;">C++</span>
-                        <span class="skill-node" style="--angle: 180deg;">Go</span>
-                        <span class="skill-node" style="--angle: 270deg;">Python</span>
-                    </div>
-                    <div class="orbit-ring orbit-ring-2">
-                        <span class="skill-node" style="--angle: 45deg;">TypeScript</span>
-                        <span class="skill-node" style="--angle: 135deg;">React</span>
-                        <span class="skill-node" style="--angle: 225deg;">PostgreSQL</span>
-                        <span class="skill-node" style="--angle: 315deg;">Redis</span>
-                    </div>
-                    <div class="orbit-ring orbit-ring-3">
-                        <span class="skill-node" style="--angle: 22deg;">Docker</span>
-                        <span class="skill-node" style="--angle: 112deg;">Linux</span>
-                        <span class="skill-node" style="--angle: 202deg;">Git</span>
-                        <span class="skill-node" style="--angle: 292deg;">Node.js</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="experience-timeline">
-                <div class="timeline-item" data-year="Now">
-                    <span class="timeline-year">Now</span>
-                    <div class="timeline-content">
-                        <h4>Exploring Go & Concurrency</h4>
-                        <p>Goroutines, channels, and distributed systems patterns</p>
-                    </div>
-                </div>
-                <div class="timeline-item" data-year="42">
-                    <span class="timeline-year">42</span>
-                    <div class="timeline-content">
-                        <h4>Systems Programming</h4>
-                        <p>Low-level C, Unix internals, and algorithm optimization</p>
-                    </div>
-                </div>
-                <div class="timeline-item" data-year="life">
-                    <span class="timeline-year">Life</span>
-                    <div class="timeline-content">
-                        <h4>Beyond the Code</h4>
-                        <p>FC Bayern member, automotive enthusiast</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="contact" id="contact">
-            <div class="contact-wrapper">
-                <div class="contact-header">
-                    <span class="section-number">03</span>
-                    <h2 class="contact-title">
-                        <span class="contact-title-line">Let's build</span>
-                        <span class="contact-title-line italic">something great</span>
-                        <span class="contact-title-line">together</span>
-                    </h2>
-                </div>
-
-                <div class="contact-content">
-                    <div class="contact-info">
-                        <div class="contact-item">
-                            <span class="contact-label">Email</span>
-                            <a href="mailto:niklasweber610@gmail.com" class="contact-value magnetic">
-                                niklasweber610@gmail.com
-                                <span class="contact-arrow">&rarr;</span>
-                            </a>
-                        </div>
-                        <div class="contact-item">
-                            <span class="contact-label">Location</span>
-                            <span class="contact-value">Heilbronn, Germany</span>
-                        </div>
-                    </div>
-
-                    <div class="contact-social">
-                        <span class="contact-label">Connect</span>
-                        <div class="social-links">
-                            <a href="https://github.com/nweber23" target="_blank" class="social-link magnetic" data-text="GitHub">
-                                <span>GitHub</span>
-                                <span class="social-line"></span>
-                            </a>
-                            <a href="https://profile.intra.42.fr/users/nweber" target="_blank" class="social-link magnetic" data-text="42 Profile">
-                                <span>42 Profile</span>
-                                <span class="social-line"></span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="contact-decoration">
-                    <div class="deco-circle"></div>
-                    <div class="deco-line"></div>
-                </div>
+            <div class="contact__footer">
+                <span class="contact__location">Based in Heilbronn, Germany</span>
+                <span class="contact__timezone">CET (UTC+1)</span>
             </div>
         </section>
     </main>
 
     <footer class="footer">
-        <div class="footer-content">
-            <span class="footer-copyright">&copy; 2025 Niklas Weber</span>
-            <span class="footer-made">Built from scratch</span>
+        <div class="footer__content">
+            <span class="footer__copyright">2025 Niklas Weber</span>
+            <span class="footer__note">Built from scratch</span>
+        </div>
+        <div class="footer__colophon">
+            <span>Set in EB Garamond & Inter</span>
         </div>
     </footer>
 
