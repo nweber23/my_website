@@ -738,6 +738,112 @@ a {
 }
 
 /* ==========================================================================
+   Imprint Section
+   ========================================================================== */
+
+.header--compact {
+    min-height: auto;
+    grid-template-rows: auto auto;
+    padding-bottom: var(--space-lg);
+}
+
+.header--compact .header__title {
+    grid-row: 1;
+    padding-top: var(--space-lg);
+}
+
+.header--compact .header__description {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: start;
+    max-width: none;
+    padding-top: var(--space-md);
+}
+
+.section--imprint {
+    padding-top: var(--space-lg);
+    padding-bottom: var(--space-lg);
+}
+
+.imprint__layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xl) var(--space-lg);
+}
+
+.imprint__layout--full {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+}
+
+.imprint__block {
+    max-width: 36rem;
+}
+
+.imprint__heading {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--space-sm);
+}
+
+.imprint__address {
+    font-style: normal;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--color-text-secondary);
+}
+
+.imprint__address p {
+    margin: 0;
+}
+
+.imprint__details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.imprint__detail {
+    display: flex;
+    gap: var(--space-md);
+}
+
+.imprint__detail dt {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-tertiary);
+    min-width: 5rem;
+}
+
+.imprint__detail dd {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+}
+
+.imprint__text {
+    font-size: 0.9375rem;
+    line-height: 1.8;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-sm);
+}
+
+.imprint__text:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 900px) {
+    .imprint__layout {
+        grid-template-columns: 1fr;
+        gap: var(--space-lg);
+    }
+}
+
+/* ==========================================================================
    Contact Section
    ========================================================================== */
 
@@ -858,6 +964,24 @@ a {
     font-size: 0.625rem;
     font-style: italic;
     color: var(--color-text-tertiary);
+}
+
+.footer__links {
+    display: flex;
+    gap: var(--space-md);
+}
+
+.footer__link {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-tertiary);
+    transition: color 0.2s ease;
+}
+
+.footer__link:hover {
+    color: var(--color-accent);
 }
 
 /* ==========================================================================
