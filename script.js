@@ -251,6 +251,65 @@
     }
 
     /**
+     * Mobile navigation
+     * Hamburger toggle with full-screen overlay menu
+     */
+    class MobileNavigation {
+        constructor() {
+            this.nav = document.querySelector('.nav');
+            this.toggle = document.querySelector('.nav__toggle');
+            this.links = document.querySelectorAll('.nav__link');
+
+            if (!this.nav || !this.toggle) return;
+
+            this.isOpen = false;
+            this.init();
+        }
+
+        init() {
+            this.toggle.addEventListener('click', () => this.handleToggle());
+
+            this.links.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (this.isOpen) this.close();
+                });
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && this.isOpen) this.close();
+            });
+
+            window.matchMedia('(min-width: 901px)').addEventListener('change', (e) => {
+                if (e.matches && this.isOpen) this.close();
+            });
+        }
+
+        handleToggle() {
+            if (this.isOpen) {
+                this.close();
+            } else {
+                this.open();
+            }
+        }
+
+        open() {
+            this.isOpen = true;
+            this.nav.classList.add('nav--open');
+            this.toggle.setAttribute('aria-expanded', 'true');
+            this.toggle.setAttribute('aria-label', 'Close menu');
+            document.body.classList.add('nav-open');
+        }
+
+        close() {
+            this.isOpen = false;
+            this.nav.classList.remove('nav--open');
+            this.toggle.setAttribute('aria-expanded', 'false');
+            this.toggle.setAttribute('aria-label', 'Open menu');
+            document.body.classList.remove('nav-open');
+        }
+    }
+
+    /**
      * External link handler
      * Adds rel attributes to external links for security
      */
@@ -278,6 +337,7 @@
         new SkillsReveal();
         new ReducedMotion();
         new ExternalLinks();
+        new MobileNavigation();
     }
 
     // Run on DOM ready
