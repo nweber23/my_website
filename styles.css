@@ -1273,6 +1273,15 @@ a {
         margin-top: 0;
     }
 
+    .project__figure {
+        margin-left: calc(-1 * var(--space-md));
+        margin-right: calc(-1 * var(--space-md));
+    }
+
+    .project__caption {
+        padding-left: var(--space-md);
+    }
+
     .project__figure--offset {
         transform: none;
     }
@@ -1282,6 +1291,12 @@ a {
         padding-right: 0;
         padding-top: var(--space-md);
         border-top: 1px solid var(--color-border-light);
+    }
+
+    .project__aside-quote {
+        text-align: left;
+        max-width: none;
+        font-size: 1rem;
     }
 
     .project__details--inline {
