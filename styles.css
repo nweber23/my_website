@@ -1105,16 +1105,30 @@ a {
         --frame-padding: 1rem;
     }
 
+    /* Prevent horizontal scroll */
+    html, body {
+        overflow-x: hidden;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    /* Hide frame on mobile to save space */
+    .frame {
+        display: none;
+    }
+
     /* ---- Navigation: sticky bar with hamburger ---- */
     .nav {
         position: sticky;
         top: 0;
-        left: auto;
+        left: 0;
+        right: 0;
+        width: 100%;
         transform: none;
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
-        padding: var(--space-xs) calc(var(--frame-padding) + var(--space-md));
+        padding: var(--space-sm) calc(var(--frame-padding) + var(--space-md));
         margin: 0;
         border-bottom: 1px solid var(--color-border-light);
         background-color: var(--color-bg);
@@ -1123,6 +1137,8 @@ a {
 
     .nav__toggle {
         display: flex;
+        min-width: 44px;
+        min-height: 44px;
     }
 
     .nav__index {
@@ -1224,9 +1240,20 @@ a {
 
     /* ---- Main content ---- */
     .main {
-        margin-left: calc(var(--frame-padding) + var(--space-md));
-        margin-right: calc(var(--frame-padding) + var(--space-md));
-        padding-top: var(--space-lg);
+        margin-left: var(--space-md);
+        margin-right: var(--space-md);
+        padding-top: var(--space-md);
+        padding-bottom: var(--space-lg);
+        width: calc(100% - var(--space-md) * 2);
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .section {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden;
     }
 
     /* ---- Header ---- */
@@ -1235,10 +1262,19 @@ a {
         grid-template-rows: auto auto auto auto;
         min-height: auto;
         padding-bottom: var(--space-xl);
+        gap: var(--space-md);
     }
 
-    .header__intro { grid-column: 1; }
-    .header__title { grid-column: 1; }
+    .header__intro {
+        grid-column: 1;
+        grid-row: auto;
+        padding-top: var(--space-md);
+    }
+
+    .header__title {
+        grid-column: 1;
+        grid-row: auto;
+    }
 
     .header__title-line--indent {
         margin-left: 10%;
@@ -1246,11 +1282,17 @@ a {
 
     .header__description {
         grid-column: 1;
+        grid-row: auto;
         justify-self: start;
-        max-width: none;
+        max-width: 100%;
+        padding-top: var(--space-md);
     }
 
-    .header__aside { grid-column: 1; }
+    .header__aside {
+        grid-column: 1;
+        grid-row: auto;
+    }
+
     .header__scroll { display: none; }
 
     /* ---- Projects ---- */
@@ -1259,6 +1301,27 @@ a {
     .project--compact {
         grid-template-columns: 1fr;
         gap: var(--space-md);
+    }
+
+    .project--featured .project__content,
+    .project--split .project__content,
+    .project--compact .project__content {
+        grid-column: 1;
+        grid-row: auto;
+    }
+
+    .project--featured .project__figure,
+    .project--split .project__figure,
+    .project--compact .project__aside {
+        grid-column: 1;
+        grid-row: auto;
+    }
+
+    .project--featured .project__meta,
+    .project--split .project__meta,
+    .project--compact .project__meta {
+        grid-column: 1;
+        grid-row: auto;
     }
 
     .project__meta {
@@ -1274,12 +1337,18 @@ a {
     }
 
     .project__figure {
-        margin-left: calc(-1 * var(--space-md));
-        margin-right: calc(-1 * var(--space-md));
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+    }
+
+    .project__image {
+        width: 100%;
+        max-width: 100%;
     }
 
     .project__caption {
-        padding-left: var(--space-md);
+        padding-left: 0;
     }
 
     .project__figure--offset {
@@ -1313,6 +1382,14 @@ a {
     /* ---- About ---- */
     .about__layout {
         grid-template-columns: 1fr;
+        gap: var(--space-lg) 0;
+        width: 100%;
+    }
+
+    .about__primary {
+        grid-column: 1;
+        grid-row: 1;
+        max-width: 100%;
     }
 
     .about__secondary {
@@ -1337,20 +1414,36 @@ a {
     .contact__layout {
         grid-template-columns: 1fr;
         gap: var(--space-lg);
+        width: 100%;
+    }
+
+    .contact__primary {
+        max-width: 100%;
+    }
+
+    .contact__heading {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
 
     .contact__value {
         padding: var(--space-xs) 0;
         display: inline-block;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        max-width: 100%;
     }
 
     /* ---- Footer ---- */
     .footer {
-        margin-left: calc(var(--frame-padding) + var(--space-md));
-        margin-right: calc(var(--frame-padding) + var(--space-md));
+        margin-left: var(--space-md);
+        margin-right: var(--space-md);
         flex-direction: column;
         gap: var(--space-md);
         align-items: flex-start;
+        width: calc(100% - var(--space-md) * 2);
+        max-width: 100%;
+        box-sizing: border-box;
     }
 
     .footer__link {
@@ -1399,28 +1492,35 @@ a {
 @media (max-width: 400px) {
     :root {
         --frame-padding: 0.75rem;
+        --space-xs: 0.5rem;
+        --space-sm: 0.75rem;
+        --space-md: 1rem;
+        --space-lg: 2rem;
         --space-xl: 3rem;
         --space-xxl: 4rem;
     }
 
     .nav {
-        padding-left: calc(var(--frame-padding) + var(--space-xs));
-        padding-right: calc(var(--frame-padding) + var(--space-xs));
+        padding-left: var(--space-sm);
+        padding-right: var(--space-sm);
+        width: 100%;
     }
 
     .nav--open {
-        padding-left: calc(var(--frame-padding) + var(--space-xs));
-        padding-right: calc(var(--frame-padding) + var(--space-xs));
+        padding-left: var(--space-sm);
+        padding-right: var(--space-sm);
     }
 
     .main {
-        margin-left: calc(var(--frame-padding) + var(--space-xs));
-        margin-right: calc(var(--frame-padding) + var(--space-xs));
+        margin-left: var(--space-sm);
+        margin-right: var(--space-sm);
+        width: calc(100% - var(--space-sm) * 2);
     }
 
     .footer {
-        margin-left: calc(var(--frame-padding) + var(--space-xs));
-        margin-right: calc(var(--frame-padding) + var(--space-xs));
+        margin-left: var(--space-sm);
+        margin-right: var(--space-sm);
+        width: calc(100% - var(--space-sm) * 2);
     }
 
     .header__title {
