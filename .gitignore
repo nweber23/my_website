@@ -10,3 +10,7 @@ nginx/logs/
 
 # Docker volumes
 volumes/
+
+# SSL certificates and private keys
+certs/
+ssl/

@@ -1,16 +1,44 @@
-# HTTP server - handles ACME challenges and redirects to HTTPS
+# HTTP server - backend for reverse proxy
 server {
     listen 80;
     listen [::]:80;
-    server_name ${DOMAIN_NAME};
+    server_name ${DOMAIN_NAME} www.${DOMAIN_NAME};
 
-    # Allow Let's Encrypt ACME challenge
-    location /.well-known/acme-challenge/ {
-        root /var/www/certbot;
+    # Document root
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+
+    # Main location block
+    location / {
+        try_files $uri $uri/ =404;
     }
 
-    # Redirect all other HTTP traffic to HTTPS
-    location / {
-        return 301 https://$host$request_uri;
+    # Cache static assets
+    location ~* \.(jpg|jpeg|png|gif|ico|svg|webp)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    location ~* \.(css|js)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    location ~* \.(woff|woff2|ttf|otf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header Access-Control-Allow-Origin "*";
+    }
+
+    # Deny access to hidden files
+    location ~ /\. {
+        deny all;
+        access_log off;
+        log_not_found off;
     }
 }
