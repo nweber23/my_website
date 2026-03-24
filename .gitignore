@@ -14,3 +14,7 @@ volumes/
 # SSL certificates and private keys
 certs/
 ssl/
+
+# Claude Code
+.claude
+.superpowers
