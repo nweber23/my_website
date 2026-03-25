@@ -11,6 +11,9 @@ nginx/logs/
 # Docker volumes
 volumes/
 
+# Node modules
+node_modules/
+
 # SSL certificates and private keys
 certs/
 ssl/
@@ -18,3 +21,4 @@ ssl/
 # Claude Code
 .claude
 .superpowers
+docs/superpowers/
