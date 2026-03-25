@@ -248,6 +248,54 @@ a {
 }
 
 /* ==========================================================================
+   Breadcrumb Navigation
+   ========================================================================== */
+
+.breadcrumb {
+    margin-bottom: var(--space-lg);
+}
+
+.breadcrumb__list {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+}
+
+.breadcrumb__item {
+    display: flex;
+    align-items: center;
+}
+
+.breadcrumb__item + .breadcrumb__item::before {
+    content: "/";
+    margin: 0 var(--space-xs);
+    color: var(--color-border);
+}
+
+.breadcrumb__link {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb__link:hover {
+    color: var(--color-accent);
+}
+
+.breadcrumb__link:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+.breadcrumb__current {
+    color: var(--color-text);
+    font-weight: 500;
+}
+
+/* ==========================================================================
    Header — Asymmetrical, editorial
    ========================================================================== */
 
@@ -584,6 +632,40 @@ a {
     border-color: var(--color-accent);
 }
 
+.project__related {
+    margin-top: var(--space-lg);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-border-light);
+}
+
+.project__related-title {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--space-sm);
+}
+
+.project__related-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.project__related-list a {
+    font-size: 0.875rem;
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-border);
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.project__related-list a:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+}
+
 .project__figure {
     position: relative;
 }
@@ -674,6 +756,30 @@ a {
     line-height: 1.8;
     color: var(--color-text-secondary);
     margin-bottom: var(--space-sm);
+}
+
+.about__text a,
+.about__lead a {
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-border);
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.about__text a:hover,
+.about__lead a:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+}
+
+.about__block-text a {
+    color: var(--color-text-secondary);
+    border-bottom: 1px solid var(--color-border);
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.about__block-text a:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
 }
 
 .about__secondary {
@@ -1016,6 +1122,65 @@ a {
 
 .footer__link:hover {
     color: var(--color-accent);
+}
+
+/* ==========================================================================
+   Collapsible Project Descriptions
+   ========================================================================== */
+
+.project__details-dropdown {
+    cursor: pointer;
+    user-select: none;
+}
+
+.project__summary {
+    cursor: pointer;
+    user-select: none;
+    padding: var(--space-sm) var(--space-md);
+    margin: 0 calc(var(--space-md) * -1) 0 calc(var(--space-md) * -1);
+    border-radius: 0.25rem;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.project__summary:hover {
+    background-color: rgba(155, 75, 58, 0.08);
+    color: var(--color-accent);
+}
+
+.project__summary::marker {
+    color: var(--color-accent);
+    font-size: 1.25rem;
+}
+
+.project__summary p {
+    font-size: 0.9375rem;
+    line-height: 1.75;
+    color: var(--color-text-secondary);
+    margin: 0;
+}
+
+.project__details-dropdown[open] .project__summary {
+    margin-bottom: var(--space-md);
+}
+
+.project__details-dropdown[open] .project__summary p {
+    font-weight: 500;
+}
+
+/* Expanded content animation */
+.project__description {
+    animation: slideDown 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-0.5rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* ==========================================================================
