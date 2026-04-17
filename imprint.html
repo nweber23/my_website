@@ -6,82 +6,84 @@
     <title>Imprint — Niklas Weber</title>
     <link rel="icon" href="data:,">
 
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Legal notice and imprint for Niklas Weber's portfolio website. Information according to German Telemedia Act (TMG). Find contact and responsibility details.">
+    <meta name="description" content="Legal notice and imprint for Niklas Weber's portfolio website. Information according to German Telemedia Act (TMG).">
     <meta name="robots" content="noindex, follow">
-    <meta name="last-modified" content="2026-03-25">
-    <meta property="article:published_time" content="2026-03-25T00:00:00Z">
-    <meta property="article:modified_time" content="2026-03-25T00:00:00Z">
-    <meta name="theme-color" content="#F0B429">
+    <meta name="last-modified" content="2026-04-17">
+    <meta name="theme-color" content="#F3EFE6">
     <link rel="canonical" href="https://nweber.me/imprint.html">
 
-    <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="Imprint — Niklas Weber">
-    <meta property="og:description" content="Legal notice and imprint for Niklas Weber's portfolio website. Information according to German Telemedia Act (TMG).">
+    <meta property="og:description" content="Legal notice and imprint for Niklas Weber's portfolio website.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://nweber.me/imprint.html">
 
     <link rel="stylesheet" href="styles.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..700,0..100;1,9..144,400..700,0..100&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-    <!-- Breadcrumb Navigation Schema -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://nweber.me/"
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": "Imprint",
-          "item": "https://nweber.me/imprint.html"
-        }
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://nweber.me/" },
+        { "@type": "ListItem", "position": 2, "name": "Imprint", "item": "https://nweber.me/imprint.html" }
       ]
     }
     </script>
 </head>
 <body>
-    <div class="frame">
+    <a href="#main" class="skip-link">Skip to content</a>
+
+    <div class="scroll-progress" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <div class="frame" aria-hidden="true">
         <div class="frame-line frame-line--top"></div>
         <div class="frame-line frame-line--bottom"></div>
         <div class="frame-line frame-line--left"></div>
         <div class="frame-line frame-line--right"></div>
+        <div class="frame-corner frame-corner--tl"></div>
+        <div class="frame-corner frame-corner--tr"></div>
+        <div class="frame-corner frame-corner--bl"></div>
+        <div class="frame-corner frame-corner--br"></div>
     </div>
 
     <nav class="nav" aria-label="Main navigation">
-        <div class="nav__index">
-            <span class="nav__index-label">Legal</span>
-            <span class="nav__index-number">§</span>
-        </div>
         <button class="nav__toggle" aria-label="Open menu" aria-expanded="false">
             <span class="nav__toggle-line"></span>
             <span class="nav__toggle-line"></span>
         </button>
-        <ul class="nav__list">
-            <li><a href="index.html" class="nav__link">Back to Home</a></li>
-        </ul>
+
+        <div class="nav__center">
+            <div class="nav__index">
+                <span class="nav__index-label">Section</span>
+                <span class="nav__index-number">§</span>
+            </div>
+
+            <ul class="nav__list">
+                <li><a href="index.html" class="nav__link" data-index="←">Back</a></li>
+            </ul>
+        </div>
+
         <div class="nav__meta">
-            <span class="nav__time"></span>
-            <span class="nav__location">Heilbronn, DE</span>
+            <div class="nav__meta-row">
+                <span class="nav__time">—</span>
+                <span>CET</span>
+            </div>
+            <span>Heilbronn, DE</span>
         </div>
     </nav>
 
-    <main class="main">
+    <main class="main" id="main">
         <nav class="breadcrumb" aria-label="Breadcrumb">
             <ol class="breadcrumb__list">
                 <li class="breadcrumb__item">
-                    <a href="/" class="breadcrumb__link">Home</a>
+                    <a href="/" class="breadcrumb__link">index</a>
                 </li>
                 <li class="breadcrumb__item">
-                    <span class="breadcrumb__current">Imprint</span>
+                    <span class="breadcrumb__current">imprint</span>
                 </li>
             </ol>
         </nav>
@@ -100,7 +102,8 @@
         <section class="section section--imprint">
             <div class="section__header">
                 <span class="section__number">01</span>
-                <h2 class="section__title">Information according to § 5 TMG</h2>
+                <h2 class="section__title">Information according to <em>§ 5 TMG</em></h2>
+                <span class="section__count">owner</span>
             </div>
 
             <div class="imprint__layout">
@@ -126,19 +129,16 @@
             </div>
         </section>
 
-        <div class="divider">
-            <span class="divider__text">continued</span>
-        </div>
-
         <section class="section section--imprint">
             <div class="section__header">
                 <span class="section__number">02</span>
-                <h2 class="section__title">Responsible for Content</h2>
+                <h2 class="section__title">Responsible for <em>Content</em></h2>
+                <span class="section__count">§ 55 Abs. 2 RStV</span>
             </div>
 
             <div class="imprint__layout">
                 <div class="imprint__block">
-                    <h3 class="imprint__heading">According to § 55 Abs. 2 RStV</h3>
+                    <h3 class="imprint__heading">Responsible party</h3>
                     <address class="imprint__address">
                         <p>Niklas Weber</p>
                         <p>Schubertstr. 7</p>
@@ -149,14 +149,11 @@
             </div>
         </section>
 
-        <div class="divider">
-            <span class="divider__text">continued</span>
-        </div>
-
         <section class="section section--imprint">
             <div class="section__header">
                 <span class="section__number">03</span>
-                <h2 class="section__title">Disclaimer</h2>
+                <h2 class="section__title"><em>Disclaimer</em></h2>
+                <span class="section__count">liability</span>
             </div>
 
             <div class="imprint__layout imprint__layout--full">
@@ -183,10 +180,13 @@
 
     <footer class="footer">
         <div class="footer__content">
-            <span class="footer__copyright">2026 Niklas Weber</span>
-            <span class="footer__note">Built from scratch</span>
+            <span class="footer__copyright">© 2026 · Niklas Weber</span>
+            <span class="footer__note">Hand-built with HTML, CSS, and vanilla JS</span>
         </div>
-            </footer>
+        <div class="footer__links">
+            <a href="index.html" class="footer__link">← Back to index</a>
+        </div>
+    </footer>
 
     <script defer src="script.min.js"></script>
     <script data-goatcounter="https://mattz.goatcounter.com/count"
