@@ -1,14 +1,86 @@
 /**
- * Portfolio — Niklas Weber
- * Minimal, purposeful interactions
+ * Niklas Weber — Portfolio
+ * Technical Editorial · 2026
  */
 
 (function() {
     'use strict';
 
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     /**
-     * Navigation index updater
-     * Updates the current section index in the navigation
+     * Scroll progress indicator (hairline top bar)
+     */
+    class ScrollProgress {
+        constructor() {
+            this.bar = document.querySelector('.scroll-progress');
+            if (!this.bar) return;
+            this.ticking = false;
+            window.addEventListener('scroll', () => this.request(), { passive: true });
+            this.update();
+        }
+
+        request() {
+            if (this.ticking) return;
+            this.ticking = true;
+            requestAnimationFrame(() => this.update());
+        }
+
+        update() {
+            const doc = document.documentElement;
+            const scrolled = (doc.scrollTop || document.body.scrollTop);
+            const height = (doc.scrollHeight - doc.clientHeight);
+            const pct = height > 0 ? Math.min(100, (scrolled / height) * 100) : 0;
+            this.bar.style.transform = 'scaleX(' + (pct / 100) + ')';
+            this.ticking = false;
+        }
+    }
+
+    /**
+     * Custom cursor · desktop only, inertia-smoothed ring
+     */
+    class Cursor {
+        constructor() {
+            this.cursor = document.querySelector('.cursor');
+            if (!this.cursor) return;
+            if (window.matchMedia('(pointer: coarse)').matches) return;
+            if (prefersReducedMotion) return;
+
+            this.target = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+            this.current = { x: this.target.x, y: this.target.y };
+            this.ready = false;
+
+            window.addEventListener('mousemove', (e) => {
+                this.target.x = e.clientX;
+                this.target.y = e.clientY;
+                if (!this.ready) {
+                    this.ready = true;
+                    this.cursor.classList.add('cursor--ready');
+                }
+            }, { passive: true });
+
+            const hoverTargets = document.querySelectorAll('a, button, summary, .project__figure, .contact__value, input, label');
+            hoverTargets.forEach(el => {
+                el.addEventListener('mouseenter', () => this.cursor.classList.add('cursor--hover'));
+                el.addEventListener('mouseleave', () => this.cursor.classList.remove('cursor--hover'));
+            });
+
+            window.addEventListener('mousedown', () => this.cursor.classList.add('cursor--active'), { passive: true });
+            window.addEventListener('mouseup', () => this.cursor.classList.remove('cursor--active'), { passive: true });
+
+            this.loop();
+        }
+
+        loop() {
+            this.current.x += (this.target.x - this.current.x) * 0.18;
+            this.current.y += (this.target.y - this.current.y) * 0.18;
+            this.cursor.style.transform = `translate3d(${this.current.x}px, ${this.current.y}px, 0)`;
+            requestAnimationFrame(() => this.loop());
+        }
+    }
+
+    /**
+     * Nav section tracker — updates section number + active link
      */
     class NavigationIndex {
         constructor() {
@@ -18,16 +90,9 @@
 
             if (!this.indexElement || this.sections.length === 0) return;
 
-            this.init();
-        }
-
-        init() {
             this.observer = new IntersectionObserver(
                 (entries) => this.handleIntersection(entries),
-                {
-                    rootMargin: '-40% 0px -60% 0px',
-                    threshold: 0
-                }
+                { rootMargin: '-40% 0px -55% 0px', threshold: 0 }
             );
 
             this.sections.forEach(section => this.observer.observe(section));
@@ -35,41 +100,30 @@
 
         handleIntersection(entries) {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const section = entry.target;
-                    const index = section.querySelector('.section__number');
+                if (!entry.isIntersecting) return;
 
-                    if (index) {
-                        this.indexElement.textContent = index.textContent;
-                    }
+                const section = entry.target;
+                const numberEl = section.querySelector('.section__number');
+                if (numberEl) this.indexElement.textContent = numberEl.textContent;
 
-                    // Update active nav link
-                    const sectionId = section.id;
-                    this.navLinks.forEach(link => {
-                        const href = link.getAttribute('href');
-                        if (href === `#${sectionId}`) {
-                            link.classList.add('active');
-                        } else {
-                            link.classList.remove('active');
-                        }
-                    });
-                }
+                const sectionId = section.id;
+                this.navLinks.forEach(link => {
+                    const href = link.getAttribute('href');
+                    link.classList.toggle('active', href === `#${sectionId}`);
+                });
             });
         }
     }
 
     /**
-     * Navigation time display
-     * Shows current time in Berlin timezone
+     * Time display (Berlin)
      */
     class NavigationTime {
         constructor() {
             this.element = document.querySelector('.nav__time');
             if (!this.element) return;
-
             this.update();
-            // Update every minute, not every second - less resource intensive
-            setInterval(() => this.update(), 60000);
+            setInterval(() => this.update(), 30000);
         }
 
         update() {
@@ -85,30 +139,21 @@
     }
 
     /**
-     * Scroll reveal
-     * Simple reveal animation for elements as they enter viewport
+     * Scroll reveal via data-reveal attribute
      */
     class ScrollReveal {
         constructor() {
-            this.elements = document.querySelectorAll(
-                '.project, .about__primary, .about__secondary, .about__skills, .about__aside-full, .contact__layout'
-            );
+            this.elements = document.querySelectorAll('[data-reveal], .about__lead-col, .about__secondary, .about__skills, .about__aside-full, .contact__layout');
 
             if (this.elements.length === 0) return;
 
-            this.init();
-        }
-
-        init() {
-            // Add reveal class to elements
-            this.elements.forEach(el => el.classList.add('reveal'));
+            this.elements.forEach(el => {
+                if (!el.hasAttribute('data-reveal')) el.setAttribute('data-reveal', '');
+            });
 
             this.observer = new IntersectionObserver(
                 (entries) => this.handleIntersection(entries),
-                {
-                    rootMargin: '0px 0px -80px 0px',
-                    threshold: 0.1
-                }
+                { rootMargin: '0px 0px -80px 0px', threshold: 0.08 }
             );
 
             this.elements.forEach(el => this.observer.observe(el));
@@ -117,7 +162,7 @@
         handleIntersection(entries) {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
+                    entry.target.classList.add('is-visible');
                     this.observer.unobserve(entry.target);
                 }
             });
@@ -125,155 +170,78 @@
     }
 
     /**
-     * Smooth scroll for anchor links
+     * Skills staggered reveal
+     */
+    class SkillsReveal {
+        constructor() {
+            const skillsBlock = document.querySelector('.about__skills');
+            if (!skillsBlock) return;
+
+            const skills = skillsBlock.querySelectorAll('.about__skill');
+            if (skills.length === 0) return;
+
+            skills.forEach((skill, i) => {
+                skill.style.transitionDelay = `${i * 0.08}s`;
+            });
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        skillsBlock.classList.add('is-visible');
+                        observer.disconnect();
+                    }
+                });
+            }, { threshold: 0.15 });
+
+            observer.observe(skillsBlock);
+        }
+    }
+
+    /**
+     * Smooth scroll for in-page anchors
      */
     class SmoothScroll {
         constructor() {
             this.links = document.querySelectorAll('a[href^="#"]');
-            if (this.links.length === 0) return;
-
-            this.init();
-        }
-
-        init() {
-            this.links.forEach(link => {
-                link.addEventListener('click', (e) => this.handleClick(e, link));
-            });
+            this.links.forEach(link => link.addEventListener('click', (e) => this.handleClick(e, link)));
         }
 
         handleClick(e, link) {
             const href = link.getAttribute('href');
-            if (href === '#') return;
+            if (href === '#' || href.length < 2) return;
 
             const target = document.querySelector(href);
             if (!target) return;
 
             e.preventDefault();
 
-            const headerOffset = 100;
+            const headerOffset = 80;
             const elementPosition = target.getBoundingClientRect().top;
             const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
             window.scrollTo({
                 top: offsetPosition,
-                behavior: 'smooth'
+                behavior: prefersReducedMotion ? 'auto' : 'smooth'
             });
 
-            // Update URL without scrolling
-            history.pushState(null, null, href);
+            history.pushState(null, '', href);
         }
     }
 
     /**
-     * Project image interaction
-     * Subtle scale on hover for project images
-     */
-    class ProjectImageHover {
-        constructor() {
-            this.figures = document.querySelectorAll('.project__figure');
-            if (this.figures.length === 0) return;
-
-            this.init();
-        }
-
-        init() {
-            this.figures.forEach(figure => {
-                const image = figure.querySelector('.project__image');
-                if (!image) return;
-
-                figure.addEventListener('mouseenter', () => {
-                    image.style.transform = 'scale(1.02)';
-                });
-
-                figure.addEventListener('mouseleave', () => {
-                    image.style.transform = 'scale(1)';
-                });
-            });
-        }
-    }
-
-    /**
-     * Staggered reveal for skills
-     * Adds slight delay to each skill item
-     */
-    class SkillsReveal {
-        constructor() {
-            this.skillsList = document.querySelector('.about__skills-list');
-            if (!this.skillsList) return;
-
-            this.skills = this.skillsList.querySelectorAll('.about__skill');
-            if (this.skills.length === 0) return;
-
-            this.init();
-        }
-
-        init() {
-            this.skills.forEach((skill, index) => {
-                skill.style.transitionDelay = `${index * 0.1}s`;
-            });
-        }
-    }
-
-    /**
-     * Reduce motion preference
-     * Respects user's motion preferences
-     */
-    class ReducedMotion {
-        constructor() {
-            this.prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-            if (this.prefersReducedMotion.matches) {
-                this.disableAnimations();
-            }
-
-            this.prefersReducedMotion.addEventListener('change', () => {
-                if (this.prefersReducedMotion.matches) {
-                    this.disableAnimations();
-                } else {
-                    this.enableAnimations();
-                }
-            });
-        }
-
-        disableAnimations() {
-            document.documentElement.style.setProperty('--animation-duration', '0s');
-
-            // Remove reveal animations
-            document.querySelectorAll('.reveal').forEach(el => {
-                el.classList.add('visible');
-                el.style.transition = 'none';
-            });
-        }
-
-        enableAnimations() {
-            document.documentElement.style.removeProperty('--animation-duration');
-        }
-    }
-
-    /**
-     * Mobile navigation
-     * Hamburger toggle with full-screen overlay menu
+     * Mobile navigation overlay
      */
     class MobileNavigation {
         constructor() {
             this.nav = document.querySelector('.nav');
             this.toggle = document.querySelector('.nav__toggle');
             this.links = document.querySelectorAll('.nav__link');
-
             if (!this.nav || !this.toggle) return;
 
             this.isOpen = false;
-            this.init();
-        }
 
-        init() {
             this.toggle.addEventListener('click', () => this.handleToggle());
-
-            this.links.forEach(link => {
-                link.addEventListener('click', () => {
-                    if (this.isOpen) this.close();
-                });
-            });
+            this.links.forEach(link => link.addEventListener('click', () => this.isOpen && this.close()));
 
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && this.isOpen) this.close();
@@ -284,13 +252,7 @@
             });
         }
 
-        handleToggle() {
-            if (this.isOpen) {
-                this.close();
-            } else {
-                this.open();
-            }
-        }
+        handleToggle() { this.isOpen ? this.close() : this.open(); }
 
         open() {
             this.isOpen = true;
@@ -310,41 +272,34 @@
     }
 
     /**
-     * External link handler
-     * Adds rel attributes to external links for security
+     * External link safety
      */
     class ExternalLinks {
         constructor() {
-            const externalLinks = document.querySelectorAll('a[target="_blank"]');
-
-            externalLinks.forEach(link => {
-                if (!link.hasAttribute('rel')) {
-                    link.setAttribute('rel', 'noopener noreferrer');
-                }
+            document.querySelectorAll('a[target="_blank"]').forEach(link => {
+                if (!link.hasAttribute('rel')) link.setAttribute('rel', 'noopener noreferrer');
             });
         }
     }
 
     /**
-     * Initialize all modules when DOM is ready
+     * Init
      */
     function init() {
+        new ScrollProgress();
+        // Cursor removed per user preference
         new NavigationIndex();
         new NavigationTime();
         new ScrollReveal();
-        new SmoothScroll();
-        new ProjectImageHover();
         new SkillsReveal();
-        new ReducedMotion();
-        new ExternalLinks();
+        new SmoothScroll();
         new MobileNavigation();
+        new ExternalLinks();
     }
 
-    // Run on DOM ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
         init();
     }
-
 })();
