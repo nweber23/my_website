@@ -11,8 +11,8 @@ COPY nginx/snippets/ /etc/nginx/snippets/
 # Copy website files
 COPY index.html /usr/share/nginx/html/
 COPY imprint.html /usr/share/nginx/html/
-COPY styles.css /usr/share/nginx/html/
-COPY script.js /usr/share/nginx/html/
+COPY styles.min.css /usr/share/nginx/html/
+COPY script.min.js /usr/share/nginx/html/
 COPY robots.txt /usr/share/nginx/html/
 COPY sitemap.xml /usr/share/nginx/html/
 COPY assets/ /usr/share/nginx/html/assets/
