@@ -35,7 +35,7 @@
     /* Layout */
     --frame-padding: 1.75rem;
     --nav-width: 4rem;
-    --container-max: 1440px;
+    --container-max: 100%;
 
     /* Motion */
     --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -694,7 +694,7 @@ button {
 
 .project__ghost {
     position: absolute;
-    top: -3rem;
+    top: -6rem;
     right: 0;
     font-family: var(--font-serif);
     font-size: clamp(9rem, 20vw, 18rem);
@@ -708,6 +708,7 @@ button {
     font-variation-settings: "SOFT" 0, "opsz" 144;
     letter-spacing: -0.04em;
     opacity: 1;
+    font-variant-numeric: tabular-nums;
 }
 
 .project--featured {
@@ -715,6 +716,10 @@ button {
     grid-template-columns: 4rem minmax(0, 1fr) minmax(0, 1.15fr);
     grid-template-rows: auto auto;
     gap: var(--space-lg) var(--space-md);
+}
+
+.project--featured .project__ghost {
+    top: -8rem;
 }
 
 .project--featured .project__meta {
@@ -746,12 +751,16 @@ button {
     padding-top: var(--space-md);
 }
 
+.project--split .project__ghost {
+    top: -4rem;
+}
+
 .project--split .project__meta { grid-column: 1; }
 .project--split .project__content { grid-column: 2; position: relative; z-index: 1; }
 .project--split .project__figure {
     grid-column: 3;
     align-self: start;
-    margin-top: 16rem;
+    margin-top: 12rem;
     position: relative;
     z-index: 1;
 }
@@ -777,8 +786,8 @@ button {
 }
 
 .project--compact .project__ghost {
-    top: auto;
-    bottom: -3rem;
+    top: -4rem;
+    bottom: auto;
 }
 
 .project__meta {
