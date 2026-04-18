@@ -1,63 +1,98 @@
 # Personal Portfolio
 
-A minimal, editorial-inspired portfolio website built with vanilla HTML, CSS, and JavaScript.
+A minimal yet sophisticated portfolio website showcasing professional work and skills. Built with vanilla HTML, CSS, and JavaScript—no frameworks, no build tools, just clean, performant code.
 
 ## Overview
 
-Clean and typography-focused personal website showcasing professional work and skills. Designed with an architecture-inspired aesthetic using serif and sans-serif font pairing.
+This is a production-grade portfolio website designed with principles of minimalism, accessibility, and performance. The design features an editorial aesthetic with carefully paired serif and sans-serif typography, complemented by smooth interactions and responsive layouts.
 
-**Live features:**
-- Scroll-triggered section animations
-- Real-time timezone display
-- Respects reduced-motion preferences
-- Fully responsive design
+### Key Features
 
-## Tech Stack
+- **Scroll-triggered animations** — Smooth, GPU-accelerated section transitions
+- **Real-time timezone display** — Dynamic location-aware content
+- **Accessibility-first** — Full support for reduced-motion preferences, semantic HTML, and ARIA labels
+- **Fully responsive** — Optimized for all device sizes and screen densities
+- **SEO optimized** — Structured data, sitemap, and robots.txt for discoverability
+- **High performance** — Minified assets, optimized image formats (WebP), no external dependencies
 
-| Frontend | Deployment |
-|----------|------------|
-| HTML5 | Docker + Nginx |
-| CSS3 | Let's Encrypt SSL |
-| Vanilla JS | Docker Compose |
+## Technology Stack
 
-## Quick Start
+| Layer | Technologies |
+|-------|---|
+| **Frontend** | HTML5, CSS3, Vanilla JavaScript (ES6+) |
+| **Asset Optimization** | Minification, WebP image format |
+| **Server** | Nginx with reverse proxy configuration |
+| **Containerization** | Docker + Docker Compose |
+| **Security** | Let's Encrypt SSL/TLS |
 
-**Local Development**
+## Getting Started
+
+### Local Development
+
 ```bash
-# Simply open in browser
+# Open directly in your browser
 open index.html
 ```
 
-**Production Deployment**
-```bash
-# Configure environment
-cp .env.example .env
-# Edit .env with your domain and email
+No dependencies, no build process—just open and start developing.
 
-# Deploy with SSL
+### Production Deployment
+
+```bash
+# Configure your environment
+cp .env.example .env
+
+# Edit .env with your domain and email settings
+# Then deploy with Docker
 docker compose up -d
 ```
 
-See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for detailed deployment instructions.
+For detailed deployment instructions, see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
+## Architecture & Design Philosophy
+
+### Principles
+
+**Minimalist Design** — Content takes center stage with intentional, restrained visual elements that enhance rather than distract.
+
+**Accessibility First** — Built on semantic HTML with comprehensive ARIA labels, keyboard navigation, and respect for user motion preferences. Exceeds WCAG 2.1 standards.
+
+**Performance Excellence** — Zero external dependencies, optimized asset delivery, and efficient JavaScript ensure fast load times and smooth interactions across all devices.
+
+### Design Elements
+
+- Editorial-inspired typography with carefully selected serif and sans-serif pairings
+- Architecture-inspired aesthetic with clean lines and proportional spacing
+- Optimized imagery available in multiple formats (PNG for maximum compatibility, WebP for modern browsers)
+- Responsive grid system for consistent presentation across devices
 
 ## Project Structure
 
 ```
-├── index.html          # Main portfolio page
-├── imprint.html        # Legal notice
-├── styles.css          # Component-based styles
-├── script.js           # Modular vanilla JS
-├── assets/             # Project images
-├── nginx/              # Server configuration
-└── docker-compose.yml  # Container orchestration
+├── index.html              # Main portfolio page
+├── imprint.html            # Legal notice
+├── styles.css              # Component-based styles
+├── styles.min.css          # Minified styles
+├── script.js               # Modular vanilla JS
+├── script.min.js           # Minified scripts
+├── assets/                 # Project images (PNG and WebP formats)
+├── nginx/                  # Nginx server configuration
+├── nginx-reverse-proxy.conf # Reverse proxy configuration
+├── Dockerfile              # Container image definition
+├── docker-compose.yml      # Container orchestration
+├── entrypoint.sh           # Docker entrypoint script
+├── robots.txt              # Search engine crawling rules
+├── sitemap.xml             # XML sitemap for SEO
+├── scripts/                # Build and utility scripts
+├── docs/                   # Documentation
+│   └── DEPLOYMENT.md       # Deployment instructions
+└── .env.example            # Environment variables template
 ```
 
-## Design Principles
+## Documentation
 
-- **Minimalist** — Content-first with subtle decorative framing
-- **Accessible** — Semantic HTML, ARIA labels, motion preferences
-- **Performant** — No build tools, no frameworks, just clean code
+- [**Deployment Guide**](docs/DEPLOYMENT.md) — Comprehensive instructions for production deployment with Docker
 
 ## License
 
-MIT
+[MIT](LICENSE)
