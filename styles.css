@@ -35,7 +35,7 @@
     /* Layout */
     --frame-padding: 1.75rem;
     --nav-width: 4rem;
-    --container-max: 1440px;
+    --container-max: 100%;
 
     /* Motion */
     --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -694,7 +694,7 @@ button {
 
 .project__ghost {
     position: absolute;
-    top: -3rem;
+    top: -6rem;
     right: 0;
     font-family: var(--font-serif);
     font-size: clamp(9rem, 20vw, 18rem);
