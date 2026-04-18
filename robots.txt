@@ -4,6 +4,19 @@
 User-agent: *
 Allow: /
 
+# Explicit AI crawler rules
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
 # Disallow crawling of specific directories (if any)
 # Disallow: /private/
 # Disallow: /temp/

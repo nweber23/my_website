@@ -1,0 +1,25 @@
+# Niklas Weber — Systems Developer
+
+Niklas Weber is a systems programmer at 42 Heilbronn specializing in C, Go, and low-level optimization.
+
+## Projects
+
+### 42 ELO Leaderboard
+Go + PostgreSQL ranking system for 42 school. Live at https://eloleaderboard.de.
+Key achievement: 30ms average response time, 99.9% uptime. Composite indexes, Redis caching, Go goroutines for concurrent match processing.
+Source: https://github.com/nweber23/42_ELO_Leaderboard
+
+### miniRT
+High-performance raytracer in C. SIMD vectorization (SSE/AVX), cache-efficient structure-of-arrays layout, tile-based multi-threaded rendering.
+Key achievement: 120+ FPS, an 80x improvement over baseline (1920x1080, complex scene).
+Source: https://github.com/nweber23/miniRT
+
+### minishell
+POSIX-compliant shell in C implementing fork/exec, pipe chaining, redirections, signals (SIGCHLD with sigaction), and a recursive-descent parser.
+Source: https://github.com/nweber23/minishell
+
+## Contact
+Email: niklasweber610@gmail.com
+GitHub: https://github.com/nweber23
+LinkedIn: https://linkedin.com/in/niklas-weber-488576329/
+Portfolio: https://nweber.me

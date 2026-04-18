@@ -1067,10 +1067,11 @@ button {
     object-fit: cover;
     filter: grayscale(12%) contrast(1.02) saturate(0.92);
     transition: filter var(--duration-slow) var(--ease-out), transform var(--duration-slow) var(--ease-out);
-    will-change: transform, filter;
 }
 
-.project__figure:hover .project__image {
+.project__figure:hover .project__image,
+.project__figure:focus-within .project__image {
+    will-change: transform, filter;
     filter: grayscale(0%) contrast(1.05) saturate(1);
     transform: scale(1.015);
 }
