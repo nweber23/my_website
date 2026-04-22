@@ -786,7 +786,7 @@ button {
 }
 
 .project--compact .project__ghost {
-    top: -4rem;
+    top: 0rem;
     bottom: auto;
 }
 
