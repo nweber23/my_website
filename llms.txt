@@ -19,7 +19,7 @@ POSIX-compliant shell in C implementing fork/exec, pipe chaining, redirections, 
 Source: https://github.com/nweber23/minishell
 
 ## Contact
-Email: niklasweber610@gmail.com
+Email: contact@nweber.me
 GitHub: https://github.com/nweber23
 LinkedIn: https://linkedin.com/in/niklas-weber-488576329/
 Portfolio: https://nweber.me
