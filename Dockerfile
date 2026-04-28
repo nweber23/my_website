@@ -15,6 +15,7 @@ COPY styles.min.css /usr/share/nginx/html/
 COPY script.min.js /usr/share/nginx/html/
 COPY robots.txt /usr/share/nginx/html/
 COPY sitemap.xml /usr/share/nginx/html/
+COPY llms.txt /usr/share/nginx/html/
 COPY assets/ /usr/share/nginx/html/assets/
 
 # Copy entrypoint script
