@@ -33,7 +33,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="styles.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..700,0..100;1,9..144,400..700,0..100&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..700,0..100;1,9..144,400..700,0..100&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..700,0..100;1,9..144,400..700,0..100&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap"></noscript>
+    <link rel="preload" as="image" href="assets/42_ELO_Leaderboard.webp">
 
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
@@ -90,7 +92,13 @@
       "description": "Competitive Rankings System for 42 Heilbronn community. Built a complete ELO ranking system in Go with PostgreSQL, optimized from the ground up for performance with sub-100ms query responses.",
       "url": "https://eloleaderboard.de",
       "codeRepository": "https://github.com/nweber23/42_ELO_Leaderboard",
-      "programmingLanguage": ["Go", "SQL"],
+      "programmingLanguage": [
+        { "@type": "ComputerLanguage", "name": "Go" },
+        { "@type": "ComputerLanguage", "name": "SQL" },
+        { "@type": "ComputerLanguage", "name": "TypeScript" }
+      ],
+      "runtimePlatform": "Linux",
+      "keywords": "ELO rating system, Go programming, PostgreSQL optimization, competitive ranking, real-time leaderboard, concurrent systems, performance",
       "image": "https://nweber.me/assets/42_ELO_Leaderboard.webp",
       "creator": { "@id": "https://nweber.me/#person" },
       "datePublished": "2026-03-25"
@@ -105,9 +113,13 @@
       "@id": "https://nweber.me/#project-minirt",
       "name": "miniRT",
       "description": "High-Performance Raytracer in C. Rebuilt core rendering loop with SIMD vectorization, cache-efficient data structures, and multi-threaded tile-based rendering. Achieved 120+ FPS — an 80x improvement over baseline.",
-      "url": "https://nweber.me/#project-minirt",
+      "url": "https://github.com/nweber23/miniRT",
       "codeRepository": "https://github.com/nweber23/miniRT",
-      "programmingLanguage": "C",
+      "programmingLanguage": [
+        { "@type": "ComputerLanguage", "name": "C" }
+      ],
+      "runtimePlatform": "Linux",
+      "keywords": "raytracer, SIMD vectorization, SSE AVX intrinsics, C programming, high performance rendering, multi-threaded tile rendering, computer graphics, performance optimization",
       "image": "https://nweber.me/assets/minirt.webp",
       "creator": { "@id": "https://nweber.me/#person" },
       "datePublished": "2025-12-15"
@@ -122,9 +134,14 @@
       "@id": "https://nweber.me/#project-minishell",
       "name": "minishell",
       "description": "POSIX-Compliant Shell in C. Implemented complete shell with lexical analysis, parsing, pipes, I/O redirection, environment variable expansion, and signal handling using Unix system calls.",
-      "url": "https://nweber.me/#project-minishell",
+      "url": "https://github.com/nweber23/minishell",
       "codeRepository": "https://github.com/nweber23/minishell",
-      "programmingLanguage": "C",
+      "programmingLanguage": [
+        { "@type": "ComputerLanguage", "name": "C" }
+      ],
+      "runtimePlatform": "Linux",
+      "keywords": "POSIX shell, Unix systems programming, process management, fork exec, file descriptors, signal handling, C programming, shell implementation",
+      "image": "https://nweber.me/assets/minirt.webp",
       "creator": { "@id": "https://nweber.me/#person" },
       "datePublished": "2025-06-30"
     }
@@ -344,7 +361,7 @@
                 </div>
 
                 <figure class="project__figure">
-                    <img src="assets/42_ELO_Leaderboard.webp" alt="42 ELO Leaderboard competitive ranking interface with player ratings and match history" class="project__image" loading="lazy" width="1231" height="749">
+                    <img src="assets/42_ELO_Leaderboard.webp" alt="42 ELO Leaderboard competitive ranking interface with player ratings and match history" class="project__image" fetchpriority="high" width="1231" height="749">
                     <figcaption class="project__caption">
                         <span>Fig. 01 — Leaderboard interface</span>
                         <span class="project__caption-tag">live</span>
