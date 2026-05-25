@@ -10,7 +10,7 @@
     <meta name="description" content="Systems Developer at 42 Heilbronn specializing in C, Go, and low-level programming. Building software from first principles. Explore my portfolio of systems projects and engineering expertise.">
     <meta name="author" content="Niklas Weber">
     <meta name="robots" content="index, follow">
-    <meta name="last-modified" content="2026-04-17">
+    <meta name="last-modified" content="2026-05-23">
     <meta name="theme-color" content="#F3EFE6">
     <link rel="canonical" href="https://nweber.me/">
 
@@ -82,7 +82,6 @@
     }
     </script>
 
-    <!-- Project Schema: 42 ELO Leaderboard -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -105,7 +104,6 @@
     }
     </script>
 
-    <!-- Project Schema: miniRT -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -126,7 +124,6 @@
     }
     </script>
 
-    <!-- Project Schema: minishell -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -147,7 +144,6 @@
     }
     </script>
 
-    <!-- Website Schema -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -161,7 +157,6 @@
     }
     </script>
 
-    <!-- ProfilePage Schema -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -172,8 +167,8 @@
       "isPartOf": { "@id": "https://nweber.me/#website" },
       "about": { "@id": "https://nweber.me/#person" },
       "mainEntity": { "@id": "https://nweber.me/#person" },
-      "datePublished": "2026-04-17",
-      "dateModified": "2026-04-17T00:00:00Z",
+      "datePublished": "2026-05-23",
+      "dateModified": "2026-05-23T00:00:00Z",
       "inLanguage": "en"
     }
     </script>
@@ -184,444 +179,409 @@
     <div class="scroll-progress" aria-hidden="true"></div>
     <div class="grain" aria-hidden="true"></div>
 
-    <div class="frame" aria-hidden="true">
-        <div class="frame-line frame-line--top"></div>
-        <div class="frame-line frame-line--bottom"></div>
-        <div class="frame-line frame-line--left"></div>
-        <div class="frame-line frame-line--right"></div>
-        <div class="frame-corner frame-corner--tl"></div>
-        <div class="frame-corner frame-corner--tr"></div>
-        <div class="frame-corner frame-corner--bl"></div>
-        <div class="frame-corner frame-corner--br"></div>
-    </div>
-
+    <!-- Navigation -->
     <nav class="nav" aria-label="Main navigation">
-        <button class="nav__toggle" aria-label="Open menu" aria-expanded="false">
-            <span class="nav__toggle-line"></span>
-            <span class="nav__toggle-line"></span>
-        </button>
+        <ul class="nav__list" role="list">
+            <li><a href="#work" class="nav__link">Work</a></li>
+            <li><a href="#about" class="nav__link">About</a></li>
+            <li><a href="#contact" class="nav__link">Contact</a></li>
+        </ul>
 
-        <div class="nav__center">
-            <div class="nav__index">
-                <span class="nav__index-label">Section</span>
-                <span class="nav__index-number">00</span>
-            </div>
-
-            <ul class="nav__list">
-                <li><a href="#work" class="nav__link" data-index="01">Work</a></li>
-                <li><a href="#about" class="nav__link" data-index="02">About</a></li>
-                <li><a href="#contact" class="nav__link" data-index="03">Contact</a></li>
-            </ul>
-        </div>
-
-        <div class="nav__meta">
-            <div class="nav__meta-row">
+        <div class="nav__right">
+            <div class="nav__status">
                 <span class="nav__status-dot" aria-hidden="true"></span>
-                <span>Available</span>
+                <span class="nav__status-text">Available</span>
             </div>
-            <div class="nav__meta-row">
-                <span class="nav__time">—</span>
-                <span>CET</span>
-            </div>
-            <span>Heilbronn, DE</span>
+            <span class="nav__sep" aria-hidden="true"></span>
+            <span class="nav__time" aria-label="Current time in CET">—</span>
         </div>
+
+        <button class="nav__toggle" aria-label="Open menu" aria-expanded="false">
+            <span class="nav__toggle-bar"></span>
+            <span class="nav__toggle-bar"></span>
+        </button>
     </nav>
 
-    <main class="main" id="main">
+    <main id="main" class="main">
         <nav class="breadcrumb" aria-label="Breadcrumb">
             <ol class="breadcrumb__list">
                 <li class="breadcrumb__item">
-                    <span class="breadcrumb__current">home</span>
+                    <span class="breadcrumb__current" aria-current="page">home</span>
                 </li>
             </ol>
         </nav>
 
-        <header class="header">
-            <div class="header__tag">
-                <span class="header__tag-line">
-                    <span class="header__tag-index">N.01</span>
-                    <span>Systems Developer</span>
-                </span>
-                <span class="header__tag-line">
-                    <span class="header__tag-secondary">at 42 Heilbronn · building from first principles</span>
-                </span>
+        <!-- Hero -->
+        <header class="hero">
+            <div class="hero__eyebrow">
+                <span>Systems Developer</span>
+                <span class="hero__dot" aria-hidden="true">·</span>
+                <span>42 Heilbronn</span>
+                <span class="hero__dot" aria-hidden="true">·</span>
+                <span>Heilbronn, DE</span>
             </div>
 
-            <h1 class="header__title">
-                <span class="header__title-line">Niklas</span>
-                <span class="header__title-line header__title-line--indent">Weber</span>
+            <h1 class="hero__name">
+                <span class="hero__name-line" data-text="Niklas">Niklas</span>
+                <span class="hero__name-line hero__name-line--shift" data-text="Weber">Weber</span>
             </h1>
 
-            <div class="header__description">
-                <p>I build software close to the metal — systems, performance, and deep understanding of how things actually work. Everything I ship is optimized, intentional, and built to last.</p>
-            </div>
+            <div class="hero__rule" aria-hidden="true"></div>
 
-            <aside class="header__aside">
-                <div class="header__stat">
-                    <span class="header__stat-label">Status</span>
-                    <span class="header__stat-value header__stat-value--accent">Available for collaboration</span>
+            <dl class="hero__stats">
+                <div class="hero__stat">
+                    <dt>Status</dt>
+                    <dd class="hero__stat--accent">Available for collaboration</dd>
                 </div>
-                <div class="header__stat">
-                    <span class="header__stat-label">Based in</span>
-                    <span class="header__stat-value">Heilbronn · Germany</span>
+                <div class="hero__stat">
+                    <dt>Focus</dt>
+                    <dd>C · Go · Systems</dd>
                 </div>
-                <div class="header__stat">
-                    <span class="header__stat-label">Focus</span>
-                    <span class="header__stat-value">C · Go · Systems</span>
+                <div class="hero__stat">
+                    <dt>Based</dt>
+                    <dd>Heilbronn, Germany</dd>
                 </div>
-                <div class="header__stat">
-                    <span class="header__stat-label">Year</span>
-                    <span class="header__stat-value">2026 / IV</span>
+                <div class="hero__stat">
+                    <dt>Year</dt>
+                    <dd>2026</dd>
                 </div>
-            </aside>
+            </dl>
 
-            <div class="header__scroll" aria-hidden="true">
-                <span class="header__scroll-text">Scroll</span>
-                <span class="header__scroll-line"></span>
+            <p class="hero__desc">I build software close to the metal — systems, performance, and deep understanding of how things actually work. Everything I ship is optimized, intentional, and built to last.</p>
+
+            <div class="hero__scroll" aria-hidden="true">
+                <span class="hero__scroll-label">Scroll</span>
+                <div class="hero__scroll-track"><div class="hero__scroll-thumb"></div></div>
             </div>
         </header>
 
-        <section class="section section--work" id="work">
-            <div class="section__header">
-                <span class="section__number">01</span>
-                <h2 class="section__title">Selected <em>Work</em></h2>
-                <span class="section__count">3 projects · 2025–26</span>
+        <!-- Work -->
+        <section class="section" id="work" aria-labelledby="work-title">
+            <div class="section__head">
+                <h2 id="work-title" class="section__title">Selected <em>Work</em></h2>
+                <span class="section__aside">3 projects · 2025–26</span>
             </div>
 
-            <article class="project project--featured" id="project-elo" data-reveal>
-                <span class="project__ghost" aria-hidden="true">01</span>
-
-                <div class="project__meta">
-                    <span class="project__index">01 / 03</span>
+            <article class="project" id="project-elo" data-reveal>
+                <div class="project__index-row">
+                    <span class="project__num" aria-hidden="true">01</span>
                     <span class="project__year">MMXXVI</span>
+                    <span class="project__count">01 / 03</span>
                 </div>
 
-                <div class="project__content">
-                    <h3 class="project__title">42 ELO Leaderboard</h3>
-                    <p class="project__subtitle">Competitive rankings system for 42 Heilbronn</p>
+                <div class="project__grid">
+                    <div class="project__info">
+                        <h3 class="project__title">42 ELO Leaderboard</h3>
+                        <p class="project__sub">Competitive rankings system for 42 Heilbronn</p>
 
-                    <dl class="project__metrics">
-                        <div class="project__metric">
-                            <dt class="project__metric-label">Avg response</dt>
-                            <dd class="project__metric-value project__metric-value--accent">30ms</dd>
-                        </div>
-                        <div class="project__metric">
-                            <dt class="project__metric-label">Uptime</dt>
-                            <dd class="project__metric-value">99.9%</dd>
-                        </div>
-                        <div class="project__metric">
-                            <dt class="project__metric-label">Query target</dt>
-                            <dd class="project__metric-value">&lt;100<span style="font-size: 0.75em;">ms</span></dd>
-                        </div>
-                    </dl>
+                        <dl class="project__metrics">
+                            <div class="project__metric">
+                                <dt>Avg response</dt>
+                                <dd class="metric--accent">30ms</dd>
+                            </div>
+                            <div class="project__metric">
+                                <dt>Uptime</dt>
+                                <dd>99.9%</dd>
+                            </div>
+                            <div class="project__metric">
+                                <dt>Query target</dt>
+                                <dd>&lt;100ms</dd>
+                            </div>
+                        </dl>
 
-                    <details class="project__details-dropdown">
-                        <summary class="project__summary">
-                            <svg class="project__summary-chevron" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2 L10 7 L4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            <p>High-performance ELO ranking system in Go and PostgreSQL, handling real-time match submissions with live leaderboards and historical data.</p>
-                        </summary>
+                        <details class="project__dropdown">
+                            <summary class="project__summary">
+                                <svg class="project__chevron" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 2 L10 7 L4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <p>High-performance ELO ranking system in Go and PostgreSQL, handling real-time match submissions with live leaderboards and historical data.</p>
+                            </summary>
+                            <div class="project__desc">
+                                <p><strong>Problem:</strong> The 42 Heilbronn community needed a competitive ranking system to track student tournament matches.</p>
+                                <p><strong>Solution:</strong> I built a complete ELO ranking system in Go with PostgreSQL, optimized from the ground up for performance. Go's concurrency primitives made it natural to handle simultaneous match submissions and API requests, while careful <strong>database optimization</strong> techniques ensured queries stayed fast even as the dataset grew. The backend processes real-time match updates and serves a React frontend with live leaderboards, detailed player profiles, and historical match data.</p>
+                                <p><strong>Technical Approach:</strong> Composite indexes on frequently-queried columns, optimized join patterns to reduce query execution time, and Redis for cached ranking calculations. Go's goroutines handle concurrent request processing cleanly — each match update is processed independently. I applied profiling throughout development to identify and eliminate bottlenecks. Similar optimization patterns appear in other <a href="#work">systems projects</a> like the <a href="https://github.com/nweber23/miniRT" target="_blank" rel="noopener noreferrer">raytracer</a>, where every algorithmic decision has direct performance implications.</p>
+                                <p><strong>Results &amp; Learnings:</strong> The system achieves 30ms average response times and maintains 99.9% uptime across tournament seasons. <strong>Query optimization</strong> and profiling-driven development are non-negotiable for systems that prioritize performance.</p>
+                            </div>
+                        </details>
 
-                        <div class="project__description">
-                            <p><strong>Problem:</strong> The 42 Heilbronn community needed a competitive ranking system to track student tournament matches.</p>
+                        <dl class="project__details">
+                            <div class="project__detail">
+                                <dt>Stack</dt>
+                                <dd>Go · TypeScript · React · PostgreSQL</dd>
+                            </div>
+                            <div class="project__detail">
+                                <dt>Role</dt>
+                                <dd>Full implementation</dd>
+                            </div>
+                            <div class="project__detail">
+                                <dt>Demo</dt>
+                                <dd><a href="https://eloleaderboard.de" target="_blank" rel="noopener noreferrer">eloleaderboard.de</a></dd>
+                            </div>
+                            <div class="project__detail">
+                                <dt>Source</dt>
+                                <dd><a href="https://github.com/nweber23/42_ELO_Leaderboard" target="_blank" rel="noopener noreferrer">github.com/nweber23</a></dd>
+                            </div>
+                        </dl>
 
-                            <p><strong>Solution:</strong> I built a complete ELO ranking system in Go with PostgreSQL, optimized from the ground up for performance. Go's concurrency primitives made it natural to handle simultaneous match submissions and API requests, while careful <strong>database optimization</strong> techniques ensured queries stayed fast even as the dataset grew. The backend processes real-time match updates and serves a React frontend with live leaderboards, detailed player profiles, and historical match data.</p>
-
-                            <p><strong>Technical Approach:</strong> Composite indexes on frequently-queried columns, optimized join patterns to reduce query execution time, and Redis for cached ranking calculations. Go's goroutines handle concurrent request processing cleanly — each match update is processed independently. I applied profiling throughout development to identify and eliminate bottlenecks. Similar optimization patterns appear in other <a href="#work">systems projects</a> like the <a href="https://github.com/nweber23/miniRT" target="_blank" rel="noopener">raytracer</a>, where every algorithmic decision has direct performance implications.</p>
-
-                            <p><strong>Results & Learnings:</strong> The system achieves 30ms average response times and maintains 99.9% uptime across tournament seasons. <strong>Query optimization</strong> and profiling-driven development are non-negotiable for systems that prioritize performance. Thoughtful architectural choices at scale make the difference between a system that handles growth gracefully and one that crumbles under its own success.</p>
+                        <div class="project__related">
+                            <p class="project__related-label">Related</p>
+                            <ul role="list">
+                                <li><a href="#project-minirt">miniRT — Low-level optimization for high-performance systems</a></li>
+                                <li><a href="#project-minishell">minishell — Unix fundamentals and process management</a></li>
+                            </ul>
                         </div>
-                    </details>
-
-                    <dl class="project__details">
-                        <div class="project__detail">
-                            <dt>Stack</dt>
-                            <dd>Go · TypeScript · React · PostgreSQL</dd>
-                        </div>
-                        <div class="project__detail">
-                            <dt>Role</dt>
-                            <dd>Full implementation</dd>
-                        </div>
-                        <div class="project__detail">
-                            <dt>Demo</dt>
-                            <dd><a href="https://eloleaderboard.de" target="_blank" rel="noopener">eloleaderboard.de</a></dd>
-                        </div>
-                        <div class="project__detail">
-                            <dt>Source</dt>
-                            <dd><a href="https://github.com/nweber23/42_ELO_Leaderboard" target="_blank" rel="noopener">github.com/nweber23</a></dd>
-                        </div>
-                    </dl>
-
-                    <div class="project__related">
-                        <h4 class="project__related-title">Related</h4>
-                        <ul class="project__related-list">
-                            <li><a href="#project-minirt">miniRT — Low-level optimization for high-performance systems</a></li>
-                            <li><a href="#project-minishell">minishell — Unix fundamentals and process management</a></li>
-                        </ul>
                     </div>
-                </div>
 
-                <figure class="project__figure">
-                    <img src="assets/42_ELO_Leaderboard.webp" alt="42 ELO Leaderboard competitive ranking interface with player ratings and match history" class="project__image" fetchpriority="high" width="1231" height="749">
-                    <figcaption class="project__caption">
-                        <span>Fig. 01 — Leaderboard interface</span>
-                        <span class="project__caption-tag">live</span>
-                    </figcaption>
-                </figure>
+                    <figure class="project__figure">
+                        <div class="project__img-wrap">
+                            <img src="assets/42_ELO_Leaderboard.webp" alt="42 ELO Leaderboard competitive ranking interface with player ratings and match history" class="project__img" fetchpriority="high" width="1231" height="749">
+                        </div>
+                        <figcaption class="project__caption">
+                            <span>Fig. 01 — Leaderboard interface</span>
+                            <span class="project__caption-tag">live</span>
+                        </figcaption>
+                    </figure>
+                </div>
             </article>
 
-            <div class="divider" aria-hidden="true">
-                <span class="divider__text">§ 02</span>
-            </div>
+            <div class="work-divider" aria-hidden="true"><span>02</span></div>
 
-            <article class="project project--split" id="project-minirt" data-reveal>
-                <span class="project__ghost" aria-hidden="true">02</span>
-
-                <div class="project__meta">
-                    <span class="project__index">02 / 03</span>
+            <article class="project" id="project-minirt" data-reveal>
+                <div class="project__index-row">
+                    <span class="project__num" aria-hidden="true">02</span>
                     <span class="project__year">MMXXV</span>
+                    <span class="project__count">02 / 03</span>
                 </div>
 
-                <div class="project__content">
-                    <h3 class="project__title">miniRT</h3>
-                    <p class="project__subtitle">High-performance raytracer in C</p>
+                <div class="project__grid">
+                    <div class="project__info">
+                        <h3 class="project__title">miniRT</h3>
+                        <p class="project__sub">High-performance raytracer in C</p>
 
-                    <dl class="project__metrics">
-                        <div class="project__metric">
-                            <dt class="project__metric-label">Frame rate</dt>
-                            <dd class="project__metric-value project__metric-value--accent">120+<span style="font-size: 0.65em;"> fps</span></dd>
+                        <dl class="project__metrics">
+                            <div class="project__metric">
+                                <dt>Frame rate</dt>
+                                <dd class="metric--accent">120+ fps</dd>
+                            </div>
+                            <div class="project__metric">
+                                <dt>Speed-up</dt>
+                                <dd>80×</dd>
+                            </div>
+                            <div class="project__metric">
+                                <dt>SIMD</dt>
+                                <dd>SSE/AVX</dd>
+                            </div>
+                        </dl>
+
+                        <details class="project__dropdown">
+                            <summary class="project__summary">
+                                <svg class="project__chevron" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 2 L10 7 L4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <p>120+ FPS raytracer built on SIMD vectorization, cache-efficient data structures, and tile-based multi-threaded rendering.</p>
+                            </summary>
+                            <div class="project__desc">
+                                <p><strong>Problem:</strong> I started building a basic raytracer in C to understand computer graphics fundamentals. The initial naive implementation achieved only 1–5 FPS when rendering complex scenes with multiple light sources.</p>
+                                <p><strong>Solution:</strong> I rebuilt the core rendering loop with <strong>C systems programming</strong> principles at its foundation. The approach combined SIMD vectorization using SSE/AVX intrinsics for batch vector operations, cache-efficient data structures using structure-of-arrays layouts instead of array-of-structures, and multi-threaded tile-based rendering to leverage multiple CPU cores.</p>
+                                <p><strong>Technical Approach:</strong> Three pillars: vectorization, memory hierarchy, parallelism. SSE intrinsics process 4 floats in parallel, AVX handles 8. I restructured data to exploit CPU cache locality by storing all X-coordinates contiguously, then Y, then Z. The renderer divides the framebuffer into tiles, with each thread processing one tile independently. Profiling with <code>perf</code> and cycle-accurate analysis revealed that the ray-primitive intersection test was the hottest code path.</p>
+                                <p><strong>Results &amp; Learnings:</strong> The optimized raytracer renders at 120+ FPS — an 80× improvement over the baseline. Systems programming at the graphics layer isn't just about algorithms; it's about respecting CPU cache behavior, instruction pipelines, and memory bandwidth.</p>
+                            </div>
+                        </details>
+
+                        <dl class="project__details">
+                            <div class="project__detail">
+                                <dt>Language</dt>
+                                <dd>C</dd>
+                            </div>
+                            <div class="project__detail">
+                                <dt>Concepts</dt>
+                                <dd>Linear algebra · optics simulation</dd>
+                            </div>
+                            <div class="project__detail">
+                                <dt>Source</dt>
+                                <dd><a href="https://github.com/nweber23/miniRT" target="_blank" rel="noopener noreferrer">github.com/nweber23/miniRT</a></dd>
+                            </div>
+                        </dl>
+
+                        <div class="project__related">
+                            <p class="project__related-label">Related</p>
+                            <ul role="list">
+                                <li><a href="#project-minishell">minishell — C fundamentals and Unix system calls</a></li>
+                                <li><a href="#project-elo">42 ELO Leaderboard — Concurrent systems, performance discipline</a></li>
+                            </ul>
                         </div>
-                        <div class="project__metric">
-                            <dt class="project__metric-label">Speed-up</dt>
-                            <dd class="project__metric-value">80×</dd>
-                        </div>
-                        <div class="project__metric">
-                            <dt class="project__metric-label">SIMD</dt>
-                            <dd class="project__metric-value">SSE/AVX</dd>
-                        </div>
-                    </dl>
-
-                    <details class="project__details-dropdown">
-                        <summary class="project__summary">
-                            <svg class="project__summary-chevron" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2 L10 7 L4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            <p>120+ FPS raytracer built on SIMD vectorization, cache-efficient data structures, and tile-based multi-threaded rendering.</p>
-                        </summary>
-
-                        <div class="project__description">
-                            <p><strong>Problem:</strong> I started building a basic raytracer in C to understand computer graphics fundamentals — ray-sphere intersections, Phong lighting, reflections, and shadows. The initial naive implementation achieved only 1–5 FPS when rendering complex scenes with multiple light sources. For real-time interaction, I needed at least 60+ FPS. This bottleneck wasn't about the algorithm's correctness; it was a systems programming challenge demanding low-level optimization expertise.</p>
-
-                            <p><strong>Solution:</strong> I rebuilt the core rendering loop with <strong>C systems programming</strong> principles at its foundation. The approach combined SIMD vectorization using SSE/AVX intrinsics for batch vector operations, cache-efficient data structures using structure-of-arrays layouts instead of array-of-structures, and multi-threaded tile-based rendering to leverage multiple CPU cores. Every design decision prioritized <strong>high-performance</strong> execution on actual hardware.</p>
-
-                            <p><strong>Technical Approach:</strong> Three pillars: vectorization, memory hierarchy, parallelism. SSE intrinsics process 4 floats in parallel, AVX handles 8. I restructured data to exploit CPU cache locality by storing all X-coordinates contiguously, then Y, then Z, enabling prefetcher-friendly access patterns. The renderer divides the framebuffer into tiles, with each thread processing one tile independently. Profiling with <code>perf</code> and cycle-accurate analysis revealed that the ray-primitive intersection test was the hottest code path — this became the focus of aggressive <strong>optimization techniques</strong>. Shares architectural discipline with the <a href="#work">ELO leaderboard</a> and <a href="https://github.com/nweber23/minishell" target="_blank" rel="noopener">minishell</a> projects.</p>
-
-                            <p><strong>Results & Learnings:</strong> The optimized raytracer renders at 120+ FPS — an 80× improvement over the baseline. Complex scenes with 10+ light sources maintain interactive frame rates. Systems programming at the graphics layer isn't just about algorithms; it's about respecting CPU cache behavior, instruction pipelines, and memory bandwidth. Profiling-driven optimization revealed counterintuitive insights: removing apparent "optimizations" that stalled the CPU pipeline actually made code faster.</p>
-                        </div>
-                    </details>
-
-                    <dl class="project__details">
-                        <div class="project__detail">
-                            <dt>Language</dt>
-                            <dd>C</dd>
-                        </div>
-                        <div class="project__detail">
-                            <dt>Concepts</dt>
-                            <dd>Linear algebra · optics simulation</dd>
-                        </div>
-                        <div class="project__detail">
-                            <dt>Source</dt>
-                            <dd><a href="https://github.com/nweber23/miniRT" target="_blank" rel="noopener">github.com/nweber23/miniRT</a></dd>
-                        </div>
-                    </dl>
-
-                    <div class="project__related">
-                        <h4 class="project__related-title">Related</h4>
-                        <ul class="project__related-list">
-                            <li><a href="#project-minishell">minishell — C fundamentals and Unix system calls</a></li>
-                            <li><a href="#project-elo">42 ELO Leaderboard — Concurrent systems, performance discipline</a></li>
-                        </ul>
                     </div>
-                </div>
 
-                <figure class="project__figure project__figure--offset">
-                    <img src="assets/minirt.webp" alt="miniRT raytracer C implementation with sphere rendering, shadows, reflections and Phong lighting" class="project__image" loading="lazy" width="1912" height="1071">
-                    <figcaption class="project__caption">
-                        <span>Fig. 02 — Rendered output</span>
-                        <span class="project__caption-tag">120 fps</span>
-                    </figcaption>
-                </figure>
+                    <figure class="project__figure project__figure--flip">
+                        <div class="project__img-wrap">
+                            <img src="assets/minirt.webp" alt="miniRT raytracer C implementation with sphere rendering, shadows, reflections and Phong lighting" class="project__img" loading="lazy" width="1912" height="1071">
+                        </div>
+                        <figcaption class="project__caption">
+                            <span>Fig. 02 — Rendered output</span>
+                            <span class="project__caption-tag">120 fps</span>
+                        </figcaption>
+                    </figure>
+                </div>
             </article>
 
-            <div class="divider" aria-hidden="true">
-                <span class="divider__text">§ 03</span>
-            </div>
+            <div class="work-divider" aria-hidden="true"><span>03</span></div>
 
             <article class="project project--compact" id="project-minishell" data-reveal>
-                <span class="project__ghost" aria-hidden="true">03</span>
-
-                <div class="project__meta">
-                    <span class="project__index">03 / 03</span>
+                <div class="project__index-row">
+                    <span class="project__num" aria-hidden="true">03</span>
                     <span class="project__year">MMXXV</span>
+                    <span class="project__count">03 / 03</span>
                 </div>
 
-                <div class="project__content">
-                    <h3 class="project__title">minishell</h3>
-                    <p class="project__subtitle">POSIX-compliant shell in C</p>
+                <div class="project__grid project__grid--compact">
+                    <div class="project__info">
+                        <h3 class="project__title">minishell</h3>
+                        <p class="project__sub">POSIX-compliant shell in C</p>
 
-                    <dl class="project__metrics">
-                        <div class="project__metric">
-                            <dt class="project__metric-label">Standard</dt>
-                            <dd class="project__metric-value project__metric-value--accent">POSIX</dd>
+                        <dl class="project__metrics">
+                            <div class="project__metric">
+                                <dt>Standard</dt>
+                                <dd class="metric--accent">POSIX</dd>
+                            </div>
+                            <div class="project__metric">
+                                <dt>Primitives</dt>
+                                <dd>fork/exec</dd>
+                            </div>
+                            <div class="project__metric">
+                                <dt>Signals</dt>
+                                <dd>sigaction</dd>
+                            </div>
+                        </dl>
+
+                        <details class="project__dropdown">
+                            <summary class="project__summary">
+                                <svg class="project__chevron" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 2 L10 7 L4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <p>Unix shell from scratch — process management, file descriptors, pipes, I/O redirection, environment expansion, signal handling.</p>
+                            </summary>
+                            <div class="project__desc">
+                                <p><strong>Problem:</strong> Understanding how a Unix shell works requires deep knowledge of operating system fundamentals. Building a shell from scratch meant confronting these abstraction layers directly.</p>
+                                <p><strong>Solution:</strong> A POSIX-compliant shell in C that replicates bash's core functionality. The shell handles the complete command execution pipeline: lexical analysis and parsing transform user input into an abstract syntax tree, and an execution engine processes these tokens using genuine Unix <strong>system calls</strong>.</p>
+                                <p><strong>Technical Approach:</strong> Three critical <strong>systems programming</strong> concepts. First, process management via fork and exec. Second, file descriptor manipulation through dup2() for pipes and I/O redirection. Third, signal handling with sigaction() to prevent zombie processes. The parsing phase uses recursive descent techniques.</p>
+                                <p><strong>Results &amp; Learnings:</strong> Building minishell transformed my understanding of Unix architecture — shells are orchestrators of the OS, not autonomous entities. Hands-on exploration of process management, file descriptors, and IPC deepened my appreciation for why <strong>low-level programming</strong> discipline matters.</p>
+                            </div>
+                        </details>
+
+                        <dl class="project__details">
+                            <div class="project__detail">
+                                <dt>Language</dt>
+                                <dd>C</dd>
+                            </div>
+                            <div class="project__detail">
+                                <dt>Focus</dt>
+                                <dd>Unix internals · syscalls</dd>
+                            </div>
+                            <div class="project__detail">
+                                <dt>Source</dt>
+                                <dd><a href="https://github.com/nweber23/minishell" target="_blank" rel="noopener noreferrer">github.com/nweber23/minishell</a></dd>
+                            </div>
+                        </dl>
+
+                        <div class="project__related">
+                            <p class="project__related-label">Related</p>
+                            <ul role="list">
+                                <li><a href="#project-minirt">miniRT — C optimization at the system level</a></li>
+                                <li><a href="#project-elo">42 ELO Leaderboard — Concurrent systems with performance discipline</a></li>
+                            </ul>
                         </div>
-                        <div class="project__metric">
-                            <dt class="project__metric-label">Primitives</dt>
-                            <dd class="project__metric-value">fork/exec</dd>
-                        </div>
-                        <div class="project__metric">
-                            <dt class="project__metric-label">Signals</dt>
-                            <dd class="project__metric-value">sigaction</dd>
-                        </div>
-                    </dl>
-
-                    <details class="project__details-dropdown">
-                        <summary class="project__summary">
-                            <svg class="project__summary-chevron" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2 L10 7 L4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            <p>Unix shell from scratch — process management, file descriptors, pipes, I/O redirection, environment expansion, signal handling.</p>
-                        </summary>
-
-                        <div class="project__description">
-                            <p><strong>Problem:</strong> Understanding how a Unix shell works requires deep knowledge of operating system fundamentals. Most developers interact with shells as black boxes, unaware of the intricate machinery handling process spawning, signal management, and file descriptor manipulation beneath the surface. Building a shell from scratch meant confronting these abstraction layers directly.</p>
-
-                            <p><strong>Solution:</strong> A POSIX-compliant shell in C that replicates bash's core functionality. The shell handles the complete command execution pipeline: lexical analysis and parsing transform user input into an abstract syntax tree, and an execution engine processes these tokens using genuine Unix <strong>system calls</strong>. The implementation includes pipe management, input/output redirection, environment variable expansion, and comprehensive signal handling.</p>
-
-                            <p><strong>Technical Approach:</strong> Three critical <strong>systems programming</strong> concepts. First, <strong>process management</strong> via fork and exec: each command spawns a child process using fork(), which then executes the target program with exec family calls. Second, file descriptor manipulation through dup2() redirects stdin/stdout/stderr, enabling pipes and file-based I/O redirection. Third, signal handling with sigaction() ensures the shell responds correctly to SIGCHLD when child processes terminate, preventing zombie processes. The parsing phase uses recursive descent techniques. Shares architectural rigor with the <a href="https://github.com/nweber23/miniRT" target="_blank" rel="noopener">raytracer</a> and <a href="#work">ELO leaderboard</a>.</p>
-
-                            <p><strong>Results & Learnings:</strong> Building minishell transformed my understanding of Unix architecture — shells are orchestrators of the OS, not autonomous entities. Signal handling taught me why race conditions in concurrent systems are insidious: a process could exit between checking its status and reaping it. Hands-on exploration of process management, file descriptors, and IPC deepened my appreciation for why <strong>low-level programming</strong> discipline matters.</p>
-                        </div>
-                    </details>
-
-                    <dl class="project__details project__details--inline">
-                        <div class="project__detail">
-                            <dt>Language</dt>
-                            <dd>C</dd>
-                        </div>
-                        <div class="project__detail">
-                            <dt>Focus</dt>
-                            <dd>Unix internals · syscalls</dd>
-                        </div>
-                        <div class="project__detail">
-                            <dt>Source</dt>
-                            <dd><a href="https://github.com/nweber23/minishell" target="_blank" rel="noopener">github.com/nweber23/minishell</a></dd>
-                        </div>
-                    </dl>
-
-                    <div class="project__related">
-                        <h4 class="project__related-title">Related</h4>
-                        <ul class="project__related-list">
-                            <li><a href="#project-minirt">miniRT — C optimization at the system level</a></li>
-                            <li><a href="#project-elo">42 ELO Leaderboard — Concurrent systems with performance discipline</a></li>
-                        </ul>
                     </div>
-                </div>
 
-                <aside class="project__aside">
-                    <p class="project__aside-quote">"The shell is a window into the operating system's soul."</p>
-                </aside>
+                    <aside class="project__pullquote">
+                        <blockquote>
+                            <p>"The shell is a window into the operating system's soul."</p>
+                        </blockquote>
+                    </aside>
+                </div>
             </article>
         </section>
 
-        <section class="section section--about" id="about">
-            <div class="section__header">
-                <span class="section__number">02</span>
-                <h2 class="section__title"><em>About</em></h2>
-                <span class="section__count">profile</span>
+        <!-- About -->
+        <section class="section section--about" id="about" aria-labelledby="about-title">
+            <div class="section__head">
+                <h2 id="about-title" class="section__title"><em>About</em></h2>
+                <span class="section__aside">profile</span>
             </div>
 
-            <div class="about__layout">
+            <div class="about__layout" data-reveal>
                 <div class="about__lead-col">
                     <p class="about__lead">I'm at 42 Heilbronn, a peer-to-peer programming school where we learn by building real things.</p>
-
                     <p class="about__text">My passion is <a href="#project-elo">systems programming</a> — where software meets hardware. There's something satisfying about understanding how things work at the deepest level: memory, scheduling, protocols, performance.</p>
-
                     <p class="about__text">I work with <a href="#project-minishell">C and Unix</a>, <a href="#project-elo">Go for concurrent systems</a>, and TypeScript when the problem needs it. Always learning, always optimizing.</p>
                 </div>
 
-                <aside class="about__secondary">
+                <div class="about__side">
                     <div class="about__block">
                         <h3 class="about__block-title">Current focus</h3>
                         <p class="about__block-text"><a href="#project-elo">Concurrency patterns in Go</a>. Distributed systems. <a href="#project-minirt">Performance optimization</a>.</p>
                     </div>
-
                     <div class="about__block">
                         <h3 class="about__block-title">Approach</h3>
                         <p class="about__block-text">Build to understand. Understand to build better.</p>
                     </div>
-                </aside>
+                </div>
 
                 <div class="about__skills">
-                    <h3 class="about__skills-title">Technical vocabulary</h3>
-                    <ul class="about__skills-list">
+                    <p class="about__skills-title">Technical vocabulary</p>
+                    <ul class="about__skills-list" role="list">
                         <li class="about__skill">
-                            <span class="about__skill-category" data-index="01">Systems</span>
+                            <span class="about__skill-cat">Systems</span>
                             <span class="about__skill-items">C · C++ · Go</span>
                         </li>
                         <li class="about__skill">
-                            <span class="about__skill-category" data-index="02">Web</span>
+                            <span class="about__skill-cat">Web</span>
                             <span class="about__skill-items">TypeScript · React · Node</span>
                         </li>
                         <li class="about__skill">
-                            <span class="about__skill-category" data-index="03">Data</span>
+                            <span class="about__skill-cat">Data</span>
                             <span class="about__skill-items">PostgreSQL · Redis</span>
                         </li>
                         <li class="about__skill">
-                            <span class="about__skill-category" data-index="04">Tools</span>
+                            <span class="about__skill-cat">Tools</span>
                             <span class="about__skill-items">Linux · Docker · Git</span>
                         </li>
                     </ul>
                 </div>
             </div>
 
-            <div class="about__aside-full">
+            <div class="about__quote-band" data-reveal>
                 <blockquote class="about__quote">
                     <p>The best way to learn is to build, break, and rebuild.</p>
                 </blockquote>
             </div>
         </section>
 
-        <section class="section section--contact" id="contact">
-            <div class="section__header">
-                <span class="section__number">03</span>
-                <h2 class="section__title"><em>Contact</em></h2>
-                <span class="section__count">available</span>
+        <!-- Contact -->
+        <section class="section section--contact" id="contact" aria-labelledby="contact-title">
+            <div class="section__head">
+                <h2 id="contact-title" class="section__title"><em>Contact</em></h2>
+                <span class="section__aside">available</span>
             </div>
 
-            <div class="contact__layout">
+            <div class="contact__layout" data-reveal>
                 <div class="contact__primary">
                     <h3 class="contact__heading">
-                        <span class="contact__heading-line">Let's discuss</span>
-                        <span class="contact__heading-line contact__heading-line--emphasis">your project</span>
+                        <span>Let's discuss</span>
+                        <span class="contact__heading--em">your project</span>
                     </h3>
-
                     <p class="contact__text">Let's work on systems, performance, and problems where understanding the fundamentals makes a real difference.</p>
                 </div>
 
-                <address class="contact__info">
+                <address class="contact__links">
                     <div class="contact__item">
                         <span class="contact__label">Email</span>
-                        <a href="mailto:contact@nweber.me" class="contact__value">contact@nweber.me</a>
+                        <a href="mailto:contact@nweber.me" class="contact__link">contact@nweber.me</a>
                     </div>
-
                     <div class="contact__item">
                         <span class="contact__label">GitHub</span>
-                        <a href="https://github.com/nweber23" target="_blank" rel="noopener" class="contact__value">github.com/nweber23</a>
+                        <a href="https://github.com/nweber23" target="_blank" rel="noopener noreferrer" class="contact__link">github.com/nweber23</a>
                     </div>
-
                     <div class="contact__item">
                         <span class="contact__label">42 Intra</span>
-                        <a href="https://profile.intra.42.fr/users/nweber" target="_blank" rel="noopener" class="contact__value">intra.42.fr/nweber</a>
+                        <a href="https://profile.intra.42.fr/users/nweber" target="_blank" rel="noopener noreferrer" class="contact__link">intra.42.fr/nweber</a>
                     </div>
-
                     <div class="contact__item">
                         <span class="contact__label">LinkedIn</span>
-                        <a href="https://www.linkedin.com/in/niklas-weber-488576329/" target="_blank" rel="noopener" class="contact__value">linkedin.com/in/niklas-weber</a>
+                        <a href="https://www.linkedin.com/in/niklas-weber-488576329/" target="_blank" rel="noopener noreferrer" class="contact__link">linkedin.com/in/niklas-weber</a>
                     </div>
                 </address>
 
@@ -634,15 +594,17 @@
     </main>
 
     <footer class="footer">
-        <div class="footer__content">
-            <span class="footer__copyright">© 2026 · Niklas Weber</span>
+        <div class="footer__left">
+            <span class="footer__copy">© 2026 · Niklas Weber</span>
             <span class="footer__note">Hand-built with HTML, CSS, and vanilla JS</span>
         </div>
-        <div class="footer__links">
+        <div class="footer__right">
             <a href="imprint.html" class="footer__link">Imprint</a>
         </div>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
     <script defer src="script.min.js"></script>
     <script data-goatcounter="https://mattz.goatcounter.com/count"
             async src="//gc.zgo.at/count.js"></script>

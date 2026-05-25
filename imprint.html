@@ -8,7 +8,7 @@
 
     <meta name="description" content="Legal notice and imprint for Niklas Weber's portfolio website. Information according to German Telemedia Act (TMG).">
     <meta name="robots" content="noindex, follow">
-    <meta name="last-modified" content="2026-04-17">
+    <meta name="last-modified" content="2026-05-23">
     <meta name="theme-color" content="#F3EFE6">
     <link rel="canonical" href="https://nweber.me/imprint.html">
 
@@ -17,10 +17,11 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://nweber.me/imprint.html">
 
-    <link rel="stylesheet" href="styles.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..700,0..100;1,9..144,400..700,0..100&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.min.css">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..700,0..100;1,9..144,400..700,0..100&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..700,0..100;1,9..144,400..700,0..100&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap"></noscript>
 
     <script type="application/ld+json">
     {
@@ -35,75 +36,49 @@
 </head>
 <body>
     <a href="#main" class="skip-link">Skip to content</a>
-
     <div class="scroll-progress" aria-hidden="true"></div>
     <div class="grain" aria-hidden="true"></div>
 
-    <div class="frame" aria-hidden="true">
-        <div class="frame-line frame-line--top"></div>
-        <div class="frame-line frame-line--bottom"></div>
-        <div class="frame-line frame-line--left"></div>
-        <div class="frame-line frame-line--right"></div>
-        <div class="frame-corner frame-corner--tl"></div>
-        <div class="frame-corner frame-corner--tr"></div>
-        <div class="frame-corner frame-corner--bl"></div>
-        <div class="frame-corner frame-corner--br"></div>
-    </div>
-
     <nav class="nav" aria-label="Main navigation">
+        <ul class="nav__list" role="list">
+            <li><a href="index.html" class="nav__link">← Back</a></li>
+        </ul>
+
+        <div class="nav__right">
+            <span class="nav__time" aria-label="Current time in CET">—</span>
+        </div>
+
         <button class="nav__toggle" aria-label="Open menu" aria-expanded="false">
-            <span class="nav__toggle-line"></span>
-            <span class="nav__toggle-line"></span>
+            <span class="nav__toggle-bar"></span>
+            <span class="nav__toggle-bar"></span>
         </button>
-
-        <div class="nav__center">
-            <div class="nav__index">
-                <span class="nav__index-label">Section</span>
-                <span class="nav__index-number">§</span>
-            </div>
-
-            <ul class="nav__list">
-                <li><a href="index.html" class="nav__link" data-index="←">Back</a></li>
-            </ul>
-        </div>
-
-        <div class="nav__meta">
-            <div class="nav__meta-row">
-                <span class="nav__time">—</span>
-                <span>CET</span>
-            </div>
-            <span>Heilbronn, DE</span>
-        </div>
     </nav>
 
-    <main class="main" id="main">
+    <main id="main" class="main">
         <nav class="breadcrumb" aria-label="Breadcrumb">
             <ol class="breadcrumb__list">
                 <li class="breadcrumb__item">
                     <a href="/" class="breadcrumb__link">home</a>
                 </li>
-                <li class="breadcrumb__item">
-                    <span class="breadcrumb__current">imprint</span>
+                <li class="breadcrumb__item breadcrumb__sep">
+                    <span class="breadcrumb__current" aria-current="page">imprint</span>
                 </li>
             </ol>
         </nav>
 
-        <header class="header header--compact">
-            <h1 class="header__title">
-                <span class="header__title-line">Legal</span>
-                <span class="header__title-line header__title-line--indent">Notice</span>
+        <header class="hero hero--compact">
+            <h1 class="hero__name">
+                <span class="hero__name-line">Legal</span>
+                <span class="hero__name-line hero__name-line--shift">Notice</span>
             </h1>
-
-            <div class="header__description">
-                <p>Imprint according to § 5 TMG (German Telemedia Act)</p>
-            </div>
+            <div class="hero__rule" aria-hidden="true"></div>
+            <p class="hero__desc">Imprint according to § 5 TMG (German Telemedia Act)</p>
         </header>
 
-        <section class="section section--imprint">
-            <div class="section__header">
-                <span class="section__number">01</span>
-                <h2 class="section__title">Information according to <em>§ 5 TMG</em></h2>
-                <span class="section__count">owner</span>
+        <section class="section section--imprint" aria-labelledby="imprint-info">
+            <div class="section__head">
+                <h2 id="imprint-info" class="section__title">Information according to <em>§ 5 TMG</em></h2>
+                <span class="section__aside">owner</span>
             </div>
 
             <div class="imprint__layout">
@@ -129,11 +104,10 @@
             </div>
         </section>
 
-        <section class="section section--imprint">
-            <div class="section__header">
-                <span class="section__number">02</span>
-                <h2 class="section__title">Responsible for <em>Content</em></h2>
-                <span class="section__count">§ 55 Abs. 2 RStV</span>
+        <section class="section section--imprint" aria-labelledby="imprint-content">
+            <div class="section__head">
+                <h2 id="imprint-content" class="section__title">Responsible for <em>Content</em></h2>
+                <span class="section__aside">§ 55 Abs. 2 RStV</span>
             </div>
 
             <div class="imprint__layout">
@@ -149,11 +123,10 @@
             </div>
         </section>
 
-        <section class="section section--imprint">
-            <div class="section__header">
-                <span class="section__number">03</span>
-                <h2 class="section__title"><em>Disclaimer</em></h2>
-                <span class="section__count">liability</span>
+        <section class="section section--imprint" aria-labelledby="imprint-disclaimer">
+            <div class="section__head">
+                <h2 id="imprint-disclaimer" class="section__title"><em>Disclaimer</em></h2>
+                <span class="section__aside">liability</span>
             </div>
 
             <div class="imprint__layout imprint__layout--full">
@@ -179,12 +152,12 @@
     </main>
 
     <footer class="footer">
-        <div class="footer__content">
-            <span class="footer__copyright">© 2026 · Niklas Weber</span>
+        <div class="footer__left">
+            <span class="footer__copy">© 2026 · Niklas Weber</span>
             <span class="footer__note">Hand-built with HTML, CSS, and vanilla JS</span>
         </div>
-        <div class="footer__links">
-            <a href="index.html" class="footer__link">← Back to index</a>
+        <div class="footer__right">
+            <a href="index.html" class="footer__link">← Index</a>
         </div>
     </footer>
 
