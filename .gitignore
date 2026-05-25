@@ -21,4 +21,5 @@ ssl/
 # Claude Code
 .claude
 .superpowers
+.playwright-mcp
 docs/superpowers/
