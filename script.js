@@ -1,6 +1,6 @@
 /**
  * Niklas Weber — Portfolio
- * Dark Editorial · 2026
+ * Technical Editorial · 2026
  */
 
 (function () {
@@ -167,55 +167,142 @@
         }
     }
 
-    /* ===== GSAP animations ===== */
-    class GSAPAnimations {
+    /* ===== Interactive hero — pointer-reactive name + glow ===== */
+    class HeroInteractive {
         constructor() {
             if (prefersReducedMotion) return;
-            if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+            if (!window.matchMedia('(pointer: fine)').matches) return;
 
-            gsap.registerPlugin(ScrollTrigger);
-            this.animateImages();
-            this.animateSectionTitles();
+            this.hero = document.querySelector('.hero');
+            this.name = document.querySelector('.hero__name');
+            if (!this.hero || !this.name) return;
+
+            this.chars = [];
+            this.splitChars();
+            if (!this.chars.length) return;
+
+            this.gx = 50; this.gy = 40;     // current glow position (%)
+            this.tgx = 50; this.tgy = 40;   // target glow position (%)
+            this.px = -1; this.py = -1;     // pointer (viewport px), -1 = inactive
+            this.running = false;
+            this.RADIUS = 240;
+
+            this.measure();
+            this.hero.addEventListener('pointerenter', () => this.measure(), { passive: true });
+            this.hero.addEventListener('pointermove', e => this.onMove(e), { passive: true });
+            this.hero.addEventListener('pointerleave', () => this.onLeave(), { passive: true });
+            window.addEventListener('resize', () => this.measure(), { passive: true });
         }
 
-        animateImages() {
-            document.querySelectorAll('.project__img-wrap').forEach(wrap => {
-                const img = wrap.querySelector('.project__img');
-                if (!img) return;
-
-                gsap.fromTo(img,
-                    { scale: 0.92, filter: 'grayscale(25%) contrast(1.0) brightness(0.85)' },
-                    {
-                        scale: 1.0,
-                        filter: 'grayscale(15%) contrast(1.05) brightness(0.92)',
-                        ease: 'power2.out',
-                        scrollTrigger: {
-                            trigger: wrap,
-                            start: 'top 90%',
-                            end: 'top 20%',
-                            scrub: 1.2
-                        }
-                    }
-                );
+        splitChars() {
+            this.name.querySelectorAll('.hero__name-line').forEach(line => {
+                const base = line.classList.contains('hero__name-line--shift') ? 80 : 20;
+                const text = line.textContent;
+                line.textContent = '';
+                for (const ch of text) {
+                    const span = document.createElement('span');
+                    span.className = 'hero__char';
+                    span.textContent = ch;
+                    span.dataset.base = base;
+                    line.appendChild(span);
+                    this.chars.push(span);
+                }
             });
         }
 
-        animateSectionTitles() {
-            document.querySelectorAll('.section__title').forEach(title => {
-                gsap.fromTo(title,
-                    { opacity: 0, y: 24 },
-                    {
-                        opacity: 1, y: 0,
-                        duration: 0.7,
-                        ease: 'power3.out',
-                        scrollTrigger: {
-                            trigger: title,
-                            start: 'top 85%',
-                            toggleActions: 'play none none none'
-                        }
-                    }
-                );
+        measure() {
+            this.centers = this.chars.map(span => {
+                const r = span.getBoundingClientRect();
+                return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
             });
+        }
+
+        onMove(e) {
+            const rect = this.hero.getBoundingClientRect();
+            this.px = e.clientX;
+            this.py = e.clientY;
+            this.tgx = ((e.clientX - rect.left) / rect.width) * 100;
+            this.tgy = ((e.clientY - rect.top) / rect.height) * 100;
+            this.start();
+        }
+
+        onLeave() {
+            this.px = -1; this.py = -1;
+            this.tgx = 50; this.tgy = 40;
+            this.start();
+        }
+
+        start() {
+            if (this.running) return;
+            this.running = true;
+            const tick = () => {
+                this.gx += (this.tgx - this.gx) * 0.12;
+                this.gy += (this.tgy - this.gy) * 0.12;
+                this.hero.style.setProperty('--glow-x', this.gx.toFixed(2) + '%');
+                this.hero.style.setProperty('--glow-y', this.gy.toFixed(2) + '%');
+                this.updateChars();
+
+                const settled = Math.abs(this.tgx - this.gx) < 0.05 &&
+                                Math.abs(this.tgy - this.gy) < 0.05;
+                if (settled && this.px === -1) { this.running = false; return; }
+                requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+        }
+
+        updateChars() {
+            for (let i = 0; i < this.chars.length; i++) {
+                const base = +this.chars[i].dataset.base;
+                let wght = 460;
+                if (this.px >= 0 && this.centers[i]) {
+                    const c = this.centers[i];
+                    const d = Math.hypot(this.px - c.x, this.py - c.y);
+                    const t = Math.max(0, 1 - d / this.RADIUS);
+                    wght = 440 + t * 260;   // 440 → 700 near cursor
+                }
+                this.chars[i].style.fontVariationSettings =
+                    '"opsz" 144, "SOFT" ' + base + ', "wght" ' + Math.round(wght);
+            }
+        }
+    }
+
+    /* ===== Metric count-up on reveal ===== */
+    class MetricCountUp {
+        constructor() {
+            const projects = document.querySelectorAll('.project');
+            if (!projects.length) return;
+            const obs = new IntersectionObserver(entries => {
+                entries.forEach(e => {
+                    if (!e.isIntersecting) return;
+                    e.target.querySelectorAll('.project__metric dd').forEach(dd => this.animate(dd));
+                    obs.unobserve(e.target);
+                });
+            }, { threshold: 0.25 });
+            projects.forEach(p => obs.observe(p));
+        }
+
+        animate(dd) {
+            const raw = dd.textContent.trim();
+            const m = raw.match(/^(\D*?)(\d+(?:\.\d+)?)(.*)$/s);
+            if (!m) return;                       // no numeric portion — leave untouched
+            if (prefersReducedMotion) { dd.textContent = raw; return; }
+
+            const prefix = m[1];
+            const target = parseFloat(m[2]);
+            const suffix = m[3];
+            const decimals = (m[2].split('.')[1] || '').length;
+            const dur = 1100;
+            const ease = t => 1 - Math.pow(1 - t, 3);
+            const t0 = performance.now();
+
+            const step = now => {
+                const t = Math.min(1, (now - t0) / dur);
+                dd.textContent = prefix + (target * ease(t)).toFixed(decimals) + suffix;
+                if (t < 1) requestAnimationFrame(step);
+                else dd.textContent = raw;
+            };
+            dd.textContent = prefix + (0).toFixed(decimals) + suffix;
+            requestAnimationFrame(step);
         }
     }
 
@@ -229,7 +316,8 @@
         new SmoothScroll();
         new MobileNav();
         new ExternalLinks();
-        new GSAPAnimations();
+        new HeroInteractive();
+        new MetricCountUp();
     }
 
     if (document.readyState === 'loading') {

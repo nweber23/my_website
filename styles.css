@@ -25,9 +25,15 @@
 
     --ease-out:   cubic-bezier(0.23, 1, 0.32, 1);
     --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-expo:  cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-quint: cubic-bezier(0.22, 1, 0.36, 1);
     --dur-fast:   0.18s;
     --dur-med:    0.38s;
     --dur-slow:   0.7s;
+
+    /* hero pointer glow (updated by JS, lerped) */
+    --glow-x: 50%;
+    --glow-y: 40%;
 }
 
 *, *::before, *::after {
@@ -64,6 +70,14 @@ body {
 img { max-width: 100%; height: auto; display: block; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+
+/* Keyboard focus — visible, on-brand ring; suppressed for pointer interaction */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+:focus:not(:focus-visible) { outline: none; }
+.btn:focus-visible { outline-offset: 4px; }
 
 /* ===== Skip link ===== */
 
@@ -298,12 +312,13 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .hero::before {
     content: "";
     position: absolute;
-    top: 40%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 70%; height: 60%;
-    background: radial-gradient(ellipse at center, rgba(185, 71, 41, 0.05) 0%, transparent 70%);
+    inset: 0;
+    background:
+        radial-gradient(38rem 30rem at var(--glow-x) var(--glow-y),
+            rgba(185, 71, 41, 0.07) 0%, transparent 62%);
     pointer-events: none;
     z-index: 0;
+    transition: background 0.45s ease;
 }
 
 .hero__eyebrow {
@@ -404,6 +419,53 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
     position: relative;
     z-index: 1;
     animation: fadeUp 0.6s var(--ease-out) 0.68s backwards;
+}
+
+/* Hero call-to-action */
+.hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.875rem 1rem;
+    margin-top: 2.5rem;
+    position: relative;
+    z-index: 1;
+    animation: fadeUp 0.6s var(--ease-out) 0.8s backwards;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    padding: 0.85rem 1.35rem;
+    border: 1px solid var(--text);
+    transition: background var(--dur-med) var(--ease-expo),
+                color var(--dur-med) var(--ease-expo),
+                border-color var(--dur-med) var(--ease-expo),
+                transform var(--dur-fast) var(--ease-out);
+}
+.btn:active { transform: translateY(1px) scale(0.985); }
+
+.btn--primary { background: var(--text); color: var(--bg); }
+.btn--primary:hover { background: var(--accent); border-color: var(--accent); }
+.btn__arrow {
+    width: 15px; height: 15px;
+    transition: transform var(--dur-med) var(--ease-expo);
+}
+.btn--primary:hover .btn__arrow { transform: translateX(4px); }
+
+.btn--ghost { color: var(--text); border-color: var(--border); }
+.btn--ghost:hover { border-color: var(--text); background: var(--surface); }
+
+/* Interactive hero name — per-character variable-font response */
+.hero__char {
+    display: inline-block;
+    will-change: font-variation-settings;
+    transition: font-variation-settings 0.35s var(--ease-out);
 }
 
 .hero__scroll {
@@ -736,6 +798,12 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
     border: 1px solid var(--border);
     position: relative;
 }
+/* Clip-wipe reveal (replaces GSAP scrub) — leaves hover transform intact */
+.js .project__img-wrap {
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 1.05s var(--ease-expo);
+}
+.js .project.is-visible .project__img-wrap { clip-path: inset(0 0 0 0); }
 .project__img {
     width: 100%;
     height: auto;
@@ -1121,14 +1189,19 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
    Reveal animations
    ========================================================================== */
 
-[data-reveal] {
+/* Reveals only hide when JS is available to bring them back —
+   without JS (.no-js) everything renders immediately. */
+.js [data-reveal] {
     opacity: 0;
-    transform: translateY(1.5rem);
-    transition: opacity var(--dur-slow) ease, transform var(--dur-slow) var(--ease-out);
+    transform: translateY(1.75rem);
+    transition: opacity 0.8s var(--ease-out),
+                transform 0.9s var(--ease-expo);
+    will-change: opacity, transform;
 }
-[data-reveal].is-visible {
+.js [data-reveal].is-visible {
     opacity: 1;
     transform: translateY(0);
+    will-change: auto;
 }
 
 /* ==========================================================================
@@ -1259,8 +1332,11 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
     }
-    [data-reveal] { opacity: 1; transform: none; }
+    [data-reveal],
+    .js [data-reveal] { opacity: 1; transform: none; }
+    .js .project__img-wrap { clip-path: none; }
     .hero__name-line { animation: none; opacity: 1; transform: none; }
+    .hero::before { transition: none; }
     .scroll-progress { display: none; }
 }
 

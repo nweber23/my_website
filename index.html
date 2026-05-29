@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
+    <script>document.documentElement.className=document.documentElement.className.replace('no-js','js');</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Niklas Weber — Systems Developer</title>
-    <link rel="icon" href="data:,">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='6'%20fill='%23141210'/%3E%3Cpath%20d='M9%2023V9h2.4l9.2%2010.6V9H23v14h-2.4L11.4%2012.4V23z'%20fill='%23F3EFE6'/%3E%3Ccircle%20cx='24'%20cy='10'%20r='2'%20fill='%23B94729'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='6'%20fill='%23141210'/%3E%3Cpath%20d='M9%2023V9h2.4l9.2%2010.6V9H23v14h-2.4L11.4%2012.4V23z'%20fill='%23F3EFE6'/%3E%3Ccircle%20cx='24'%20cy='10'%20r='2'%20fill='%23B94729'/%3E%3C/svg%3E">
 
     <!-- SEO Meta Tags -->
     <meta name="description" content="Systems Developer at 42 Heilbronn specializing in C, Go, and low-level programming. Building software from first principles. Explore my portfolio of systems projects and engineering expertise.">
@@ -249,6 +251,16 @@
 
             <p class="hero__desc">I build software close to the metal — systems, performance, and deep understanding of how things actually work. Everything I ship is optimized, intentional, and built to last.</p>
 
+            <div class="hero__cta">
+                <a href="#work" class="btn btn--primary">
+                    <span>View work</span>
+                    <svg class="btn__arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+                <a href="#contact" class="btn btn--ghost">
+                    <span>Get in touch</span>
+                </a>
+            </div>
+
             <div class="hero__scroll" aria-hidden="true">
                 <span class="hero__scroll-label">Scroll</span>
                 <div class="hero__scroll-track"><div class="hero__scroll-thumb"></div></div>
@@ -257,7 +269,7 @@
 
         <!-- Work -->
         <section class="section" id="work" aria-labelledby="work-title">
-            <div class="section__head">
+            <div class="section__head" data-reveal>
                 <h2 id="work-title" class="section__title">Selected <em>Work</em></h2>
                 <span class="section__aside">3 projects · 2025–26</span>
             </div>
@@ -497,7 +509,7 @@
 
         <!-- About -->
         <section class="section section--about" id="about" aria-labelledby="about-title">
-            <div class="section__head">
+            <div class="section__head" data-reveal>
                 <h2 id="about-title" class="section__title"><em>About</em></h2>
                 <span class="section__aside">profile</span>
             </div>
@@ -552,7 +564,7 @@
 
         <!-- Contact -->
         <section class="section section--contact" id="contact" aria-labelledby="contact-title">
-            <div class="section__head">
+            <div class="section__head" data-reveal>
                 <h2 id="contact-title" class="section__title"><em>Contact</em></h2>
                 <span class="section__aside">available</span>
             </div>
@@ -603,8 +615,6 @@
         </div>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
     <script defer src="script.min.js"></script>
     <script data-goatcounter="https://mattz.goatcounter.com/count"
             async src="//gc.zgo.at/count.js"></script>
