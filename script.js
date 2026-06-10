@@ -451,6 +451,268 @@
         }
     }
 
+    /* ===== Endmark forge — the closing name as molten particles =====
+       The giant stroked "NIKLAS WEBER" is rebuilt from ~3k canvas
+       particles sampled off its outline. The cursor acts like an
+       angle grinder: nearby particles ignite and spray off with the
+       pointer's momentum, then spring back into the outline. Falls
+       back to the static stroked span on touch, small screens and
+       reduced motion. */
+    class EndmarkForge {
+        constructor() {
+            if (prefersReducedMotion || !finePointer) return;
+            if (window.matchMedia('(max-width: 900px)').matches) return;
+            this.root = document.querySelector('.endmark');
+            this.span = this.root ? this.root.querySelector('span') : null;
+            if (!this.span) return;
+
+            this.particles = [];
+            this.colors = this.buildRamp();
+            this.px = -1e4; this.py = -1e4;   // pointer in canvas space
+            this.pvx = 0; this.pvy = 0;       // pointer velocity → spray direction
+            this.lastMove = 0;
+            this.inside = false;
+            this.running = false;
+            this.built = false;
+            this.visible = false;
+            this.calm = true;
+
+            this.canvas = document.createElement('canvas');
+            this.canvas.className = 'endmark__canvas';
+            this.ctx = this.canvas.getContext('2d');
+            this.root.appendChild(this.canvas);
+
+            const io = new IntersectionObserver(entries => {
+                entries.forEach(e => {
+                    this.visible = e.isIntersecting;
+                    if (e.isIntersecting) this.activate();
+                });
+            }, { rootMargin: '160px' });
+            io.observe(this.root);
+
+            this.root.addEventListener('pointermove', e => this.onMove(e), { passive: true });
+            this.root.addEventListener('pointerleave', () => { this.inside = false; }, { passive: true });
+            this.root.addEventListener('pointerdown', e => this.blast(e), { passive: true });
+
+            let timer;
+            window.addEventListener('resize', () => {
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    this.built = false;
+                    if (this.visible) this.activate();
+                }, 160);
+            }, { passive: true });
+        }
+
+        /* 16-step color ramp: cold stroke → ember → white-hot */
+        buildRamp() {
+            const stops = [
+                [0.00, 66, 58, 46],
+                [0.30, 128, 62, 30],
+                [0.55, 255, 77, 28],     // --accent
+                [0.80, 255, 146, 72],
+                [1.00, 255, 228, 184]
+            ];
+            const ramp = [];
+            for (let i = 0; i < 16; i++) {
+                const t = i / 15;
+                let a = stops[0], b = stops[stops.length - 1];
+                for (let s = 0; s < stops.length - 1; s++) {
+                    if (t >= stops[s][0] && t <= stops[s + 1][0]) { a = stops[s]; b = stops[s + 1]; break; }
+                }
+                const f = (t - a[0]) / ((b[0] - a[0]) || 1);
+                ramp.push('rgb(' +
+                    Math.round(a[1] + (b[1] - a[1]) * f) + ',' +
+                    Math.round(a[2] + (b[2] - a[2]) * f) + ',' +
+                    Math.round(a[3] + (b[3] - a[3]) * f) + ')');
+            }
+            return ramp;
+        }
+
+        activate() {
+            if (this.built) { this.start(); return; }
+            if (this.waitingFonts) return;
+            this.waitingFonts = true;
+            document.fonts.ready.then(() => {
+                this.waitingFonts = false;
+                if (!this.visible || this.built) return;
+                if (this.build()) this.start();
+            });
+        }
+
+        /* Stamp the stroked name once, lift its pixels into particles */
+        build() {
+            const w = this.root.clientWidth;
+            const h = this.root.clientHeight;
+            if (!w || !h) return false;
+            this.w = w; this.h = h;
+            this.dpr = Math.min(2, window.devicePixelRatio || 1);
+            this.canvas.width = Math.round(w * this.dpr);
+            this.canvas.height = Math.round(h * this.dpr);
+
+            const ctx = this.ctx;
+            const fs = parseFloat(getComputedStyle(this.span).fontSize);
+            this.radius = fs * 0.85;
+            const cy = this.span.offsetTop + this.span.offsetHeight / 2;
+            const text = (this.span.textContent || '').trim().toUpperCase();
+
+            this.canvas.style.fontVariationSettings = '"wdth" 110, "wght" 800';
+            ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+            ctx.clearRect(0, 0, w, h);
+            ctx.font = '800 ' + fs + 'px Archivo, sans-serif';
+            if ('letterSpacing' in ctx) ctx.letterSpacing = (fs * -0.01).toFixed(2) + 'px';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.lineWidth = Math.max(1.5, fs / 64);
+            ctx.strokeStyle = '#fff';
+            ctx.strokeText(text, w / 2, cy + fs * 0.04);
+
+            const dw = this.canvas.width, dh = this.canvas.height;
+            const img = ctx.getImageData(0, 0, dw, dh).data;
+            ctx.clearRect(0, 0, w, h);
+
+            const pts = [];
+            const step = Math.max(2, Math.round(this.dpr * 1.6));
+            for (let y = 0; y < dh; y += step) {
+                for (let x = 0; x < dw; x += step) {
+                    if (img[(y * dw + x) * 4 + 3] > 100) pts.push(x / this.dpr, y / this.dpr);
+                }
+            }
+            const total = pts.length / 2;
+            if (!total) return false;
+            const stride = Math.max(1, Math.ceil(total / 3600));
+            this.particles = [];
+            for (let i = 0; i < total; i += stride) {
+                const hx = pts[i * 2], hy = pts[i * 2 + 1];
+                this.particles.push({
+                    x: hx, y: hy, hx, hy, vx: 0, vy: 0,
+                    heat: 0, b: 0, sz: 1.1 + Math.random() * 0.7
+                });
+            }
+            this.built = true;
+            this.root.classList.add('endmark--forge');
+            this.renderFrame();
+            return true;
+        }
+
+        onMove(e) {
+            if (!this.built) return;
+            const r = this.canvas.getBoundingClientRect();
+            const x = e.clientX - r.left;
+            const y = e.clientY - r.top;
+            const now = performance.now();
+            const dt = now - this.lastMove;
+            if (this.lastMove && dt > 0 && dt < 120) {
+                const k = 16 / dt;   // normalize to px-per-frame
+                this.pvx = Math.max(-28, Math.min(28, (x - this.px) * k));
+                this.pvy = Math.max(-28, Math.min(28, (y - this.py) * k));
+            }
+            this.lastMove = now;
+            this.px = x; this.py = y;
+            this.inside = true;
+            this.start();
+        }
+
+        /* Click → shockwave: a wider, harder detonation */
+        blast(e) {
+            if (!this.built) return;
+            const r = this.canvas.getBoundingClientRect();
+            const bx = e.clientX - r.left, by = e.clientY - r.top;
+            const R = this.radius * 2.2, R2 = R * R;
+            for (const p of this.particles) {
+                const dx = p.x - bx, dy = p.y - by;
+                const d2 = dx * dx + dy * dy;
+                if (d2 >= R2) continue;
+                const d = Math.sqrt(d2) || 1;
+                const f = 1 - d / R;
+                p.vx += (dx / d) * f * 16 + (Math.random() - 0.5) * f * 5;
+                p.vy += (dy / d) * f * 16 + (Math.random() - 0.5) * f * 5 - f * 2;
+                p.heat = Math.min(1, p.heat + f * 1.4);
+            }
+            this.start();
+        }
+
+        start() {
+            if (this.running || !this.built) return;
+            this.running = true;
+            const loop = () => {
+                if (!this.visible) { this.running = false; return; }
+                this.stepPhysics();
+                this.renderFrame();
+                if (!this.inside && this.calm) { this.running = false; return; }
+                requestAnimationFrame(loop);
+            };
+            requestAnimationFrame(loop);
+        }
+
+        stepPhysics() {
+            const R = this.radius, R2 = R * R;
+            const px = this.px, py = this.py;
+            const active = this.inside;
+            const P = this.particles;
+            let calm = !active;
+            for (let i = 0; i < P.length; i++) {
+                const p = P[i];
+                if (active) {
+                    const dx = p.x - px, dy = p.y - py;
+                    const d2 = dx * dx + dy * dy;
+                    if (d2 < R2) {
+                        const d = Math.sqrt(d2) || 1;
+                        const f = 1 - d / R;
+                        const f2 = f * f;
+                        p.vx += (dx / d) * f2 * 3.2 + this.pvx * f2 * 0.5 + (Math.random() - 0.5) * f2 * 2.4;
+                        p.vy += (dy / d) * f2 * 3.2 + this.pvy * f2 * 0.5 + (Math.random() - 0.5) * f2 * 2.4 - f2 * 0.9;
+                        p.heat = Math.min(1, p.heat + f2 * 1.2);
+                    }
+                }
+                p.vx += (p.hx - p.x) * 0.013;
+                p.vy += (p.hy - p.y) * 0.013;
+                p.vx *= 0.91; p.vy *= 0.91;
+                p.x += p.vx; p.y += p.vy;
+                p.heat = p.heat > 0.006 ? p.heat * 0.96 : 0;
+                p.b = (p.heat * 15) | 0;
+                if (calm && (p.heat > 0 ||
+                    Math.abs(p.x - p.hx) + Math.abs(p.y - p.hy) > 0.4 ||
+                    Math.abs(p.vx) + Math.abs(p.vy) > 0.06)) calm = false;
+            }
+            this.pvx *= 0.8; this.pvy *= 0.8;
+            this.calm = calm;
+            if (calm) {
+                for (let i = 0; i < P.length; i++) {
+                    const p = P[i];
+                    p.x = p.hx; p.y = p.hy; p.vx = 0; p.vy = 0; p.heat = 0; p.b = 0;
+                }
+            }
+        }
+
+        renderFrame() {
+            const ctx = this.ctx;
+            ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+            ctx.clearRect(0, 0, this.w, this.h);
+            const P = this.particles, ramp = this.colors;
+            for (let b = 0; b < ramp.length; b++) {
+                let set = false;
+                for (let i = 0; i < P.length; i++) {
+                    const p = P[i];
+                    if (p.b !== b) continue;
+                    if (!set) { ctx.fillStyle = ramp[b]; ctx.strokeStyle = ramp[b]; set = true; }
+                    const speed = Math.abs(p.vx) + Math.abs(p.vy);
+                    if (speed > 3.5) {
+                        // fast sparks render as motion streaks
+                        ctx.lineWidth = Math.min(2, p.sz);
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p.x - p.vx * 1.6, p.y - p.vy * 1.6);
+                        ctx.stroke();
+                    } else {
+                        const s = p.sz + p.heat * 1.2;
+                        ctx.fillRect(p.x - s / 2, p.y - s / 2, s, s);
+                    }
+                }
+            }
+        }
+    }
+
     /* ===== Init ===== */
     function init() {
         new ScrollProgress();
@@ -466,6 +728,7 @@
         new ExternalLinks();
         new HeroInteractive();
         new MetricCountUp();
+        new EndmarkForge();
     }
 
     if (document.readyState === 'loading') {
