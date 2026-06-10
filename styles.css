@@ -16,6 +16,7 @@
     --accent: #FF4D1C;
     --accent-hover: #FF7448;
     --ok: #58C792;
+    --amber: #FFAA00;
     --border: #29241C;
     --border-2: #1C1812;
 
@@ -311,7 +312,7 @@ button { font: inherit; background: none; border: 0; cursor: pointer; color: inh
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: var(--accent);
+    background: var(--amber);
     animation: pulse 2.4s ease-in-out infinite;
 }
 @keyframes pulse {
