@@ -28,6 +28,7 @@
     --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
     --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-quint: cubic-bezier(0.83, 0, 0.17, 1);
+    --ease-in-sharp: cubic-bezier(0.55, 0, 1, 0.45);
     --dur-fast: 180ms;
     --dur-med: 420ms;
     --dur-slow: 900ms;
@@ -235,19 +236,20 @@ button { font: inherit; background: none; border: 0; cursor: pointer; color: inh
     color: var(--text);
     transition: color var(--dur-fast) var(--ease-out);
 }
-.nav__left:hover .nav__mark { color: var(--accent); }
-
-/* Split-flap glyph swap: N collapses, W snaps in (and back) */
+/* Split-flap glyph swap: outgoing glyph falls shut (ease-in), incoming snaps open (ease-out) */
 .nav__mark-n,
 .nav__mark-w {
     transform-box: fill-box;
     transform-origin: 50% 50%;
-    transition: transform 160ms var(--ease-quint);
 }
-.nav__mark-n { transition-delay: 140ms; }
-.nav__mark-w { transform: scaleY(0); transition-delay: 0ms; }
-.nav__left:hover .nav__mark-n { transform: scaleY(0); transition-delay: 0ms; }
-.nav__left:hover .nav__mark-w { transform: scaleY(1); transition-delay: 140ms; }
+.nav__mark-n { transition: transform 200ms var(--ease-expo) 100ms; }
+.nav__mark-w { transform: scaleY(0); transition: transform 110ms var(--ease-in-sharp) 0ms; }
+
+@media (hover: hover) and (pointer: fine) {
+    .nav__left:hover .nav__mark { color: var(--accent); }
+    .nav__left:hover .nav__mark-n { transform: scaleY(0); transition: transform 110ms var(--ease-in-sharp) 0ms; }
+    .nav__left:hover .nav__mark-w { transform: scaleY(1); transition: transform 200ms var(--ease-expo) 100ms; }
+}
 
 .nav__list {
     display: flex;
@@ -319,24 +321,6 @@ button { font: inherit; background: none; border: 0; cursor: pointer; color: inh
 
 .nav__sep { width: 1px; height: 0.9rem; background: var(--border); }
 .nav__time { color: var(--text-3); font-variant-numeric: tabular-nums; }
-
-/* Mobile toggle */
-.nav__toggle {
-    display: none;
-    flex-direction: column;
-    gap: 6px;
-    padding: 0.6rem 0;
-    width: 2rem;
-}
-.nav__toggle-bar {
-    display: block;
-    width: 100%;
-    height: 1px;
-    background: var(--text);
-    transition: transform var(--dur-med) var(--ease-expo), opacity var(--dur-fast);
-}
-.nav--open .nav__toggle-bar:first-child { transform: translateY(3.5px) rotate(45deg); }
-.nav--open .nav__toggle-bar:last-child { transform: translateY(-3.5px) rotate(-45deg); }
 
 /* ===== Ticker ===== */
 .ticker-wrap {
@@ -1265,49 +1249,16 @@ button { font: inherit; background: none; border: 0; cursor: pointer; color: inh
     transform: translateY(0);
 }
 
-/* ===== Mobile navigation overlay ===== */
+/* ===== Mobile navigation ===== */
 @media (max-width: 900px) {
-    .nav__list {
-        position: fixed;
-        inset: var(--nav-h) 0 0 0;
-        transform: none;
-        left: 0;
-        background: var(--bg);
-        flex-direction: column;
-        justify-content: center;
-        align-items: flex-start;
-        gap: 0;
-        padding: 0 var(--pad-x);
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity var(--dur-med) var(--ease-out);
-    }
-    .nav--open .nav__list { opacity: 1; pointer-events: auto; }
-    .nav__list li { width: 100%; border-bottom: 1px solid var(--border-2); }
-    .nav__link {
-        display: block;
-        font-family: var(--font-display);
-        font-weight: 800;
-        font-variation-settings: "wdth" 110, "wght" 800;
-        font-size: clamp(2.2rem, 10vw, 3.5rem);
-        text-transform: uppercase;
-        letter-spacing: 0;
-        padding: 1.2rem 0;
-        color: var(--text);
-    }
-    .nav__link::before {
-        font-family: var(--font-mono);
-        font-size: 0.75rem;
-        vertical-align: super;
-        margin-right: 0.6em;
-        color: var(--accent);
-    }
-    .nav__link::after { display: none; }
-    body.nav-open { overflow: hidden; }
-
+    .nav__list { gap: 1.5rem; }
+    .nav__link::before { display: none; }
     .nav__status { display: none; }
     .nav__sep { display: none; }
-    .nav__toggle { display: flex; }
+}
+@media (max-width: 380px) {
+    .nav__list { gap: 0.875rem; }
+    .nav__link { font-size: 0.625rem; letter-spacing: 0.1em; }
 }
 
 /* ===== Responsive ===== */
