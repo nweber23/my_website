@@ -452,7 +452,6 @@ button { font: inherit; background: none; border: 0; cursor: pointer; color: inh
 
 /* hero load choreography */
 .js .hero__eyebrow,
-.js .hero__rule,
 .js .hero__stats,
 .js .hero__desc,
 .js .hero__cta,
@@ -467,7 +466,6 @@ button { font: inherit; background: none; border: 0; cursor: pointer; color: inh
 .js .hero__name-mask:nth-child(1) .hero__name-line { animation-delay: 120ms; }
 .js .hero__name-mask:nth-child(2) .hero__name-line { animation-delay: 240ms; }
 .js .hero__eyebrow { animation-delay: 60ms; }
-.js .hero__rule { animation-delay: 500ms; }
 .js .hero__stats { animation-delay: 600ms; }
 .js .hero__desc { animation-delay: 700ms; }
 .js .hero__cta { animation-delay: 800ms; }
@@ -482,27 +480,74 @@ button { font: inherit; background: none; border: 0; cursor: pointer; color: inh
     to { transform: translateY(0); }
 }
 
+/* Hero rule welds itself in: a white-hot spark travels the line,
+   drawing it in ember behind itself, then the metal cools to border */
 .hero__rule {
     height: 1px;
-    background: var(--border);
     position: relative;
     margin-bottom: clamp(1.5rem, 3.5vh, 2.5rem);
-    overflow: hidden;
 }
-.hero__rule::after {
+.hero__rule::before {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 18%;
-    height: 100%;
-    background: var(--accent);
-    animation: sweep 5s var(--ease-quint) infinite 1.2s;
-    transform: translateX(-110%);
+    inset: 0;
+    background: var(--border);
 }
-@keyframes sweep {
-    0% { transform: translateX(-110%); }
-    55%, 100% { transform: translateX(560%); }
+.js .hero__rule::before {
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    animation:
+        weld-line 1.3s cubic-bezier(0.45, 0, 0.22, 1) 600ms forwards,
+        weld-cool 1.4s ease-out 2s forwards;
+}
+.js .hero__rule::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: -106px;
+    width: 120px;
+    height: 28px;
+    margin-top: -14px;
+    /* white-hot spark at the right end + 1px ember heat-trail behind it */
+    background:
+        radial-gradient(circle at calc(100% - 14px) 50%,
+            #FFEBC4 0, #FF9C54 4px,
+            rgba(255, 77, 28, 0.5) 10px, transparent 20px) no-repeat,
+        linear-gradient(90deg,
+            rgba(255, 77, 28, 0) 0%, rgba(255, 77, 28, 0.85) 90%,
+            #FFE4B8 100%) no-repeat 0 50% / 100% 1px;
+    opacity: 0;
+    /* first pass mirrors the line draw exactly (same duration/easing/delay);
+       the loop re-runs the crossing every 5s from then on */
+    animation:
+        weld-pass 1.3s cubic-bezier(0.45, 0, 0.22, 1) 600ms both,
+        weld-loop 5s cubic-bezier(0.45, 0, 0.22, 1) 5600ms infinite,
+        weld-blink 5s linear 600ms infinite,
+        weld-flicker 120ms linear 600ms infinite;
+}
+@keyframes weld-line { to { transform: scaleX(1); } }
+@keyframes weld-cool {
+    from { background: var(--accent); }
+    to { background: var(--border); }
+}
+@keyframes weld-pass {
+    from { left: -106px; }
+    to { left: calc(100% - 106px); }
+}
+/* crossing occupies the first 26% (1.3s) of each 5s cycle, then rests */
+@keyframes weld-loop {
+    0% { left: -106px; }
+    26%, 100% { left: calc(100% - 106px); }
+}
+@keyframes weld-blink {
+    0% { opacity: 0; }
+    3%, 23% { opacity: 1; }
+    26%, 100% { opacity: 0; }
+}
+@keyframes weld-flicker {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(1.35); }
 }
 
 .hero__stats {
@@ -1323,6 +1368,11 @@ button { font: inherit; background: none; border: 0; cursor: pointer; color: inh
     .project__img-wrap { clip-path: inset(0 0 0 0); }
     .ticker-inner { animation: none; }
     .hero__rule::after { display: none; }
+    .js .hero__rule::before {
+        animation: none;
+        transform: scaleX(1);
+        background: var(--border);
+    }
     .hero__scroll-thumb { animation: none; transform: scaleX(1); }
     .xhair { display: none; }
     .nav__mark-n, .nav__mark-w { transition-delay: 0ms !important; }

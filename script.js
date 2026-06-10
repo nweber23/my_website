@@ -451,6 +451,87 @@
         }
     }
 
+    /* ===== Number heat — ghost project numbers warm near the cursor =====
+       The stroked 01/02/03 outlines heat from border-gray to ember as
+       the pointer approaches, with a faint glow at full heat. Heating
+       is fast, cooling is slow — like metal. */
+    class NumberHeat {
+        constructor() {
+            if (prefersReducedMotion || !finePointer) return;
+            if (window.matchMedia('(max-width: 900px)').matches) return;
+            this.els = Array.from(document.querySelectorAll('.project__num'));
+            if (!this.els.length) return;
+
+            this.COLD = [41, 36, 28];      // --border
+            this.HOT = [255, 77, 28];      // --accent
+            this.RADIUS = 320;
+            this.heats = this.els.map(() => 0);
+            this.targets = this.els.map(() => 0);
+            this.running = false;
+
+            document.addEventListener('pointermove', e => this.onMove(e), { passive: true });
+            document.addEventListener('pointerleave', () => {
+                this.targets.fill(0);
+                this.start();
+            });
+        }
+
+        onMove(e) {
+            const R = this.RADIUS;
+            let wake = false;
+            for (let i = 0; i < this.els.length; i++) {
+                const r = this.els[i].getBoundingClientRect();
+                if (r.bottom < -R || r.top > window.innerHeight + R) {
+                    this.targets[i] = 0;
+                    continue;
+                }
+                // distance from pointer to the nearest edge of the glyph box
+                const dx = Math.max(r.left - e.clientX, 0, e.clientX - r.right);
+                const dy = Math.max(r.top - e.clientY, 0, e.clientY - r.bottom);
+                const t = Math.max(0, 1 - Math.hypot(dx, dy) / R);
+                this.targets[i] = t * t;
+                if (t > 0) wake = true;
+            }
+            if (wake || this.heats.some(h => h > 0.004)) this.start();
+        }
+
+        start() {
+            if (this.running) return;
+            this.running = true;
+            const tick = () => {
+                let settled = true;
+                for (let i = 0; i < this.els.length; i++) {
+                    const target = this.targets[i];
+                    let h = this.heats[i];
+                    h += (target - h) * (target > h ? 0.3 : 0.05);
+                    if (Math.abs(target - h) > 0.003) settled = false;
+                    else h = target;
+                    this.heats[i] = h;
+                    this.paint(i, h);
+                }
+                if (settled) { this.running = false; return; }
+                requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+        }
+
+        paint(i, h) {
+            const el = this.els[i];
+            if (h < 0.004) {
+                el.style.webkitTextStrokeColor = '';
+                el.style.textShadow = '';
+                return;
+            }
+            const c = this.COLD, k = this.HOT;
+            el.style.webkitTextStrokeColor = 'rgb(' +
+                Math.round(c[0] + (k[0] - c[0]) * h) + ',' +
+                Math.round(c[1] + (k[1] - c[1]) * h) + ',' +
+                Math.round(c[2] + (k[2] - c[2]) * h) + ')';
+            el.style.textShadow =
+                '0 0 ' + Math.round(28 * h) + 'px rgba(255,77,28,' + (0.35 * h).toFixed(3) + ')';
+        }
+    }
+
     /* ===== Endmark forge — the closing name as molten particles =====
        The giant stroked "NIKLAS WEBER" is rebuilt from ~3k canvas
        particles sampled off its outline. The cursor acts like an
@@ -728,6 +809,7 @@
         new ExternalLinks();
         new HeroInteractive();
         new MetricCountUp();
+        new NumberHeat();
         new EndmarkForge();
     }
 
