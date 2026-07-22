@@ -4,6 +4,11 @@ Niklas Weber is a systems programmer at 42 Heilbronn specializing in C, Go, and 
 
 ## Projects
 
+### Transcendence Casino
+Real-time multiplayer online casino — Blackjack, Texas Hold'em Poker, and a slot machine. Live at https://transcendence.nweber.me.
+Three-tier architecture: Go + Gin backend, standalone C++ game engine over gRPC, React/TypeScript frontend. Hand-rolled WebSocket hub (topic fan-out, multi-tab presence). Exact decimal money math with row-locked transactions and an immutable audit ledger. Prometheus + Grafana monitoring with six dashboards and Discord alerting.
+Source: https://github.com/nweber23/transcendence
+
 ### 42 ELO Leaderboard
 Go + PostgreSQL ranking system for 42 school. Live at https://eloleaderboard.de.
 Key achievement: 30ms average response time, 99.9% uptime. Composite indexes, Redis caching, Go goroutines for concurrent match processing.

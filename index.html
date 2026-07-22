@@ -9,27 +9,27 @@
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='6'%20fill='%230E0C09'/%3E%3Cpath%20d='M9%2023V9h2.4l9.2%2010.6V9H23v14h-2.4L11.4%2012.4V23z'%20fill='%23ECE5D8'/%3E%3Ccircle%20cx='24'%20cy='10'%20r='2'%20fill='%23FF4D1C'/%3E%3C/svg%3E">
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Systems Developer at 42 Heilbronn specializing in C, Go, and low-level programming. Building software from first principles. Explore my portfolio of systems projects and engineering expertise.">
+    <meta name="description" content="Systems Developer at 42 Heilbronn specializing in C, Go, and low-level programming. Building real-time multiplayer systems, high-performance engines, and software from first principles.">
     <meta name="author" content="Niklas Weber">
     <meta name="robots" content="index, follow">
-    <meta name="last-modified" content="2026-06-09">
+    <meta name="last-modified" content="2026-07-22">
     <meta name="theme-color" content="#0E0C09">
     <link rel="canonical" href="https://nweber.me/">
 
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="Niklas Weber — Systems Developer">
-    <meta property="og:description" content="Systems Developer at 42 Heilbronn specializing in C, Go, and low-level programming. Explore ELO ranking systems, raytracers, and shell implementations built from first principles.">
+    <meta property="og:description" content="Systems Developer at 42 Heilbronn specializing in C, Go, and low-level programming. Explore a real-time multiplayer casino, ELO ranking systems, raytracers, and shell implementations built from first principles.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://nweber.me/">
-    <meta property="og:image" content="https://nweber.me/assets/42_ELO_Leaderboard.webp">
+    <meta property="og:image" content="https://nweber.me/assets/ft_casino.webp">
     <meta property="og:site_name" content="Niklas Weber Portfolio">
     <meta property="og:locale" content="en_US">
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Niklas Weber — Systems Developer">
-    <meta name="twitter:description" content="Systems Developer at 42 Heilbronn specializing in C, Go, and low-level programming. ELO systems, raytracers, shell implementations from first principles.">
-    <meta name="twitter:image" content="https://nweber.me/assets/42_ELO_Leaderboard.webp">
+    <meta name="twitter:description" content="Systems Developer at 42 Heilbronn specializing in C, Go, and low-level programming. Real-time multiplayer systems, ELO systems, raytracers, shell implementations from first principles.">
+    <meta name="twitter:image" content="https://nweber.me/assets/ft_casino.webp">
     <meta name="twitter:creator" content="@nweber23">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,7 +37,7 @@
     <link rel="stylesheet" href="styles.min.css?v=20260615">
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Geist+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Geist+Mono:wght@400;500&display=swap"></noscript>
-    <link rel="preload" as="image" href="assets/42_ELO_Leaderboard.webp">
+    <link rel="preload" as="image" href="assets/ft_casino.webp">
 
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
@@ -71,7 +71,11 @@
         "PostgreSQL",
         "Unix Process Management",
         "SIMD Vectorization",
-        "Database Optimization"
+        "Database Optimization",
+        "Real-time Systems",
+        "WebSockets",
+        "gRPC",
+        "C++"
       ],
       "knowsLanguage": [
         { "@type": "Language", "name": "English" },
@@ -81,6 +85,29 @@
         "@type": "EducationalOrganization",
         "name": "42 Heilbronn"
       }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareSourceCode",
+      "@id": "https://nweber.me/#project-transcendence",
+      "name": "Transcendence Casino",
+      "description": "Real-time multiplayer online casino — Blackjack, Texas Hold'em Poker, and a slot machine — built as a three-tier system with a Go backend, a C++ game engine over gRPC, and a React frontend, with a hand-rolled WebSocket hub and a full Prometheus/Grafana monitoring stack.",
+      "url": "https://transcendence.nweber.me",
+      "codeRepository": "https://github.com/nweber23/transcendence",
+      "programmingLanguage": [
+        { "@type": "ComputerLanguage", "name": "Go" },
+        { "@type": "ComputerLanguage", "name": "C++" },
+        { "@type": "ComputerLanguage", "name": "TypeScript" },
+        { "@type": "ComputerLanguage", "name": "SQL" }
+      ],
+      "runtimePlatform": "Docker / Linux",
+      "keywords": "real-time multiplayer, online casino, WebSocket, gRPC, Go backend, C++ game engine, React frontend, PostgreSQL, Prometheus, Grafana, blackjack, poker, slot machine, concurrency, financial correctness",
+      "image": "https://nweber.me/assets/ft_casino.webp",
+      "creator": { "@id": "https://nweber.me/#person" },
+      "datePublished": "2026-07-22"
     }
     </script>
 
@@ -298,14 +325,96 @@
         <section class="section" id="work" aria-labelledby="work-title">
             <div class="section__head" data-reveal>
                 <h2 id="work-title" class="section__title">Selected <em>Work</em></h2>
-                <span class="section__aside" data-decode>3 projects · 2025–26</span>
+                <span class="section__aside" data-decode>4 projects · 2025–26</span>
             </div>
 
-            <article class="project" id="project-elo" data-reveal>
+            <article class="project" id="project-transcendence" data-reveal>
                 <div class="project__index-row">
                     <span class="project__num" aria-hidden="true" data-scrub="0.06">01</span>
                     <span class="project__year">MMXXVI</span>
-                    <span class="project__count">01 / 03</span>
+                    <span class="project__count">01 / 04</span>
+                </div>
+
+                <div class="project__grid">
+                    <div class="project__info">
+                        <h3 class="project__title">Transcendence Casino</h3>
+                        <p class="project__sub">Real-time multiplayer online casino</p>
+
+                        <dl class="project__metrics">
+                            <div class="project__metric">
+                                <dt>Games</dt>
+                                <dd class="metric--accent">3 live</dd>
+                            </div>
+                            <div class="project__metric">
+                                <dt>Architecture</dt>
+                                <dd>3-tier gRPC</dd>
+                            </div>
+                            <div class="project__metric">
+                                <dt>Monitoring</dt>
+                                <dd>6 dashboards</dd>
+                            </div>
+                        </dl>
+
+                        <details class="project__dropdown">
+                            <summary class="project__summary">
+                                <svg class="project__chevron" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 2 L10 7 L4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <p>A real-time multiplayer casino — Blackjack, Poker, and slots — spanning Go, C++, and React, bridged by gRPC and a hand-rolled WebSocket hub, with a full Prometheus/Grafana monitoring stack.</p>
+                            </summary>
+                            <div class="project__desc">
+                                <p><strong>Problem:</strong> Transcendence is 42's capstone project format — a large, module-scored web application with strict architectural requirements: a typed backend, a real database, containerized services, real-time multiplayer gameplay, security, and production-grade monitoring. The brief here was a full online casino — Blackjack, Texas Hold'em Poker, and a slot machine — playable live over WebSockets, not a static demo.</p>
+                                <p><strong>Solution:</strong> The result is a three-tier system: a Go and Gin backend handling auth, wallets, and REST/WebSocket traffic; a standalone C++ engine handling the actual game rules — card shuffling, hand evaluation, poker betting rounds, slot RNG — over a <strong>gRPC</strong> contract; and a React/TypeScript frontend on top, themed as a from-scratch "luxury casino" design system rather than a reskinned component kit, with cross-browser support and a spectator mode so a live hand can be watched by other users in real time.</p>
+                                <p><strong>Technical Approach:</strong> Two details push this past a CRUD app with a casino skin. Every balance-changing operation — a bet, a deposit, a payout — runs inside a locked database transaction using exact decimal arithmetic, since float math is unacceptable for money; the transactions table is an append-only, independently auditable ledger. And the real-time layer is a hand-rolled <strong>WebSocket</strong> hub, not a pub/sub library — it tracks per-user, per-tab, per-topic subscriptions and debounces presence so a page refresh doesn't flicker a player's status offline. Similar cross-language, protocol-level thinking shows up in the <a href="#project-elo">ELO Leaderboard</a>'s concurrent match processing.</p>
+                                <p><strong>Results &amp; Learnings:</strong> The stack also carries a full observability layer — Prometheus scraping six targets and six auto-provisioned Grafana dashboards, with alerting routed to Discord. OAuth2, 2FA, and a custom music module are still in progress. Working across three languages bridged by a single protobuf contract made the tradeoffs of IPC design concrete in a way a single-language stack never does.</p>
+                            </div>
+                        </details>
+
+                        <dl class="project__details">
+                            <div class="project__detail">
+                                <dt>Stack</dt>
+                                <dd>Go · C++ · TypeScript · React · PostgreSQL</dd>
+                            </div>
+                            <div class="project__detail">
+                                <dt>Focus</dt>
+                                <dd>Real-time multiplayer · financial correctness</dd>
+                            </div>
+                            <div class="project__detail">
+                                <dt>Demo</dt>
+                                <dd><a href="https://transcendence.nweber.me" target="_blank" rel="noopener noreferrer">transcendence.nweber.me</a></dd>
+                            </div>
+                            <div class="project__detail">
+                                <dt>Source</dt>
+                                <dd><a href="https://github.com/nweber23/transcendence" target="_blank" rel="noopener noreferrer">github.com/nweber23/transcendence</a></dd>
+                            </div>
+                        </dl>
+
+                        <div class="project__related">
+                            <p class="project__related-label">Related</p>
+                            <ul role="list">
+                                <li><a href="#project-elo">42 ELO Leaderboard — Go concurrency and real-time systems</a></li>
+                                <li><a href="#project-minirt">miniRT — Performance-minded C-family engineering</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <figure class="project__figure" data-scrub="-0.04">
+                        <div class="project__img-wrap">
+                            <img src="assets/ft_casino.webp" alt="Transcendence Casino real-time multiplayer interface showing blackjack table with player hands and chips" class="project__img" fetchpriority="high" width="1231" height="749">
+                        </div>
+                        <figcaption class="project__caption">
+                            <span>Fig. 01 — Casino table interface</span>
+                            <span class="project__caption-tag">live</span>
+                        </figcaption>
+                    </figure>
+                </div>
+            </article>
+
+            <div class="work-divider" aria-hidden="true"><span>02</span></div>
+
+            <article class="project" id="project-elo" data-reveal>
+                <div class="project__index-row">
+                    <span class="project__num" aria-hidden="true" data-scrub="0.06">02</span>
+                    <span class="project__year">MMXXVI</span>
+                    <span class="project__count">02 / 04</span>
                 </div>
 
                 <div class="project__grid">
@@ -364,30 +473,30 @@
                             <p class="project__related-label">Related</p>
                             <ul role="list">
                                 <li><a href="#project-minirt">miniRT — Low-level optimization for high-performance systems</a></li>
-                                <li><a href="#project-minishell">minishell — Unix fundamentals and process management</a></li>
+                                <li><a href="#project-transcendence">Transcendence Casino — Real-time multiplayer systems</a></li>
                             </ul>
                         </div>
                     </div>
 
                     <figure class="project__figure" data-scrub="-0.04">
                         <div class="project__img-wrap">
-                            <img src="assets/42_ELO_Leaderboard.webp" alt="42 ELO Leaderboard competitive ranking interface with player ratings and match history" class="project__img" fetchpriority="high" width="1231" height="749">
+                            <img src="assets/42_ELO_Leaderboard.webp" alt="42 ELO Leaderboard competitive ranking interface with player ratings and match history" class="project__img" loading="lazy" width="1231" height="749">
                         </div>
                         <figcaption class="project__caption">
-                            <span>Fig. 01 — Leaderboard interface</span>
+                            <span>Fig. 02 — Leaderboard interface</span>
                             <span class="project__caption-tag">live</span>
                         </figcaption>
                     </figure>
                 </div>
             </article>
 
-            <div class="work-divider" aria-hidden="true"><span>02</span></div>
+            <div class="work-divider" aria-hidden="true"><span>03</span></div>
 
             <article class="project" id="project-minirt" data-reveal>
                 <div class="project__index-row">
-                    <span class="project__num" aria-hidden="true" data-scrub="0.06">02</span>
+                    <span class="project__num" aria-hidden="true" data-scrub="0.06">03</span>
                     <span class="project__year">MMXXV</span>
-                    <span class="project__count">02 / 03</span>
+                    <span class="project__count">03 / 04</span>
                 </div>
 
                 <div class="project__grid">
@@ -452,20 +561,20 @@
                             <img src="assets/minirt.webp" alt="miniRT raytracer C implementation with sphere rendering, shadows, reflections and Phong lighting" class="project__img" loading="lazy" width="1912" height="1071">
                         </div>
                         <figcaption class="project__caption">
-                            <span>Fig. 02 — Rendered output</span>
+                            <span>Fig. 03 — Rendered output</span>
                             <span class="project__caption-tag">120 fps</span>
                         </figcaption>
                     </figure>
                 </div>
             </article>
 
-            <div class="work-divider" aria-hidden="true"><span>03</span></div>
+            <div class="work-divider" aria-hidden="true"><span>04</span></div>
 
             <article class="project project--compact" id="project-minishell" data-reveal>
                 <div class="project__index-row">
-                    <span class="project__num" aria-hidden="true" data-scrub="0.06">03</span>
+                    <span class="project__num" aria-hidden="true" data-scrub="0.06">04</span>
                     <span class="project__year">MMXXV</span>
-                    <span class="project__count">03 / 03</span>
+                    <span class="project__count">04 / 04</span>
                 </div>
 
                 <div class="project__grid project__grid--compact">
