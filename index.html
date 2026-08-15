@@ -12,13 +12,13 @@
     <meta name="description" content="Systems Developer at 42 Heilbronn specializing in C, Go, and low-level programming. Building real-time multiplayer systems, high-performance engines, and software from first principles.">
     <meta name="author" content="Niklas Weber">
     <meta name="robots" content="index, follow">
-    <meta name="last-modified" content="2026-07-22">
+    <meta name="last-modified" content="2026-08-15">
     <meta name="theme-color" content="#0E0C09">
     <link rel="canonical" href="https://nweber.me/">
 
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="Niklas Weber — Systems Developer">
-    <meta property="og:description" content="Systems Developer at 42 Heilbronn specializing in C, Go, and low-level programming. Explore a real-time multiplayer casino, ELO ranking systems, raytracers, and shell implementations built from first principles.">
+    <meta property="og:description" content="Systems Developer at 42 Heilbronn specializing in C, Go, and low-level programming. Explore a real-time multiplayer casino, a 3D OpenGL renderer, ELO ranking systems, raytracers, and shell implementations built from first principles.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://nweber.me/">
     <meta property="og:image" content="https://nweber.me/assets/ft_casino.webp">
@@ -28,13 +28,13 @@
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Niklas Weber — Systems Developer">
-    <meta name="twitter:description" content="Systems Developer at 42 Heilbronn specializing in C, Go, and low-level programming. Real-time multiplayer systems, ELO systems, raytracers, shell implementations from first principles.">
+    <meta name="twitter:description" content="Systems Developer at 42 Heilbronn specializing in C, Go, and low-level programming. Real-time multiplayer systems, 3D OpenGL rendering, ELO systems, raytracers, shell implementations from first principles.">
     <meta name="twitter:image" content="https://nweber.me/assets/ft_casino.webp">
     <meta name="twitter:creator" content="@nweber23">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="styles.min.css?v=20260615">
+    <link rel="stylesheet" href="styles.min.css?v=20260815">
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Geist+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Geist+Mono:wght@400;500&display=swap"></noscript>
     <link rel="preload" as="image" href="assets/ft_casino.webp">
@@ -108,6 +108,31 @@
       "image": "https://nweber.me/assets/ft_casino.webp",
       "creator": { "@id": "https://nweber.me/#person" },
       "datePublished": "2026-07-22"
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareSourceCode",
+      "@id": "https://nweber.me/#project-go-renderer",
+      "name": "3D Go Renderer",
+      "description": "From-scratch .obj/.mtl 3D renderer in Go targeting OpenGL 4.1 core — custom vector/matrix math, ear-clipping triangulation, automatic UV generation, and a zero-steady-state-allocation render loop.",
+      "codeRepository": "https://github.com/nweber23/3D-Go-Renderer",
+      "programmingLanguage": [
+        { "@type": "ComputerLanguage", "name": "Go" }
+      ],
+      "runtimePlatform": "OpenGL 4.1 / Linux",
+      "keywords": "3D renderer, Go programming, OpenGL, rasterization, obj parser, mtl parser, triangulation, ear clipping, vector math, matrix math, frustum culling, computer graphics, zero-allocation, goroutines",
+      "video": {
+        "@type": "VideoObject",
+        "name": "3D Go Renderer — OpenGL rasterization demo",
+        "description": "Orbit camera demo of the 3D Go Renderer rendering a textured .obj model in real time via a hand-written OpenGL 4.1 pipeline.",
+        "contentUrl": "https://nweber.me/assets/go_renderer.mp4",
+        "uploadDate": "2026-07-03"
+      },
+      "creator": { "@id": "https://nweber.me/#person" },
+      "datePublished": "2026-07-03"
     }
     </script>
 
@@ -197,7 +222,7 @@
       "about": { "@id": "https://nweber.me/#person" },
       "mainEntity": { "@id": "https://nweber.me/#person" },
       "datePublished": "2026-05-23",
-      "dateModified": "2026-06-09T00:00:00Z",
+      "dateModified": "2026-08-15T00:00:00Z",
       "inLanguage": "en"
     }
     </script>
@@ -325,14 +350,14 @@
         <section class="section" id="work" aria-labelledby="work-title">
             <div class="section__head" data-reveal>
                 <h2 id="work-title" class="section__title">Selected <em>Work</em></h2>
-                <span class="section__aside" data-decode>4 projects · 2025–26</span>
+                <span class="section__aside" data-decode>5 projects · 2025–26</span>
             </div>
 
             <article class="project" id="project-transcendence" data-reveal>
                 <div class="project__index-row">
                     <span class="project__num" aria-hidden="true" data-scrub="0.06">01</span>
                     <span class="project__year">MMXXVI</span>
-                    <span class="project__count">01 / 04</span>
+                    <span class="project__count">01 / 05</span>
                 </div>
 
                 <div class="project__grid">
@@ -410,11 +435,91 @@
 
             <div class="work-divider" aria-hidden="true"><span>02</span></div>
 
-            <article class="project" id="project-elo" data-reveal>
+            <article class="project" id="project-go-renderer" data-reveal>
                 <div class="project__index-row">
                     <span class="project__num" aria-hidden="true" data-scrub="0.06">02</span>
                     <span class="project__year">MMXXVI</span>
-                    <span class="project__count">02 / 04</span>
+                    <span class="project__count">02 / 05</span>
+                </div>
+
+                <div class="project__grid">
+                    <div class="project__info">
+                        <h3 class="project__title">3D Go Renderer</h3>
+                        <p class="project__sub">From-scratch OpenGL renderer in Go</p>
+
+                        <dl class="project__metrics">
+                            <div class="project__metric">
+                                <dt>Allocs/frame</dt>
+                                <dd class="metric--accent">0.06</dd>
+                            </div>
+                            <div class="project__metric">
+                                <dt>Parser</dt>
+                                <dd>Concurrent</dd>
+                            </div>
+                            <div class="project__metric">
+                                <dt>UV modes</dt>
+                                <dd>3</dd>
+                            </div>
+                        </dl>
+
+                        <details class="project__dropdown">
+                            <summary class="project__summary">
+                                <svg class="project__chevron" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 2 L10 7 L4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <p>A from-scratch 3D renderer in Go — custom .obj/.mtl parsing, ear-clipping triangulation, and an OpenGL 4.1 pipeline with zero steady-state heap allocations.</p>
+                            </summary>
+                            <div class="project__desc">
+                                <p><strong>Problem:</strong> scop is 42's OpenGL project — render a 3D <code>.obj</code> model with only a math library and raw OpenGL bindings as external dependencies. There's no scene-graph, no asset pipeline, no glTF loader to lean on: the file parser, the vector and matrix math, the triangulation, and the camera all have to be built from first principles.</p>
+                                <p><strong>Solution:</strong> The result is a Go renderer on <strong>OpenGL 4.1 core</strong> with GLFW for windowing. Custom <code>.obj</code> and <code>.mtl</code> parsers handle geometry and material properties (Ka/Kd/Ks/Ns/map_Kd) with graceful degradation when texture files are missing, and three automatic UV-generation modes — planar, cylindrical, spherical — cover models that ship without texture coordinates. An orbit and free-fly camera sit on top of hand-written vec2/3/4 types and column-major mat4 math, including perspective and lookAt transforms, with no external math dependency.</p>
+                                <p><strong>Technical Approach:</strong> Two problems needed real solving. Arbitrary polygons — including concave, non-planar, and degenerate ones — get triangulated with <strong>ear clipping over each face's Newell-normal plane</strong>, so geometry stays correct regardless of how the source .obj was authored. And the render loop is allocation-free at steady state: a single VAO/VBO/EBO per model with vertex deduplication, Gribb–Hartmann frustum culling, and texture-state batching bring it to 0.06 allocs/frame under <code>-debug</code>. Parsing itself is parallelized — worker goroutines pre-parse vertex and face data per line-aligned chunk, the same concurrency discipline behind the <a href="#project-elo">ELO Leaderboard</a>'s match processing.</p>
+                                <p><strong>Results &amp; Learnings:</strong> On the Utah teapot, concurrent parsing cut load time from 9.9ms to 7.0ms, and unit tests cover the parser, triangulation, UV generation, math, camera, and frustum culling. Building a rasterization pipeline by hand — after a SIMD <a href="#project-minirt">raytracer</a> the semester before — made the tradeoffs between rasterization and ray tracing concrete in a way tutorials never do.</p>
+                            </div>
+                        </details>
+
+                        <dl class="project__details">
+                            <div class="project__detail">
+                                <dt>Language</dt>
+                                <dd>Go</dd>
+                            </div>
+                            <div class="project__detail">
+                                <dt>Graphics</dt>
+                                <dd>OpenGL 4.1 · GLFW</dd>
+                            </div>
+                            <div class="project__detail">
+                                <dt>Source</dt>
+                                <dd><a href="https://github.com/nweber23/3D-Go-Renderer" target="_blank" rel="noopener noreferrer">github.com/nweber23/3D-Go-Renderer</a></dd>
+                            </div>
+                        </dl>
+
+                        <div class="project__related">
+                            <p class="project__related-label">Related</p>
+                            <ul role="list">
+                                <li><a href="#project-minirt">miniRT — Rasterization vs. ray tracing, C-family graphics work</a></li>
+                                <li><a href="#project-elo">42 ELO Leaderboard — Goroutine-based concurrent parsing</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <figure class="project__figure" data-scrub="-0.04">
+                        <div class="project__img-wrap">
+                            <video class="project__img" width="1280" height="720" autoplay muted loop playsinline disablepictureinpicture aria-label="3D Go Renderer orbit camera demo, rendering a textured .obj model in real time">
+                                <source src="assets/go_renderer.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        <figcaption class="project__caption">
+                            <span>Fig. 02 — Orbit camera demo</span>
+                            <span class="project__caption-tag">opengl 4.1</span>
+                        </figcaption>
+                    </figure>
+                </div>
+            </article>
+
+            <div class="work-divider" aria-hidden="true"><span>03</span></div>
+
+            <article class="project" id="project-elo" data-reveal>
+                <div class="project__index-row">
+                    <span class="project__num" aria-hidden="true" data-scrub="0.06">03</span>
+                    <span class="project__year">MMXXVI</span>
+                    <span class="project__count">03 / 05</span>
                 </div>
 
                 <div class="project__grid">
@@ -472,7 +577,7 @@
                         <div class="project__related">
                             <p class="project__related-label">Related</p>
                             <ul role="list">
-                                <li><a href="#project-minirt">miniRT — Low-level optimization for high-performance systems</a></li>
+                                <li><a href="#project-go-renderer">3D Go Renderer — Goroutine-based concurrent parsing</a></li>
                                 <li><a href="#project-transcendence">Transcendence Casino — Real-time multiplayer systems</a></li>
                             </ul>
                         </div>
@@ -483,20 +588,20 @@
                             <img src="assets/42_ELO_Leaderboard.webp" alt="42 ELO Leaderboard competitive ranking interface with player ratings and match history" class="project__img" loading="lazy" width="1231" height="749">
                         </div>
                         <figcaption class="project__caption">
-                            <span>Fig. 02 — Leaderboard interface</span>
+                            <span>Fig. 03 — Leaderboard interface</span>
                             <span class="project__caption-tag project__caption-tag--archived">archived</span>
                         </figcaption>
                     </figure>
                 </div>
             </article>
 
-            <div class="work-divider" aria-hidden="true"><span>03</span></div>
+            <div class="work-divider" aria-hidden="true"><span>04</span></div>
 
             <article class="project" id="project-minirt" data-reveal>
                 <div class="project__index-row">
-                    <span class="project__num" aria-hidden="true" data-scrub="0.06">03</span>
+                    <span class="project__num" aria-hidden="true" data-scrub="0.06">04</span>
                     <span class="project__year">MMXXV</span>
-                    <span class="project__count">03 / 04</span>
+                    <span class="project__count">04 / 05</span>
                 </div>
 
                 <div class="project__grid">
@@ -551,7 +656,7 @@
                             <p class="project__related-label">Related</p>
                             <ul role="list">
                                 <li><a href="#project-minishell">minishell — C fundamentals and Unix system calls</a></li>
-                                <li><a href="#project-elo">42 ELO Leaderboard — Concurrent systems, performance discipline</a></li>
+                                <li><a href="#project-go-renderer">3D Go Renderer — Rasterization vs. ray tracing</a></li>
                             </ul>
                         </div>
                     </div>
@@ -561,20 +666,20 @@
                             <img src="assets/minirt.webp" alt="miniRT raytracer C implementation with sphere rendering, shadows, reflections and Phong lighting" class="project__img" loading="lazy" width="1912" height="1071">
                         </div>
                         <figcaption class="project__caption">
-                            <span>Fig. 03 — Rendered output</span>
+                            <span>Fig. 04 — Rendered output</span>
                             <span class="project__caption-tag">120 fps</span>
                         </figcaption>
                     </figure>
                 </div>
             </article>
 
-            <div class="work-divider" aria-hidden="true"><span>04</span></div>
+            <div class="work-divider" aria-hidden="true"><span>05</span></div>
 
             <article class="project project--compact" id="project-minishell" data-reveal>
                 <div class="project__index-row">
-                    <span class="project__num" aria-hidden="true" data-scrub="0.06">04</span>
+                    <span class="project__num" aria-hidden="true" data-scrub="0.06">05</span>
                     <span class="project__year">MMXXV</span>
-                    <span class="project__count">04 / 04</span>
+                    <span class="project__count">05 / 05</span>
                 </div>
 
                 <div class="project__grid project__grid--compact">

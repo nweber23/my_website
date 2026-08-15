@@ -936,7 +936,9 @@ button { font: inherit; background: none; border: 0; cursor: pointer; color: inh
 .project__figure::after { bottom: 1.6rem; right: -0.3em; }
 
 .project__img {
+    display: block;
     width: 100%;
+    height: auto;
     filter: saturate(0.92);
     transition: transform 1.2s var(--ease-expo), filter var(--dur-med) var(--ease-out);
     will-change: transform;
