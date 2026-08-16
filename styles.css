@@ -598,8 +598,9 @@ button { font: inherit; background: none; border: 0; cursor: pointer; color: inh
     padding: 1.05em 1.9em;
     position: relative;
     overflow: hidden;
-    transition: color var(--dur-fast) var(--ease-out);
+    transition: color var(--dur-fast) var(--ease-out), transform 120ms var(--ease-out);
 }
+.btn:active { transform: scale(0.97); }
 .btn span, .btn .btn__arrow { position: relative; z-index: 1; }
 .btn__arrow {
     width: 0.9em;
@@ -737,8 +738,9 @@ button { font: inherit; background: none; border: 0; cursor: pointer; color: inh
     color: inherit;
     position: relative;
     overflow: hidden;
-    transition: background var(--dur-fast) var(--ease-out);
+    transition: background var(--dur-fast) var(--ease-out), transform 120ms var(--ease-out);
 }
+.work-bento__tile:active { transform: scale(0.985); }
 .work-bento__tile--flagship { grid-row: span 2; }
 .work-bento__tile::before {
     content: "";
@@ -938,6 +940,7 @@ button { font: inherit; background: none; border: 0; cursor: pointer; color: inh
 }
 .project__summary::-webkit-details-marker { display: none; }
 .project__summary:hover { background: var(--bg-raise); }
+.project__summary:active { background: var(--bg-raise); }
 .project__summary p {
     font-size: 0.9rem;
     line-height: 1.55;
