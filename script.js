@@ -118,6 +118,37 @@
         }
     }
 
+    /* ===== Word-scrub reveal — paragraph settles in word-by-word on scroll ===== */
+    class WordScrub {
+        constructor() {
+            if (prefersReducedMotion) return;
+            this.els = document.querySelectorAll('[data-word-scrub]');
+            if (!this.els.length) return;
+
+            this.els.forEach(el => {
+                const text = el.textContent.trim();
+                el.textContent = '';
+                text.split(/(\s+)/).forEach(chunk => {
+                    if (!chunk.trim()) { el.appendChild(document.createTextNode(chunk)); return; }
+                    const span = document.createElement('span');
+                    span.className = 'word';
+                    span.textContent = chunk;
+                    span.style.setProperty('--i', el.querySelectorAll('.word').length);
+                    el.appendChild(span);
+                });
+            });
+
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(e => {
+                    if (!e.isIntersecting) return;
+                    e.target.classList.add('is-visible');
+                    observer.unobserve(e.target);
+                });
+            }, { rootMargin: '0px 0px -100px 0px', threshold: 0.2 });
+            this.els.forEach(el => observer.observe(el));
+        }
+    }
+
     /* ===== Decode (scramble) effect on mono labels ===== */
     class Decode {
         constructor() {
@@ -801,6 +832,7 @@
         new NavTime();
         new ScrollReveal();
         new SkillsReveal();
+        new WordScrub();
         new Decode();
         new Scrub();
         new Crosshair();

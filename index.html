@@ -34,7 +34,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="styles.min.css?v=20260815">
+    <link rel="stylesheet" href="styles.min.css?v=20260816">
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Geist+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Geist+Mono:wght@400;500&display=swap"></noscript>
     <link rel="preload" as="image" href="assets/ft_casino.webp">
@@ -351,6 +351,83 @@
             <div class="section__head" data-reveal>
                 <h2 id="work-title" class="section__title">Selected <em>Work</em></h2>
                 <span class="section__aside" data-decode>5 projects · 2025–26</span>
+            </div>
+
+            <div class="work-bento" data-reveal>
+                <a href="#project-transcendence" class="work-bento__tile work-bento__tile--flagship">
+                    <div class="work-bento__top">
+                        <span class="work-bento__num">01</span>
+                        <span class="work-bento__status work-bento__status--live">live</span>
+                    </div>
+                    <div class="work-bento__body">
+                        <h3 class="work-bento__title">Transcendence Casino</h3>
+                        <p class="work-bento__desc">Real-time multiplayer casino — Blackjack, Poker, slots — spanning Go, C++, and React over a hand-rolled WebSocket hub.</p>
+                    </div>
+                    <div class="work-bento__foot">
+                        <span class="work-bento__stack">Go · C++ · React · gRPC</span>
+                        <svg class="work-bento__arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                </a>
+
+                <a href="#project-go-renderer" class="work-bento__tile">
+                    <div class="work-bento__top">
+                        <span class="work-bento__num">02</span>
+                        <span class="work-bento__status">opengl 4.1</span>
+                    </div>
+                    <div class="work-bento__body">
+                        <h3 class="work-bento__title">3D Go Renderer</h3>
+                        <p class="work-bento__desc">From-scratch OpenGL renderer, zero steady-state allocations.</p>
+                    </div>
+                    <div class="work-bento__foot">
+                        <span class="work-bento__stack">Go</span>
+                        <svg class="work-bento__arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                </a>
+
+                <a href="#project-elo" class="work-bento__tile">
+                    <div class="work-bento__top">
+                        <span class="work-bento__num">03</span>
+                        <span class="work-bento__status work-bento__status--archived">archived</span>
+                    </div>
+                    <div class="work-bento__body">
+                        <h3 class="work-bento__title">42 ELO Leaderboard</h3>
+                        <p class="work-bento__desc">Go + PostgreSQL ranking system, 30ms average response.</p>
+                    </div>
+                    <div class="work-bento__foot">
+                        <span class="work-bento__stack">Go · PostgreSQL</span>
+                        <svg class="work-bento__arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                </a>
+
+                <a href="#project-minirt" class="work-bento__tile">
+                    <div class="work-bento__top">
+                        <span class="work-bento__num">04</span>
+                        <span class="work-bento__status">120 fps</span>
+                    </div>
+                    <div class="work-bento__body">
+                        <h3 class="work-bento__title">miniRT</h3>
+                        <p class="work-bento__desc">SIMD-vectorized raytracer, 80× baseline speed-up.</p>
+                    </div>
+                    <div class="work-bento__foot">
+                        <span class="work-bento__stack">C · SSE/AVX</span>
+                        <svg class="work-bento__arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                </a>
+
+                <a href="#project-minishell" class="work-bento__tile">
+                    <div class="work-bento__top">
+                        <span class="work-bento__num">05</span>
+                        <span class="work-bento__status">posix</span>
+                    </div>
+                    <div class="work-bento__body">
+                        <h3 class="work-bento__title">minishell</h3>
+                        <p class="work-bento__desc">Unix shell from scratch — fork/exec, pipes, signals.</p>
+                    </div>
+                    <div class="work-bento__foot">
+                        <span class="work-bento__stack">C</span>
+                        <svg class="work-bento__arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                </a>
             </div>
 
             <article class="project" id="project-transcendence" data-reveal>
@@ -757,7 +834,7 @@
 
             <div class="about__layout" data-reveal>
                 <div class="about__lead-col">
-                    <p class="about__lead">I'm at 42 Heilbronn, a peer-to-peer programming school where we learn by building real things.</p>
+                    <p class="about__lead" data-word-scrub>I'm at 42 Heilbronn, a peer-to-peer programming school where we learn by building real things.</p>
                     <p class="about__text">My passion is <a href="#project-elo">systems programming</a> — where software meets hardware. There's something satisfying about understanding how things work at the deepest level: memory, scheduling, protocols, performance.</p>
                     <p class="about__text">I work with <a href="#project-minishell">C and Unix</a>, <a href="#project-elo">Go for concurrent systems</a>, and TypeScript when the problem needs it. Always learning, always optimizing.</p>
                 </div>
@@ -861,7 +938,7 @@
         </div>
     </footer>
 
-    <script defer src="script.min.js?v=20260615"></script>
+    <script defer src="script.min.js?v=20260816"></script>
     <script data-goatcounter="https://mattz.goatcounter.com/count"
             async src="//gc.zgo.at/count.js"></script>
 </body>
