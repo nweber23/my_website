@@ -189,6 +189,10 @@
             if (!this.tooltip) {
                 this.tooltip = document.createElement('div');
                 this.tooltip.className = 'gh-stats__tooltip';
+                this.tooltipCount = document.createElement('strong');
+                this.tooltipRest = document.createTextNode('');
+                this.tooltip.appendChild(this.tooltipCount);
+                this.tooltip.appendChild(this.tooltipRest);
                 document.body.appendChild(this.tooltip);
             }
             const tooltip = this.tooltip;
@@ -196,7 +200,8 @@
 
             const show = (rect, evt) => {
                 const count = rect.dataset.count;
-                tooltip.innerHTML = '<strong>' + count + '</strong> ' + (count === '1' ? 'contribution' : 'contributions') + ' on ' + rect.dataset.date;
+                this.tooltipCount.textContent = count;
+                this.tooltipRest.textContent = ' ' + (count === '1' ? 'contribution' : 'contributions') + ' on ' + rect.dataset.date;
 
                 const tw = tooltip.offsetWidth;
                 const th = tooltip.offsetHeight;
