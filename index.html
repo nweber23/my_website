@@ -12,7 +12,7 @@
     <meta name="description" content="Systems Developer at 42 Heilbronn specializing in C, Go, and low-level programming. Building real-time multiplayer systems, high-performance engines, and software from first principles.">
     <meta name="author" content="Niklas Weber">
     <meta name="robots" content="index, follow">
-    <meta name="last-modified" content="2026-08-15">
+    <meta name="last-modified" content="2026-08-23">
     <meta name="theme-color" content="#0E0C09">
     <link rel="canonical" href="https://nweber.me/">
 
@@ -34,7 +34,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="styles.min.css?v=20260816">
+    <link rel="stylesheet" href="styles.min.css?v=20260823d">
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Geist+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Geist+Mono:wght@400;500&display=swap"></noscript>
     <link rel="preload" as="image" href="assets/ft_casino.webp">
@@ -223,7 +223,7 @@
       "about": { "@id": "https://nweber.me/#person" },
       "mainEntity": { "@id": "https://nweber.me/#person" },
       "datePublished": "2026-05-23",
-      "dateModified": "2026-08-15T00:00:00Z",
+      "dateModified": "2026-08-23T00:00:00Z",
       "inLanguage": "en"
     }
     </script>
@@ -262,7 +262,8 @@
         <ul class="nav__list" role="list">
             <li><a href="#work" class="nav__link" data-idx="01">Work</a></li>
             <li><a href="#about" class="nav__link" data-idx="02">About</a></li>
-            <li><a href="#contact" class="nav__link" data-idx="03">Contact</a></li>
+            <li><a href="writing.html" class="nav__link" data-idx="03">Writing</a></li>
+            <li><a href="#contact" class="nav__link" data-idx="04">Contact</a></li>
         </ul>
 
         <div class="nav__right">
@@ -626,10 +627,10 @@
                                 <p>High-performance ELO ranking system in Go and PostgreSQL, built for real-time match submissions with live leaderboards and historical data. No longer actively maintained.</p>
                             </summary>
                             <div class="project__desc">
-                                <p><strong>Problem:</strong> The 42 Heilbronn community needed a competitive ranking system to track student tournament matches.</p>
-                                <p><strong>Solution:</strong> I built a complete ELO ranking system in Go with PostgreSQL, optimized from the ground up for performance. Go's concurrency primitives made it natural to handle simultaneous match submissions and API requests, while careful <strong>database optimization</strong> techniques ensured queries stayed fast even as the dataset grew. The backend processed real-time match updates and served a React frontend with live leaderboards, detailed player profiles, and historical match data.</p>
-                                <p><strong>Technical Approach:</strong> Composite indexes on frequently-queried columns, optimized join patterns to reduce query execution time, and Redis for cached ranking calculations. Go's goroutines handled concurrent request processing cleanly — each match update was processed independently. I applied profiling throughout development to identify and eliminate bottlenecks. Similar optimization patterns appear in other <a href="#work">systems projects</a> like the <a href="https://github.com/nweber23/miniRT" target="_blank" rel="noopener noreferrer">raytracer</a>, where every algorithmic decision has direct performance implications.</p>
-                                <p><strong>Results &amp; Learnings:</strong> The system achieved 30ms average response times and maintained 99.9% uptime across tournament seasons. <strong>Query optimization</strong> and profiling-driven development are non-negotiable for systems that prioritize performance. The project is now archived and no longer under active development.</p>
+                                <p><strong>Problem:</strong> The 42 Heilbronn community ran table football and table tennis tournaments with no shared way to track who was actually good. Beyond just storing results, two students could report the same match slot within seconds of each other — naive rating recalculation is a textbook race condition, since an Elo update is a read-modify-write against a shared score and two concurrent submissions can't be allowed to read the same stale rating and both write back.</p>
+                                <p><strong>Solution:</strong> I built a complete Elo ranking system in Go with PostgreSQL, optimized from the ground up for performance. Match submissions run inside a transaction that locks both players' rows before applying the rating update, so concurrent reports serialize instead of clobbering each other, while reads — the public leaderboard, player profiles, match history — stay on a separate fast path. The backend served a React frontend with live leaderboards, detailed player profiles, and historical match data.</p>
+                                <p><strong>Technical Approach:</strong> Composite indexes on the columns the leaderboard and history views actually filter and sort by, plus Redis for the aggregate stats (win/loss streaks, rating deltas) that don't need to be recomputed on every request and get invalidated on write instead. Go's goroutines handled concurrent API traffic cleanly since each match update was isolated to its own transaction. I profiled throughout development to find and remove the slow paths rather than guessing at them. Similar optimization patterns appear in other <a href="#work">systems projects</a> like the <a href="https://github.com/nweber23/miniRT" target="_blank" rel="noopener noreferrer">raytracer</a>, where every algorithmic decision has direct performance implications.</p>
+                                <p><strong>Results &amp; Learnings:</strong> The system achieved 30ms average response times and maintained 99.9% uptime across tournament seasons, and the row-locking approach never produced a double-counted match under concurrent load in practice. <strong>Query optimization</strong> and profiling-driven development are non-negotiable for systems that prioritize performance. The project is now archived and no longer under active development.</p>
                             </div>
                         </details>
 
@@ -786,10 +787,10 @@
                                 <p>Unix shell from scratch — process management, file descriptors, pipes, I/O redirection, environment expansion, signal handling.</p>
                             </summary>
                             <div class="project__desc">
-                                <p><strong>Problem:</strong> Understanding how a Unix shell works requires deep knowledge of operating system fundamentals. Building a shell from scratch meant confronting these abstraction layers directly.</p>
-                                <p><strong>Solution:</strong> A POSIX-compliant shell in C that replicates bash's core functionality. The shell handles the complete command execution pipeline: lexical analysis and parsing transform user input into an abstract syntax tree, and an execution engine processes these tokens using genuine Unix <strong>system calls</strong>.</p>
-                                <p><strong>Technical Approach:</strong> Three critical <strong>systems programming</strong> concepts. First, process management via fork and exec. Second, file descriptor manipulation through dup2() for pipes and I/O redirection. Third, signal handling with sigaction() to prevent zombie processes. The parsing phase uses recursive descent techniques.</p>
-                                <p><strong>Results &amp; Learnings:</strong> Building minishell transformed my understanding of Unix architecture — shells are orchestrators of the OS, not autonomous entities. Hands-on exploration of process management, file descriptors, and IPC deepened my appreciation for why <strong>low-level programming</strong> discipline matters.</p>
+                                <p><strong>Problem:</strong> Understanding how a Unix shell works requires deep knowledge of operating system fundamentals, and 42's minishell project forbids leaning on any of them from a library — no shell libraries, only raw libc and system calls. That means quoting, expansion, redirection, and pipelines all have to be built from first principles, and getting any one of them subtly wrong (a heredoc that doesn't respect quoted delimiters, an <code>unset</code> that leaves a stale env var visible to a child) is invisible until it breaks a specific command.</p>
+                                <p><strong>Solution:</strong> A POSIX-compliant shell in C that replicates bash's core behavior. A hand-written lexer and recursive-descent parser turn raw input into a token stream that respects single/double-quote semantics and here-doc boundaries, then an execution engine walks that structure using genuine Unix <strong>system calls</strong> — no <code>system()</code>, no shortcuts.</p>
+                                <p><strong>Technical Approach:</strong> Three systems-programming concepts carry the implementation. Process management via <code>fork</code>/<code>execve</code> with correct PATH resolution and exit-status propagation back through pipelines. File descriptor manipulation through <code>dup2()</code> for multi-stage pipes and I/O redirection (<code>&lt;</code>, <code>&gt;</code>, <code>&gt;&gt;</code>, here-docs), including keeping descriptors from leaking into children that shouldn't inherit them. And signal handling with <code>sigaction()</code> so <code>SIGINT</code>/<code>SIGQUIT</code> behave differently at the prompt versus inside a running child, without ever leaving a zombie process behind.</p>
+                                <p><strong>Results &amp; Learnings:</strong> Building minishell transformed my understanding of Unix architecture — shells are orchestrators of the OS, not autonomous entities, and the same process/IPC discipline is exactly what shows up later in <a href="#project-transcendence">gRPC-bridged services</a> or a <a href="#project-minirt">multi-threaded render loop</a>. Hands-on exploration of process management, file descriptors, and IPC deepened my appreciation for why <strong>low-level programming</strong> discipline matters.</p>
                             </div>
                         </details>
 
@@ -842,12 +843,35 @@
 
                 <div class="about__side">
                     <div class="about__block">
-                        <h3 class="about__block-title">Current focus</h3>
-                        <p class="about__block-text"><a href="#project-elo">Concurrency patterns in Go</a>. Distributed systems. <a href="#project-minirt">Performance optimization</a>.</p>
+                        <h3 class="about__block-title">Current focus — Aug 2026</h3>
+                        <p class="about__block-text"><a href="#project-elo">Concurrency patterns in Go</a>. Distributed systems. Writing up the geometry behind the <a href="#project-go-renderer">Go renderer</a> — see <a href="writing.html">Writing</a>.</p>
                     </div>
                     <div class="about__block">
                         <h3 class="about__block-title">Approach</h3>
                         <p class="about__block-text">Build to understand. Understand to build better.</p>
+                    </div>
+                    <div class="about__block about__block--github" data-github-stats>
+                        <h3 class="about__block-title">Live from GitHub</h3>
+                        <dl class="gh-stats">
+                            <div class="gh-stats__item">
+                                <dt>Repos</dt>
+                                <dd data-gh-repos>39</dd>
+                            </div>
+                            <div class="gh-stats__item">
+                                <dt>Stars</dt>
+                                <dd data-gh-stars>15</dd>
+                            </div>
+                            <div class="gh-stats__item">
+                                <dt>Followers</dt>
+                                <dd data-gh-followers>33</dd>
+                            </div>
+                            <div class="gh-stats__item">
+                                <dt>Commits · 12mo</dt>
+                                <dd data-gh-commits>—</dd>
+                            </div>
+                        </dl>
+                        <div class="gh-stats__graph" data-gh-graph role="img" aria-label="Niklas Weber's GitHub contribution graph — hover a square for its date and commit count"></div>
+                        <a href="https://github.com/nweber23" target="_blank" rel="noopener noreferrer" class="gh-stats__link">github.com/nweber23 →</a>
                     </div>
                 </div>
 
@@ -935,11 +959,12 @@
             <span class="footer__note">Hand-built with HTML, CSS, and vanilla JS</span>
         </div>
         <div class="footer__right">
+            <a href="writing.html" class="footer__link">Writing</a>
             <a href="imprint.html" class="footer__link">Imprint</a>
         </div>
     </footer>
 
-    <script defer src="script.min.js?v=20260816"></script>
+    <script defer src="script.min.js?v=20260823d"></script>
     <script data-goatcounter="https://mattz.goatcounter.com/count"
             async src="//gc.zgo.at/count.js"></script>
 </body>

@@ -82,6 +82,147 @@
         }
     }
 
+    /* ===== Live GitHub activity ===== */
+    class GitHubActivity {
+        constructor() {
+            this.root = document.querySelector('[data-github-stats]');
+            if (!this.root) return;
+            this.els = {
+                repos: this.root.querySelector('[data-gh-repos]'),
+                stars: this.root.querySelector('[data-gh-stars]'),
+                followers: this.root.querySelector('[data-gh-followers]'),
+                commits: this.root.querySelector('[data-gh-commits]'),
+                graph: this.root.querySelector('[data-gh-graph]')
+            };
+            this.load();
+        }
+        async load() {
+            const cacheKey = 'gh-stats-v2';
+            const cacheTTL = 1000 * 60 * 60 * 6;
+            try {
+                const cached = JSON.parse(localStorage.getItem(cacheKey));
+                if (cached && Date.now() - cached.ts < cacheTTL) {
+                    this.render(cached.data);
+                    return;
+                }
+            } catch (e) { /* corrupt or unavailable cache, fall through to fetch */ }
+
+            try {
+                const [userRes, reposRes, contribRes] = await Promise.all([
+                    fetch('https://api.github.com/users/nweber23'),
+                    fetch('https://api.github.com/users/nweber23/repos?per_page=100'),
+                    fetch('https://github-contributions-api.jogruber.de/v4/nweber23?y=last')
+                ]);
+                if (!userRes.ok || !reposRes.ok) throw new Error('github api error');
+                const user = await userRes.json();
+                const repos = await reposRes.json();
+                const stars = Array.isArray(repos)
+                    ? repos.reduce((sum, r) => sum + (r.stargazers_count || 0), 0)
+                    : null;
+
+                let commits = null, days = null;
+                if (contribRes.ok) {
+                    const contrib = await contribRes.json();
+                    commits = contrib.total && contrib.total.lastYear;
+                    days = contrib.contributions;
+                }
+
+                const data = { repos: user.public_repos, followers: user.followers, stars, commits, days };
+                try { localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data })); } catch (e) { /* storage unavailable */ }
+                this.render(data);
+            } catch (e) {
+                /* API unreachable or rate-limited — leave the static fallback numbers in the markup */
+            }
+        }
+        render(data) {
+            if (this.els.repos && data.repos != null) this.els.repos.textContent = data.repos;
+            if (this.els.stars && data.stars != null) this.els.stars.textContent = data.stars;
+            if (this.els.followers && data.followers != null) this.els.followers.textContent = data.followers;
+            if (this.els.commits && data.commits != null) this.els.commits.textContent = data.commits;
+            if (this.els.graph && Array.isArray(data.days) && data.days.length) this.renderGraph(data.days);
+            this.root.classList.add('is-live');
+        }
+        renderGraph(days) {
+            const svgNS = 'http://www.w3.org/2000/svg';
+            const cell = 11, gap = 3;
+            const first = new Date(days[0].date + 'T00:00:00');
+            const startPad = first.getDay();
+            const cols = Math.ceil((startPad + days.length) / 7);
+            const width = cols * (cell + gap) - gap;
+            const height = 7 * (cell + gap) - gap;
+            const levelColors = ['var(--border-2)', '#5C2413', '#A8391B', '#E0491F', 'var(--accent)'];
+
+            const svg = document.createElementNS(svgNS, 'svg');
+            svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+            svg.setAttribute('width', width);
+            svg.setAttribute('height', height);
+
+            days.forEach((d, i) => {
+                const idx = startPad + i;
+                const col = Math.floor(idx / 7);
+                const row = idx % 7;
+                const rect = document.createElementNS(svgNS, 'rect');
+                rect.setAttribute('x', col * (cell + gap));
+                rect.setAttribute('y', row * (cell + gap));
+                rect.setAttribute('width', cell);
+                rect.setAttribute('height', cell);
+                rect.setAttribute('rx', 2);
+                rect.setAttribute('fill', levelColors[d.level] || levelColors[0]);
+
+                const dateLabel = new Date(d.date + 'T00:00:00').toLocaleDateString('en-US', {
+                    month: 'short', day: 'numeric', year: 'numeric'
+                });
+                rect.dataset.count = d.count;
+                rect.dataset.date = dateLabel;
+
+                const title = document.createElementNS(svgNS, 'title');
+                title.textContent = d.count + (d.count === 1 ? ' contribution on ' : ' contributions on ') + dateLabel;
+                rect.appendChild(title);
+                svg.appendChild(rect);
+            });
+
+            this.els.graph.innerHTML = '';
+            this.els.graph.appendChild(svg);
+            this.attachTooltip(svg);
+        }
+        attachTooltip(svg) {
+            if (!this.tooltip) {
+                this.tooltip = document.createElement('div');
+                this.tooltip.className = 'gh-stats__tooltip';
+                document.body.appendChild(this.tooltip);
+            }
+            const tooltip = this.tooltip;
+            const margin = 8;
+
+            const show = (rect, evt) => {
+                const count = rect.dataset.count;
+                tooltip.innerHTML = '<strong>' + count + '</strong> ' + (count === '1' ? 'contribution' : 'contributions') + ' on ' + rect.dataset.date;
+
+                const tw = tooltip.offsetWidth;
+                const th = tooltip.offsetHeight;
+                let left = evt.clientX - tw / 2;
+                left = Math.max(margin, Math.min(left, window.innerWidth - tw - margin));
+                let top = evt.clientY - th - 14;
+                if (top < margin) top = evt.clientY + 18;
+
+                tooltip.style.left = left + 'px';
+                tooltip.style.top = top + 'px';
+                tooltip.classList.add('is-visible');
+            };
+            const hide = () => tooltip.classList.remove('is-visible');
+
+            svg.addEventListener('pointerover', e => {
+                if (e.target.tagName === 'rect') show(e.target, e);
+            });
+            svg.addEventListener('pointermove', e => {
+                if (e.target.tagName === 'rect') show(e.target, e);
+            });
+            svg.addEventListener('pointerout', e => {
+                if (e.target.tagName === 'rect') hide();
+            });
+        }
+    }
+
     /* ===== Scroll reveal ===== */
     class ScrollReveal {
         constructor() {
@@ -843,6 +984,7 @@
         new MetricCountUp();
         new NumberHeat();
         new EndmarkForge();
+        new GitHubActivity();
     }
 
     if (document.readyState === 'loading') {
