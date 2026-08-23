@@ -23,6 +23,12 @@ Source: https://github.com/nweber23/miniRT
 POSIX-compliant shell in C implementing fork/exec, pipe chaining, redirections, signals (SIGCHLD with sigaction), and a recursive-descent parser.
 Source: https://github.com/nweber23/minishell
 
+## Writing
+
+### Triangulating arbitrary polygons with ear clipping over a Newell-normal plane
+How the 3D Go Renderer triangulates arbitrary .obj faces — including concave, non-planar, and degenerate polygons — using ear clipping projected onto each face's Newell normal.
+https://nweber.me/writing.html
+
 ## Contact
 Email: contact@nweber.me
 GitHub: https://github.com/nweber23
