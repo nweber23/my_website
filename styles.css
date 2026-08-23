@@ -1495,6 +1495,29 @@ button { font: inherit; background: none; border: 0; cursor: pointer; color: inh
 .imprint__text a { color: var(--accent); text-decoration-color: rgba(255, 77, 28, 0.4); }
 .imprint__text a:hover { color: var(--accent-hover); }
 
+.writing-index { margin-bottom: clamp(2rem, 5vh, 3rem); border-top: 1px solid var(--border); }
+.writing-index__item {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem 1.5rem;
+    padding: 1.1rem 0.25rem;
+    border-bottom: 1px solid var(--border-2);
+    transition: padding-left var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+}
+.writing-index__item:hover { background: var(--bg-raise); padding-left: 0.6rem; }
+.writing-index__link { color: var(--text); text-decoration-color: var(--text-3); font-size: 1rem; }
+.writing-index__link:hover { color: var(--accent); }
+.writing-index__meta {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    white-space: nowrap;
+}
+
 .article__code {
     font-family: var(--font-mono);
     font-size: 0.8125rem;

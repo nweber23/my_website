@@ -25,9 +25,13 @@ Source: https://github.com/nweber23/minishell
 
 ## Writing
 
+### gRPC versus REST: picking protocols at the Transcendence service boundary
+Why Transcendence uses REST/WebSocket at the browser-facing edge but gRPC/protobuf between the Go backend and the C++ game engine, and what that split actually buys.
+https://nweber.me/writing.html#grpc-vs-rest
+
 ### Triangulating arbitrary polygons with ear clipping over a Newell-normal plane
 How the 3D Go Renderer triangulates arbitrary .obj faces — including concave, non-planar, and degenerate polygons — using ear clipping projected onto each face's Newell normal.
-https://nweber.me/writing.html
+https://nweber.me/writing.html#ear-clipping
 
 ## Contact
 Email: contact@nweber.me

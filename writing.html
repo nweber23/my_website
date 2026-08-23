@@ -19,7 +19,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="styles.min.css?v=20260823d">
+    <link rel="stylesheet" href="styles.min.css?v=20260823f">
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Geist+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Geist+Mono:wght@400;500&display=swap"></noscript>
 
@@ -47,6 +47,22 @@
       "mainEntityOfPage": "https://nweber.me/writing.html",
       "about": { "@id": "https://nweber.me/#project-go-renderer" },
       "keywords": "ear clipping, triangulation, Newell's method, polygon rasterization, computational geometry, Go, OpenGL"
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "@id": "https://nweber.me/writing.html#grpc-vs-rest",
+      "headline": "gRPC versus REST: picking protocols at the Transcendence service boundary",
+      "description": "Why Transcendence's casino uses REST/WebSocket at the browser-facing edge but a gRPC/protobuf contract between the Go backend and the C++ game engine, and what that split actually buys.",
+      "author": { "@type": "Person", "name": "Niklas Weber", "url": "https://nweber.me/#person" },
+      "datePublished": "2026-08-23",
+      "dateModified": "2026-08-23",
+      "mainEntityOfPage": "https://nweber.me/writing.html",
+      "about": { "@id": "https://nweber.me/#project-transcendence" },
+      "keywords": "gRPC, REST, protobuf, API design, service boundaries, microservices, Go, C++, WebSocket"
     }
     </script>
 </head>
@@ -90,7 +106,45 @@
             <p class="hero__desc">Notes on systems programming, graphics, and things I had to actually understand before I could ship them.</p>
         </header>
 
-        <section class="section section--imprint" aria-labelledby="post-title">
+        <nav class="writing-index" aria-label="All posts">
+            <div class="writing-index__item">
+                <a href="#grpc-vs-rest" class="writing-index__link">gRPC versus REST: picking protocols at the Transcendence service boundary</a>
+                <span class="writing-index__meta">2026-08-23 · Transcendence</span>
+            </div>
+            <div class="writing-index__item">
+                <a href="#ear-clipping" class="writing-index__link">Triangulating arbitrary polygons with ear clipping</a>
+                <span class="writing-index__meta">2026-08-23 · Go renderer</span>
+            </div>
+        </nav>
+
+        <section class="section section--imprint" aria-labelledby="grpc-title" id="grpc-vs-rest">
+            <div class="section__head">
+                <h2 id="grpc-title" class="section__title">gRPC versus REST: picking protocols at a <em>service boundary</em></h2>
+                <span class="section__aside">2026-08-23 · Transcendence</span>
+            </div>
+
+            <div class="imprint__layout imprint__layout--full">
+                <article class="imprint__block">
+                    <p class="imprint__text">The <a href="index.html#project-transcendence">Transcendence Casino</a> is a three-tier system on purpose: a Go and Gin backend facing the browser, a standalone C++ engine that owns the actual game rules (card shuffling, hand evaluation, poker betting rounds, slot RNG), and a React frontend on top. Two service boundaries, two very different sets of constraints — and using the same protocol for both would have been the wrong call in either direction.</p>
+
+                    <h3 class="imprint__heading">The browser-facing edge: REST and WebSockets</h3>
+                    <p class="imprint__text">Between the frontend and the Go backend, the requirements are: browsers have to be able to speak it natively, it has to be debuggable with <code>curl</code> or the network tab at 2am, and it has to support a long-lived connection for real-time table state. That's REST over HTTP for the stateless calls — auth, wallet balance, match history — and a hand-rolled <strong>WebSocket</strong> hub for everything that changes mid-hand: card deals, bets, chat, spectator updates. JSON's human-readability is a genuine feature here, not just a tax, because the people debugging this boundary are frontend engineers and me at odd hours, and every browser devtool already understands it for free.</p>
+
+                    <h3 class="imprint__heading">The internal edge: why gRPC for Go ↔ C++</h3>
+                    <p class="imprint__text">The Go-backend-to-C++-engine boundary has the opposite constraints. Nobody's browser talks to it directly, so human-readability buys nothing, but two languages now have to agree byte-for-byte on what a "resolve this poker hand" request looks like — and that's exactly the kind of contract that rots silently over a hand-maintained JSON schema shared across two codebases. A field renamed on one side, an int vs. a float on the other, an optional field one side forgets to check: all invisible until a hand resolves incorrectly in production. <strong>gRPC</strong> and <code>.proto</code> files fix this by making the schema the single source of truth — <code>protoc</code> generates matching Go and C++ stubs from the same definition, so a breaking change to a message shape is a compile error on both sides of the boundary, not a runtime surprise.</p>
+
+                    <h3 class="imprint__heading">What gRPC actually buys beyond type safety</h3>
+                    <p class="imprint__text">Three concrete things, for this specific boundary. First, binary protobuf encoding over HTTP/2 is meaningfully cheaper per call than JSON-over-HTTP/1.1 when the backend is issuing a hand-evaluation or bet-resolution call for every action at every table — overhead that's irrelevant for a handful of page loads but adds up across concurrent tables. Second, HTTP/2 multiplexing means many concurrent calls from the Go backend to the C++ engine share one connection without head-of-line blocking, which matters once several tables are resolving hands in the same tick. Third, a <code>.proto</code> service definition documents itself — the contract lives in one file that's also the code, rather than in a wiki page that drifts out of sync with what the endpoints actually accept.</p>
+
+                    <h3 class="imprint__heading">The actual lesson</h3>
+                    <p class="imprint__text">Neither protocol is "better" in the abstract — REST won at the browser edge for the same reasons gRPC won at the internal edge: match the protocol to who has to read it and how often it runs. A public API that outside developers or a browser will consume should optimize for debuggability and ubiquity; a private, high-frequency, cross-language boundary should optimize for a contract the compiler enforces. It's the same protocol-boundary thinking behind the WebSocket hub's topic fan-out, and behind treating <a href="index.html#project-minishell">process boundaries</a> as something to design deliberately rather than paper over.</p>
+
+                    <p class="imprint__text"><a href="index.html#project-transcendence">← Back to the Transcendence Casino project</a></p>
+                </article>
+            </div>
+        </section>
+
+        <section class="section section--imprint" aria-labelledby="post-title" id="ear-clipping">
             <div class="section__head">
                 <h2 id="post-title" class="section__title">Triangulating arbitrary polygons with <em>ear clipping</em></h2>
                 <span class="section__aside">2026-08-23 · Go renderer</span>
@@ -142,7 +196,7 @@ nz += (x[i] - x[j]) * (y[i] + y[j])
         </div>
     </footer>
 
-    <script defer src="script.min.js?v=20260823d"></script>
+    <script defer src="script.min.js?v=20260823f"></script>
     <script data-goatcounter="https://mattz.goatcounter.com/count"
             async src="//gc.zgo.at/count.js"></script>
 </body>
