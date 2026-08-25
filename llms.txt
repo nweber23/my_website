@@ -25,6 +25,10 @@ Source: https://github.com/nweber23/minishell
 
 ## Writing
 
+### Getting Elo leaderboard queries under 100ms: indexes, caching, and profiling instead of guessing
+How the 42 Elo Leaderboard hit 30ms average response times — composite indexes matched to actual query shapes, Redis for derived stats that don't need recomputing on every read, and EXPLAIN ANALYZE over intuition.
+https://nweber.me/writing.html#elo-query-performance
+
 ### gRPC versus REST: picking protocols at the Transcendence service boundary
 Why Transcendence uses REST/WebSocket at the browser-facing edge but gRPC/protobuf between the Go backend and the C++ game engine, and what that split actually buys.
 https://nweber.me/writing.html#grpc-vs-rest
