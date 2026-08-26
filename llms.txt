@@ -25,6 +25,10 @@ Source: https://github.com/nweber23/minishell
 
 ## Writing
 
+### Why I keep building from scratch: process handling, WebSocket hubs, and .obj parsers
+A case for hand-rolling the parts of a system that matter — minishell's process handling, a WebSocket hub, an .obj parser — and reaching for a library everywhere else.
+https://nweber.me/writing/build-from-scratch.html
+
 ### Getting Elo leaderboard queries under 100ms: indexes, caching, and profiling instead of guessing
 How the 42 Elo Leaderboard hit 30ms average response times — composite indexes matched to actual query shapes, Redis for derived stats that don't need recomputing on every read, and EXPLAIN ANALYZE over intuition.
 https://nweber.me/writing/elo-query-performance.html

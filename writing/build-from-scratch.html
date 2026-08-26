@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why I Keep Building From Scratch — Niklas Weber</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='6'%20fill='%230E0C09'/%3E%3Cpath%20d='M9%2023V9h2.4l9.2%2010.6V9H23v14h-2.4L11.4%2012.4V23z'%20fill='%23ECE5D8'/%3E%3Ccircle%20cx='24'%20cy='10'%20r='2'%20fill='%23FF4D1C'/%3E%3C/svg%3E">
+
+    <meta name="description" content="A case for hand-rolling the parts of a system that matter — minishell's process handling, a WebSocket hub, an .obj parser — and reaching for a library everywhere else.">
+    <meta name="robots" content="index, follow">
+    <meta name="last-modified" content="2026-08-26">
+    <meta name="theme-color" content="#0E0C09">
+    <link rel="canonical" href="https://nweber.me/writing/build-from-scratch.html">
+
+    <meta property="og:title" content="Why I Keep Building From Scratch">
+    <meta property="og:description" content="A case for hand-rolling the parts of a system that matter — minishell's process handling, a WebSocket hub, an .obj parser — and reaching for a library everywhere else.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://nweber.me/writing/build-from-scratch.html">
+    <meta property="og:image" content="https://nweber.me/assets/ft_casino.webp">
+    <meta property="og:site_name" content="Niklas Weber Portfolio">
+    <meta property="og:locale" content="en_US">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Why I Keep Building From Scratch">
+    <meta name="twitter:description" content="A case for hand-rolling the parts of a system that matter — minishell's process handling, a WebSocket hub, an .obj parser — and reaching for a library everywhere else.">
+    <meta name="twitter:image" content="https://nweber.me/assets/ft_casino.webp">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="../styles.min.css?v=20260823f">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Geist+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Geist+Mono:wght@400;500&display=swap"></noscript>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://nweber.me/" },
+        { "@type": "ListItem", "position": 2, "name": "Writing", "item": "https://nweber.me/writing.html" },
+        { "@type": "ListItem", "position": 3, "name": "Why I keep building from scratch", "item": "https://nweber.me/writing/build-from-scratch.html" }
+      ]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "@id": "https://nweber.me/writing/build-from-scratch.html",
+      "headline": "Why I keep building from scratch: process handling, WebSocket hubs, and .obj parsers",
+      "description": "A case for hand-rolling the parts of a system that matter — minishell's process handling, a WebSocket hub, an .obj parser — and reaching for a library everywhere else.",
+      "author": { "@type": "Person", "name": "Niklas Weber", "url": "https://nweber.me/#person" },
+      "datePublished": "2026-08-26",
+      "dateModified": "2026-08-26",
+      "mainEntityOfPage": "https://nweber.me/writing/build-from-scratch.html",
+      "about": { "@id": "https://nweber.me/#person" },
+      "image": "https://nweber.me/assets/ft_casino.webp",
+      "keywords": "systems programming, process management, WebSockets, parsers, C, Go, first principles, software design"
+    }
+    </script>
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <div class="scroll-progress" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <nav class="nav" aria-label="Main navigation">
+        <ul class="nav__list" role="list">
+            <li><a href="../index.html" class="nav__link" data-idx="00">← Back</a></li>
+        </ul>
+
+        <div class="nav__right">
+            <span class="nav__time" aria-label="Current time in CET">—</span>
+            <button class="nav__toggle" aria-label="Open menu" aria-expanded="false">
+                <span class="nav__toggle-bar"></span>
+                <span class="nav__toggle-bar"></span>
+            </button>
+        </div>
+    </nav>
+
+    <main id="main" class="main">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol class="breadcrumb__list">
+                <li class="breadcrumb__item">
+                    <a href="/" class="breadcrumb__link">home</a>
+                </li>
+                <li class="breadcrumb__item breadcrumb__sep">
+                    <a href="../writing.html" class="breadcrumb__link">writing</a>
+                </li>
+                <li class="breadcrumb__item breadcrumb__sep">
+                    <span class="breadcrumb__current" aria-current="page">build from scratch</span>
+                </li>
+            </ol>
+        </nav>
+
+        <section class="section section--imprint" aria-labelledby="scratch-title" id="build-from-scratch">
+            <div class="section__head">
+                <h1 id="scratch-title" class="section__title">Why I keep building things <em>from scratch</em></h1>
+                <span class="section__aside">2026-08-26 · General</span>
+            </div>
+
+            <div class="imprint__layout imprint__layout--full">
+                <article class="imprint__block">
+                    <p class="imprint__text">Across the projects on this site there's a pattern that wasn't really a decision so much as a habit: a shell that implements its own process management instead of wrapping <code>system()</code>, a WebSocket layer built as a hand-rolled hub instead of a pub/sub library, a 3D renderer with its own <code>.obj</code> parser and triangulation instead of a scene-graph dependency. None of that is an aversion to libraries — it's a bet about which parts of a system are worth understanding at the level where you could rebuild them, and which parts aren't.</p>
+
+                    <h2 class="imprint__heading">"From scratch" has a boundary</h2>
+                    <p class="imprint__text">None of these projects avoid dependencies wholesale. Postgres, OpenGL, React, nginx, gRPC's code generation — all off-the-shelf, all doing exactly what they're supposed to do, and none of them rewritten. The line isn't "avoid libraries," it's "don't outsource the part of the problem the project actually exists to solve." A casino app that wraps someone else's WebSocket abstraction hasn't really built a real-time system — it's built a UI on top of one. The interesting, load-bearing part is the part you keep.</p>
+
+                    <h2 class="imprint__heading">minishell: process management as the actual subject</h2>
+                    <p class="imprint__text">A shell's entire job is process orchestration — fork/exec, pipe chaining, signal delivery, redirections. Using a library for that would be building a shell around a shell. So <a href="../index.html#project-minishell">minishell</a> implements its own recursive-descent parser and drives <code>fork()</code>, <code>execve()</code>, <code>pipe()</code>, and <code>sigaction()</code> directly, because getting SIGCHLD reaping and job control right under POSIX semantics <em>is</em> the assignment, not a yak-shave standing in front of it.</p>
+
+                    <h2 class="imprint__heading">The Transcendence WebSocket hub: control over an off-the-shelf socket layer</h2>
+                    <p class="imprint__text">The <a href="../index.html#project-transcendence">Transcendence Casino</a>'s real-time layer could have leaned on a pub/sub library for topic fan-out. Instead it's a hand-rolled hub that tracks per-user, per-tab, per-topic subscriptions and debounces presence explicitly, because the actual requirement — a page refresh in one tab shouldn't flicker a player's status offline in every other tab watching that table — is specific enough that a generic pub/sub abstraction would need workarounds bolted on anyway. Writing the hub directly meant the debounce logic lived exactly where the domain problem was, not translated through someone else's event model.</p>
+
+                    <h2 class="imprint__heading">The Go renderer's parser: no scene graph to lean on</h2>
+                    <p class="imprint__text">The <a href="../index.html#project-go-renderer">3D Go Renderer</a> reads raw <code>.obj</code>/<code>.mtl</code> files and does its own vertex deduplication, UV generation, and <a href="ear-clipping.html">ear-clipping triangulation over a Newell-normal plane</a>. A scene-graph library would have handled all of that — and would also have hidden exactly the geometry problems that made the project worth doing. The zero-steady-state-allocation render loop only works because the parsing and triangulation code was written knowing precisely what it allocates and when, which isn't something you get for free from someone else's abstraction.</p>
+
+                    <h2 class="imprint__heading">The actual lesson</h2>
+                    <p class="imprint__text">The test isn't "could I write this myself" — you can write almost anything yourself given enough time. It's whether writing it yourself is how you find out something you needed to know: how SIGCHLD actually behaves under concurrent child processes, what a debounce needs to guarantee when a table has forty spectators, why a face's projection plane matters more than its triangulation order. Reach for a library when the problem is solved and the solving isn't the point. Build it yourself when the building is the only way to actually understand what you shipped.</p>
+                </article>
+            </div>
+        </section>
+
+        <nav class="writing-index" aria-label="More posts">
+            <div class="writing-index__item">
+                <a href="elo-query-performance.html" class="writing-index__link">Getting Elo leaderboard queries under 100ms</a>
+                <span class="writing-index__meta">2026-08-25 · 42 Elo Leaderboard</span>
+            </div>
+            <div class="writing-index__item">
+                <a href="grpc-vs-rest.html" class="writing-index__link">gRPC versus REST: picking protocols at the Transcendence service boundary</a>
+                <span class="writing-index__meta">2026-08-23 · Transcendence</span>
+            </div>
+            <div class="writing-index__item">
+                <a href="ear-clipping.html" class="writing-index__link">Triangulating arbitrary polygons with ear clipping</a>
+                <span class="writing-index__meta">2026-08-23 · Go renderer</span>
+            </div>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <div class="footer__left">
+            <span class="footer__copy">© 2026 · Niklas Weber</span>
+            <span class="footer__note">Hand-built with HTML, CSS, and vanilla JS</span>
+        </div>
+        <div class="footer__right">
+            <a href="../index.html" class="footer__link">← Index</a>
+        </div>
+    </footer>
+
+    <script defer src="../script.min.js?v=20260823f"></script>
+    <script data-goatcounter="https://mattz.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
