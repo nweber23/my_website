@@ -12,6 +12,7 @@ COPY nginx/snippets/ /etc/nginx/snippets/
 COPY index.html /usr/share/nginx/html/
 COPY imprint.html /usr/share/nginx/html/
 COPY writing.html /usr/share/nginx/html/
+COPY writing/ /usr/share/nginx/html/writing/
 COPY styles.min.css /usr/share/nginx/html/
 COPY script.min.js /usr/share/nginx/html/
 COPY robots.txt /usr/share/nginx/html/

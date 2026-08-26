@@ -24,7 +24,6 @@
     <meta name="twitter:title" content="Writing — Niklas Weber">
     <meta name="twitter:description" content="Technical writing by Niklas Weber on systems programming, graphics, and low-level engineering.">
     <meta name="twitter:image" content="https://nweber.me/assets/ft_casino.webp">
-    <meta name="twitter:creator" content="@nweber23">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,48 +45,35 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "BlogPosting",
-      "@id": "https://nweber.me/writing.html#ear-clipping",
-      "headline": "Triangulating arbitrary polygons with ear clipping over a Newell-normal plane",
-      "description": "How the 3D Go Renderer triangulates arbitrary .obj faces — including concave, non-planar, and degenerate polygons — using ear clipping projected onto each face's Newell normal.",
-      "author": { "@type": "Person", "name": "Niklas Weber", "url": "https://nweber.me/#person" },
-      "datePublished": "2026-08-23",
-      "dateModified": "2026-08-23",
-      "mainEntityOfPage": "https://nweber.me/writing.html",
-      "about": { "@id": "https://nweber.me/#project-go-renderer" },
-      "keywords": "ear clipping, triangulation, Newell's method, polygon rasterization, computational geometry, Go, OpenGL"
-    }
-    </script>
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "BlogPosting",
-      "@id": "https://nweber.me/writing.html#elo-query-performance",
-      "headline": "Getting Elo leaderboard queries under 100ms: indexes, caching, and profiling instead of guessing",
-      "description": "How the 42 Elo Leaderboard hit 30ms average response times — composite indexes matched to actual query shapes, Redis for derived stats that don't need recomputing on every read, and EXPLAIN ANALYZE over intuition.",
-      "author": { "@type": "Person", "name": "Niklas Weber", "url": "https://nweber.me/#person" },
-      "datePublished": "2026-08-25",
-      "dateModified": "2026-08-25",
-      "mainEntityOfPage": "https://nweber.me/writing.html",
-      "about": { "@id": "https://nweber.me/#project-elo" },
-      "keywords": "PostgreSQL, query optimization, composite indexes, Redis, caching, Go, EXPLAIN ANALYZE, database performance"
-    }
-    </script>
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "BlogPosting",
-      "@id": "https://nweber.me/writing.html#grpc-vs-rest",
-      "headline": "gRPC versus REST: picking protocols at the Transcendence service boundary",
-      "description": "Why Transcendence's casino uses REST/WebSocket at the browser-facing edge but a gRPC/protobuf contract between the Go backend and the C++ game engine, and what that split actually buys.",
-      "author": { "@type": "Person", "name": "Niklas Weber", "url": "https://nweber.me/#person" },
-      "datePublished": "2026-08-23",
-      "dateModified": "2026-08-23",
-      "mainEntityOfPage": "https://nweber.me/writing.html",
-      "about": { "@id": "https://nweber.me/#project-transcendence" },
-      "keywords": "gRPC, REST, protobuf, API design, service boundaries, microservices, Go, C++, WebSocket"
+      "@type": "CollectionPage",
+      "@id": "https://nweber.me/writing.html",
+      "name": "Writing",
+      "description": "Technical writing by Niklas Weber on systems programming, graphics, and low-level engineering.",
+      "url": "https://nweber.me/writing.html",
+      "isPartOf": { "@id": "https://nweber.me/#person" },
+      "mainEntity": {
+        "@type": "ItemList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "url": "https://nweber.me/writing/elo-query-performance.html",
+            "name": "Getting Elo leaderboard queries under 100ms: indexes, caching, and profiling instead of guessing"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "url": "https://nweber.me/writing/grpc-vs-rest.html",
+            "name": "gRPC versus REST: picking protocols at the Transcendence service boundary"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "url": "https://nweber.me/writing/ear-clipping.html",
+            "name": "Triangulating arbitrary polygons with ear clipping over a Newell-normal plane"
+          }
+        ]
+      }
     }
     </script>
 </head>
@@ -132,151 +118,18 @@
 
         <nav class="writing-index" aria-label="All posts">
             <div class="writing-index__item">
-                <a href="#elo-query-performance" class="writing-index__link">Getting Elo leaderboard queries under 100ms</a>
+                <a href="writing/elo-query-performance.html" class="writing-index__link">Getting Elo leaderboard queries under 100ms</a>
                 <span class="writing-index__meta">2026-08-25 · 42 Elo Leaderboard</span>
             </div>
             <div class="writing-index__item">
-                <a href="#grpc-vs-rest" class="writing-index__link">gRPC versus REST: picking protocols at the Transcendence service boundary</a>
+                <a href="writing/grpc-vs-rest.html" class="writing-index__link">gRPC versus REST: picking protocols at the Transcendence service boundary</a>
                 <span class="writing-index__meta">2026-08-23 · Transcendence</span>
             </div>
             <div class="writing-index__item">
-                <a href="#ear-clipping" class="writing-index__link">Triangulating arbitrary polygons with ear clipping</a>
+                <a href="writing/ear-clipping.html" class="writing-index__link">Triangulating arbitrary polygons with ear clipping</a>
                 <span class="writing-index__meta">2026-08-23 · Go renderer</span>
             </div>
         </nav>
-
-        <section class="section section--imprint" aria-labelledby="elo-title" id="elo-query-performance">
-            <div class="section__head">
-                <h2 id="elo-title" class="section__title">Getting Elo leaderboard queries under <em>100ms</em></h2>
-                <span class="section__aside">2026-08-25 · 42 Elo Leaderboard</span>
-            </div>
-
-            <div class="imprint__layout imprint__layout--full">
-                <article class="imprint__block">
-                    <p class="imprint__text">The <a href="index.html#project-elo">42 Elo Leaderboard</a> had one performance target that mattered more than any other: the public leaderboard and player profile pages had to stay under 100ms, even during a tournament weekend when half the campus was refreshing the standings between matches. It ended up averaging 30ms. Getting there wasn't one clever trick — it was refusing to guess, and fixing the two or three query shapes that were actually slow.</p>
-
-                    <h3 class="imprint__heading">Start with what the queries actually look like</h3>
-                    <p class="imprint__text">The leaderboard view sorts every active player by rating, descending, and paginates. The player profile view pulls a single player's match history, filtered by player ID and ordered by date. Both look trivial written as SQL, and both were the first thing to fall over under load, because a default Postgres table only has an index on its primary key — every <code>ORDER BY rating DESC</code> or <code>WHERE player_id = ?</code> was doing a sequential scan and sorting the result in memory:</p>
-                    <pre class="article__code"><code>SELECT id, username, rating
-FROM players
-WHERE active = true
-ORDER BY rating DESC
-LIMIT 50;
-
-SELECT * FROM matches
-WHERE player_id = $1
-ORDER BY played_at DESC;</code></pre>
-                    <p class="imprint__text">Fine on a seed table of forty rows. Not fine once match history accumulates across seasons and the leaderboard is being polled by dozens of open tabs at once — the sequential scan cost grows with the table, right when tournament traffic is at its highest.</p>
-
-                    <h3 class="imprint__heading">EXPLAIN ANALYZE before touching anything</h3>
-                    <p class="imprint__text">The instinct when a query is slow is to add an index and see if it helps. That's guessing. <code>EXPLAIN ANALYZE</code> tells you exactly what the planner is doing and where the time actually goes, and it's the difference between fixing the real bottleneck and adding an index that never gets used:</p>
-                    <pre class="article__code"><code>EXPLAIN ANALYZE
-SELECT id, username, rating FROM players
-WHERE active = true ORDER BY rating DESC LIMIT 50;
-
--- Seq Scan on players  (cost=0.00..842.10 rows=12000 width=24)
---   Filter: active
---   -&gt; Sort  (cost=... actual time=41.220..41.310 rows=50 loops=1)</code></pre>
-                    <p class="imprint__text">A sequential scan followed by an in-memory sort on every request, on a table that's mostly read and rarely written, is exactly the case a composite index is for.</p>
-
-                    <h3 class="imprint__heading">Composite indexes matched to the query, not the table</h3>
-                    <p class="imprint__text">A single-column index on <code>rating</code> alone still leaves the planner filtering <code>active</code> separately. The fix is a composite index built in the same order the query filters and sorts, so Postgres can walk it directly instead of touching the heap and sorting after the fact:</p>
-                    <pre class="article__code"><code>CREATE INDEX idx_players_active_rating
-    ON players (active, rating DESC);
-
-CREATE INDEX idx_matches_player_played
-    ON matches (player_id, played_at DESC);</code></pre>
-                    <p class="imprint__text">Same principle both times: an index is only as good as its match to the actual <code>WHERE</code>/<code>ORDER BY</code> shape a view issues. Re-running <code>EXPLAIN ANALYZE</code> after adding these turned the leaderboard query from a sequential scan and sort into an index scan that returns the top 50 rows without touching the rest of the table — the query plan, not a benchmark number, is what confirmed the fix actually worked.</p>
-
-                    <h3 class="imprint__heading">Not every read belongs in Postgres</h3>
-                    <p class="imprint__text">Win/loss streaks and rating deltas are derived from match history — computable with an aggregate query, but there's no reason to recompute them on every profile view when they only change when that specific player's match history changes. Those went into Redis, written once on the match-submission write path and invalidated for the affected players' keys instead of on a TTL:</p>
-                    <pre class="article__code"><code>func (s *Store) InvalidateStats(playerIDs ...int64) error {
-    keys := make([]string, len(playerIDs))
-    for i, id := range playerIDs {
-        keys[i] = fmt.Sprintf("stats:player:%d", id)
-    }
-    return s.redis.Del(ctx, keys...).Err()
-}</code></pre>
-                    <p class="imprint__text">Invalidate-on-write instead of expire-on-timer matters here because a stale streak is wrong in a way players notice immediately after a match — a TTL either serves stale data for up to its full window or gets set so short it stops saving any real work. Tying invalidation to the write that actually changes the data means the cache is never wrong, just occasionally cold.</p>
-
-                    <h3 class="imprint__heading">Keeping the write path from slowing the read path</h3>
-                    <p class="imprint__text">Match submissions are read-modify-write against a shared rating and needed row-level locking to stay correct under concurrent reports — that's a correctness problem, covered in more detail on the <a href="index.html#project-elo">project page</a>. What matters for query performance specifically is that those locked, transactional writes are isolated to the match-submission endpoint. The leaderboard and profile reads never wait on that transaction, because they're a separate code path hitting indexes that satisfy them without a lock in sight. Keeping the hot read path free of anything the write path is doing was as much a factor in the 30ms average as the indexes themselves.</p>
-
-                    <h3 class="imprint__heading">The actual lesson</h3>
-                    <p class="imprint__text">None of this required exotic tooling — a composite index matched to the real query shape, a cache invalidated by the write that changes its data instead of a timer, and <code>EXPLAIN ANALYZE</code> run before and after every change instead of trusting intuition about what's slow. The same discipline shows up in the <a href="index.html#project-minirt">raytracer's</a> SIMD work: profile first, change one thing, measure again. Guessing at optimizations is how you end up with an index nobody uses and a bottleneck nobody found.</p>
-
-                    <p class="imprint__text"><a href="index.html#project-elo">← Back to the 42 Elo Leaderboard project</a></p>
-                </article>
-            </div>
-        </section>
-
-        <section class="section section--imprint" aria-labelledby="grpc-title" id="grpc-vs-rest">
-            <div class="section__head">
-                <h2 id="grpc-title" class="section__title">gRPC versus REST: picking protocols at a <em>service boundary</em></h2>
-                <span class="section__aside">2026-08-23 · Transcendence</span>
-            </div>
-
-            <div class="imprint__layout imprint__layout--full">
-                <article class="imprint__block">
-                    <p class="imprint__text">The <a href="index.html#project-transcendence">Transcendence Casino</a> is a three-tier system on purpose: a Go and Gin backend facing the browser, a standalone C++ engine that owns the actual game rules (card shuffling, hand evaluation, poker betting rounds, slot RNG), and a React frontend on top. Two service boundaries, two very different sets of constraints — and using the same protocol for both would have been the wrong call in either direction.</p>
-
-                    <h3 class="imprint__heading">The browser-facing edge: REST and WebSockets</h3>
-                    <p class="imprint__text">Between the frontend and the Go backend, the requirements are: browsers have to be able to speak it natively, it has to be debuggable with <code>curl</code> or the network tab at 2am, and it has to support a long-lived connection for real-time table state. That's REST over HTTP for the stateless calls — auth, wallet balance, match history — and a hand-rolled <strong>WebSocket</strong> hub for everything that changes mid-hand: card deals, bets, chat, spectator updates. JSON's human-readability is a genuine feature here, not just a tax, because the people debugging this boundary are frontend engineers and me at odd hours, and every browser devtool already understands it for free.</p>
-
-                    <h3 class="imprint__heading">The internal edge: why gRPC for Go ↔ C++</h3>
-                    <p class="imprint__text">The Go-backend-to-C++-engine boundary has the opposite constraints. Nobody's browser talks to it directly, so human-readability buys nothing, but two languages now have to agree byte-for-byte on what a "resolve this poker hand" request looks like — and that's exactly the kind of contract that rots silently over a hand-maintained JSON schema shared across two codebases. A field renamed on one side, an int vs. a float on the other, an optional field one side forgets to check: all invisible until a hand resolves incorrectly in production. <strong>gRPC</strong> and <code>.proto</code> files fix this by making the schema the single source of truth — <code>protoc</code> generates matching Go and C++ stubs from the same definition, so a breaking change to a message shape is a compile error on both sides of the boundary, not a runtime surprise.</p>
-
-                    <h3 class="imprint__heading">What gRPC actually buys beyond type safety</h3>
-                    <p class="imprint__text">Three concrete things, for this specific boundary. First, binary protobuf encoding over HTTP/2 is meaningfully cheaper per call than JSON-over-HTTP/1.1 when the backend is issuing a hand-evaluation or bet-resolution call for every action at every table — overhead that's irrelevant for a handful of page loads but adds up across concurrent tables. Second, HTTP/2 multiplexing means many concurrent calls from the Go backend to the C++ engine share one connection without head-of-line blocking, which matters once several tables are resolving hands in the same tick. Third, a <code>.proto</code> service definition documents itself — the contract lives in one file that's also the code, rather than in a wiki page that drifts out of sync with what the endpoints actually accept.</p>
-
-                    <h3 class="imprint__heading">The actual lesson</h3>
-                    <p class="imprint__text">Neither protocol is "better" in the abstract — REST won at the browser edge for the same reasons gRPC won at the internal edge: match the protocol to who has to read it and how often it runs. A public API that outside developers or a browser will consume should optimize for debuggability and ubiquity; a private, high-frequency, cross-language boundary should optimize for a contract the compiler enforces. It's the same protocol-boundary thinking behind the WebSocket hub's topic fan-out, and behind treating <a href="index.html#project-minishell">process boundaries</a> as something to design deliberately rather than paper over.</p>
-
-                    <p class="imprint__text"><a href="index.html#project-transcendence">← Back to the Transcendence Casino project</a></p>
-                </article>
-            </div>
-        </section>
-
-        <section class="section section--imprint" aria-labelledby="post-title" id="ear-clipping">
-            <div class="section__head">
-                <h2 id="post-title" class="section__title">Triangulating arbitrary polygons with <em>ear clipping</em></h2>
-                <span class="section__aside">2026-08-23 · Go renderer</span>
-            </div>
-
-            <div class="imprint__layout imprint__layout--full">
-                <article class="imprint__block">
-                    <p class="imprint__text">Building the <a href="index.html#project-go-renderer">3D Go Renderer</a> meant writing a <code>.obj</code> parser with no scene-graph library to lean on — and <code>.obj</code> files don't promise you triangles. A face line can list any number of vertices, and there's no requirement that they're convex, planar, or even non-degenerate. OpenGL, meanwhile, only draws triangles. Something has to turn an arbitrary N-gon into a triangle fan that renders identically to the original face, for every N-gon a modeling tool might export.</p>
-
-                    <h3 class="imprint__heading">The naive approach breaks immediately</h3>
-                    <p class="imprint__text">The obvious first move — a triangle fan from vertex 0 to every subsequent pair, <code>(v0, v1, v2), (v0, v2, v3), (v0, v3, v4)…</code> — only works for convex polygons. On a concave face, a fan drawn from a "dented in" vertex draws triangles that cut outside the polygon's boundary. It looks correct on a cube and quietly wrong on anything hand-sculpted, which is most real assets.</p>
-
-                    <h3 class="imprint__heading">Ear clipping, briefly</h3>
-                    <p class="imprint__text">Ear clipping fixes this by working locally instead of fanning from a fixed point. An "ear" is three consecutive vertices <code>(prev, curr, next)</code> where the triangle they form is convex <em>and</em> contains no other vertex of the polygon. Every simple polygon with more than three vertices has at least one ear (this is the two-ears theorem) — so the algorithm just finds one, clips it off as an output triangle, removes the middle vertex from the polygon, and repeats on the shrinking N−1-gon until only a triangle is left:</p>
-                    <pre class="article__code"><code>while len(polygon) &gt; 3:
-    for i in range(len(polygon)):
-        prev, curr, next = polygon[i-1], polygon[i], polygon[i+1]
-        if is_convex(prev, curr, next) and no_other_vertex_inside(prev, curr, next, polygon):
-            emit_triangle(prev, curr, next)
-            remove(polygon, curr)
-            break</code></pre>
-                    <p class="imprint__text">That inner loop is O(n) per ear and there are n−2 ears to find, so naive ear clipping is O(n²) — fine for the low vertex counts an <code>.obj</code> face actually has, and simple enough to get right, which matters more than asymptotic elegance for a parser that has to handle whatever a modeling tool produces.</p>
-
-                    <h3 class="imprint__heading">The part that actually took iteration: which plane?</h3>
-                    <p class="imprint__text">"Convex" and "contains no other vertex" are both 2D tests — cross products and point-in-triangle checks that assume everything lives in a flat plane. Vertices in an <code>.obj</code> file are 3D, and a face is not guaranteed to be planar: normals can be smoothed, or the source mesh can just be slightly warped. Projecting onto the wrong plane — say, always dropping the Z coordinate — silently corrupts any face that happens to be oriented edge-on to that axis, collapsing it into a degenerate sliver with zero area in 2D.</p>
-                    <p class="imprint__text">The fix is to compute a face normal with <strong>Newell's method</strong> before triangulating, rather than assuming an axis-aligned projection:</p>
-                    <pre class="article__code"><code>nx += (y[i] - y[j]) * (z[i] + z[j])
-ny += (z[i] - z[j]) * (x[i] + x[j])
-nz += (x[i] - x[j]) * (y[i] + y[j])
-// for each edge (i, j) around the face, accumulated</code></pre>
-                    <p class="imprint__text">Newell's method gives a stable normal even for near-planar or slightly noisy polygons, because it averages the contribution of every edge instead of trusting any single cross product. Ear clipping then runs in the 2D coordinate system defined by that normal — pick the two axes with the largest projection, or build an explicit tangent basis — so the convexity and containment tests stay correct regardless of how the source face is oriented in world space.</p>
-
-                    <h3 class="imprint__heading">Why this mattered beyond "it renders"</h3>
-                    <p class="imprint__text">This is the kind of bug that doesn't show up on a cube or the Utah teapot's smoother patches — it shows up on one specific concave, slightly non-planar face in one specific model, and looks like a rendering glitch rather than a geometry bug. Testing it properly meant writing degenerate and concave fixtures deliberately rather than trusting whatever test models happened to be lying around, which is the same lesson that runs through the parser, UV generation, and frustum culling code in the rest of the <a href="index.html#project-go-renderer">renderer</a>: the failure cases you don't construct on purpose are the ones that ship.</p>
-
-                    <p class="imprint__text"><a href="index.html#project-go-renderer">← Back to the 3D Go Renderer project</a></p>
-                </article>
-            </div>
-        </section>
     </main>
 
     <footer class="footer">

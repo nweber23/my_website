@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triangulating Polygons with Ear Clipping — Niklas Weber</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='6'%20fill='%230E0C09'/%3E%3Cpath%20d='M9%2023V9h2.4l9.2%2010.6V9H23v14h-2.4L11.4%2012.4V23z'%20fill='%23ECE5D8'/%3E%3Ccircle%20cx='24'%20cy='10'%20r='2'%20fill='%23FF4D1C'/%3E%3C/svg%3E">
+
+    <meta name="description" content="How the 3D Go Renderer triangulates arbitrary .obj faces — including concave, non-planar, and degenerate polygons — using ear clipping projected onto each face's Newell normal.">
+    <meta name="robots" content="index, follow">
+    <meta name="last-modified" content="2026-08-23">
+    <meta name="theme-color" content="#0E0C09">
+    <link rel="canonical" href="https://nweber.me/writing/ear-clipping.html">
+
+    <meta property="og:title" content="Triangulating Polygons with Ear Clipping">
+    <meta property="og:description" content="How the 3D Go Renderer triangulates arbitrary .obj faces — including concave, non-planar, and degenerate polygons — using ear clipping projected onto each face's Newell normal.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://nweber.me/writing/ear-clipping.html">
+    <meta property="og:image" content="https://nweber.me/assets/ft_casino.webp">
+    <meta property="og:site_name" content="Niklas Weber Portfolio">
+    <meta property="og:locale" content="en_US">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Triangulating Polygons with Ear Clipping">
+    <meta name="twitter:description" content="How the 3D Go Renderer triangulates arbitrary .obj faces — including concave, non-planar, and degenerate polygons — using ear clipping projected onto each face's Newell normal.">
+    <meta name="twitter:image" content="https://nweber.me/assets/ft_casino.webp">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="../styles.min.css?v=20260823f">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Geist+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Geist+Mono:wght@400;500&display=swap"></noscript>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://nweber.me/" },
+        { "@type": "ListItem", "position": 2, "name": "Writing", "item": "https://nweber.me/writing.html" },
+        { "@type": "ListItem", "position": 3, "name": "Triangulating arbitrary polygons with ear clipping over a Newell-normal plane", "item": "https://nweber.me/writing/ear-clipping.html" }
+      ]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "@id": "https://nweber.me/writing/ear-clipping.html",
+      "headline": "Triangulating arbitrary polygons with ear clipping over a Newell-normal plane",
+      "description": "How the 3D Go Renderer triangulates arbitrary .obj faces — including concave, non-planar, and degenerate polygons — using ear clipping projected onto each face's Newell normal.",
+      "author": { "@type": "Person", "name": "Niklas Weber", "url": "https://nweber.me/#person" },
+      "datePublished": "2026-08-23",
+      "dateModified": "2026-08-23",
+      "mainEntityOfPage": "https://nweber.me/writing/ear-clipping.html",
+      "about": { "@id": "https://nweber.me/#project-go-renderer" },
+      "keywords": "ear clipping, triangulation, Newell's method, polygon rasterization, computational geometry, Go, OpenGL",
+      "video": {
+        "@type": "VideoObject",
+        "name": "3D Go Renderer — OpenGL rasterization demo",
+        "description": "Orbit camera demo of the 3D Go Renderer rendering a textured .obj model in real time via a hand-written OpenGL 4.1 pipeline.",
+        "contentUrl": "https://nweber.me/assets/go_renderer.mp4",
+        "thumbnailUrl": "https://nweber.me/assets/go_renderer_thumb.webp",
+        "uploadDate": "2026-07-03T00:00:00+02:00"
+      }
+    }
+    </script>
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <div class="scroll-progress" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <nav class="nav" aria-label="Main navigation">
+        <ul class="nav__list" role="list">
+            <li><a href="../index.html" class="nav__link" data-idx="00">← Back</a></li>
+        </ul>
+
+        <div class="nav__right">
+            <span class="nav__time" aria-label="Current time in CET">—</span>
+            <button class="nav__toggle" aria-label="Open menu" aria-expanded="false">
+                <span class="nav__toggle-bar"></span>
+                <span class="nav__toggle-bar"></span>
+            </button>
+        </div>
+    </nav>
+
+    <main id="main" class="main">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol class="breadcrumb__list">
+                <li class="breadcrumb__item">
+                    <a href="/" class="breadcrumb__link">home</a>
+                </li>
+                <li class="breadcrumb__item breadcrumb__sep">
+                    <a href="../writing.html" class="breadcrumb__link">writing</a>
+                </li>
+                <li class="breadcrumb__item breadcrumb__sep">
+                    <span class="breadcrumb__current" aria-current="page">ear clipping</span>
+                </li>
+            </ol>
+        </nav>
+
+        <section class="section section--imprint" aria-labelledby="post-title" id="ear-clipping">
+            <div class="section__head">
+                <h1 id="post-title" class="section__title">Triangulating arbitrary polygons with <em>ear clipping</em></h1>
+                <span class="section__aside">2026-08-23 · Go renderer</span>
+            </div>
+
+            <div class="imprint__layout imprint__layout--full">
+                <article class="imprint__block">
+                    <p class="imprint__text">Building the <a href="../index.html#project-go-renderer">3D Go Renderer</a> meant writing a <code>.obj</code> parser with no scene-graph library to lean on — and <code>.obj</code> files don't promise you triangles. A face line can list any number of vertices, and there's no requirement that they're convex, planar, or even non-degenerate. OpenGL, meanwhile, only draws triangles. Something has to turn an arbitrary N-gon into a triangle fan that renders identically to the original face, for every N-gon a modeling tool might export.</p>
+
+                    <h2 class="imprint__heading">The naive approach breaks immediately</h2>
+                    <p class="imprint__text">The obvious first move — a triangle fan from vertex 0 to every subsequent pair, <code>(v0, v1, v2), (v0, v2, v3), (v0, v3, v4)…</code> — only works for convex polygons. On a concave face, a fan drawn from a "dented in" vertex draws triangles that cut outside the polygon's boundary. It looks correct on a cube and quietly wrong on anything hand-sculpted, which is most real assets.</p>
+
+                    <h2 class="imprint__heading">Ear clipping, briefly</h2>
+                    <p class="imprint__text">Ear clipping fixes this by working locally instead of fanning from a fixed point. An "ear" is three consecutive vertices <code>(prev, curr, next)</code> where the triangle they form is convex <em>and</em> contains no other vertex of the polygon. Every simple polygon with more than three vertices has at least one ear (this is the two-ears theorem) — so the algorithm just finds one, clips it off as an output triangle, removes the middle vertex from the polygon, and repeats on the shrinking N−1-gon until only a triangle is left:</p>
+                    <pre class="article__code"><code>while len(polygon) &gt; 3:
+    for i in range(len(polygon)):
+        prev, curr, next = polygon[i-1], polygon[i], polygon[i+1]
+        if is_convex(prev, curr, next) and no_other_vertex_inside(prev, curr, next, polygon):
+            emit_triangle(prev, curr, next)
+            remove(polygon, curr)
+            break</code></pre>
+                    <p class="imprint__text">That inner loop is O(n) per ear and there are n−2 ears to find, so naive ear clipping is O(n²) — fine for the low vertex counts an <code>.obj</code> face actually has, and simple enough to get right, which matters more than asymptotic elegance for a parser that has to handle whatever a modeling tool produces.</p>
+
+                    <h2 class="imprint__heading">The part that actually took iteration: which plane?</h2>
+                    <p class="imprint__text">"Convex" and "contains no other vertex" are both 2D tests — cross products and point-in-triangle checks that assume everything lives in a flat plane. Vertices in an <code>.obj</code> file are 3D, and a face is not guaranteed to be planar: normals can be smoothed, or the source mesh can just be slightly warped. Projecting onto the wrong plane — say, always dropping the Z coordinate — silently corrupts any face that happens to be oriented edge-on to that axis, collapsing it into a degenerate sliver with zero area in 2D.</p>
+                    <p class="imprint__text">The fix is to compute a face normal with <strong>Newell's method</strong> before triangulating, rather than assuming an axis-aligned projection:</p>
+                    <pre class="article__code"><code>nx += (y[i] - y[j]) * (z[i] + z[j])
+ny += (z[i] - z[j]) * (x[i] + x[j])
+nz += (x[i] - x[j]) * (y[i] + y[j])
+// for each edge (i, j) around the face, accumulated</code></pre>
+                    <p class="imprint__text">Newell's method gives a stable normal even for near-planar or slightly noisy polygons, because it averages the contribution of every edge instead of trusting any single cross product. Ear clipping then runs in the 2D coordinate system defined by that normal — pick the two axes with the largest projection, or build an explicit tangent basis — so the convexity and containment tests stay correct regardless of how the source face is oriented in world space.</p>
+
+                    <h2 class="imprint__heading">Why this mattered beyond "it renders"</h2>
+                    <p class="imprint__text">This is the kind of bug that doesn't show up on a cube or the Utah teapot's smoother patches — it shows up on one specific concave, slightly non-planar face in one specific model, and looks like a rendering glitch rather than a geometry bug. Testing it properly meant writing degenerate and concave fixtures deliberately rather than trusting whatever test models happened to be lying around, which is the same lesson that runs through the parser, UV generation, and frustum culling code in the rest of the <a href="../index.html#project-go-renderer">renderer</a>: the failure cases you don't construct on purpose are the ones that ship.</p>
+
+                    <p class="imprint__text"><a href="../index.html#project-go-renderer">← Back to the 3D Go Renderer project</a></p>
+                </article>
+            </div>
+        </section>
+
+        <nav class="writing-index" aria-label="More posts">
+            <div class="writing-index__item">
+                <a href="elo-query-performance.html" class="writing-index__link">Getting Elo leaderboard queries under 100ms</a>
+                <span class="writing-index__meta">2026-08-25 · 42 Elo Leaderboard</span>
+            </div>
+            <div class="writing-index__item">
+                <a href="grpc-vs-rest.html" class="writing-index__link">gRPC versus REST: picking protocols at the Transcendence service boundary</a>
+                <span class="writing-index__meta">2026-08-23 · Transcendence</span>
+            </div>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <div class="footer__left">
+            <span class="footer__copy">© 2026 · Niklas Weber</span>
+            <span class="footer__note">Hand-built with HTML, CSS, and vanilla JS</span>
+        </div>
+        <div class="footer__right">
+            <a href="../index.html" class="footer__link">← Index</a>
+        </div>
+    </footer>
+
+    <script defer src="../script.min.js?v=20260823f"></script>
+    <script data-goatcounter="https://mattz.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
