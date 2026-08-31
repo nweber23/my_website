@@ -588,6 +588,26 @@
         }
     }
 
+    /* ===== Lazy-load autoplay video only once it's near the viewport ===== */
+    class LazyVideo {
+        constructor() {
+            const videos = document.querySelectorAll('video[data-src]');
+            if (!videos.length) return;
+            const obs = new IntersectionObserver(entries => {
+                entries.forEach(e => {
+                    if (!e.isIntersecting) return;
+                    const v = e.target;
+                    const source = v.querySelector('source[data-src]');
+                    if (source) source.src = source.dataset.src;
+                    v.load();
+                    v.play().catch(() => {});
+                    obs.unobserve(v);
+                });
+            }, { rootMargin: '200px' });
+            videos.forEach(v => obs.observe(v));
+        }
+    }
+
     /* ===== Metric count-up on reveal ===== */
     class MetricCountUp {
         constructor() {
@@ -987,6 +1007,7 @@
         new ExternalLinks();
         new HeroInteractive();
         new MetricCountUp();
+        new LazyVideo();
         new NumberHeat();
         new EndmarkForge();
         new GitHubActivity();

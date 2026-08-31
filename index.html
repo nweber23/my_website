@@ -33,7 +33,9 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="styles.min.css?v=20260823f">
+    <link rel="preconnect" href="https://api.github.com" crossorigin>
+    <link rel="preconnect" href="https://github-contributions-api.jogruber.de" crossorigin>
+    <link rel="stylesheet" href="styles.min.css?v=20260831a">
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Geist+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Geist+Mono:wght@400;500&display=swap"></noscript>
     <link rel="preload" as="image" href="assets/ft_casino.webp">
@@ -585,8 +587,8 @@
 
                     <figure class="project__figure" data-scrub="-0.04">
                         <div class="project__img-wrap">
-                            <video class="project__img" width="1280" height="720" autoplay muted loop playsinline disablepictureinpicture aria-label="3D Go Renderer orbit camera demo, rendering a textured .obj model in real time">
-                                <source src="assets/go_renderer.mp4" type="video/mp4">
+                            <video class="project__img" width="1280" height="720" muted loop playsinline disablepictureinpicture preload="none" poster="assets/go_renderer_thumb.webp" data-src aria-label="3D Go Renderer orbit camera demo, rendering a textured .obj model in real time">
+                                <source data-src="assets/go_renderer.mp4" type="video/mp4">
                             </video>
                         </div>
                         <figcaption class="project__caption">
@@ -654,7 +656,7 @@
                             </div>
                             <div class="project__detail">
                                 <dt>Source</dt>
-                                <dd><a href="https://github.com/nweber23/42_ELO_Leaderboard" target="_blank" rel="noopener noreferrer">github.com/nweber23</a></dd>
+                                <dd><a href="https://github.com/nweber23/42_ELO_Leaderboard" target="_blank" rel="noopener noreferrer">github.com/nweber23/42_ELO_Leaderboard</a></dd>
                             </div>
                         </dl>
 
@@ -970,7 +972,7 @@
         </div>
     </footer>
 
-    <script defer src="script.min.js?v=20260823f"></script>
+    <script defer src="script.min.js?v=20260831a"></script>
     <script data-goatcounter="https://mattz.goatcounter.com/count"
             async src="//gc.zgo.at/count.js"></script>
 </body>

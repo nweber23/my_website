@@ -1,48 +1,44 @@
 # Niklas Weber — Systems Developer
 
-Niklas Weber is a systems programmer at 42 Heilbronn specializing in C, Go, and low-level optimization.
+> Niklas Weber is a systems programmer at 42 Heilbronn specializing in C, Go, and low-level optimization.
 
 ## Projects
 
-### Transcendence Casino
-Real-time multiplayer online casino — Blackjack, Texas Hold'em Poker, and a slot machine. Live at https://transcendence.nweber.me.
+### [Transcendence Casino](https://transcendence.nweber.me)
+Real-time multiplayer online casino — Blackjack, Texas Hold'em Poker, and a slot machine.
 Three-tier architecture: Go + Gin backend, standalone C++ game engine over gRPC, React/TypeScript frontend. Hand-rolled WebSocket hub (topic fan-out, multi-tab presence). Exact decimal money math with row-locked transactions and an immutable audit ledger. Prometheus + Grafana monitoring with six dashboards and Discord alerting.
-Source: https://github.com/nweber23/transcendence
+- Source: [github.com/nweber23/transcendence](https://github.com/nweber23/transcendence)
 
-### 42 ELO Leaderboard
-Go + PostgreSQL ranking system for 42 school. Live at https://eloleaderboard.de.
+### [42 ELO Leaderboard](https://eloleaderboard.de)
+Go + PostgreSQL ranking system for 42 school.
 Key achievement: 30ms average response time, 99.9% uptime. Composite indexes, Redis caching, Go goroutines for concurrent match processing.
-Source: https://github.com/nweber23/42_ELO_Leaderboard
+- Source: [github.com/nweber23/42_ELO_Leaderboard](https://github.com/nweber23/42_ELO_Leaderboard)
 
 ### miniRT
 High-performance raytracer in C. SIMD vectorization (SSE/AVX), cache-efficient structure-of-arrays layout, tile-based multi-threaded rendering.
 Key achievement: 120+ FPS, an 80x improvement over baseline (1920x1080, complex scene).
-Source: https://github.com/nweber23/miniRT
+- Source: [github.com/nweber23/miniRT](https://github.com/nweber23/miniRT)
 
 ### minishell
 POSIX-compliant shell in C implementing fork/exec, pipe chaining, redirections, signals (SIGCHLD with sigaction), and a recursive-descent parser.
-Source: https://github.com/nweber23/minishell
+- Source: [github.com/nweber23/minishell](https://github.com/nweber23/minishell)
 
 ## Writing
 
-### Why I keep building from scratch: process handling, WebSocket hubs, and .obj parsers
+### [Why I keep building from scratch: process handling, WebSocket hubs, and .obj parsers](https://nweber.me/writing/build-from-scratch.html)
 A case for hand-rolling the parts of a system that matter — minishell's process handling, a WebSocket hub, an .obj parser — and reaching for a library everywhere else.
-https://nweber.me/writing/build-from-scratch.html
 
-### Getting Elo leaderboard queries under 100ms: indexes, caching, and profiling instead of guessing
+### [Getting Elo leaderboard queries under 100ms: indexes, caching, and profiling instead of guessing](https://nweber.me/writing/elo-query-performance.html)
 How the 42 Elo Leaderboard hit 30ms average response times — composite indexes matched to actual query shapes, Redis for derived stats that don't need recomputing on every read, and EXPLAIN ANALYZE over intuition.
-https://nweber.me/writing/elo-query-performance.html
 
-### gRPC versus REST: picking protocols at the Transcendence service boundary
+### [gRPC versus REST: picking protocols at the Transcendence service boundary](https://nweber.me/writing/grpc-vs-rest.html)
 Why Transcendence uses REST/WebSocket at the browser-facing edge but gRPC/protobuf between the Go backend and the C++ game engine, and what that split actually buys.
-https://nweber.me/writing/grpc-vs-rest.html
 
-### Triangulating arbitrary polygons with ear clipping over a Newell-normal plane
+### [Triangulating arbitrary polygons with ear clipping over a Newell-normal plane](https://nweber.me/writing/ear-clipping.html)
 How the 3D Go Renderer triangulates arbitrary .obj faces — including concave, non-planar, and degenerate polygons — using ear clipping projected onto each face's Newell normal.
-https://nweber.me/writing/ear-clipping.html
 
 ## Contact
-Email: contact@nweber.me
-GitHub: https://github.com/nweber23
-LinkedIn: https://linkedin.com/in/niklas-weber-488576329/
-Portfolio: https://nweber.me
+- Email: [contact@nweber.me](mailto:contact@nweber.me)
+- GitHub: [github.com/nweber23](https://github.com/nweber23)
+- LinkedIn: [linkedin.com/in/niklas-weber-488576329](https://linkedin.com/in/niklas-weber-488576329/)
+- Portfolio: [nweber.me](https://nweber.me)
