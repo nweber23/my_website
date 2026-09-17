@@ -25,6 +25,9 @@ POSIX-compliant shell in C implementing fork/exec, pipe chaining, redirections, 
 
 ## Writing
 
+### [Building a container runtime from scratch: namespaces, pivot_root, cgroups v2, and OverlayFS in pure Go](https://nweber.me/writing/container-from-scratch.html)
+Writing a minimal container runtime in pure Go — PID/mount/UTS/network namespaces, pivot_root, cgroups v2, and OverlayFS — by hand, with the real debugging incidents along the way.
+
 ### [Why I keep building from scratch: process handling, WebSocket hubs, and .obj parsers](https://nweber.me/writing/build-from-scratch.html)
 A case for hand-rolling the parts of a system that matter — minishell's process handling, a WebSocket hub, an .obj parser — and reaching for a library everywhere else.
 

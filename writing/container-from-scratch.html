@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building a Container Runtime From Scratch — Niklas Weber</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='6'%20fill='%230E0C09'/%3E%3Cpath%20d='M9%2023V9h2.4l9.2%2010.6V9H23v14h-2.4L11.4%2012.4V23z'%20fill='%23ECE5D8'/%3E%3Ccircle%20cx='24'%20cy='10'%20r='2'%20fill='%23FF4D1C'/%3E%3C/svg%3E">
+
+    <meta name="description" content="Writing a minimal container runtime in pure Go — PID/mount/UTS/network namespaces, pivot_root, cgroups v2, and OverlayFS — by hand, with the real debugging incidents along the way.">
+    <meta name="robots" content="index, follow">
+    <meta name="last-modified" content="2026-09-17">
+    <meta name="theme-color" content="#0E0C09">
+    <link rel="canonical" href="https://nweber.me/writing/container-from-scratch.html">
+
+    <meta property="og:title" content="Building a Container Runtime From Scratch">
+    <meta property="og:description" content="Writing a minimal container runtime in pure Go — PID/mount/UTS/network namespaces, pivot_root, cgroups v2, and OverlayFS — by hand, with the real debugging incidents along the way.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://nweber.me/writing/container-from-scratch.html">
+    <meta property="og:image" content="https://nweber.me/assets/ft_casino.webp">
+    <meta property="og:site_name" content="Niklas Weber Portfolio">
+    <meta property="og:locale" content="en_US">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Building a Container Runtime From Scratch">
+    <meta name="twitter:description" content="Writing a minimal container runtime in pure Go — PID/mount/UTS/network namespaces, pivot_root, cgroups v2, and OverlayFS — by hand, with the real debugging incidents along the way.">
+    <meta name="twitter:image" content="https://nweber.me/assets/ft_casino.webp">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="../styles.min.css?v=20260831a">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Geist+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Geist+Mono:wght@400;500&display=swap"></noscript>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://nweber.me/" },
+        { "@type": "ListItem", "position": 2, "name": "Writing", "item": "https://nweber.me/writing.html" },
+        { "@type": "ListItem", "position": 3, "name": "Building a container runtime from scratch in Go", "item": "https://nweber.me/writing/container-from-scratch.html" }
+      ]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "@id": "https://nweber.me/writing/container-from-scratch.html",
+      "headline": "Building a container runtime from scratch: namespaces, pivot_root, cgroups v2, and OverlayFS in pure Go",
+      "description": "Writing a minimal container runtime in pure Go — PID/mount/UTS/network namespaces, pivot_root, cgroups v2, and OverlayFS — by hand, with the real debugging incidents along the way.",
+      "author": {
+        "@type": "Person",
+        "@id": "https://nweber.me/#person",
+        "name": "Niklas Weber",
+        "url": "https://nweber.me",
+        "jobTitle": "Systems Developer",
+        "description": "Systems Developer at 42 Heilbronn specializing in C, Go, and low-level programming.",
+        "sameAs": [
+          "https://github.com/nweber23",
+          "https://profile.intra.42.fr/users/nweber",
+          "https://www.linkedin.com/in/niklas-weber-488576329/"
+        ]
+      },
+      "datePublished": "2026-09-17",
+      "dateModified": "2026-09-17",
+      "mainEntityOfPage": "https://nweber.me/writing/container-from-scratch.html",
+      "about": { "@id": "https://nweber.me/#person" },
+      "keywords": "Linux namespaces, containers, cgroups v2, pivot_root, OverlayFS, PID namespace, network namespace, Go, golang.org/x/sys/unix, container runtime, Docker internals"
+    }
+    </script>
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <div class="scroll-progress" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <nav class="nav" aria-label="Main navigation">
+        <ul class="nav__list" role="list">
+            <li><a href="../index.html" class="nav__link" data-idx="00">← Back</a></li>
+        </ul>
+
+        <div class="nav__right">
+            <span class="nav__time" aria-label="Current time in CET">—</span>
+            <button class="nav__toggle" aria-label="Open menu" aria-expanded="false">
+                <span class="nav__toggle-bar"></span>
+                <span class="nav__toggle-bar"></span>
+            </button>
+        </div>
+    </nav>
+
+    <main id="main" class="main">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol class="breadcrumb__list">
+                <li class="breadcrumb__item">
+                    <a href="/" class="breadcrumb__link">home</a>
+                </li>
+                <li class="breadcrumb__item breadcrumb__sep">
+                    <a href="../writing.html" class="breadcrumb__link">writing</a>
+                </li>
+                <li class="breadcrumb__item breadcrumb__sep">
+                    <span class="breadcrumb__current" aria-current="page">container from scratch</span>
+                </li>
+            </ol>
+        </nav>
+
+        <section class="section section--imprint" aria-labelledby="post-title" id="container-from-scratch">
+            <div class="section__head">
+                <h1 id="post-title" class="section__title">Building a container runtime <em>from scratch</em></h1>
+                <span class="section__aside">2026-09-17 · Systems programming</span>
+            </div>
+
+            <div class="imprint__layout imprint__layout--full">
+                <article class="imprint__block">
+                    <p class="imprint__text"><code>container-from-scratch</code> is a minimal container runtime, one Go file, stdlib plus <code>golang.org/x/sys/unix</code> and nothing else — no container libraries. The goal wasn't to compete with Docker, it was to stop treating it as a black box: implement, by hand, the actual kernel primitives it's built on. PID namespaces, mount namespaces with a private <code>/proc</code>, UTS namespaces, <code>pivot_root</code>, cgroups v2, network namespaces, OverlayFS, and a real PID 1 that reaps its zombies. Each stage adds exactly one mechanism on top of the last, and each has a "done" condition that isn't "it compiles" but "here is the terminal output proving this isolation is real." Source is on <a href="https://github.com/nweber23/understanding_containers">GitHub</a>.</p>
+                    <p class="imprint__text">Deliberately out of scope: image registries, a long-running daemon, real bridge networking with iptables NAT (documented as a manual exercise, not automated), and user namespaces — flagged below as the natural next project rather than bolted on at the end of an already long session.</p>
+
+                    <h2 class="imprint__heading">The trick every stage depends on: re-executing yourself via /proc/self/exe</h2>
+                    <p class="imprint__text">Before any of the stages, one problem has to be solved or nothing else works. PID namespaces can only be entered by a process at <em>creation</em> time, via <code>clone(2)</code> — unlike most other namespace types, calling <code>unshare(CLONE_NEWPID)</code> does not move the calling process into a new namespace, it only affects children forked afterward. And Go specifically can't just call a raw <code>fork()</code> to get that child: the runtime is heavily multithreaded (goroutine scheduler, GC workers, the sysmon thread), and a bare <code>fork()</code> only duplicates the calling OS thread — every other thread, and any lock state it held, vanishes in the child, leaving a structurally broken runtime until an <code>exec()</code> replaces the whole process image. Go deliberately doesn't expose a safe raw fork.</p>
+                    <p class="imprint__text">The fix, used here and in real runtimes like runc: re-exec the same binary via <code>/proc/self/exe</code> — a magic symlink the kernel always points at the current process's own executable — passing the target clone flags through <code>exec.Cmd</code>'s <code>SysProcAttr.Cloneflags</code>. The new process is born <em>directly inside</em> the new namespace as its PID 1, via a full <code>execve()</code>, no fork, no broken runtime. Since it's the same compiled binary running twice, a sentinel argv value tells the two branches apart:</p>
+                    <pre class="article__code"><code>const reexecMarker = "__namespace_init__"
+
+func main() {
+    if len(os.Args) > 1 &amp;&amp; os.Args[1] == reexecMarker {
+        runInNamespace(os.Args[2:])
+        return
+    }
+    spawn(os.Args[1:])
+}</code></pre>
+
+                    <h2 class="imprint__heading">Stage 1 — PID namespace</h2>
+                    <p class="imprint__text">A process's private view of PID space: the first process born inside a new PID namespace becomes PID 1 from that namespace's point of view, while still having a real, different PID on the host — dual identity, same task. Namespaces nest asymmetrically on purpose: a child can't see its parent's namespace, but the parent can always see into it, so the host can still supervise every container. One flag does it:</p>
+                    <pre class="article__code"><code>cmd.SysProcAttr = &amp;syscall.SysProcAttr{
+    Cloneflags: unix.CLONE_NEWPID,
+}</code></pre>
+                    <p class="imprint__text">Done: <code>echo $$</code> inside reports <code>1</code>. <code>ps aux</code> on the host, in a second terminal, still shows the process under its real, large PID. But <code>ls /proc</code> <em>inside</em> the namespace at this point still misleadingly lists the whole host process tree — not a bug. Procfs binds itself to a specific PID namespace at <em>mount</em> time, stored in the superblock, not re-evaluated per reader. The <code>/proc</code> mount here is the one inherited from the host, still bound to the host's namespace. Fixing that is the next stage.</p>
+
+                    <h2 class="imprint__heading">Stage 2 — mount namespace and a private /proc</h2>
+                    <p class="imprint__text"><code>CLONE_NEWNS</code> gives a private mount table, but there's a subtlety that trips up almost everyone on the first attempt: mount points have a <em>propagation type</em>, not just namespace membership. Default propagation on most distros, Ubuntu included, is <code>MS_SHARED</code> for root and everything under it — a shared mount belongs to a peer group, and cloning off a shared mount keeps that membership, so mount/unmount events still propagate bidirectionally between the "private" namespace and the host even though the table is technically separate. <code>CLONE_NEWNS</code> alone does not stop this; you have to explicitly, recursively remount root as <code>MS_PRIVATE</code> to sever peer-group membership. It's the first thing every real container runtime does after creating the mount namespace.</p>
+                    <p class="imprint__text">Then mount a <em>fresh</em> procfs at <code>/proc</code> — a new procfs mount always captures the PID namespace of whoever is mounting it, right now, fixing the Stage 1 cliffhanger:</p>
+                    <pre class="article__code"><code>func setupMounts() error {
+    if err := unix.Mount("none", "/", "", unix.MS_REC|unix.MS_PRIVATE, ""); err != nil {
+        return fmt.Errorf("making / private: %w", err)
+    }
+    return unix.Mount("proc", "/proc", "proc", 0, "")
+}</code></pre>
+                    <p class="imprint__text">Done, with real output: <code>ps aux</code> inside shows only the shell and <code>ps</code> itself — PIDs 1 and 7. From the host, <code>mount | grep /proc</code> shows exactly one entry, nothing leaked from the container. Both directions of isolation proven. One small confusion worth naming: running <code>cat /proc/mounts | head -3</code> inside shows the <em>old</em> host mounts first (ext4 root, udev, devpts), which looks like the private <code>/proc</code> didn't take. It did — a new mount namespace starts as a <em>copy</em> of the parent's table, not empty, so those entries are legitimately part of the private table too, just listed before the fresh proc mount, which was added last. <code>head -3</code> just cuts off before reaching it.</p>
+
+                    <h2 class="imprint__heading">Stage 3 — UTS namespace</h2>
+                    <p class="imprint__text">The simplest namespace in the set, on purpose. "UTS" is Unix Timesharing System, named after the <code>struct utsname</code> from <code>uname(2)</code> that hostname happens to live in. It isolates two strings — hostname and NIS domain name — but that matters because so much tooling keys off hostname (shell prompts, logs, service discovery, TLS SANs, split-brain detection) that shared hostnames across containers would cause silent collisions. No propagation semantics, no filesystem interaction, no ordering constraints with anything else: one clone flag, one syscall.</p>
+                    <pre class="article__code"><code>// added to the same Cloneflags bitmask:
+syscall.CLONE_NEWUTS
+
+// then, before exec, inside the new namespace:
+unix.Sethostname([]byte("container"))</code></pre>
+                    <p class="imprint__text">Done: <code>hostname</code> inside prints <code>container</code>; the host's own hostname is untouched.</p>
+
+                    <h2 class="imprint__heading">Stage 4 — chroot vs. pivot_root</h2>
+                    <p class="imprint__text">This is the stage with the best "here's something people get wrong" content in the whole project. <code>chroot(2)</code>, from 1979, only changes where a process's <code>/</code> <em>appears</em> to point for path resolution — it never touches the mount table. The old root stays mounted exactly where it was, just unreachable via chroot-relative paths. It's famously not a security boundary: root can escape it — open a file descriptor outside the jail before chrooting, or the classic double-<code>chroot()</code>-plus-<code>fchdir()</code> trick, or <code>mknod</code> a device node to reach raw disk.</p>
+                    <p class="imprint__text"><code>pivot_root(2)</code> is what runc and Docker actually use. It's fundamentally a <em>mount</em> operation: it swaps which mount is the root of the mount tree for the current mount namespace, and relocates the old root to a path you specify so you can genuinely unmount it afterward. This only makes sense on top of Stage 2's private mount namespace — pivoting the host's real root would be catastrophic, and the kernel disallows it in most cases anyway. The mechanism is a five-step dance, each step satisfying a real kernel constraint:</p>
+                    <pre class="article__code"><code>func pivotRoot(newRoot string) error {
+    // pivot_root requires newRoot to already BE a mount point —
+    // bind-mounting it onto itself satisfies that without copying data
+    if err := unix.Mount(newRoot, newRoot, "", unix.MS_BIND|unix.MS_REC, ""); err != nil {
+        return fmt.Errorf("bind-mounting new root: %w", err)
+    }
+    oldRootDir := filepath.Join(newRoot, ".pivot_root_old")
+    if err := os.MkdirAll(oldRootDir, 0700); err != nil {
+        return fmt.Errorf("creating old root holder: %w", err)
+    }
+    if err := unix.PivotRoot(newRoot, oldRootDir); err != nil {
+        return fmt.Errorf("pivot_root: %w", err)
+    }
+    if err := unix.Chdir("/"); err != nil {
+        return fmt.Errorf("chdir to new root: %w", err)
+    }
+    // lazy unmount: detaches immediately even with an open fd still
+    // referencing it, cleaned up once nothing holds it — a plain
+    // unmount can fail EBUSY here
+    if err := unix.Unmount("/.pivot_root_old", unix.MNT_DETACH); err != nil {
+        return fmt.Errorf("unmounting old root: %w", err)
+    }
+    return os.RemoveAll("/.pivot_root_old")
+}</code></pre>
+                    <p class="imprint__text">This stage needs an actual root filesystem to pivot into — a one-time shell setup step, kept deliberately out of the Go program to respect the "no image pulling" scope boundary: install <code>busybox-static</code>, copy the binary in, symlink <code>sh</code>/<code>ls</code>/<code>ps</code>/etc. to it. Skip that step and the failure is exactly as informative as it should be — <code>pivot root failed: bind-mounting new root: no such file or directory</code>, because the rootfs directory genuinely doesn't exist yet. Done: <code>ls /</code> inside shows only <code>bin</code> and <code>proc</code>; anything host-only fails with "no such file or directory," not a permission error — it genuinely isn't in this mount tree anymore.</p>
+
+                    <h2 class="imprint__heading">Stage 5 — cgroups v2: memory, CPU, and the OOM debugging saga</h2>
+                    <p class="imprint__text">Everything so far controls what a container can <em>see</em>. None of it controls what it can <em>consume</em> — a runaway loop or a leak inside the namespace is exactly as dangerous to the host as running it directly. Namespaces are a visibility mechanism; cgroups are the resource-accounting mechanism, and together they're what actually makes this a container rather than a process with a funny <code>/proc</code>. cgroups v2 isn't a syscall API at all — it's a virtual filesystem at <code>/sys/fs/cgroup</code>. Making a directory there creates a cgroup, auto-populated with control files (<code>cgroup.procs</code>, <code>memory.max</code>, <code>cpu.max</code>); writing a PID into <code>cgroup.procs</code> joins it, writing numbers into the limit files sets real kernel-enforced ceilings. No new clone flag — pure file I/O, done from the <em>launcher</em> process using the child's real host PID (the namespace's own view of itself, PID 1, would be useless as a cgroup key — the same host-PID-vs-namespace-PID duality from Stage 1's <code>ps aux</code> confusion, again):</p>
+                    <pre class="article__code"><code>const (
+    cgroupPath       = "/sys/fs/cgroup/container-from-scratch"
+    memoryLimitBytes = "20971520" // 20 MB
+    cpuMax           = "10000 100000" // 10ms per 100ms period = 10% of one core
+)
+
+func setupCgroup(pid int) (cleanup func(), err error) {
+    os.MkdirAll(cgroupPath, 0755)
+    cleanup = func() { os.Remove(cgroupPath) }
+    os.WriteFile(filepath.Join(cgroupPath, "memory.max"), []byte(memoryLimitBytes), 0644)
+    os.WriteFile(filepath.Join(cgroupPath, "memory.swap.max"), []byte("0"), 0644)
+    os.WriteFile(filepath.Join(cgroupPath, "cpu.max"), []byte(cpuMax), 0644)
+    os.WriteFile(filepath.Join(cgroupPath, "cgroup.procs"), []byte(strconv.Itoa(pid)), 0644)
+    return cleanup, nil
+}</code></pre>
+                    <p class="imprint__text">Verifying this one turned into the richest debugging chain in the whole project. First memory-stress attempt, <code>head -c 50000000 /dev/zero | tr '\0' x</code>, failed immediately — the minimal busybox rootfs never had <code>/dev</code> set up, no devtmpfs, no device nodes. Switched to busybox's own <code>yes</code> builtin instead. Second attempt ran the stress command without capturing its output, so <code>x</code> characters just flooded the terminal instead of building up in memory — <code>memory.current</code> sat near 5MB and <code>memory.events</code> showed <code>oom 0</code>, proof nothing was actually accumulating. Switched to a pipe-free, substitution-free shell doubling loop instead, which can't fail on quoting:</p>
+                    <pre class="article__code"><code>x="a"; while true; do x="$x$x"; done   # doubles every iteration — past 20MB in ~25 loops</code></pre>
+                    <p class="imprint__text">First run of <em>that</em> also didn't die. <code>memory.current</code> sat right at the limit indefinitely — no OOM kill. The real cause is a genuinely well-known and poorly-documented cgroups v2 gotcha: <code>memory.max</code> only caps memory, not swap, separately. With swap enabled on the host, once the cgroup hits its memory ceiling the kernel pushes pages into swap instead of invoking the OOM killer — the process doesn't die, it thrashes. The fix is the <code>memory.swap.max = 0</code> write above, forcing the kernel to OOM-kill instead of swap-stall since there's nowhere left to overflow into. After that fix, the same test triggered a real kill — verified with the correct diagnostic tool, <em>not</em> <code>dmesg | tail</code> (full of unrelated AppArmor noise from other running apps, drowning the real signal) but the cgroup's own accounting:</p>
+                    <pre class="article__code"><code>cat /sys/fs/cgroup/container-from-scratch/memory.events   # oom_kill count went nonzero</code></pre>
+                    <p class="imprint__text">CPU throttling needed no debugging: a <code>while true; do :; done</code> busy-loop inside, checked from the host with <code>ps aux | grep sh</code>, showed <strong>8.2%</strong> CPU — capped near the configured 10% quota instead of pinning a full core.</p>
+
+                    <h2 class="imprint__heading">Stage 6 — network namespace</h2>
+                    <p class="imprint__text"><code>CLONE_NEWNET</code> gives a process its own complete network stack — interfaces, routing table, ARP table, port space — so containers can't collide over ports the way two unrelated host programs never would either. It's the entire code change:</p>
+                    <pre class="article__code"><code>Cloneflags: syscall.CLONE_NEWPID | syscall.CLONE_NEWNS | syscall.CLONE_NEWUTS | syscall.CLONE_NEWNET</code></pre>
+                    <p class="imprint__text">Nothing else needed — everything observable is a direct consequence of the flag. Worth a paragraph: a fresh netns isn't empty, the kernel auto-creates a loopback interface, but leaves it administratively down. Even <code>curl localhost</code> inside a brand-new netns fails until something explicitly brings <code>lo</code> up; Docker's entrypoint does this silently, here it's done by hand and directly observable. Connecting the namespace to the outside world — a veth pair, a bridge, iptables NAT for outbound masquerading — is a large amount of plumbing that <code>dockerd</code>/CNI automate, and was deliberately left as a documented, manual shell exercise rather than built into the Go program:</p>
+                    <pre class="article__code"><code>sudo ip link add veth0 type veth peer name veth1
+sudo ip link set veth1 netns $PID
+sudo ip addr add 10.200.1.1/24 dev veth0
+sudo ip link set veth0 up
+sudo nsenter -t $PID -n ip addr add 10.200.1.2/24 dev veth1
+sudo nsenter -t $PID -n ip link set veth1 up
+sudo nsenter -t $PID -n ip link set lo up</code></pre>
+                    <p class="imprint__text">Done: <code>ip addr</code> inside shows only <code>lo</code>, down; the host's real interfaces are untouched; <code>ping -c1 127.0.0.1</code> inside fails until <code>lo</code> is brought up by hand, then succeeds.</p>
+
+                    <h2 class="imprint__heading">Stage 7 — OverlayFS, and three unrelated bugs wearing the same disguise</h2>
+                    <p class="imprint__text">This is the payoff stage for "how do image layers actually work." Every prior stage pivoted into one flat rootfs directory. Real images are built from stacked layers — a base, an install layer, an app layer — and two containers from the same image share the base layer's blocks on disk instead of each getting a full copy; a container's writes never touch the shared base at all. That's why <code>docker run</code> from an existing image is near-instant instead of a filesystem copy, and why layer caching works. OverlayFS combines directories into one view via four roles: <code>lowerdir</code> (read-only layers, never written), <code>upperdir</code> (the single writable layer every write lands in), <code>workdir</code> (internal scratch space for atomic renames, must be empty and on the same filesystem as <code>upperdir</code>), and <code>merged</code> (the actual mountpoint — this is what gets <code>pivot_root</code>'d into, indistinguishable from an ordinary filesystem from inside). A file deleted from inside the container that exists in the lower layer isn't actually deleted — it's recorded in <code>upperdir</code> as a whiteout, a character device with major/minor 0/0.</p>
+                    <pre class="article__code"><code>opts := fmt.Sprintf("lowerdir=%s,upperdir=%s,workdir=%s", absLower, absUpper, absWork)
+unix.Mount("overlay", merged, "overlay", 0, opts)</code></pre>
+                    <p class="imprint__text">This is the debugging chain worth reading in full, because it's rarely one clean root cause and this wasn't either — three distinct, mostly unrelated bugs, all surfacing as the same symptom, mount failures, each needing a different diagnostic to isolate:</p>
+                    <p class="imprint__text"><strong>Bug one.</strong> First run: <code>mounting overlay: invalid argument</code>, no clue why from the Go error alone. Reproducing the same mount manually from a host shell (more verbose errors) hit a <em>different</em> failure, <code>mount: bad usage</code> — a shell issue, not overlayfs: the project directory's path contains a literal space, and the manual reproduction used an unquoted <code>$(pwd)</code> inside the <code>-o</code> value, so word-splitting corrupted the argument into garbage tokens. Quoting it (<code>-o "lowerdir=$(pwd)/...,upperdir=...,workdir=..."</code>) fixed the manual command and proved the overlay mechanism itself was fine — syscalls don't care about spaces the way shells do, so this wasn't the real blocker for the Go program.</p>
+                    <p class="imprint__text"><strong>Bug two, the real one behind the original error.</strong> Going back to <code>dmesg</code> from an earlier failed attempt turned up the actual smoking gun: <code>overlay: Unknown parameter ' upperdir'</code> — note the leading space. Traced by reading the Go source directly to a one-character typo introduced while hand-typing the code: <code>fmt.Sprintf("lowerdir=%s, upperdir=%s,workdir=%s", ...)</code>, a stray space after the first comma. Overlayfs's option parser splits strictly on commas with zero tolerance for surrounding whitespace, so <code>", upperdir=..."</code> became a literally unparseable <code>" upperdir"</code> token — the kernel error was telling the exact truth the whole time. Removing the space fixed it.</p>
+                    <p class="imprint__text"><strong>Bug three, completely unrelated, surfacing right after.</strong> <code>mount failed: no such file or directory</code> — this time from the <code>/proc</code> mount, not overlay, which now succeeded. The <code>layers/lower</code> setup script had never actually been run: the directory was empty, auto-created by <code>os.MkdirAll</code> inside the sudo-run Go program and so owned by root. No <code>/bin</code>, no <code>/proc</code> mountpoint existed in the base layer, so after pivoting into an empty merged view there was nowhere to mount <code>/proc</code> onto. Fixing it directly wasn't possible without a sudo password to write into a root-owned directory — the fix had to be handed back as a shell command instead.</p>
+                    <p class="imprint__text">Done, once all three were fixed: writing a file inside the container appears in <code>layers/upper</code> on the host, <code>layers/lower</code> stays untouched; deleting a file that exists in the lower layer makes it disappear from inside the container while the original remains on the host, now visible in <code>layers/upper</code> as a whiteout.</p>
+
+                    <h2 class="imprint__heading">Two more additions, chosen for what they catch</h2>
+                    <p class="imprint__text"><strong>pids.max</strong> — fork-bomb protection, the same filesystem-write pattern as the other cgroup limits, capping total process count at 64. A shell loop spawning background processes continuously hits the cap and stops, instead of exhausting the host.</p>
+                    <p class="imprint__text"><strong>PID 1 as a real init, reaping zombies</strong> — the more structurally interesting one, and a genuine gotcha that's literally why <code>docker run --init</code> and tini exist. Up to this point, PID 1 handed off to the target command via <code>unix.Exec</code> — an <code>execve()</code> that <em>replaces</em> the process image entirely, meaning PID 1 <em>became</em> the shell directly, with nothing left running to ever call <code>wait()</code> on orphaned descendants. Any process reparented onto PID 1 (a background job whose direct parent exited) would finish and become a permanent zombie, since nobody was waiting on it. The fix keeps PID 1 as a small Go supervisor: start the target as a child instead of exec-replacing into it, then loop <code>wait4(-1, ...)</code> forever, reaping any child — the main one or any reparented orphan — until there are none left:</p>
+                    <pre class="article__code"><code>func runAsInit(args []string) {
+    child := exec.Command(args[0], args[1:]...)
+    child.Stdin, child.Stdout, child.Stderr = os.Stdin, os.Stdout, os.Stderr
+    child.Start()
+    mainPid := child.Process.Pid
+
+    exitCode := 0
+    for {
+        var ws unix.WaitStatus
+        pid, err := unix.Wait4(-1, &amp;ws, 0, nil)
+        if err == unix.EINTR {
+            continue
+        }
+        if err != nil {
+            break // ECHILD: nothing left to reap
+        }
+        if pid == mainPid {
+            exitCode = ws.ExitStatus()
+        }
+    }
+    os.Exit(exitCode)
+}</code></pre>
+                    <p class="imprint__text">This waits for every descendant to exit before returning, rather than exiting the instant the main process does and letting namespace teardown <code>SIGKILL</code> the rest, which is what tini actually does. Deliberately the simpler, slightly less production-faithful choice — good enough for the concept.</p>
+
+                    <h2 class="imprint__heading">What's left out, on purpose</h2>
+                    <p class="imprint__text">Image registries and pulling images, a long-running daemon or REST API, and real bridge networking with iptables NAT are all explained conceptually here but never implemented — each one is a lot of plumbing whose value, for this project, was understanding <em>that</em> it exists and roughly how, not re-deriving dockerd. User namespaces (rootless containers) are the one deliberately deferred for a different reason: they're the single most security-relevant piece not covered, and they interact with everything above — mounts, cgroup permissions — in ways that deserve a slower, dedicated pass rather than being bolted onto the end of an already long session. Natural part two.</p>
+
+                    <h2 class="imprint__heading">What actually mattered</h2>
+                    <p class="imprint__text">None of the individual mechanisms here are secret — they're documented in man pages and in runc's own source. What a from-scratch implementation buys is the debugging: watching <code>ls /proc</code> half-work in Stage 1 and understanding exactly why via superfs superblock binding; hitting a memory limit that silently does nothing until you learn cgroups v2 caps memory and swap separately; chasing an overlay mount failure through a shell-quoting artifact, a one-character typo, and a skipped setup step before finding the real cause each time. That's the actual shape of systems debugging — rarely one clean root cause, always resolved by reading the error message literally and reaching for the more specific diagnostic (<code>memory.events</code> over <code>dmesg</code>, a manual mount reproduction over trusting the Go error) instead of the generic one.</p>
+
+                    <p class="imprint__text"><a href="https://github.com/nweber23/understanding_containers">← Source on GitHub</a></p>
+                </article>
+            </div>
+        </section>
+
+        <nav class="writing-index" aria-label="More posts">
+            <div class="writing-index__item">
+                <a href="build-from-scratch.html" class="writing-index__link">Why I keep building things from scratch</a>
+                <span class="writing-index__meta">2026-08-26 · General</span>
+            </div>
+            <div class="writing-index__item">
+                <a href="elo-query-performance.html" class="writing-index__link">Getting Elo leaderboard queries under 100ms</a>
+                <span class="writing-index__meta">2026-08-25 · 42 Elo Leaderboard</span>
+            </div>
+            <div class="writing-index__item">
+                <a href="grpc-vs-rest.html" class="writing-index__link">gRPC versus REST: picking protocols at the Transcendence service boundary</a>
+                <span class="writing-index__meta">2026-08-23 · Transcendence</span>
+            </div>
+            <div class="writing-index__item">
+                <a href="ear-clipping.html" class="writing-index__link">Triangulating arbitrary polygons with ear clipping</a>
+                <span class="writing-index__meta">2026-08-23 · Go renderer</span>
+            </div>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <div class="footer__left">
+            <span class="footer__copy">© 2026 · Niklas Weber</span>
+            <span class="footer__note">Hand-built with HTML, CSS, and vanilla JS</span>
+        </div>
+        <div class="footer__right">
+            <a href="../index.html" class="footer__link">← Index</a>
+        </div>
+    </footer>
+
+    <script defer src="../script.min.js?v=20260831a"></script>
+    <script data-goatcounter="https://mattz.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
