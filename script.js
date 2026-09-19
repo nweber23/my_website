@@ -1,6 +1,6 @@
 /**
  * Niklas Weber — Portfolio
- * Close to the Metal · 2026
+ * Descent · 2026
  */
 
 (function () {
@@ -8,14 +8,75 @@
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const finePointer = window.matchMedia('(pointer: fine)').matches;
+    const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
-    /* ===== Scroll progress — top hairline + rail meter + hex address ===== */
-    class ScrollProgress {
+    /* ===== Hero stack — pointer tilt and scroll spread =====
+       The five plates tilt a little toward the pointer and pull
+       apart as the hero scrolls away, like a stack being opened. */
+    class HeroStack {
         constructor() {
-            this.bar = document.querySelector('.scroll-progress');
-            this.meter = document.querySelector('.rail__meter-fill');
-            this.hex = document.querySelector('.rail__hex');
-            if (!this.bar && !this.meter && !this.hex) return;
+            this.stack = document.querySelector('[data-stack]');
+            this.hero = document.querySelector('.hero');
+            if (!this.stack || !this.hero || prefersReducedMotion) return;
+            this.scene = this.stack.querySelector('.stack__scene');
+
+            this.tilt = { x: 0, y: 0 };
+            this.target = { x: 0, y: 0 };
+            this.spread = 1;
+            this.targetSpread = 1;
+            this.running = false;
+
+            if (finePointer) {
+                window.addEventListener('pointermove', e => {
+                    this.target.x = (e.clientX / window.innerWidth) * 2 - 1;
+                    this.target.y = (e.clientY / window.innerHeight) * 2 - 1;
+                    this.start();
+                }, { passive: true });
+            }
+            window.addEventListener('scroll', () => this.onScroll(), { passive: true });
+            this.onScroll();
+        }
+        onScroll() {
+            const h = this.hero.offsetHeight || 1;
+            const p = clamp(window.scrollY / h, 0, 1);
+            this.targetSpread = 1 + p * 1.8;
+            this.start();
+        }
+        start() {
+            if (this.running) return;
+            this.running = true;
+            const tick = () => {
+                this.tilt.x += (this.target.x - this.tilt.x) * 0.08;
+                this.tilt.y += (this.target.y - this.tilt.y) * 0.08;
+                this.spread += (this.targetSpread - this.spread) * 0.14;
+                const s = this.scene.style;
+                s.setProperty('--rz', (-40 + this.tilt.x * 9).toFixed(2) + 'deg');
+                s.setProperty('--rx', (57 - this.tilt.y * 7).toFixed(2) + 'deg');
+                s.setProperty('--spread', this.spread.toFixed(3));
+                const settled =
+                    Math.abs(this.target.x - this.tilt.x) < 0.002 &&
+                    Math.abs(this.target.y - this.tilt.y) < 0.002 &&
+                    Math.abs(this.targetSpread - this.spread) < 0.002;
+                if (settled) { this.running = false; return; }
+                requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+        }
+    }
+
+    /* ===== Depth — which layer is under the nav bar =====
+       Gives the nav the material of the current layer, moves the
+       depth rail marker and highlights the matching nav link. */
+    class Depth {
+        constructor() {
+            this.layers = Array.from(document.querySelectorAll('[data-layer]'));
+            if (!this.layers.length) return;
+            this.nav = document.querySelector('.nav');
+            this.rail = document.querySelector('.rail');
+            this.railItems = Array.from(document.querySelectorAll('[data-rail]'));
+            this.links = Array.from(document.querySelectorAll('.nav__link'));
+            this.contact = document.getElementById('contact');
+            this.current = null;
             this.ticking = false;
             window.addEventListener('scroll', () => this.request(), { passive: true });
             window.addEventListener('resize', () => this.request(), { passive: true });
@@ -24,61 +85,31 @@
         request() {
             if (this.ticking) return;
             this.ticking = true;
-            requestAnimationFrame(() => this.update());
+            requestAnimationFrame(() => { this.ticking = false; this.update(); });
         }
         update() {
-            const doc = document.documentElement;
-            const scrolled = doc.scrollTop || document.body.scrollTop;
-            const height = doc.scrollHeight - doc.clientHeight;
-            const t = height > 0 ? Math.min(1, scrolled / height) : 0;
-            if (this.bar) this.bar.style.transform = 'scaleX(' + t + ')';
-            if (this.meter) this.meter.style.transform = 'scaleY(' + t + ')';
-            if (this.hex) {
-                const addr = Math.round(t * 0xFFFF);
-                this.hex.textContent = '0x' + addr.toString(16).toUpperCase().padStart(4, '0');
+            const probe = (this.nav ? this.nav.offsetHeight : 60) + 1;
+            let layer = this.layers[0];
+            for (const el of this.layers) {
+                if (el.getBoundingClientRect().top <= probe) layer = el;
             }
-            this.ticking = false;
-        }
-    }
+            const key = layer.dataset.layer;
+            if (key !== this.current) {
+                this.current = key;
+                if (this.nav) this.nav.className = this.nav.className.replace(/\bl-\w+/g, '').trim() + ' l-' + key;
+            }
 
-    /* ===== Nav active link tracking ===== */
-    class NavTracker {
-        constructor() {
-            this.sections = document.querySelectorAll('.section[id]');
-            this.links = document.querySelectorAll('.nav__link');
-            if (!this.sections.length || !this.links.length) return;
+            const railKey = layer.id && layer.classList.contains('layer') ? layer.id : null;
+            this.railItems.forEach(item => item.classList.toggle('is-current', item.dataset.rail === railKey));
+            if (this.rail) this.rail.classList.toggle('is-on', !!railKey);
 
-            this.observer = new IntersectionObserver(
-                entries => this.handle(entries),
-                { rootMargin: '-40% 0px -55% 0px', threshold: 0 }
-            );
-            this.sections.forEach(s => this.observer.observe(s));
-        }
-        handle(entries) {
-            entries.forEach(entry => {
-                if (!entry.isIntersecting) return;
-                const id = entry.target.id;
-                this.links.forEach(link => {
-                    const active = link.getAttribute('href') === '#' + id;
-                    link.classList.toggle('is-active', active);
-                });
-            });
-        }
-    }
-
-    /* ===== Live time display ===== */
-    class NavTime {
-        constructor() {
-            this.el = document.querySelector('.nav__time');
-            if (!this.el) return;
-            this.update();
-            setInterval(() => this.update(), 30000);
-        }
-        update() {
-            this.el.textContent = new Date().toLocaleTimeString('de-DE', {
-                hour: '2-digit', minute: '2-digit', hour12: false,
-                timeZone: 'Europe/Berlin'
-            }) + ' CET';
+            let active = null;
+            if (railKey) active = '#application';
+            else if (key === 'bedrock') {
+                const contactTop = this.contact ? this.contact.getBoundingClientRect().top : Infinity;
+                active = contactTop < window.innerHeight * 0.5 ? '#contact' : '#about';
+            }
+            this.links.forEach(l => l.classList.toggle('is-active', l.getAttribute('href') === active));
         }
     }
 
@@ -101,10 +132,7 @@
             const cacheTTL = 1000 * 60 * 60 * 6;
             try {
                 const cached = JSON.parse(localStorage.getItem(cacheKey));
-                if (cached && Date.now() - cached.ts < cacheTTL) {
-                    this.render(cached.data);
-                    return;
-                }
+                if (cached && Date.now() - cached.ts < cacheTTL) { this.render(cached.data); return; }
             } catch (e) { /* corrupt or unavailable cache, fall through to fetch */ }
 
             try {
@@ -116,22 +144,18 @@
                 if (!userRes.ok || !reposRes.ok) throw new Error('github api error');
                 const user = await userRes.json();
                 const repos = await reposRes.json();
-                const stars = Array.isArray(repos)
-                    ? repos.reduce((sum, r) => sum + (r.stargazers_count || 0), 0)
-                    : null;
-
+                const stars = Array.isArray(repos) ? repos.reduce((sum, r) => sum + (r.stargazers_count || 0), 0) : null;
                 let commits = null, days = null;
                 if (contribRes.ok) {
                     const contrib = await contribRes.json();
                     commits = contrib.total && contrib.total.lastYear;
                     days = contrib.contributions;
                 }
-
                 const data = { repos: user.public_repos, followers: user.followers, stars, commits, days };
                 try { localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data })); } catch (e) { /* storage unavailable */ }
                 this.render(data);
             } catch (e) {
-                /* API unreachable or rate-limited — leave the static fallback numbers in the markup */
+                /* API unreachable or rate-limited — keep the static numbers in the markup */
             }
         }
         render(data) {
@@ -143,14 +167,16 @@
             this.root.classList.add('is-live');
         }
         renderGraph(days) {
+            /* narrow screens get the last 26 weeks so the graph fits without scrolling */
+            if (this.els.graph.clientWidth < 560) days = days.slice(-182);
             const svgNS = 'http://www.w3.org/2000/svg';
             const cell = 11, gap = 3;
-            const first = new Date(days[0].date + 'T00:00:00');
-            const startPad = first.getDay();
+            const startPad = new Date(days[0].date + 'T00:00:00').getDay();
             const cols = Math.ceil((startPad + days.length) / 7);
             const width = cols * (cell + gap) - gap;
             const height = 7 * (cell + gap) - gap;
-            const levelColors = ['var(--border-2)', '#5C2413', '#A8391B', '#E0491F', 'var(--accent)'];
+            /* silicon to wafer violet, solid steps */
+            const levelColors = ['#1D1E27', '#3A3566', '#5A51A3', '#8A7DE0', '#B9A9FF'];
 
             const svg = document.createElementNS(svgNS, 'svg');
             svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
@@ -159,22 +185,15 @@
 
             days.forEach((d, i) => {
                 const idx = startPad + i;
-                const col = Math.floor(idx / 7);
-                const row = idx % 7;
                 const rect = document.createElementNS(svgNS, 'rect');
-                rect.setAttribute('x', col * (cell + gap));
-                rect.setAttribute('y', row * (cell + gap));
+                rect.setAttribute('x', Math.floor(idx / 7) * (cell + gap));
+                rect.setAttribute('y', (idx % 7) * (cell + gap));
                 rect.setAttribute('width', cell);
                 rect.setAttribute('height', cell);
-                rect.setAttribute('rx', 2);
                 rect.setAttribute('fill', levelColors[d.level] || levelColors[0]);
-
-                const dateLabel = new Date(d.date + 'T00:00:00').toLocaleDateString('en-US', {
-                    month: 'short', day: 'numeric', year: 'numeric'
-                });
+                const dateLabel = new Date(d.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                 rect.dataset.count = d.count;
                 rect.dataset.date = dateLabel;
-
                 const title = document.createElementNS(svgNS, 'title');
                 title.textContent = d.count + (d.count === 1 ? ' contribution on ' : ' contributions on ') + dateLabel;
                 rect.appendChild(title);
@@ -188,231 +207,44 @@
         attachTooltip(svg) {
             if (!this.tooltip) {
                 this.tooltip = document.createElement('div');
-                this.tooltip.className = 'gh-stats__tooltip';
+                this.tooltip.className = 'gh__tooltip';
                 this.tooltipCount = document.createElement('strong');
                 this.tooltipRest = document.createTextNode('');
                 this.tooltip.appendChild(this.tooltipCount);
                 this.tooltip.appendChild(this.tooltipRest);
                 document.body.appendChild(this.tooltip);
             }
-            const tooltip = this.tooltip;
-            const margin = 8;
-
+            const tooltip = this.tooltip, margin = 8;
             const show = (rect, evt) => {
                 const count = rect.dataset.count;
                 this.tooltipCount.textContent = count;
                 this.tooltipRest.textContent = ' ' + (count === '1' ? 'contribution' : 'contributions') + ' on ' + rect.dataset.date;
-
-                const tw = tooltip.offsetWidth;
-                const th = tooltip.offsetHeight;
-                let left = evt.clientX - tw / 2;
-                left = Math.max(margin, Math.min(left, window.innerWidth - tw - margin));
+                const tw = tooltip.offsetWidth, th = tooltip.offsetHeight;
+                const left = clamp(evt.clientX - tw / 2, margin, window.innerWidth - tw - margin);
                 let top = evt.clientY - th - 14;
                 if (top < margin) top = evt.clientY + 18;
-
                 tooltip.style.left = left + 'px';
                 tooltip.style.top = top + 'px';
                 tooltip.classList.add('is-visible');
             };
-            const hide = () => tooltip.classList.remove('is-visible');
-
-            svg.addEventListener('pointerover', e => {
-                if (e.target.tagName === 'rect') show(e.target, e);
-            });
-            svg.addEventListener('pointermove', e => {
-                if (e.target.tagName === 'rect') show(e.target, e);
-            });
-            svg.addEventListener('pointerout', e => {
-                if (e.target.tagName === 'rect') hide();
-            });
+            svg.addEventListener('pointerover', e => { if (e.target.tagName === 'rect') show(e.target, e); });
+            svg.addEventListener('pointermove', e => { if (e.target.tagName === 'rect') show(e.target, e); });
+            svg.addEventListener('pointerout', e => { if (e.target.tagName === 'rect') tooltip.classList.remove('is-visible'); });
         }
     }
 
-    /* ===== Scroll reveal ===== */
-    class ScrollReveal {
+    /* ===== Live time (secondary pages) ===== */
+    class NavTime {
         constructor() {
-            this.els = document.querySelectorAll('[data-reveal]');
-            if (!this.els.length) return;
-
-            this.observer = new IntersectionObserver(
-                entries => {
-                    entries.forEach(e => {
-                        if (!e.isIntersecting) return;
-                        e.target.classList.add('is-visible');
-                        this.observer.unobserve(e.target);
-                    });
-                },
-                { rootMargin: '0px 0px -80px 0px', threshold: 0.06 }
-            );
-            this.els.forEach(el => this.observer.observe(el));
-        }
-    }
-
-    /* ===== Skills stagger reveal ===== */
-    class SkillsReveal {
-        constructor() {
-            const block = document.querySelector('.about__skills');
-            if (!block) return;
-            const observer = new IntersectionObserver(entries => {
-                entries.forEach(e => {
-                    if (!e.isIntersecting) return;
-                    block.classList.add('is-visible');
-                    observer.disconnect();
-                });
-            }, { threshold: 0.15 });
-            observer.observe(block);
-        }
-    }
-
-    /* ===== Word-scrub reveal — paragraph settles in word-by-word on scroll ===== */
-    class WordScrub {
-        constructor() {
-            if (prefersReducedMotion) return;
-            this.els = document.querySelectorAll('[data-word-scrub]');
-            if (!this.els.length) return;
-
-            this.els.forEach(el => {
-                const text = el.textContent.trim();
-                el.textContent = '';
-                text.split(/(\s+)/).forEach(chunk => {
-                    if (!chunk.trim()) { el.appendChild(document.createTextNode(chunk)); return; }
-                    const span = document.createElement('span');
-                    span.className = 'word';
-                    span.textContent = chunk;
-                    span.style.setProperty('--i', el.querySelectorAll('.word').length);
-                    el.appendChild(span);
-                });
-            });
-
-            const observer = new IntersectionObserver(entries => {
-                entries.forEach(e => {
-                    if (!e.isIntersecting) return;
-                    e.target.classList.add('is-visible');
-                    observer.unobserve(e.target);
-                });
-            }, { rootMargin: '0px 0px -100px 0px', threshold: 0.2 });
-            this.els.forEach(el => observer.observe(el));
-        }
-    }
-
-    /* ===== Decode (scramble) effect on mono labels ===== */
-    class Decode {
-        constructor() {
-            this.els = document.querySelectorAll('[data-decode]');
-            if (!this.els.length) return;
-            if (prefersReducedMotion) return;
-
-            this.CHARS = '<>/\\[]{}=+*#01';
-            const obs = new IntersectionObserver(entries => {
-                entries.forEach(e => {
-                    if (!e.isIntersecting) return;
-                    this.run(e.target);
-                    obs.unobserve(e.target);
-                });
-            }, { threshold: 0.4 });
-            this.els.forEach(el => obs.observe(el));
-        }
-
-        run(el) {
-            const original = el.textContent;
-            const len = original.length;
-            const dur = 700;
-            const t0 = performance.now();
-
-            const step = now => {
-                const t = Math.min(1, (now - t0) / dur);
-                const settled = Math.floor(t * len);
-                let out = original.slice(0, settled);
-                for (let i = settled; i < len; i++) {
-                    const ch = original[i];
-                    out += (ch === ' ') ? ' '
-                        : this.CHARS[(Math.random() * this.CHARS.length) | 0];
-                }
-                el.textContent = out;
-                if (t < 1) requestAnimationFrame(step);
-                else el.textContent = original;
-            };
-            requestAnimationFrame(step);
-        }
-    }
-
-    /* ===== Scrub engine — pointer-independent scroll parallax ===== */
-    class Scrub {
-        constructor() {
-            if (prefersReducedMotion) return;
-            this.els = Array.from(document.querySelectorAll('[data-scrub]')).map(el => ({
-                el, speed: parseFloat(el.dataset.scrub) || 0.08
-            }));
-            if (!this.els.length) return;
-            if (window.matchMedia('(max-width: 900px)').matches) return;
-
-            this.ticking = false;
-            window.addEventListener('scroll', () => this.request(), { passive: true });
-            window.addEventListener('resize', () => this.request(), { passive: true });
+            this.el = document.querySelector('.nav__time');
+            if (!this.el) return;
             this.update();
-        }
-        request() {
-            if (this.ticking) return;
-            this.ticking = true;
-            requestAnimationFrame(() => this.update());
+            setInterval(() => this.update(), 30000);
         }
         update() {
-            const vh = window.innerHeight;
-            for (const item of this.els) {
-                const r = item.el.getBoundingClientRect();
-                const center = r.top + r.height / 2;
-                const delta = (center - vh / 2) * item.speed;
-                item.el.style.transform = 'translate3d(0,' + delta.toFixed(1) + 'px,0)';
-            }
-            this.ticking = false;
-        }
-    }
-
-    /* ===== Crosshair cursor telemetry ===== */
-    class Crosshair {
-        constructor() {
-            if (prefersReducedMotion || !finePointer) return;
-            this.root = document.querySelector('.xhair');
-            if (!this.root) return;
-            this.v = this.root.querySelector('.xhair__v');
-            this.h = this.root.querySelector('.xhair__h');
-            this.tag = this.root.querySelector('.xhair__tag');
-
-            this.x = -1; this.y = -1;       // current (lerped)
-            this.tx = -1; this.ty = -1;     // target
-            this.running = false;
-
-            document.addEventListener('pointermove', e => this.onMove(e), { passive: true });
-            document.addEventListener('pointerleave', () => this.root.classList.remove('is-on'));
-        }
-        onMove(e) {
-            if (this.tx < 0) { this.x = e.clientX; this.y = e.clientY; }
-            this.tx = e.clientX;
-            this.ty = e.clientY;
-            this.root.classList.add('is-on');
-            this.start();
-        }
-        start() {
-            if (this.running) return;
-            this.running = true;
-            const tick = () => {
-                this.x += (this.tx - this.x) * 0.22;
-                this.y += (this.ty - this.y) * 0.22;
-                this.v.style.transform = 'translateX(' + this.x.toFixed(1) + 'px)';
-                this.h.style.transform = 'translateY(' + this.y.toFixed(1) + 'px)';
-                this.tag.style.transform =
-                    'translate(' + (this.x + 12).toFixed(1) + 'px,' + (this.y + 12).toFixed(1) + 'px)';
-                this.tag.textContent =
-                    'X:' + String(Math.round(this.x)).padStart(4, '0') +
-                    ' Y:' + String(Math.round(this.y)).padStart(4, '0');
-
-                if (Math.abs(this.tx - this.x) < 0.3 && Math.abs(this.ty - this.y) < 0.3) {
-                    this.running = false;
-                    return;
-                }
-                requestAnimationFrame(tick);
-            };
-            requestAnimationFrame(tick);
+            this.el.textContent = new Date().toLocaleTimeString('de-DE', {
+                hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Europe/Berlin'
+            }) + ' in Heilbronn';
         }
     }
 
@@ -421,16 +253,13 @@
         constructor() {
             this.nav = document.querySelector('.nav');
             this.toggle = document.querySelector('.nav__toggle');
-            this.links = document.querySelectorAll('.nav__link');
             if (!this.nav || !this.toggle) return;
-
             this.open = false;
-            this.toggle.addEventListener('click', () => this.handleToggle());
-            this.links.forEach(l => l.addEventListener('click', () => this.open && this.close()));
+            this.toggle.addEventListener('click', () => (this.open ? this.close() : this.doOpen()));
+            document.querySelectorAll('.nav__link').forEach(l => l.addEventListener('click', () => this.open && this.close()));
             document.addEventListener('keydown', e => e.key === 'Escape' && this.open && this.close());
             window.matchMedia('(min-width: 901px)').addEventListener('change', e => e.matches && this.open && this.close());
         }
-        handleToggle() { this.open ? this.close() : this.doOpen(); }
         doOpen() {
             this.open = true;
             this.nav.classList.add('nav--open');
@@ -447,24 +276,6 @@
         }
     }
 
-    /* ===== Smooth scroll ===== */
-    class SmoothScroll {
-        constructor() {
-            document.querySelectorAll('a[href^="#"]').forEach(link => {
-                link.addEventListener('click', e => {
-                    const href = link.getAttribute('href');
-                    if (!href || href.length < 2) return;
-                    const target = document.querySelector(href);
-                    if (!target) return;
-                    e.preventDefault();
-                    const offset = target.getBoundingClientRect().top + window.pageYOffset - 80;
-                    window.scrollTo({ top: offset, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
-                    history.pushState(null, '', href);
-                });
-            });
-        }
-    }
-
     /* ===== External link safety ===== */
     class ExternalLinks {
         constructor() {
@@ -474,121 +285,7 @@
         }
     }
 
-    /* ===== Interactive hero — width-axis name + ember glow =====
-       Each character's Archivo `wdth` stretches toward the cursor
-       (100 → 125) and the whole name compresses as you scroll away. */
-    class HeroInteractive {
-        constructor() {
-            if (prefersReducedMotion) return;
-
-            this.hero = document.querySelector('.hero');
-            this.name = document.querySelector('.hero__name');
-            if (!this.hero || !this.name) return;
-            if (this.hero.classList.contains('hero--compact')) return;
-
-            this.chars = [];
-            if (finePointer) this.splitChars();
-
-            this.gx = 50; this.gy = 40;     // glow position (%)
-            this.tgx = 50; this.tgy = 40;
-            this.px = -1; this.py = -1;     // pointer, -1 = inactive
-            this.squeeze = 0;               // scroll compression 0..1
-            this.running = false;
-            this.RADIUS = 260;
-
-            if (finePointer) {
-                this.measure();
-                this.hero.addEventListener('pointerenter', () => this.measure(), { passive: true });
-                this.hero.addEventListener('pointermove', e => this.onMove(e), { passive: true });
-                this.hero.addEventListener('pointerleave', () => this.onLeave(), { passive: true });
-                window.addEventListener('resize', () => this.measure(), { passive: true });
-            }
-            window.addEventListener('scroll', () => this.onScroll(), { passive: true });
-        }
-
-        splitChars() {
-            this.name.querySelectorAll('.hero__name-line').forEach(line => {
-                const text = line.textContent;
-                line.textContent = '';
-                for (const ch of text) {
-                    const span = document.createElement('span');
-                    span.className = 'hero__char';
-                    span.textContent = ch;
-                    line.appendChild(span);
-                    this.chars.push(span);
-                }
-            });
-        }
-
-        measure() {
-            this.centers = this.chars.map(span => {
-                const r = span.getBoundingClientRect();
-                return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
-            });
-        }
-
-        onMove(e) {
-            const rect = this.hero.getBoundingClientRect();
-            this.px = e.clientX;
-            this.py = e.clientY;
-            this.tgx = ((e.clientX - rect.left) / rect.width) * 100;
-            this.tgy = ((e.clientY - rect.top) / rect.height) * 100;
-            this.start();
-        }
-
-        onLeave() {
-            this.px = -1; this.py = -1;
-            this.tgx = 50; this.tgy = 40;
-            this.start();
-        }
-
-        onScroll() {
-            const h = this.hero.offsetHeight || 1;
-            const t = Math.min(1, Math.max(0, window.scrollY / (h * 0.9)));
-            if (Math.abs(t - this.squeeze) < 0.005) return;
-            this.squeeze = t;
-            // squeeze the whole name as the hero scrolls out
-            this.name.style.fontVariationSettings =
-                '"wdth" ' + (105 - t * 35).toFixed(1) + ', "wght" ' + Math.round(800 - t * 200);
-            this.name.style.opacity = (1 - t * 0.55).toFixed(3);
-            if (this.chars.length && this.px >= 0) this.measure();
-        }
-
-        start() {
-            if (this.running) return;
-            this.running = true;
-            const tick = () => {
-                this.gx += (this.tgx - this.gx) * 0.12;
-                this.gy += (this.tgy - this.gy) * 0.12;
-                this.hero.style.setProperty('--glow-x', this.gx.toFixed(2) + '%');
-                this.hero.style.setProperty('--glow-y', this.gy.toFixed(2) + '%');
-                this.updateChars();
-
-                const settled = Math.abs(this.tgx - this.gx) < 0.05 &&
-                                Math.abs(this.tgy - this.gy) < 0.05;
-                if (settled && this.px === -1) { this.running = false; return; }
-                requestAnimationFrame(tick);
-            };
-            requestAnimationFrame(tick);
-        }
-
-        updateChars() {
-            for (let i = 0; i < this.chars.length; i++) {
-                let wdth = 100, wght = 800;
-                if (this.px >= 0 && this.centers[i]) {
-                    const c = this.centers[i];
-                    const d = Math.hypot(this.px - c.x, this.py - c.y);
-                    const t = Math.max(0, 1 - d / this.RADIUS);
-                    wdth = 100 + t * 25;    // 100 → 125 near cursor
-                    wght = 800 + t * 100;   // 800 → 900 near cursor
-                }
-                this.chars[i].style.fontVariationSettings =
-                    '"wdth" ' + wdth.toFixed(1) + ', "wght" ' + Math.round(wght);
-            }
-        }
-    }
-
-    /* ===== Lazy-load autoplay video only once it's near the viewport ===== */
+    /* ===== Lazy-load the demo video once it's near the viewport ===== */
     class LazyVideo {
         constructor() {
             const videos = document.querySelectorAll('video[data-src]');
@@ -600,7 +297,7 @@
                     const source = v.querySelector('source[data-src]');
                     if (source) source.src = source.dataset.src;
                     v.load();
-                    v.play().catch(() => {});
+                    if (!prefersReducedMotion) v.play().catch(() => {});
                     obs.unobserve(v);
                 });
             }, { rootMargin: '200px' });
@@ -608,146 +305,23 @@
         }
     }
 
-    /* ===== Metric count-up on reveal ===== */
-    class MetricCountUp {
-        constructor() {
-            const projects = document.querySelectorAll('.project');
-            if (!projects.length) return;
-            const obs = new IntersectionObserver(entries => {
-                entries.forEach(e => {
-                    if (!e.isIntersecting) return;
-                    e.target.querySelectorAll('.project__metric dd').forEach(dd => this.animate(dd));
-                    obs.unobserve(e.target);
-                });
-            }, { threshold: 0.25 });
-            projects.forEach(p => obs.observe(p));
-        }
-
-        animate(dd) {
-            const raw = dd.textContent.trim();
-            const m = raw.match(/^(\D*?)(\d+(?:\.\d+)?)(.*)$/s);
-            if (!m) return;                       // no numeric portion — leave untouched
-            if (prefersReducedMotion) { dd.textContent = raw; return; }
-
-            const prefix = m[1];
-            const target = parseFloat(m[2]);
-            const suffix = m[3];
-            const decimals = (m[2].split('.')[1] || '').length;
-            const dur = 1100;
-            const ease = t => 1 - Math.pow(1 - t, 3);
-            const t0 = performance.now();
-
-            const step = now => {
-                const t = Math.min(1, (now - t0) / dur);
-                dd.textContent = prefix + (target * ease(t)).toFixed(decimals) + suffix;
-                if (t < 1) requestAnimationFrame(step);
-                else dd.textContent = raw;
-            };
-            dd.textContent = prefix + (0).toFixed(decimals) + suffix;
-            requestAnimationFrame(step);
-        }
-    }
-
-    /* ===== Number heat — ghost project numbers warm near the cursor =====
-       The stroked 01/02/03 outlines heat from border-gray to ember as
-       the pointer approaches, with a faint glow at full heat. Heating
-       is fast, cooling is slow — like metal. */
-    class NumberHeat {
+    /* ===== Closing mark — the name as wafer dust =====
+       The outline of "Niklas Weber" is stamped once into a canvas,
+       its lit pixels lifted into ~3k particles, and the pointer
+       pushes them around with its own momentum before they spring
+       back into the letters. Click detonates a wider shockwave. */
+    class Endmark {
         constructor() {
             if (prefersReducedMotion || !finePointer) return;
             if (window.matchMedia('(max-width: 900px)').matches) return;
-            this.els = Array.from(document.querySelectorAll('.project__num'));
-            if (!this.els.length) return;
-
-            this.COLD = [41, 36, 28];      // --border
-            this.HOT = [255, 77, 28];      // --accent
-            this.RADIUS = 320;
-            this.heats = this.els.map(() => 0);
-            this.targets = this.els.map(() => 0);
-            this.running = false;
-
-            document.addEventListener('pointermove', e => this.onMove(e), { passive: true });
-            document.addEventListener('pointerleave', () => {
-                this.targets.fill(0);
-                this.start();
-            });
-        }
-
-        onMove(e) {
-            const R = this.RADIUS;
-            let wake = false;
-            for (let i = 0; i < this.els.length; i++) {
-                const r = this.els[i].getBoundingClientRect();
-                if (r.bottom < -R || r.top > window.innerHeight + R) {
-                    this.targets[i] = 0;
-                    continue;
-                }
-                // distance from pointer to the nearest edge of the glyph box
-                const dx = Math.max(r.left - e.clientX, 0, e.clientX - r.right);
-                const dy = Math.max(r.top - e.clientY, 0, e.clientY - r.bottom);
-                const t = Math.max(0, 1 - Math.hypot(dx, dy) / R);
-                this.targets[i] = t * t;
-                if (t > 0) wake = true;
-            }
-            if (wake || this.heats.some(h => h > 0.004)) this.start();
-        }
-
-        start() {
-            if (this.running) return;
-            this.running = true;
-            const tick = () => {
-                let settled = true;
-                for (let i = 0; i < this.els.length; i++) {
-                    const target = this.targets[i];
-                    let h = this.heats[i];
-                    h += (target - h) * (target > h ? 0.3 : 0.05);
-                    if (Math.abs(target - h) > 0.003) settled = false;
-                    else h = target;
-                    this.heats[i] = h;
-                    this.paint(i, h);
-                }
-                if (settled) { this.running = false; return; }
-                requestAnimationFrame(tick);
-            };
-            requestAnimationFrame(tick);
-        }
-
-        paint(i, h) {
-            const el = this.els[i];
-            if (h < 0.004) {
-                el.style.webkitTextStrokeColor = '';
-                el.style.textShadow = '';
-                return;
-            }
-            const c = this.COLD, k = this.HOT;
-            el.style.webkitTextStrokeColor = 'rgb(' +
-                Math.round(c[0] + (k[0] - c[0]) * h) + ',' +
-                Math.round(c[1] + (k[1] - c[1]) * h) + ',' +
-                Math.round(c[2] + (k[2] - c[2]) * h) + ')';
-            el.style.textShadow =
-                '0 0 ' + Math.round(28 * h) + 'px rgba(255,77,28,' + (0.35 * h).toFixed(3) + ')';
-        }
-    }
-
-    /* ===== Endmark forge — the closing name as molten particles =====
-       The giant stroked "NIKLAS WEBER" is rebuilt from ~3k canvas
-       particles sampled off its outline. The cursor acts like an
-       angle grinder: nearby particles ignite and spray off with the
-       pointer's momentum, then spring back into the outline. Falls
-       back to the static stroked span on touch, small screens and
-       reduced motion. */
-    class EndmarkForge {
-        constructor() {
-            if (prefersReducedMotion || !finePointer) return;
-            if (window.matchMedia('(max-width: 900px)').matches) return;
-            this.root = document.querySelector('.endmark');
+            this.root = document.querySelector('[data-endmark]');
             this.span = this.root ? this.root.querySelector('span') : null;
             if (!this.span) return;
 
             this.particles = [];
-            this.colors = this.buildRamp();
-            this.px = -1e4; this.py = -1e4;   // pointer in canvas space
-            this.pvx = 0; this.pvy = 0;       // pointer velocity → spray direction
+            this.ramp = this.buildRamp();
+            this.px = -1e4; this.py = -1e4;
+            this.pvx = 0; this.pvy = 0;
             this.lastMove = 0;
             this.inside = false;
             this.running = false;
@@ -760,13 +334,12 @@
             this.ctx = this.canvas.getContext('2d');
             this.root.appendChild(this.canvas);
 
-            const io = new IntersectionObserver(entries => {
+            new IntersectionObserver(entries => {
                 entries.forEach(e => {
                     this.visible = e.isIntersecting;
-                    if (e.isIntersecting) this.activate();
+                    if (this.visible) this.activate();
                 });
-            }, { rootMargin: '160px' });
-            io.observe(this.root);
+            }, { rootMargin: '160px' }).observe(this.root);
 
             this.root.addEventListener('pointermove', e => this.onMove(e), { passive: true });
             this.root.addEventListener('pointerleave', () => { this.inside = false; }, { passive: true });
@@ -775,21 +348,18 @@
             let timer;
             window.addEventListener('resize', () => {
                 clearTimeout(timer);
-                timer = setTimeout(() => {
-                    this.built = false;
-                    if (this.visible) this.activate();
-                }, 160);
+                timer = setTimeout(() => { this.built = false; if (this.visible) this.activate(); }, 160);
             }, { passive: true });
         }
 
-        /* 16-step color ramp: cold stroke → ember → white-hot */
+        /* cold outline to wafer violet to white */
         buildRamp() {
             const stops = [
-                [0.00, 66, 58, 46],
-                [0.30, 128, 62, 30],
-                [0.55, 255, 77, 28],     // --accent
-                [0.80, 255, 146, 72],
-                [1.00, 255, 228, 184]
+                [0.00, 166, 162, 184],
+                [0.35, 146, 128, 214],
+                [0.65, 185, 169, 255],
+                [0.85, 222, 212, 255],
+                [1.00, 255, 255, 255]
             ];
             const ramp = [];
             for (let i = 0; i < 16; i++) {
@@ -818,10 +388,8 @@
             });
         }
 
-        /* Stamp the stroked name once, lift its pixels into particles */
         build() {
-            const w = this.root.clientWidth;
-            const h = this.root.clientHeight;
+            const w = this.root.clientWidth, h = this.root.clientHeight;
             if (!w || !h) return false;
             this.w = w; this.h = h;
             this.dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -829,46 +397,83 @@
             this.canvas.height = Math.round(h * this.dpr);
 
             const ctx = this.ctx;
-            const fs = parseFloat(getComputedStyle(this.span).fontSize);
-            this.radius = fs * 0.85;
+            const cs = getComputedStyle(this.span);
+            const fs = parseFloat(cs.fontSize);
             const cy = this.span.offsetTop + this.span.offsetHeight / 2;
-            const text = (this.span.textContent || '').trim().toUpperCase();
+            const text = (this.span.textContent || '').trim();
 
-            this.canvas.style.fontVariationSettings = '"wdth" 110, "wght" 800';
             ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
             ctx.clearRect(0, 0, w, h);
-            ctx.font = '800 ' + fs + 'px Archivo, sans-serif';
-            if ('letterSpacing' in ctx) ctx.letterSpacing = (fs * -0.01).toFixed(2) + 'px';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.lineWidth = Math.max(1.5, fs / 64);
-            ctx.strokeStyle = '#fff';
-            ctx.strokeText(text, w / 2, cy + fs * 0.04);
 
-            const dw = this.canvas.width, dh = this.canvas.height;
-            const img = ctx.getImageData(0, 0, dw, dh).data;
-            ctx.clearRect(0, 0, w, h);
+            /* Stamp on its own canvas at 3x so the counters of e, b and r
+               rasterise cleanly, with the real wide axis of the typeface
+               (extra-expanded is 150%, the wdth the CSS asks for) and no
+               negative tracking, which would run the curves of adjacent
+               letters into each other. */
+            const ss = 3;
+            const stamp = document.createElement('canvas');
+            stamp.width = Math.round(w * ss);
+            stamp.height = Math.round(h * ss);
+            const sctx = stamp.getContext('2d');
+            sctx.setTransform(ss, 0, 0, ss, 0, 0);
 
-            const pts = [];
-            const step = Math.max(2, Math.round(this.dpr * 1.6));
-            for (let y = 0; y < dh; y += step) {
-                for (let x = 0; x < dw; x += step) {
-                    if (img[(y * dw + x) * 4 + 3] > 100) pts.push(x / this.dpr, y / this.dpr);
+            const setFont = size => {
+                sctx.font = '800 ' + size + 'px Anybody, sans-serif';
+                if ('fontStretch' in sctx) sctx.fontStretch = 'extra-expanded';
+                if ('letterSpacing' in sctx) sctx.letterSpacing = (size * 0.012).toFixed(2) + 'px';
+            };
+            let size = fs;
+            setFont(size);
+            const maxW = w * 0.94;
+            for (let i = 0; i < 6; i++) {
+                const measured = sctx.measureText(text).width;
+                if (measured <= maxW || measured <= 0) break;
+                size *= maxW / measured;
+                setFont(size);
+            }
+            this.radius = size * 0.85;
+
+            sctx.textAlign = 'center';
+            sctx.textBaseline = 'middle';
+            sctx.fillStyle = '#fff';
+            /* fill the letters, then trace the edge of that silhouette.
+               Stroking the glyph paths instead would draw every internal
+               contour and every overlap between neighbouring letters,
+               which is what put stray lines across the e, b and r. */
+            sctx.fillText(text, w / 2, cy);
+
+            const dw = stamp.width, dh = stamp.height;
+            const img = sctx.getImageData(0, 0, dw, dh).data;
+            const solid = (x, y) => (x < 0 || y < 0 || x >= dw || y >= dh) ? false : img[(y * dw + x) * 4 + 3] > 130;
+
+            /* an edge point is filled and has at least one empty neighbour
+               a lattice step away, so the outline is exactly one particle
+               thick however big the letters are */
+            const edges = s => {
+                const out = [];
+                for (let y = 0; y < dh; y += s) {
+                    for (let x = 0; x < dw; x += s) {
+                        if (!solid(x, y)) continue;
+                        if (solid(x - s, y) && solid(x + s, y) && solid(x, y - s) && solid(x, y + s)) continue;
+                        out.push(x, y);
+                    }
                 }
-            }
-            const total = pts.length / 2;
-            if (!total) return false;
-            const stride = Math.max(1, Math.ceil(total / 3600));
+                return out;
+            };
+            const MAX = 6000;
+            let step = ss;
+            let pts = edges(step);
+            while (step < ss * 5 && pts.length / 2 > MAX) { step += 1; pts = edges(step); }
+
             this.particles = [];
-            for (let i = 0; i < total; i += stride) {
-                const hx = pts[i * 2], hy = pts[i * 2 + 1];
-                this.particles.push({
-                    x: hx, y: hy, hx, hy, vx: 0, vy: 0,
-                    heat: 0, b: 0, sz: 1.1 + Math.random() * 0.7
-                });
+            for (let i = 0; i < pts.length; i += 2) {
+                const hx = pts[i] / ss, hy = pts[i + 1] / ss;
+                this.particles.push({ x: hx, y: hy, hx, hy, vx: 0, vy: 0, heat: 0, b: 0, sz: (step / ss) * 1.5 });
             }
+            if (!this.particles.length) return false;
+
             this.built = true;
-            this.root.classList.add('endmark--forge');
+            this.root.classList.add('endmark--live');
             this.renderFrame();
             return true;
         }
@@ -876,14 +481,12 @@
         onMove(e) {
             if (!this.built) return;
             const r = this.canvas.getBoundingClientRect();
-            const x = e.clientX - r.left;
-            const y = e.clientY - r.top;
-            const now = performance.now();
-            const dt = now - this.lastMove;
+            const x = e.clientX - r.left, y = e.clientY - r.top;
+            const now = performance.now(), dt = now - this.lastMove;
             if (this.lastMove && dt > 0 && dt < 120) {
-                const k = 16 / dt;   // normalize to px-per-frame
-                this.pvx = Math.max(-28, Math.min(28, (x - this.px) * k));
-                this.pvy = Math.max(-28, Math.min(28, (y - this.py) * k));
+                const k = 16 / dt;
+                this.pvx = clamp((x - this.px) * k, -26, 26);
+                this.pvy = clamp((y - this.py) * k, -26, 26);
             }
             this.lastMove = now;
             this.px = x; this.py = y;
@@ -891,20 +494,17 @@
             this.start();
         }
 
-        /* Click → shockwave: a wider, harder detonation */
         blast(e) {
             if (!this.built) return;
             const r = this.canvas.getBoundingClientRect();
             const bx = e.clientX - r.left, by = e.clientY - r.top;
             const R = this.radius * 2.2, R2 = R * R;
             for (const p of this.particles) {
-                const dx = p.x - bx, dy = p.y - by;
-                const d2 = dx * dx + dy * dy;
+                const dx = p.x - bx, dy = p.y - by, d2 = dx * dx + dy * dy;
                 if (d2 >= R2) continue;
-                const d = Math.sqrt(d2) || 1;
-                const f = 1 - d / R;
-                p.vx += (dx / d) * f * 16 + (Math.random() - 0.5) * f * 5;
-                p.vy += (dy / d) * f * 16 + (Math.random() - 0.5) * f * 5 - f * 2;
+                const d = Math.sqrt(d2) || 1, f = 1 - d / R;
+                p.vx += (dx / d) * f * 15 + (Math.random() - 0.5) * f * 5;
+                p.vy += (dy / d) * f * 15 + (Math.random() - 0.5) * f * 5 - f * 2;
                 p.heat = Math.min(1, p.heat + f * 1.4);
             }
             this.start();
@@ -925,21 +525,17 @@
 
         stepPhysics() {
             const R = this.radius, R2 = R * R;
-            const px = this.px, py = this.py;
-            const active = this.inside;
+            const px = this.px, py = this.py, active = this.inside;
             const P = this.particles;
             let calm = !active;
             for (let i = 0; i < P.length; i++) {
                 const p = P[i];
                 if (active) {
-                    const dx = p.x - px, dy = p.y - py;
-                    const d2 = dx * dx + dy * dy;
+                    const dx = p.x - px, dy = p.y - py, d2 = dx * dx + dy * dy;
                     if (d2 < R2) {
-                        const d = Math.sqrt(d2) || 1;
-                        const f = 1 - d / R;
-                        const f2 = f * f;
-                        p.vx += (dx / d) * f2 * 3.2 + this.pvx * f2 * 0.5 + (Math.random() - 0.5) * f2 * 2.4;
-                        p.vy += (dy / d) * f2 * 3.2 + this.pvy * f2 * 0.5 + (Math.random() - 0.5) * f2 * 2.4 - f2 * 0.9;
+                        const d = Math.sqrt(d2) || 1, f = 1 - d / R, f2 = f * f;
+                        p.vx += (dx / d) * f2 * 3 + this.pvx * f2 * 0.5 + (Math.random() - 0.5) * f2 * 2.2;
+                        p.vy += (dy / d) * f2 * 3 + this.pvy * f2 * 0.5 + (Math.random() - 0.5) * f2 * 2.2 - f2 * 0.8;
                         p.heat = Math.min(1, p.heat + f2 * 1.2);
                     }
                 }
@@ -967,7 +563,7 @@
             const ctx = this.ctx;
             ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
             ctx.clearRect(0, 0, this.w, this.h);
-            const P = this.particles, ramp = this.colors;
+            const P = this.particles, ramp = this.ramp;
             for (let b = 0; b < ramp.length; b++) {
                 let set = false;
                 for (let i = 0; i < P.length; i++) {
@@ -976,7 +572,6 @@
                     if (!set) { ctx.fillStyle = ramp[b]; ctx.strokeStyle = ramp[b]; set = true; }
                     const speed = Math.abs(p.vx) + Math.abs(p.vy);
                     if (speed > 3.5) {
-                        // fast sparks render as motion streaks
                         ctx.lineWidth = Math.min(2, p.sz);
                         ctx.beginPath();
                         ctx.moveTo(p.x, p.y);
@@ -991,31 +586,17 @@
         }
     }
 
-    /* ===== Init ===== */
     function init() {
-        new ScrollProgress();
-        new NavTracker();
+        new HeroStack();
+        new Depth();
         new NavTime();
-        new ScrollReveal();
-        new SkillsReveal();
-        new WordScrub();
-        new Decode();
-        new Scrub();
-        new Crosshair();
-        new SmoothScroll();
         new MobileNav();
         new ExternalLinks();
-        new HeroInteractive();
-        new MetricCountUp();
         new LazyVideo();
-        new NumberHeat();
-        new EndmarkForge();
         new GitHubActivity();
+        new Endmark();
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
 })();
