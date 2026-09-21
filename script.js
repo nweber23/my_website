@@ -848,6 +848,90 @@
         }
     }
 
+    /* ===== Article outline =====
+       Builds the "On this page" column from the post's own headings,
+       marks the section you are reading, and shows a reading time.
+       It only exists on wide screens (the CSS hides it below that),
+       and posts without at least two headings simply don't get one. */
+    class ArticleAside {
+        constructor() {
+            const article = document.querySelector('article.imprint__block');
+            const layout = article && article.parentElement;
+            if (!article || !layout || !layout.classList.contains('imprint__layout--full')) return;
+            const heads = Array.from(article.querySelectorAll('h2'));
+            if (heads.length < 2) return;
+
+            const used = new Set();
+            heads.forEach(h => {
+                if (h.id) { used.add(h.id); return; }
+                let id = h.textContent.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 48) || 'section';
+                while (used.has(id)) id += '-2';
+                used.add(id);
+                h.id = id;
+            });
+            if (!article.id) article.id = 'article-top';
+
+            const aside = document.createElement('aside');
+            aside.className = 'doc__aside';
+            aside.setAttribute('aria-label', 'On this page');
+            const title = document.createElement('h2');
+            title.textContent = 'On this page';
+            const list = document.createElement('ol');
+            list.className = 'doc__toc';
+            list.setAttribute('role', 'list');
+
+            const entries = [{ id: article.id, label: 'Introduction', el: article }].concat(
+                heads.map(h => ({ id: h.id, label: h.textContent.trim(), el: h }))
+            );
+            this.links = entries.map(en => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = '#' + en.id;
+                a.textContent = en.label;
+                li.appendChild(a);
+                list.appendChild(li);
+                return { a, el: en.el };
+            });
+
+            const words = article.textContent.trim().split(/\s+/).length;
+            const meta = document.createElement('p');
+            meta.className = 'doc__meta';
+            meta.textContent = 'About ' + Math.max(1, Math.round(words / 220)) + ' min read';
+
+            aside.appendChild(title);
+            aside.appendChild(list);
+            aside.appendChild(meta);
+
+            const back = document.querySelector('.breadcrumb__link[href$="writing.html"]');
+            if (back) {
+                const all = document.createElement('a');
+                all.className = 'doc__all';
+                all.href = back.getAttribute('href');
+                all.textContent = '← All writing';
+                aside.appendChild(all);
+            }
+            layout.appendChild(aside);
+
+            this.ticking = false;
+            window.addEventListener('scroll', () => this.request(), { passive: true });
+            window.addEventListener('resize', () => this.request(), { passive: true });
+            this.update();
+        }
+        request() {
+            if (this.ticking) return;
+            this.ticking = true;
+            requestAnimationFrame(() => { this.ticking = false; this.update(); });
+        }
+        update() {
+            const line = window.innerHeight * 0.28;
+            let current = this.links[0];
+            for (const l of this.links) {
+                if (l.el.getBoundingClientRect().top <= line) current = l;
+            }
+            this.links.forEach(l => l.a.classList.toggle('is-current', l === current));
+        }
+    }
+
     function init() {
         new HeroStack();
         new Depth();
@@ -857,6 +941,7 @@
         new LazyVideo();
         new GitHubActivity();
         new Endmark();
+        new ArticleAside();
     }
 
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
