@@ -35,7 +35,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://api.github.com" crossorigin>
     <link rel="preconnect" href="https://github-contributions-api.jogruber.de" crossorigin>
-    <link rel="stylesheet" href="styles.min.css?v=20260917b">
+    <link rel="stylesheet" href="styles.min.css?v=20260920a">
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,300..900&family=Schibsted+Grotesk:ital,wght@0,400..700;1,400..700&family=Azeret+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,300..900&family=Schibsted+Grotesk:ital,wght@0,400..700;1,400..700&family=Azeret+Mono:wght@400;500&display=swap"></noscript>
     <link rel="preload" as="image" href="assets/ft_casino.webp">
@@ -283,59 +283,95 @@
 
             <div class="stack" data-stack aria-hidden="true">
                 <div class="stack__scene">
-                    <div class="plate l-silicon" style="--i:0">
-                        <div class="plate__body">
-                            <svg viewBox="0 0 100 100"><g class="plate__art">
-                                <rect x="14" y="14" width="72" height="72"/>
-                                <path d="M14 32h72M14 50h72M14 68h72M32 14v72M50 14v72M68 14v72"/>
-                                <rect class="plate__hot" x="50" y="32" width="18" height="18"/>
-                                <path d="M8 22h6M8 40h6M8 58h6M8 76h6M86 22h6M86 40h6M86 58h6M86 76h6M22 8v6M40 8v6M58 8v6M76 8v6M22 86v6M40 86v6M58 86v6M76 86v6"/>
-                            </g></svg>
-                            <span class="plate__label">Silicon</span>
+                    <div class="plate l-silicon" style="--i:0" data-goto="silicon" data-name="Silicon" data-project="miniRT" data-metric="120+ fps, 80× the baseline">
+                        <div class="slab">
+                            <div class="face face--top">
+                                <svg viewBox="0 0 100 100"><g class="plate__art">
+                                    <rect x="14" y="14" width="72" height="72"/>
+                                    <path d="M14 32h72M14 50h72M14 68h72M32 14v72M50 14v72M68 14v72"/>
+                                    <rect class="plate__hot" x="50" y="32" width="18" height="18"/>
+                                    <path d="M8 22h6M8 40h6M8 58h6M8 76h6M86 22h6M86 40h6M86 58h6M86 76h6M22 8v6M40 8v6M58 8v6M76 8v6M22 86v6M40 86v6M58 86v6M76 86v6"/>
+                                    </g></svg>
+                            </div>
+                            <div class="face face--front"><span class="face__label">Silicon</span></div>
+                            <div class="face face--back"></div>
+                            <div class="face face--left"></div>
+                            <div class="face face--right"></div>
+                            <div class="face face--bottom"></div>
                         </div>
                     </div>
-                    <div class="plate l-kernel" style="--i:1">
-                        <div class="plate__body">
-                            <svg viewBox="0 0 100 100"><g class="plate__art">
-                                <circle cx="50" cy="20" r="6"/>
-                                <circle cx="28" cy="50" r="6"/><circle cx="72" cy="50" r="6"/>
-                                <circle cx="16" cy="80" r="6"/><circle cx="40" cy="80" r="6"/><circle class="plate__hot" cx="72" cy="80" r="6"/>
-                                <path d="M46 25 32 45M54 25l14 20M25 56l-6 18M31 56l6 18M72 56v18"/>
-                            </g></svg>
-                            <span class="plate__label">Kernel</span>
+                    <div class="plate l-kernel" style="--i:1" data-goto="kernel" data-name="Kernel" data-project="minishell" data-metric="fork, exec, pipes and signals">
+                        <div class="slab">
+                            <div class="face face--top">
+                                <svg viewBox="0 0 100 100"><g class="plate__art">
+                                    <circle cx="50" cy="20" r="6"/>
+                                    <circle cx="28" cy="50" r="6"/><circle cx="72" cy="50" r="6"/>
+                                    <circle cx="16" cy="80" r="6"/><circle cx="40" cy="80" r="6"/><circle class="plate__hot" cx="72" cy="80" r="6"/>
+                                    <path d="M46 25 32 45M54 25l14 20M25 56l-6 18M31 56l6 18M72 56v18"/>
+                                    </g></svg>
+                            </div>
+                            <div class="face face--front"><span class="face__label">Kernel</span></div>
+                            <div class="face face--back"></div>
+                            <div class="face face--left"></div>
+                            <div class="face face--right"></div>
+                            <div class="face face--bottom"></div>
                         </div>
                     </div>
-                    <div class="plate l-gpu" style="--i:2">
-                        <div class="plate__body">
-                            <svg viewBox="0 0 100 100"><g class="plate__art">
-                                <path d="M14 80 34 22 58 64 80 18 88 76ZM14 80 58 64 88 76M34 22 80 18M34 22l-6 40L14 80M28 62l30 2M58 64l22-46"/>
-                                <path class="plate__hot" d="M34 22 58 64 80 18Z"/>
-                            </g></svg>
-                            <span class="plate__label">GPU pipeline</span>
+                    <div class="plate l-gpu" style="--i:2" data-goto="gpu" data-name="GPU pipeline" data-project="3D Go Renderer" data-metric="0.06 heap allocations per frame">
+                        <div class="slab">
+                            <div class="face face--top">
+                                <svg viewBox="0 0 100 100"><g class="plate__art">
+                                    <path d="M14 80 34 22 58 64 80 18 88 76ZM14 80 58 64 88 76M34 22 80 18M34 22l-6 40L14 80M28 62l30 2M58 64l22-46"/>
+                                    <path class="plate__hot" d="M34 22 58 64 80 18Z"/>
+                                    </g></svg>
+                            </div>
+                            <div class="face face--front"><span class="face__label">GPU pipeline</span></div>
+                            <div class="face face--back"></div>
+                            <div class="face face--left"></div>
+                            <div class="face face--right"></div>
+                            <div class="face face--bottom"></div>
                         </div>
                     </div>
-                    <div class="plate l-db" style="--i:3">
-                        <div class="plate__body">
-                            <svg viewBox="0 0 100 100"><g class="plate__art">
-                                <rect x="12" y="16" width="76" height="68"/>
-                                <path d="M12 30h76M12 44h76M12 58h76M12 72h76M36 16v68M64 16v68"/>
-                                <rect class="plate__hot" x="12" y="44" width="76" height="14"/>
-                            </g></svg>
-                            <span class="plate__label">Database</span>
+                    <div class="plate l-db" style="--i:3" data-goto="database" data-name="Database" data-project="42 ELO Leaderboard" data-metric="30ms average response">
+                        <div class="slab">
+                            <div class="face face--top">
+                                <svg viewBox="0 0 100 100"><g class="plate__art">
+                                    <rect x="12" y="16" width="76" height="68"/>
+                                    <path d="M12 30h76M12 44h76M12 58h76M12 72h76M36 16v68M64 16v68"/>
+                                    <rect class="plate__hot" x="12" y="44" width="76" height="14"/>
+                                    </g></svg>
+                            </div>
+                            <div class="face face--front"><span class="face__label">Database</span></div>
+                            <div class="face face--back"></div>
+                            <div class="face face--left"></div>
+                            <div class="face face--right"></div>
+                            <div class="face face--bottom"></div>
                         </div>
                     </div>
-                    <div class="plate l-app" style="--i:4">
-                        <div class="plate__body">
-                            <svg viewBox="0 0 100 100"><g class="plate__art">
-                                <rect x="10" y="12" width="80" height="76"/>
-                                <path d="M10 24h80"/>
-                                <circle cx="17" cy="18" r="1.8"/><circle cx="24" cy="18" r="1.8"/>
-                                <rect x="18" y="32" width="30" height="22"/><rect x="54" y="32" width="28" height="48"/>
-                                <rect class="plate__hot" x="18" y="60" width="30" height="20"/>
-                            </g></svg>
-                            <span class="plate__label">Application</span>
+                    <div class="plate l-app" style="--i:4" data-goto="application" data-name="Application" data-project="Transcendence Casino" data-metric="3 games live over WebSockets">
+                        <div class="slab">
+                            <div class="face face--top">
+                                <svg viewBox="0 0 100 100"><g class="plate__art">
+                                    <rect x="10" y="12" width="80" height="76"/>
+                                    <path d="M10 24h80"/>
+                                    <circle cx="17" cy="18" r="1.8"/><circle cx="24" cy="18" r="1.8"/>
+                                    <rect x="18" y="32" width="30" height="22"/><rect x="54" y="32" width="28" height="48"/>
+                                    <rect class="plate__hot" x="18" y="60" width="30" height="20"/>
+                                    </g></svg>
+                            </div>
+                            <div class="face face--front"><span class="face__label">Application</span></div>
+                            <div class="face face--back"></div>
+                            <div class="face face--left"></div>
+                            <div class="face face--right"></div>
+                            <div class="face face--bottom"></div>
                         </div>
                     </div>
+                </div>
+                <div class="stack__card" data-stack-card data-state="idle">
+                    <p class="stack__card-kicker" data-card-kicker></p>
+                    <p class="stack__card-title" data-card-title></p>
+                    <p class="stack__card-text" data-card-text>Drag to turn it. Point at a layer to pull it out.</p>
+                    <p class="stack__card-go" data-card-go></p>
                 </div>
             </div>
         </header>
@@ -698,7 +734,7 @@
         </div>
     </footer>
 
-    <script defer src="script.min.js?v=20260917b"></script>
+    <script defer src="script.min.js?v=20260920a"></script>
     <script data-goatcounter="https://mattz.goatcounter.com/count"
             async src="//gc.zgo.at/count.js"></script>
 </body>

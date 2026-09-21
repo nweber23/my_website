@@ -201,7 +201,7 @@ code {
 .hero {
     position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
     align-items: center;
     gap: clamp(1rem, 4vw, 4rem);
     min-height: 100vh;
@@ -219,7 +219,7 @@ code {
     font-family: var(--font-display);
     font-weight: 800;
     font-variation-settings: "wdth" 150;
-    font-size: clamp(3.4rem, 8.6vw, 9.25rem);
+    font-size: clamp(3.2rem, 7.1vw, 8rem);
     line-height: 0.86;
     letter-spacing: -0.03em;
     margin: 0 0 1.75rem -0.04em;
@@ -240,73 +240,124 @@ code {
     border-left: 2px solid var(--accent);
 }
 
-/* ===== The stack ===== */
+/* ===== The stack =====
+   Five extruded slabs, each a real six-sided box in CSS 3D. The
+   face colours are the material's own light and dark sides, so
+   the solid reads without any gradient. Motion is driven by a
+   small physics loop in script.js (gravity, springs, inertia),
+   which writes --dx / --dz per plate and --rx / --rz / --sy /
+   --sc on the scene. */
 .stack {
-    --s: clamp(12rem, 25vw, 23rem);
-    --t: calc(var(--s) * 0.045);
-    --gap: calc(var(--s) * 0.19);
+    --s: clamp(11rem, 20vw, 19rem);
+    --t: calc(var(--s) * 0.13);
+    --gap: calc(var(--s) * 0.18);
+    --step: calc(var(--s) * 0.07);
     position: relative;
-    height: calc(var(--s) * 1.9);
+    justify-self: end;
+    width: 100%;
+    height: calc(var(--s) * 1.5 + 6.5rem);
     perspective: 3200px;
-    perspective-origin: 50% 30%;
+    perspective-origin: 50% 38%;
+    cursor: grab;
+    touch-action: pan-y;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
+.stack.is-dragging, .stack.is-dragging .plate { cursor: grabbing; }
 .stack__scene {
-    --rx: 57deg;
-    --rz: -40deg;
+    --rx: 55deg;
+    --rz: -36deg;
     --spread: 1;
     position: absolute;
     left: 50%;
-    top: 50%;
+    top: calc(50% - 3.9rem);
     width: var(--s);
     height: var(--s);
     margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
     transform-style: preserve-3d;
-    transform: rotateX(var(--rx)) rotateZ(var(--rz));
+    transform: translate3d(0, var(--sy, 0px), 0) scale(var(--sc, 1)) rotateX(var(--rx)) rotateZ(var(--rz));
 }
+
 .plate {
     position: absolute;
     inset: 0;
     transform-style: preserve-3d;
-    transform: translateZ(calc((var(--i) - 2) * var(--gap) * var(--spread)));
+    cursor: pointer;
+    transform: translate3d(
+        0px,
+        calc((var(--i) - 2) * var(--step) * -1 + var(--dy, 0px)),
+        calc((var(--i) - 2) * var(--gap) * var(--spread) + var(--dz, 0px)));
 }
-.plate__body {
+/* before its turn to fall a slab is simply not there */
+.plate.is-waiting { visibility: hidden; }
+/* if the script never runs the stack still appears */
+.js .stack:not(.is-ready) .plate { opacity: 0; animation: plate-fallback 0s linear 2.5s forwards; }
+@keyframes plate-fallback { to { opacity: 1; } }
+.slab {
     position: absolute;
     inset: 0;
     transform-style: preserve-3d;
+}
+.face {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    backface-visibility: hidden;
+}
+.face--top, .face--bottom {
+    width: var(--s);
+    height: var(--s);
+    margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
+}
+.face--top {
     background: var(--bg);
     color: var(--ink);
     box-shadow: inset 0 0 0 1px var(--rim);
-    transition: transform 500ms var(--ease);
+    transform: translateZ(calc(var(--t) / 2));
 }
-/* plate thickness: two side faces hanging below the top face */
-.plate__body::before,
-.plate__body::after {
-    content: "";
-    position: absolute;
-}
-.plate__body::before {
-    left: 0;
-    top: 100%;
-    width: 100%;
-    height: var(--t);
-    background: var(--edge);
-    transform-origin: 50% 0;
-    transform: rotateX(90deg);
-}
-.plate__body::after {
-    top: 0;
-    left: 0;
-    width: var(--t);
-    height: 100%;
+.face--bottom {
     background: var(--edge-2);
-    transform-origin: 0 50%;
-    transform: rotateY(90deg);
+    filter: brightness(0.65);
+    transform: translateZ(calc(var(--t) / -2)) rotateX(180deg);
 }
-.plate svg {
+.face--front, .face--back {
+    width: var(--s);
+    height: var(--t);
+    margin: calc(var(--t) / -2) 0 0 calc(var(--s) / -2);
+    background: var(--edge);
+}
+.face--front {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 0.7em;
+    transform: translateY(calc(var(--s) / 2)) rotateX(-90deg);
+}
+.face--back { transform: translateY(calc(var(--s) / -2)) rotateX(90deg); }
+.face--left, .face--right {
+    width: var(--t);
+    height: var(--s);
+    margin: calc(var(--s) / -2) 0 0 calc(var(--t) / -2);
+    background: var(--edge-2);
+}
+.face--left { transform: translateX(calc(var(--s) / -2)) rotateY(-90deg); }
+.face--right { transform: translateX(calc(var(--s) / 2)) rotateY(90deg); }
+
+.face__label {
+    font-size: calc(var(--s) * 0.042);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    color: var(--ink);
+    opacity: 0.85;
+}
+
+.face svg {
     position: absolute;
-    inset: 9%;
-    width: 82%;
-    height: 82%;
+    inset: 10%;
+    width: 80%;
+    height: 80%;
     overflow: visible;
 }
 .plate__art {
@@ -317,26 +368,46 @@ code {
     stroke-opacity: 0.5;
 }
 .plate__art .plate__hot { fill: var(--accent); stroke: var(--accent); stroke-opacity: 1; }
-.plate__label {
-    position: absolute;
-    left: 7%;
-    bottom: 4%;
-    font-size: calc(var(--s) * 0.052);
-    font-weight: 600;
-    white-space: nowrap;
-}
-@media (hover: hover) and (pointer: fine) {
-    .plate:hover .plate__body { transform: translateZ(calc(var(--gap) * 0.35)); }
+
+
+/* the layer under the pointer is outlined in its own accent */
+.plate.is-active .face--top { box-shadow: inset 0 0 0 2px var(--accent); }
+/* a slab landing sends a ring across its own top face */
+.plate.is-hit .face--top { animation: landing 720ms var(--ease) 1 both; }
+@keyframes landing {
+    0% { box-shadow: inset 0 0 0 2px var(--accent), 0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent); }
+    100% { box-shadow: inset 0 0 0 1px var(--rim), 0 0 0 calc(var(--s) * 0.09) color-mix(in srgb, var(--accent) 0%, transparent); }
 }
 
-.js .plate__body {
-    animation: plate-drop 900ms var(--ease-drop) backwards;
-    animation-delay: calc(var(--i) * 120ms + 120ms);
+/* info card: names the layer under the pointer, in that layer's material */
+.stack__card {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: min(100%, 23rem);
+    transform: translateX(-50%);
+    padding: 0.85rem 1.1rem 0.95rem;
+    background: var(--bg);
+    color: var(--ink);
+    border: 1px solid var(--rim);
+    text-align: left;
 }
-@keyframes plate-drop {
-    from { transform: translateZ(calc(var(--s) * 1.4)); opacity: 0; }
-    30% { opacity: 1; }
+.stack__card[data-state="idle"] { background: none; border-color: transparent; text-align: center; }
+.stack__card.is-swap { animation: card-in 260ms var(--ease) both; }
+@keyframes card-in { from { opacity: 0; transform: translate(-50%, 6px); } }
+.stack__card p:empty { display: none; }
+.stack__card-kicker { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent); margin-bottom: 0.3rem; }
+.stack__card-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-variation-settings: "wdth" var(--wdth-m);
+    font-size: 1.6rem;
+    line-height: 1;
+    letter-spacing: var(--track);
+    margin-bottom: 0.35rem;
 }
+.stack__card-text { font-size: 0.9375rem; color: var(--muted); }
+.stack__card-go { font-size: 0.8125rem; font-weight: 600; margin-top: 0.55rem; color: var(--accent); }
 .js .hero__copy > * { animation: settle 700ms var(--ease) backwards; }
 .js .hero__role { animation-delay: 700ms; }
 .js .hero__name { animation-delay: 760ms; }
@@ -907,9 +978,17 @@ code {
     .hero {
         grid-template-columns: minmax(0, 1fr);
         min-height: 0;
-        padding-top: calc(var(--nav-h) + 0.5rem);
+        padding-top: calc(var(--nav-h) + 1.5rem);
     }
-    .stack { order: -1; --s: min(58vw, 17rem); height: calc(var(--s) * 1.75); }
+    .stack {
+        order: -1;
+        justify-self: center;
+        --s: min(42vw, 12.5rem);
+        --step: calc(var(--s) * 0.05);
+        height: calc(var(--s) * 1.85 + 6rem);
+        perspective-origin: 50% 50%;
+    }
+    .stack__scene { left: 57%; top: calc(50% - 3rem); }
     .layer__head { grid-template-columns: minmax(0, 1fr); }
     .layer__meta { grid-column: 1; }
     .project { grid-template-columns: minmax(0, 1fr); }
@@ -932,6 +1011,7 @@ code {
 
 /* ===== Reduced motion ===== */
 @media (prefers-reduced-motion: reduce) {
+    .js .stack:not(.is-ready) .plate { opacity: 1; }
     html { scroll-behavior: auto; }
     *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; }
 }

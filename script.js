@@ -10,57 +10,319 @@
     const finePointer = window.matchMedia('(pointer: fine)').matches;
     const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
-    /* ===== Hero stack — pointer tilt and scroll spread =====
-       The five plates tilt a little toward the pointer and pull
-       apart as the hero scrolls away, like a stack being opened. */
+    /* ===== Hero stack — a physical model you can handle =====
+       The five slabs fall in under gravity and land with a bounce,
+       a shockwave through the ones below, and a ring across their
+       face. You can drag the whole assembly round and it keeps its
+       momentum; left alone it drifts back home. Pointing at a layer
+       pulls it out of the stack on a spring and names the project
+       that lives there; clicking it dives into that layer. A small
+       loop integrates everything and writes CSS variables, and it
+       only runs while the hero is on screen. */
     class HeroStack {
         constructor() {
             this.stack = document.querySelector('[data-stack]');
             this.hero = document.querySelector('.hero');
-            if (!this.stack || !this.hero || prefersReducedMotion) return;
+            if (!this.stack || !this.hero) return;
             this.scene = this.stack.querySelector('.stack__scene');
+            this.card = this.stack.querySelector('[data-stack-card]');
+            this.cardEls = this.card && {
+                kicker: this.card.querySelector('[data-card-kicker]'),
+                title: this.card.querySelector('[data-card-title]'),
+                text: this.card.querySelector('[data-card-text]'),
+                go: this.card.querySelector('[data-card-go]')
+            };
+            this.plates = Array.from(this.stack.querySelectorAll('[data-goto]')).map(el => ({
+                el, i: parseInt(el.style.getPropertyValue('--i'), 10) || 0,
+                z: 0, vz: 0, x: 0, vx: 0, zT: 0, xT: 0, phase: 'spring', delay: 0
+            })).sort((a, b) => a.i - b.i);
 
-            this.tilt = { x: 0, y: 0 };
-            this.target = { x: 0, y: 0 };
-            this.spread = 1;
-            this.targetSpread = 1;
-            this.running = false;
+            this.reduced = prefersReducedMotion;
+            this.touch = !finePointer;
+            this.HOME_RZ = -36; this.HOME_RX = 55;
+            this.yaw = 0; this.yawV = 0; this.pitch = 0;
+            this.tilt = { x: 0, y: 0 }; this.tiltT = { x: 0, y: 0 };
+            this.shake = 0; this.shakeV = 0;
+            this.dive = 0; this.diveV = 0; this.diveT = 0;
+            this.spread = 1; this.spreadT = 1;
+            this.hover = -1; this.hoverPos = { x: 0, y: 0 };
+            this.dragging = false; this.pd = null;
+            this.lastInput = 0;
+            this.visible = true; this.running = false;
 
-            if (finePointer) {
-                window.addEventListener('pointermove', e => {
-                    this.target.x = (e.clientX / window.innerWidth) * 2 - 1;
-                    this.target.y = (e.clientY / window.innerHeight) * 2 - 1;
-                    this.start();
-                }, { passive: true });
-            }
+            this.measure();
+            window.addEventListener('resize', () => this.measure(), { passive: true });
             window.addEventListener('scroll', () => this.onScroll(), { passive: true });
+            this.bindInput();
             this.onScroll();
+            this.paintCard();
+
+            new IntersectionObserver(entries => {
+                this.visible = entries[0].isIntersecting;
+                if (this.visible) this.start();
+            }).observe(this.hero);
+
+            this.intro();
         }
+
+        measure() {
+            this.s = this.scene.offsetWidth || 300;
+            this.gap = this.s * 0.18;
+        }
+
+        /* the slabs fall in bottom-first, staggered */
+        intro() {
+            if (!this.reduced) {
+                this.plates.forEach(p => {
+                    p.z = this.s * (1.3 + p.i * 0.35);
+                    p.vz = 0;
+                    p.phase = 'wait';
+                    p.delay = 0.1 + p.i * 0.14;
+                    p.el.classList.add('is-waiting');
+                });
+            }
+            this.render();
+            this.stack.classList.add('is-ready');
+            this.start();
+        }
+
+        bindInput() {
+            const st = this.stack;
+            const plateAt = e => {
+                const el = e.target.closest && e.target.closest('[data-goto]');
+                return el ? this.plates.find(p => p.el === el) : null;
+            };
+            const now = () => performance.now() / 1000;
+
+            st.addEventListener('pointerdown', e => {
+                if (e.pointerType === 'mouse' && e.button !== 0) return;
+                this.pd = { id: e.pointerId, sx: e.clientX, sy: e.clientY, lx: e.clientX, ly: e.clientY,
+                            lt: e.timeStamp, moved: false, plate: plateAt(e), type: e.pointerType };
+            });
+
+            window.addEventListener('pointermove', e => {
+                if (finePointer && !this.reduced) {
+                    this.tiltT.x = (e.clientX / window.innerWidth) * 2 - 1;
+                    this.tiltT.y = (e.clientY / window.innerHeight) * 2 - 1;
+                }
+                const pd = this.pd;
+                if (pd && e.pointerId === pd.id) {
+                    const dx = e.clientX - pd.lx, dy = e.clientY - pd.ly;
+                    const dt = Math.max(1, e.timeStamp - pd.lt) / 1000;
+                    if (!pd.moved && Math.hypot(e.clientX - pd.sx, e.clientY - pd.sy) > 6) {
+                        pd.moved = true;
+                        this.dragging = true;
+                        st.classList.add('is-dragging');
+                        try { st.setPointerCapture(e.pointerId); } catch (err) { /* synthetic pointer */ }
+                        this.setHover(-1);
+                    }
+                    if (this.dragging && !this.reduced) {
+                        this.yaw += dx * 0.45;
+                        this.pitch = clamp(this.pitch - dy * 0.25, -25, 22);
+                        this.yawV = this.yawV * 0.5 + (dx * 0.45 / dt) * 0.5;
+                        this.lastInput = now();
+                    }
+                    pd.lx = e.clientX; pd.ly = e.clientY; pd.lt = e.timeStamp;
+                    this.poke();
+                    return;
+                }
+                if (e.pointerType === 'mouse' && !this.dragging && st.contains(e.target)) this.hoverAt(e, plateAt(e));
+            }, { passive: true });
+
+            st.addEventListener('pointerleave', e => {
+                if (e.pointerType === 'mouse' && !this.dragging) this.setHover(-1);
+            });
+
+            const end = e => {
+                const pd = this.pd;
+                if (!pd || e.pointerId !== pd.id) return;
+                this.pd = null;
+                try { st.releasePointerCapture(e.pointerId); } catch (err) { /* not captured */ }
+                if (pd.moved) {
+                    this.dragging = false;
+                    st.classList.remove('is-dragging');
+                    this.lastInput = now();
+                    return;
+                }
+                if (e.type === 'pointercancel' || !pd.plate) return;
+                /* a mouse click opens the layer; a first tap selects it, a second opens it */
+                if (pd.type === 'mouse' || this.hover === pd.plate.i) this.go(pd.plate);
+                else { this.hoverPos = { x: e.clientX, y: e.clientY }; this.setHover(pd.plate.i); }
+            };
+            window.addEventListener('pointerup', end);
+            window.addEventListener('pointercancel', end);
+
+            document.addEventListener('pointerdown', e => {
+                if (e.pointerType !== 'mouse' && this.hover >= 0 && !st.contains(e.target)) this.setHover(-1);
+            });
+        }
+
+        /* moving to another layer needs a real movement, otherwise a slab
+           sliding out from under a still cursor would flip the hover back
+           and forth */
+        hoverAt(e, plate) {
+            const idx = plate ? plate.i : -1;
+            if (idx === this.hover) return;
+            if (this.hover >= 0 && Math.hypot(e.clientX - this.hoverPos.x, e.clientY - this.hoverPos.y) < 16) return;
+            this.hoverPos = { x: e.clientX, y: e.clientY };
+            this.setHover(idx);
+        }
+
+        /* pull the layer out, open a gap above it and let the ones below settle */
+        setHover(h) {
+            this.hover = h;
+            const gap = this.gap, s = this.s;
+            for (const p of this.plates) {
+                if (h < 0) { p.zT = 0; p.xT = 0; }
+                else if (p.i === h) { p.zT = gap * 0.3; p.xT = s * 0.55; }
+                else if (p.i > h) { p.zT = gap * 0.95; p.xT = 0; }
+                else { p.zT = -gap * 0.14; p.xT = 0; }
+                p.el.classList.toggle('is-active', p.i === h);
+                if (this.reduced) { p.z = p.zT; p.x = p.xT; }
+            }
+            this.paintCard();
+            this.poke();
+        }
+
+        paintCard() {
+            const c = this.card, e = this.cardEls;
+            if (!c || !e) return;
+            const p = this.plates.find(q => q.i === this.hover);
+            c.className = 'stack__card';
+            if (p) {
+                const key = Array.from(p.el.classList).find(k => k.startsWith('l-'));
+                if (key) c.classList.add(key);
+                c.dataset.state = 'layer';
+                e.kicker.textContent = 'Layer ' + (5 - p.i) + ' of 5, ' + p.el.dataset.name;
+                e.title.textContent = p.el.dataset.project;
+                e.text.textContent = p.el.dataset.metric;
+                e.go.textContent = this.touch ? 'Tap again to open this layer' : 'Click to open this layer';
+            } else {
+                c.dataset.state = 'idle';
+                e.kicker.textContent = '';
+                e.title.textContent = '';
+                e.text.textContent = this.touch
+                    ? 'Drag to turn it. Tap a layer to pull it out.'
+                    : 'Drag to turn it. Point at a layer to pull it out.';
+                e.go.textContent = '';
+            }
+            if (!this.reduced) { void c.offsetWidth; c.classList.add('is-swap'); }
+        }
+
+        /* dive: the whole model rushes toward you while the page scrolls to the layer */
+        go(p) {
+            const target = document.getElementById(p.el.dataset.goto);
+            if (!target) return;
+            this.diveT = 1;
+            this.setHover(-1);
+            const top = target.getBoundingClientRect().top + window.scrollY - 56;
+            window.scrollTo({ top, behavior: this.reduced ? 'auto' : 'smooth' });
+            this.poke();
+        }
+
         onScroll() {
             const h = this.hero.offsetHeight || 1;
             const p = clamp(window.scrollY / h, 0, 1);
-            this.targetSpread = 1 + p * 1.8;
-            this.start();
+            this.spreadT = 1 + p * 1.35;
+            if (p > 0.9) this.diveT = 0;
+            this.poke();
         }
+
+        poke() { if (this.reduced) this.render(); else this.start(); }
+
         start() {
-            if (this.running) return;
+            if (this.running || this.reduced) return;
             this.running = true;
-            const tick = () => {
-                this.tilt.x += (this.target.x - this.tilt.x) * 0.08;
-                this.tilt.y += (this.target.y - this.tilt.y) * 0.08;
-                this.spread += (this.targetSpread - this.spread) * 0.14;
-                const s = this.scene.style;
-                s.setProperty('--rz', (-40 + this.tilt.x * 9).toFixed(2) + 'deg');
-                s.setProperty('--rx', (57 - this.tilt.y * 7).toFixed(2) + 'deg');
-                s.setProperty('--spread', this.spread.toFixed(3));
-                const settled =
-                    Math.abs(this.target.x - this.tilt.x) < 0.002 &&
-                    Math.abs(this.target.y - this.tilt.y) < 0.002 &&
-                    Math.abs(this.targetSpread - this.spread) < 0.002;
-                if (settled) { this.running = false; return; }
+            let last = 0;
+            const tick = t => {
+                if (!this.visible) { this.running = false; return; }
+                const dt = last ? Math.min(0.033, (t - last) / 1000) : 0.016;
+                last = t;
+                this.step(dt, t / 1000);
+                this.render();
                 requestAnimationFrame(tick);
             };
             requestAnimationFrame(tick);
+        }
+
+        /* a slab lands: shake the assembly, ring its face, push the ones under it */
+        impact(p, v) {
+            const k = clamp(v / (this.s * 6), 0.15, 1);
+            this.shakeV += 150 * k;
+            for (const q of this.plates) {
+                if (q.i < p.i && q.phase === 'spring') q.vz -= 80 * k;
+            }
+            p.el.classList.remove('is-hit');
+            void p.el.offsetWidth;
+            p.el.classList.add('is-hit');
+            setTimeout(() => p.el.classList.remove('is-hit'), 760);
+        }
+
+        step(dt, t) {
+            const s = this.s, g = s * 15;
+            for (const p of this.plates) {
+                if (p.phase === 'wait') {
+                    p.delay -= dt;
+                    if (p.delay > 0) continue;
+                    p.phase = 'fall';
+                    p.el.classList.remove('is-waiting');
+                }
+                if (p.phase === 'fall') {
+                    p.vz -= g * dt;
+                    p.z += p.vz * dt;
+                    if (p.z <= 0) {
+                        const v = -p.vz;
+                        p.z = 0;
+                        this.impact(p, v);
+                        if (v < s * 0.9) { p.phase = 'spring'; p.vz = 0; }
+                        else p.vz = v * 0.3;
+                    }
+                } else {
+                    p.vz += (-170 * (p.z - p.zT) - 15 * p.vz) * dt;
+                    p.z += p.vz * dt;
+                }
+                p.vx += (-170 * (p.x - p.xT) - 16 * p.vx) * dt;
+                p.x += p.vx * dt;
+            }
+
+            this.shakeV += (-260 * this.shake - 13 * this.shakeV) * dt;
+            this.shake += this.shakeV * dt;
+            this.diveV += (-90 * (this.dive - this.diveT) - 14 * this.diveV) * dt;
+            this.dive += this.diveV * dt;
+            this.spread += (this.spreadT - this.spread) * (1 - Math.exp(-9 * dt));
+
+            const kt = 1 - Math.exp(-6 * dt);
+            this.tilt.x += (this.tiltT.x - this.tilt.x) * kt;
+            this.tilt.y += (this.tiltT.y - this.tilt.y) * kt;
+
+            /* orbit: momentum while free, then a slow return to the home angle */
+            if (!this.dragging) {
+                this.yaw += this.yawV * dt;
+                this.yawV *= Math.exp(-3.4 * dt);
+                const idle = t - this.lastInput;
+                if (idle > 2.2) {
+                    const home = Math.round(this.yaw / 360) * 360;
+                    this.yaw += (home - this.yaw) * (1 - Math.exp(-1.6 * dt));
+                }
+                if (idle > 0.6) this.pitch += (0 - this.pitch) * (1 - Math.exp(-2.2 * dt));
+            }
+            this.t = t;
+        }
+
+        render() {
+            const st = this.scene.style;
+            const t = this.t || 0;
+            const rz = this.HOME_RZ + this.yaw + this.tilt.x * 4 + Math.sin(t * 0.55) * 2.2;
+            const rx = clamp(this.HOME_RX + this.pitch - this.tilt.y * 3 + Math.cos(t * 0.4) * 1.2, 26, 80);
+            st.setProperty('--rz', rz.toFixed(2) + 'deg');
+            st.setProperty('--rx', rx.toFixed(2) + 'deg');
+            st.setProperty('--spread', this.spread.toFixed(3));
+            st.setProperty('--sy', (this.shake + this.dive * this.s * 0.15).toFixed(2) + 'px');
+            st.setProperty('--sc', (1 + this.dive * 0.6).toFixed(3));
+            for (const p of this.plates) {
+                p.el.style.setProperty('--dz', p.z.toFixed(1) + 'px');
+                p.el.style.setProperty('--dy', p.x.toFixed(1) + 'px');
+            }
         }
     }
 
