@@ -547,20 +547,16 @@
         }
     }
 
-    /* ===== Lazy-load the demo video once it's near the viewport ===== */
+    /* ===== Autoplay the demo video once it's near the viewport ===== */
     class LazyVideo {
         constructor() {
-            const videos = document.querySelectorAll('video[data-src]');
-            if (!videos.length) return;
+            const videos = document.querySelectorAll('video[data-autoplay]');
+            if (!videos.length || prefersReducedMotion) return;
             const obs = new IntersectionObserver(entries => {
                 entries.forEach(e => {
                     if (!e.isIntersecting) return;
-                    const v = e.target;
-                    const source = v.querySelector('source[data-src]');
-                    if (source) source.src = source.dataset.src;
-                    v.load();
-                    if (!prefersReducedMotion) v.play().catch(() => {});
-                    obs.unobserve(v);
+                    e.target.play().catch(() => {});
+                    obs.unobserve(e.target);
                 });
             }, { rootMargin: '200px' });
             videos.forEach(v => obs.observe(v));
