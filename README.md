@@ -40,7 +40,7 @@ page stays readable without WebGL and for search engines.
 ### Local Development
 
 ```bash
-npm install
+npm install        # requires Node 20.19+ (22 recommended, see .nvmrc)
 npm run dev        # http://localhost:5173
 npm run build      # type-check + production build into dist/
 npm run preview    # serve dist/
