@@ -23,3 +23,5 @@ ssl/
 .superpowers
 .playwright-mcp
 docs/superpowers/
+# Build output
+dist/

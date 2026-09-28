@@ -1,28 +1,38 @@
-# Personal Portfolio
+# Personal Portfolio — The Plane of Focus
 
-A minimal yet sophisticated portfolio website showcasing professional work and skills. Built with vanilla HTML, CSS, and JavaScript—no frameworks, no build tools, just clean, performant code.
+Portfolio of Niklas Weber, built around an interactive lens lab. The hero is a
+procedurally generated 50 mm lens on an optical bench: turn its focus ring and the
+glass elements travel on their helicoid, moving the plane of focus through a
+diorama where each project sits at its own distance.
 
-## Overview
+## What the lab does
 
-This is a production-grade portfolio website designed with principles of minimalism, accessibility, and performance. The design features an editorial aesthetic with carefully paired serif and sans-serif typography, complemented by smooth interactions and responsive layouts.
+- **Real thin-lens optics** — focus distance, near/far limits, depth of field,
+  hyperfocal distance, helicoid travel and blur-disc size are computed live for a
+  50 mm lens on a 36 × 24 mm sensor (`src/lab/optics.ts`).
+- **Procedural lens** — a six-element double-Gauss design with ED glass, a
+  nine-blade iris, focus and aperture rings with printed scales, shown as a
+  cutaway. Press **X** for the exploded view.
+- **Light paths** — ray cones from the subject through the lens to the sensor,
+  converging (or not) on the sensor plane; blur discs for every subject.
+- **Sensor view** — a second camera at the lens's principal point, rendered with
+  a custom bokeh shader that uses the same blur-disc formula as the readouts. The
+  image also appears, upside down, on the 3D sensor.
+- **Project card** — literally out of focus until you focus on its subject.
+- Keyboard: arrow keys turn the ring, **1–5** focus on a project, **A** cycles the
+  aperture, **X** exploded view, **S** sensor view.
 
-### Key Features
-
-- **Scroll-triggered animations** — Smooth, GPU-accelerated section transitions
-- **Real-time timezone display** — Dynamic location-aware content
-- **Accessibility-first** — Full support for reduced-motion preferences, semantic HTML, and ARIA labels
-- **Fully responsive** — Optimized for all device sizes and screen densities
-- **SEO optimized** — Structured data, sitemap, and robots.txt for discoverability
-- **High performance** — Minified assets, optimized image formats (WebP), no external dependencies
+All project content is also written out as regular HTML below the lab, so the
+page stays readable without WebGL and for search engines.
 
 ## Technology Stack
 
 | Layer | Technologies |
 |-------|---|
-| **Frontend** | HTML5, CSS3, Vanilla JavaScript (ES6+) |
-| **Asset Optimization** | Minification, WebP image format |
+| **Frontend** | HTML, CSS, TypeScript, three.js |
+| **Build** | Vite (multi-page), self-hosted fonts via Fontsource |
 | **Server** | Nginx with reverse proxy configuration |
-| **Containerization** | Docker + Docker Compose |
+| **Containerization** | Docker (multi-stage build) + Docker Compose |
 | **Security** | Let's Encrypt SSL/TLS |
 
 ## Getting Started
@@ -30,68 +40,50 @@ This is a production-grade portfolio website designed with principles of minimal
 ### Local Development
 
 ```bash
-# Open directly in your browser
-open index.html
+npm install
+npm run dev        # http://localhost:5173
+npm run build      # type-check + production build into dist/
+npm run preview    # serve dist/
 ```
-
-No dependencies, no build process—just open and start developing.
 
 ### Production Deployment
 
 ```bash
-# Configure your environment
 cp .env.example .env
-
 # Edit .env with your domain and email settings
-# Then deploy with Docker
-docker compose up -d
+docker compose up -d --build
 ```
 
-For detailed deployment instructions, see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
-
-## Architecture & Design Philosophy
-
-### Principles
-
-**Minimalist Design** — Content takes center stage with intentional, restrained visual elements that enhance rather than distract.
-
-**Accessibility First** — Built on semantic HTML with comprehensive ARIA labels, keyboard navigation, and respect for user motion preferences. Exceeds WCAG 2.1 standards.
-
-**Performance Excellence** — Zero external dependencies, optimized asset delivery, and efficient JavaScript ensure fast load times and smooth interactions across all devices.
-
-### Design Elements
-
-- Editorial-inspired typography with carefully selected serif and sans-serif pairings
-- Architecture-inspired aesthetic with clean lines and proportional spacing
-- Optimized imagery available in multiple formats (PNG for maximum compatibility, WebP for modern browsers)
-- Responsive grid system for consistent presentation across devices
+The Dockerfile builds the site with Node and serves `dist/` from nginx. For
+detailed deployment instructions, see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ## Project Structure
 
 ```
-├── index.html              # Main portfolio page
+├── index.html              # Home: lens lab + projects, writing, about, contact
+├── writing.html            # Writing index
+├── writing/                # Posts
 ├── imprint.html            # Legal notice
-├── styles.css              # Component-based styles
-├── styles.min.css          # Minified styles
-├── script.js               # Modular vanilla JS
-├── script.min.js           # Minified scripts
-├── assets/                 # Project images (PNG and WebP formats)
+├── src/
+│   ├── main.ts             # Home entry (clock, GitHub stats, lazy lab import)
+│   ├── pages.ts            # Entry for writing/imprint pages
+│   ├── lab/                # The lens lab
+│   │   ├── optics.ts       # Thin-lens formulas
+│   │   ├── layout.ts       # Bench layout and log distance scale
+│   │   ├── lens.ts         # Procedural lens model
+│   │   ├── diorama.ts      # Project miniatures, bench, backdrop
+│   │   ├── rays.ts         # Ray cones, blur discs, plane of focus, DoF zone
+│   │   ├── sensorView.ts   # Sensor camera + bokeh shader
+│   │   ├── textures.ts     # Canvas textures (scales, cards, terminal)
+│   │   ├── subjects.ts     # Project data shown in the lab
+│   │   └── lab.ts          # Renderer, interaction, UI binding
+│   ├── shared/             # Clock, GitHub stats
+│   └── styles/             # base, home and page styles
+├── public/                 # Copied as-is: assets/, robots.txt, sitemap.xml, llms.txt
 ├── nginx/                  # Nginx server configuration
-├── nginx-reverse-proxy.conf # Reverse proxy configuration
-├── Dockerfile              # Container image definition
-├── docker-compose.yml      # Container orchestration
-├── entrypoint.sh           # Docker entrypoint script
-├── robots.txt              # Search engine crawling rules
-├── sitemap.xml             # XML sitemap for SEO
-├── scripts/                # Build and utility scripts
-├── docs/                   # Documentation
-│   └── DEPLOYMENT.md       # Deployment instructions
-└── .env.example            # Environment variables template
+├── Dockerfile              # Build + serve image
+└── docker-compose.yml      # Container orchestration
 ```
-
-## Documentation
-
-- [**Deployment Guide**](docs/DEPLOYMENT.md) — Comprehensive instructions for production deployment with Docker
 
 ## License
 
