@@ -1066,7 +1066,7 @@
 
 .spec__details div {
   display: grid;
-  grid-template-columns: 6.5rem 1fr;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
   gap: 1rem;
   font-size: 0.9rem;
 }
@@ -1077,6 +1077,7 @@
 
 .spec__details dd {
   margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .spec__related p {
@@ -1239,7 +1240,7 @@
 
 .vocab div {
   display: grid;
-  grid-template-columns: 6.5rem 1fr;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
   gap: 1rem;
   padding: 0.7rem 0;
   border-bottom: 1px solid var(--line);
@@ -1307,6 +1308,8 @@
 }
 
 .contact__links a {
+  min-width: 0;
+  overflow-wrap: anywhere;
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
@@ -1347,7 +1350,7 @@
 @media (max-width: 860px) {
   .manual__head,
   .spec {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .manual__intro {
     grid-column: 1;
@@ -1371,10 +1374,10 @@
   }
   .spec__main,
   .about {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .notes a {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .notes__topic {
     display: none;
