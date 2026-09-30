@@ -1,6 +1,6 @@
 # Niklas Weber — Systems Developer
 
-> Niklas Weber is a systems programmer at 42 Heilbronn specializing in C, Go, and low-level optimization.
+> Niklas Weber is a systems programmer at 42 Heilbronn and a Software Engineering student at Hochschule Heilbronn (Heilbronn University of Applied Sciences), specializing in C, Go, and low-level optimization.
 
 ## Projects
 
