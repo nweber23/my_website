@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For vs While in C, C++ and Go: Identical Assembly — Niklas Weber</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%230b0b0c'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='10.5'%20fill='none'%20stroke='%23ece7df'%20stroke-width='1.6'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='6'%20fill='none'%20stroke='%23ece7df'%20stroke-opacity='.5'%20stroke-width='1.4'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='2.2'%20fill='%23ff5a1f'/%3E%3C/svg%3E">
+
+    <meta name="description" content="I compared for and while loops in C, C++ and Go at the machine-code level: identical. What actually changes performance is the counter type, calls in the loop condition, bounds checks, and loop alignment.">
+    <meta name="robots" content="index, follow">
+    <meta name="last-modified" content="2026-10-02">
+    <meta name="theme-color" content="#0b0b0c">
+    <link rel="canonical" href="https://nweber.me/writing/for-vs-while-loops.html">
+
+    <meta property="og:title" content="For vs While in C, C++ and Go: Identical Assembly">
+    <meta property="og:description" content="I compared for and while loops in C, C++ and Go at the machine-code level: identical. What actually changes performance is the counter type, calls in the loop condition, bounds checks, and loop alignment.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://nweber.me/writing/for-vs-while-loops.html">
+    <meta property="og:image" content="https://nweber.me/assets/ft_casino.webp">
+    <meta property="og:site_name" content="Niklas Weber Portfolio">
+    <meta property="og:locale" content="en_US">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="For vs While in C, C++ and Go: Identical Assembly">
+    <meta name="twitter:description" content="I compared for and while loops in C, C++ and Go at the machine-code level: identical. What actually changes performance is the counter type, calls in the loop condition, bounds checks, and loop alignment.">
+    <meta name="twitter:image" content="https://nweber.me/assets/ft_casino.webp">
+
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://nweber.me/" },
+        { "@type": "ListItem", "position": 2, "name": "Writing", "item": "https://nweber.me/writing.html" },
+        { "@type": "ListItem", "position": 3, "name": "For vs while loops in C, C++ and Go: identical assembly, and what actually changes performance", "item": "https://nweber.me/writing/for-vs-while-loops.html" }
+      ]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "@id": "https://nweber.me/writing/for-vs-while-loops.html",
+      "headline": "For vs while loops in C, C++ and Go: identical assembly, and what actually changes performance",
+      "description": "I compared for and while loops in C, C++ and Go at the machine-code level: identical. What actually changes performance is the counter type, calls in the loop condition, bounds checks, and loop alignment.",
+      "author": {
+        "@type": "Person",
+        "@id": "https://nweber.me/#person",
+        "name": "Niklas Weber",
+        "url": "https://nweber.me",
+        "jobTitle": "Systems Developer",
+        "description": "Systems Developer at 42 Heilbronn specializing in C, Go, and low-level programming.",
+        "sameAs": [
+          "https://github.com/nweber23",
+          "https://profile.intra.42.fr/users/nweber",
+          "https://www.linkedin.com/in/niklas-weber-488576329/"
+        ]
+      },
+      "datePublished": "2026-10-02",
+      "dateModified": "2026-10-02",
+      "mainEntityOfPage": "https://nweber.me/writing/for-vs-while-loops.html",
+      "about": { "@id": "https://nweber.me/#person" },
+      "keywords": "for vs while loop performance, C, C++, Go, assembly, gcc, clang, objdump, bounds check elimination, loop vectorization, strlen in loop condition, loop alignment, microbenchmarking"
+    }
+    </script>
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <div class="scroll-progress" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <nav class="nav" aria-label="Main navigation">
+        <ul class="nav__list" role="list">
+            <li><a href="../index.html" class="nav__link" data-idx="00">← Back</a></li>
+        </ul>
+
+        <div class="nav__right">
+            <span class="nav__time" aria-label="Current time in CET">—</span>
+            <button class="nav__toggle" aria-label="Open menu" aria-expanded="false">
+                <span class="nav__toggle-bar"></span>
+                <span class="nav__toggle-bar"></span>
+            </button>
+        </div>
+    </nav>
+
+    <main id="main" class="main">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol class="breadcrumb__list">
+                <li class="breadcrumb__item">
+                    <a href="/" class="breadcrumb__link">home</a>
+                </li>
+                <li class="breadcrumb__item breadcrumb__sep">
+                    <a href="../writing.html" class="breadcrumb__link">writing</a>
+                </li>
+                <li class="breadcrumb__item breadcrumb__sep">
+                    <span class="breadcrumb__current" aria-current="page">for vs while</span>
+                </li>
+            </ol>
+        </nav>
+
+        <section class="section section--imprint" aria-labelledby="post-title" id="for-vs-while-loops">
+            <div class="section__head">
+                <h1 id="post-title" class="section__title">For vs while in C, C++ and Go: the assembly is <em>identical</em></h1>
+                <span class="section__aside">2026-10-02 · Systems programming</span>
+            </div>
+
+            <div class="imprint__layout imprint__layout--full">
+                <article class="imprint__block">
+                    <p class="imprint__text">"Is <code>for</code> faster than <code>while</code>?" is one of those questions everybody has an opinion on and almost nobody has checked. I write C, C++ and Go, so I checked in all three: compiled the same loop both ways, diffed the machine code, then benchmarked it. The short answer is that the compiler can't tell the two apart. The long answer is that the question sent me to four things that <em>do</em> change loop performance, and to one benchmarking trap that gave me three fake speed differences before I understood it.</p>
+
+                    <h2 class="imprint__heading">The short version</h2>
+                    <ul>
+                        <li><code>for</code> and <code>while</code> produce identical machine code in all 16 C/C++ configurations I tried (gcc and clang, <code>-O0</code> to <code>-O3</code>) and in every Go pair I tried. The only difference anywhere is one <code>xor</code> scheduled one slot earlier at gcc <code>-O3</code>.</li>
+                        <li>A 32-bit <code>unsigned</code> counter against a 64-bit bound made gcc stop vectorizing: <strong>2.4× slower</strong>.</li>
+                        <li><code>strlen(s)</code> in the loop condition made a loop <strong>quadratic</strong>: 835 ms vs 0.19 ms at 320 000 characters.</li>
+                        <li>C++ range-for and iterator loops are 2–3× slower than index loops at <code>-O0</code> and identical at <code>-O2</code>.</li>
+                        <li>Go's bounds check, in a simple sum loop, costs nothing I could measure.</li>
+                        <li>The trap: the same instructions ran <strong>2× slower</strong> when the loop happened to straddle a 64-byte boundary. That produced phantom differences between variants that were byte-for-byte the same loop.</li>
+                    </ul>
+
+                    <h2 class="imprint__heading">Setup</h2>
+                    <p class="imprint__text">The kernel is the smallest loop that can't be deleted: sum an array of <code>uint32_t</code> into a <code>uint64_t</code>. Four spellings in C, the same four in C++ and Go.</p>
+                    <pre class="article__code"><code>uint64_t sum_for(const uint32_t *a, size_t n) {
+    uint64_t s = 0;
+    for (size_t i = 0; i &lt; n; i++) s += a[i];
+    return s;
+}
+
+uint64_t sum_while(const uint32_t *a, size_t n) {
+    uint64_t s = 0;
+    size_t i = 0;
+    while (i &lt; n) { s += a[i]; i++; }
+    return s;
+}
+// plus sum_dowhile (hand-inverted loop with an n == 0 guard)
+// and sum_ptr (walks a pointer to a + n)</code></pre>
+                    <p class="imprint__text">Everything ran on a Ryzen 5 4500U laptop (Zen 2), with gcc 13.3, clang 18.1.3 and Go 1.27.1, pinned to one core with <code>taskset</code>. Each timing is a median: 15 samples per variant, interleaved round-robin after a warm-up round so clock drift hits every variant equally, 2<sup>28</sup> elements per sample, and the whole thing repeated five times. The array is 4096 elements (16 KB) so it stays in L1 and the loop is the only thing being measured. The laptop boosts, so absolute nanoseconds move between runs: the same scalar loop took 0.26 ns, 0.28 ns, and 0.42 ns when the clock dropped to its 2.4 GHz base. Within a run, the ratios are stable, so those are what I trust.</p>
+
+                    <h2 class="imprint__heading">Test 1: is the machine code the same?</h2>
+                    <p class="imprint__text">Timing a loop tells you whether two versions <em>behave</em> differently. Diffing the code tells you whether they are different <em>at all</em>, which is a stronger and cheaper test, so that came first. Compile to an object file, disassemble each function, strip the addresses and jump targets (they differ because the functions sit at different offsets), and compare:</p>
+                    <pre class="article__code"><code>body() {
+  objdump -d --no-show-raw-insn "$1" |
+  awk -v f="&lt;$2&gt;:" '$2==f{p=1;next} /^$/{p=0} p' |
+  sed -E 's/^\s*[0-9a-f]+:\s*//; s/\s*#.*//; s/&lt;[^&gt;]*&gt;//g;
+          s/^(j[a-z]+|call)\s+.*/\1 T/; s/\s+/ /g; s/ $//' |
+  grep -Ev '^(nop|cs nop|data16)'
+}
+diff &lt;(body loops.o sum_for) &lt;(body loops.o sum_while) &amp;&amp; echo IDENTICAL</code></pre>
+                    <p class="imprint__text">My first version of this script reported every pair as different. The jump targets were the problem: <code>je 20</code> in one function and <code>je 50</code> in the other are the same jump. Normalizing them fixed it. <code>=</code> means byte-for-byte identical after normalization, <code>≈</code> means the same instructions in a different order:</p>
+                    <table>
+                        <thead>
+                            <tr><th></th><th>-O0</th><th>-O1</th><th>-O2</th><th>-O3</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>gcc (C)</td><td>=</td><td>=</td><td>=</td><td>≈</td></tr>
+                            <tr><td>clang (C)</td><td>=</td><td>=</td><td>=</td><td>=</td></tr>
+                            <tr><td>g++ (C++)</td><td>=</td><td>=</td><td>=</td><td>≈</td></tr>
+                            <tr><td>clang++ (C++)</td><td>=</td><td>=</td><td>=</td><td>=</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="imprint__text">The single <code>≈</code> is gcc <code>-O3</code>, where one <code>xorl %edx, %edx</code> is placed one slot earlier in <code>sum_for</code>. That is the scheduler, not the loop. And it makes sense that the table is so uniform: both front ends lower <code>for</code> and <code>while</code> to the same control-flow graph, a header block with the test, a body, and a back edge. There is no <code>for</code> in the IR to be fast or slow. This is what gcc <code>-O2</code> produced for both (without the leading <code>endbr64</code>); it already turned the indexed loop into a pointer bump:</p>
+                    <pre class="article__code"><code>    testq   %rsi, %rsi
+    je      .Lzero
+    leaq    (%rdi,%rsi,4), %rcx     # end = a + n
+    xorl    %eax, %eax
+.Lloop:
+    movl    (%rdi), %edx
+    addq    $4, %rdi
+    addq    %rdx, %rax
+    cmpq    %rcx, %rdi
+    jne     .Lloop
+    ret
+.Lzero:
+    xorl    %eax, %eax
+    ret</code></pre>
+                    <p class="imprint__text">Go gives the same answer. With <code>go tool objdump</code>, <code>for i := 0; i &lt; len(a); i++</code>, <code>for i &lt; len(a)</code> with a manual <code>i++</code>, <code>for i := range a</code> and <code>for _, v := range a</code> are four identical 11-instruction functions. Even with optimizations off (<code>-gcflags='all=-N -l'</code>), <code>for</code> and <code>while</code> keep the same 35 instructions; one <code>JMP</code> sits in a different place. (Note the <code>all=</code>: without it, <code>-gcflags</code> only applies to the package named on the command line. My first <code>-N</code> run silently compiled the loops with optimizations on and "proved" everything was identical.)</p>
+                    <pre class="article__code"><code>    XORL CX, CX                 // sum
+    XORL DX, DX                 // i
+    JMP  cond
+body:
+    MOVL 0(AX)(DX*4), SI
+    ADDQ SI, CX
+    INCQ DX
+cond:
+    CMPQ BX, DX
+    JG   body
+    MOVQ CX, AX
+    RET</code></pre>
+                    <p class="imprint__text">The hand-written do-while is the one variant that is not identical. Writing <code>if (n == 0) return 0;</code> yourself is doing by hand what the compiler's loop inversion already does for a <code>for</code>, so the surrounding code differs slightly, but the hot loop is the same.</p>
+
+                    <h2 class="imprint__heading">Test 2: what does change a loop</h2>
+                    <p class="imprint__text">If the keyword is irrelevant, the interesting question is what <em>isn't</em>. Four things came up.</p>
+
+                    <h3 class="imprint__heading">The counter type decides whether the loop vectorizes</h3>
+                    <p class="imprint__text"><code>int i</code> against an <code>int n</code> and <code>size_t i</code> against a <code>size_t n</code> both vectorize. <code>unsigned i</code> against a <code>size_t n</code> does not, in gcc:</p>
+                    <pre class="article__code"><code>uint64_t sum_u32(const uint32_t *a, size_t n) {
+    uint64_t s = 0;
+    for (unsigned i = 0; i &lt; n; i++) s += a[i];   // 32-bit counter, 64-bit bound
+    return s;
+}</code></pre>
+                    <p class="imprint__text">If <code>n</code> is larger than <code>UINT_MAX</code>, <code>i</code> wraps to zero and the loop never ends, so the compiler has to preserve that. Signed overflow is undefined behavior, so the compiler may assume an <code>int</code> counter never wraps, which is why <code>int</code> is fine. gcc <code>-O3</code> compiled the unsigned version to a 17-instruction scalar function with no SIMD instructions at all. clang vectorizes it anyway, with a much longer function (50 instructions vs 17, presumably a runtime check plus a scalar fallback; I didn't read it closely). Times in ns per element:</p>
+                    <table>
+                        <thead>
+                            <tr><th></th><th>gcc -O2</th><th>gcc -O3</th><th>gcc -O3, aligned</th><th>clang -O3</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>for</td><td>0.257</td><td>0.116</td><td>0.117</td><td>0.111</td></tr>
+                            <tr><td>while</td><td>0.256</td><td>0.117</td><td>0.142</td><td>0.111</td></tr>
+                            <tr><td>do-while</td><td>0.257</td><td>0.142</td><td>0.116</td><td>0.111</td></tr>
+                            <tr><td>pointer</td><td>0.257</td><td>0.116</td><td>0.142</td><td>0.141</td></tr>
+                            <tr><td>int counter</td><td>0.257</td><td>0.142</td><td>0.116</td><td>0.116</td></tr>
+                            <tr><td>unsigned counter</td><td>0.258</td><td>0.281</td><td>0.555</td><td>0.111</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="imprint__text">Read the <code>gcc -O3</code> column for the real effect: vectorizing takes the loop from 0.257 (gcc <code>-O2</code> is scalar, one element per cycle) to 0.116 ns, and the unsigned counter loses it, landing at 0.281. The scattered 0.142 values in the <code>gcc -O3</code> columns are <em>not</em> a finding. They are the trap from the last section, and they move when I change where the loops sit in memory. Ignore them for now.</p>
+                    <p class="imprint__text">The takeaway is a habit, not a benchmark result: use <code>size_t</code> or a signed type for the counter, and never a narrower unsigned type than the bound it's compared against.</p>
+
+                    <h3 class="imprint__heading">A function call in the condition runs every iteration</h3>
+                    <p class="imprint__text">The loop condition is evaluated on every iteration whether it's spelled <code>for</code> or <code>while</code>. Put a call there and you pay for it every time, unless the compiler can prove the result doesn't change:</p>
+                    <pre class="article__code"><code>void upcase_call(char *s) {
+    for (size_t i = 0; i &lt; strlen(s); i++)
+        if (s[i] &gt;= 'a' &amp;&amp; s[i] &lt;= 'z') s[i] -= 32;
+}
+
+void upcase_hoist(char *s) {
+    size_t n = strlen(s);
+    for (size_t i = 0; i &lt; n; i++)
+        if (s[i] &gt;= 'a' &amp;&amp; s[i] &lt;= 'z') s[i] -= 32;
+}</code></pre>
+                    <p class="imprint__text">The store to <code>s[i]</code> is a <code>char</code> write, and <code>char</code> may alias anything, including the string's own terminator. So the compiler can't prove <code>strlen</code> returns the same value next iteration. Both gcc and clang at <code>-O2</code> keep the call inside the loop, and the timing shows it:</p>
+                    <table>
+                        <thead>
+                            <tr><th>Length</th><th>strlen in condition</th><th>hoisted</th><th>Ratio</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>10 000</td><td>0.437 ms</td><td>0.0052 ms</td><td>84×</td></tr>
+                            <tr><td>40 000</td><td>14.4 ms</td><td>0.0214 ms</td><td>674×</td></tr>
+                            <tr><td>160 000</td><td>204 ms</td><td>0.0934 ms</td><td>2 189×</td></tr>
+                            <tr><td>320 000</td><td>836 ms</td><td>0.190 ms</td><td>4 402×</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="imprint__text">gcc <code>-O2</code>; clang is within a few percent (820 ms at 320 000). Doubling the length quadruples the time, plus a jump between 20 000 and 40 000 characters where the string stops fitting in L1. Go doesn't have this exact trap, because <code>len(s)</code> is a field in the slice header, but the rule is the same in all three languages: <code>i &lt; f()</code> calls <code>f</code> on every iteration.</p>
+
+                    <h3 class="imprint__heading">C++ at -O0 is where the folklore comes from</h3>
+                    <p class="imprint__text">With <code>std::vector</code>, the index loop, the range-for, and the iterator loop all do the same work. At <code>-O0</code>, they don't compile to the same thing, because every <code>operator[]</code>, <code>operator*</code>, <code>operator++</code> and <code>operator!=</code> is a real function call. Ratios to the index <code>for</code> loop (4.59 ns/elem at <code>-O0</code>, 0.258 at <code>-O2</code>):</p>
+                    <table>
+                        <thead>
+                            <tr><th></th><th>-O0</th><th>-O2</th><th>-O2, aligned</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>index for</td><td>1.00×</td><td>1.00×</td><td>1.00×</td></tr>
+                            <tr><td>index while</td><td>1.00×</td><td>0.98×</td><td>1.00×</td></tr>
+                            <tr><td>range-for</td><td>2.18×</td><td>0.99×</td><td>1.00×</td></tr>
+                            <tr><td>iterator while</td><td>3.09×</td><td>1.00×</td><td>1.00×</td></tr>
+                            <tr><td>std::accumulate</td><td>2.09×</td><td>1.96×</td><td>0.99×</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="imprint__text">The <code>-O0</code> column explains why people who benchmark a debug build conclude "range-for is slower". The index <code>for</code> and <code>while</code> are still byte-identical there, so the keyword is not the cause; the abstraction layer is. At <code>-O2</code> they all collapse to the same loop, except one number: <code>std::accumulate</code> at 1.96×. That one is not real, and the "aligned" column is the hint. It's the subject of the last section.</p>
+
+                    <h3 class="imprint__heading">Go: bounds checks, and the one place for and while differ</h3>
+                    <p class="imprint__text">Go checks every <code>a[i]</code> against the slice length unless the compiler can prove it's in range. <code>-d=ssa/check_bce/debug=1</code> shows which accesses kept their check:</p>
+                    <pre class="article__code"><code>// i is bounded by len(a): the check is proved away
+for i := 0; i &lt; len(a); i++ { s += uint64(a[i]) }
+for i := range a             { s += uint64(a[i]) }
+
+// i is bounded by an unrelated n: Found IsInBounds, checked every iteration
+for i := 0; i &lt; n; i++ { s += uint64(a[i]) }
+
+// re-slice once up front: the check moves out of the loop (Found IsSliceInBounds)
+a = a[:n]
+for i := 0; i &lt; n; i++ { s += uint64(a[i]) }</code></pre>
+                    <p class="imprint__text">Both the <code>for i &lt; n</code> and the <code>while i &lt; n</code> forms keep the check, and the <code>a = a[:n]</code> hint removes it from both, so the loop keyword is irrelevant here too. The machine code confirms it: the checked loop has an extra <code>CMPQ</code>/<code>JA</code> pair that jumps to <code>runtime.panicBounds</code>. What does that pair cost? To isolate it from everything else I wrote the same loop by hand in assembly, with and without a per-iteration compare-and-branch that is never taken, both inside one cache line. Medians of three runs were 0.2815 and 0.2819 ns per element, and the minimums were identical at 0.257. In a sum loop, where the critical path is the add chain and the predicted branch fits in spare issue slots, a bounds check was not measurable. That is a result about this loop on this CPU; a check can still matter when it stops a larger optimization, and Go's compiler doesn't auto-vectorize, so here it isn't blocking one.</p>
+                    <p class="imprint__text">The one real semantic difference between <code>for</code> and <code>while</code> in Go is the loop variable. Since Go 1.22, a variable declared in the <code>for</code> header is a fresh copy per iteration. A <code>while</code>-style loop with the counter declared outside is one shared variable:</p>
+                    <pre class="article__code"><code>for i := 0; i &lt; 3; i++ { fs = append(fs, func() int { return i }) }
+// calling each closure: [0 1 2]
+
+i := 0
+for i &lt; 3 { fs = append(fs, func() int { return i }); i++ }
+// calling each closure: [3 3 3]</code></pre>
+                    <p class="imprint__text">I ran both to be sure. The per-iteration copy only costs anything when a closure captures the variable; a <code>for</code> loop that captures nothing allocates nothing (0 allocations per run). If you have ever been bitten by the old "all closures see the last value" bug, <code>for</code> with the variable in the header is now the safe spelling.</p>
+
+                    <h2 class="imprint__heading">The trap: the same loop, 2× slower</h2>
+                    <p class="imprint__text">Everything above is clean because I'd learned to distrust the timings by then. Three times, the benchmark reported a large difference between variants whose hot loops were instruction-for-instruction the same.</p>
+
+                    <p class="imprint__text"><strong>1. gcc -O3 do-while, 22% slower.</strong> The <code>do-while</code> variant measured 0.142 against 0.116 ns/elem for <code>for</code>, reproducibly, across runs. The obvious conclusion is "hand-inverting the loop made it worse". But the inner vector loop in both functions is the same nine instructions (<code>movdqu</code>, <code>addq</code>, <code>movdqa</code>, two <code>punpck</code>, two <code>paddq</code>, <code>cmpq</code>, <code>jne</code>). The loops sit at different addresses, so I rebuilt with <code>-falign-loops=32</code>. The penalty did not disappear: it moved. Now <code>do-while</code> was fast and <code>while</code> and the pointer variant were the slow ones. That is the "gcc -O3, aligned" column in the table above, and it is also why the <code>int counter</code> row jumps around.</p>
+
+                    <p class="imprint__text"><strong>2. std::accumulate, 2× slower.</strong> At <code>-O2</code>, <code>std::accumulate</code> ran at about twice the time of the range-for, in every run (0.556, 0.555, 0.507 against 0.28, 0.27, 0.26). Both compile to the same five-instruction, 14-byte loop (load, two adds, compare, branch). In the linked binary the range-for's loop is at <code>0x1718</code>–<code>0x1725</code>, inside one 64-byte line. <code>accumulate</code>'s is at <code>0x1778</code>–<code>0x1785</code>, and it runs across the boundary at <code>0x1780</code>. Forcing loop alignment made every variant equal (0.99×, in the table).</p>
+
+                    <p class="imprint__text"><strong>3. Go, two groups.</strong> Eight Go variants fell into two groups, with nothing in between:</p>
+                    <table>
+                        <thead>
+                            <tr><th>Variant</th><th>Check</th><th>Crosses line</th><th>ns/elem</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>for i &lt; len(a)</td><td>no</td><td>no</td><td>0.258</td></tr>
+                            <tr><td>while i &lt; len(a)</td><td>no</td><td>no</td><td>0.259</td></tr>
+                            <tr><td>range index</td><td>no</td><td>no</td><td>0.261</td></tr>
+                            <tr><td>range value</td><td>no</td><td>no</td><td>0.259</td></tr>
+                            <tr><td>for i &lt; n</td><td>yes</td><td>yes</td><td>0.511</td></tr>
+                            <tr><td>while i &lt; n</td><td>yes</td><td>yes</td><td>0.546</td></tr>
+                            <tr><td>for i &lt; n + hint</td><td>no</td><td>yes</td><td>0.526</td></tr>
+                            <tr><td>range n + hint</td><td>no</td><td>yes</td><td>0.533</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="imprint__text">A first reading: "the bounds check costs 2×". It doesn't survive the last two rows ("hint" is <code>a = a[:n]</code>). Those have <em>no</em> check in the loop and are just as slow. My second suspicion was a <code>NOPL</code> that Go's assembler had inserted inside the slow loops, between <code>INCQ</code> and <code>CMPQ</code>. I tested it in hand-written assembly, with and without the <code>nop</code>: no difference. Reordering the functions in the source file, to see whether the slow group followed the layout, didn't change the grouping either. What did separate the groups was where the hot loop ended up. I extracted the address range of all eight loops from the final binary. The four fast ones (14 bytes each) are every one inside a single 64-byte line, for example <code>0x49bb6b</code>–<code>0x49bb78</code>. The four slow ones (17 and 22 bytes) all cross a line boundary, for example <code>0x49bc74</code>–<code>0x49bc84</code>, across <code>0x49bc80</code>. Eight for eight, and the "Crosses line" column is the only one that predicts the timing.</p>
+                    <p class="imprint__text">To prove it, I wrote the same five-instruction loop in assembly and placed it by hand:</p>
+                    <table>
+                        <thead>
+                            <tr><th>Same loop, hand-placed</th><th>ns/elem</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>inside one 64-byte line</td><td>0.258</td></tr>
+                            <tr><td>starts 8 bytes before a 64-byte boundary</td><td>0.508</td></tr>
+                            <tr><td>starts 12 bytes before a 64-byte boundary</td><td>0.508</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="imprint__text">Those are the same two numbers the Go variants split into, to three digits: 0.258 and 0.508. 0.25 ns is one cycle at about 3.9 GHz (the clock a one-cycle-per-element scalar loop implies; at the 2.4 GHz base I measured 0.42 ns for the same loop), so a loop that straddles a 64-byte boundary here costs one extra cycle per iteration. I established <em>that</em> placement alone reproduces it; I did not dig into the front-end mechanics of why Zen 2 pays that cycle, and other CPUs will behave differently. The point survives either way.</p>
+
+                    <p class="imprint__text">The first column of the C table, scalar <code>gcc -O2</code>, never showed any of this. Every variant was 0.257. Its loops happened to all land well. Which is the actual problem: whether you see a phantom difference depends on luck.</p>
+                    <p class="imprint__text">With the working set at 64 MB instead of 16 KB, the DRAM-resident run, the loop-form differences and the alignment artifacts vanish into memory bandwidth. Every gcc <code>-O3</code> and clang variant with a signed or 64-bit counter runs at 0.28 ns per element (about 14 GB/s), within 2% of each other, whether the loop is <code>for</code>, <code>while</code>, do-while or pointer, aligned or not. What stays visible is vectorization: scalar gcc <code>-O2</code> can't saturate the bus (0.46 ns), and the <code>unsigned</code> counter loop that gcc leaves scalar is still 1.8× slower at <code>-O3</code> (0.50 ns). Clang is unaffected (0.28).</p>
+
+                    <h2 class="imprint__heading">What I'd take from this</h2>
+                    <ul>
+                        <li><strong>Pick the loop for what it says.</strong> <code>for</code> when you have a counter, <code>while</code> when the exit condition is the point, <code>range</code> in Go. There is no performance reason to prefer one.</li>
+                        <li><strong>Check these instead:</strong> the counter's type against its bound, calls in the condition, and (in Go) whether the compiler can prove the index in range.</li>
+                        <li><strong>Never benchmark at <code>-O0</code>.</strong> It measures call overhead for abstractions that don't exist in a release build.</li>
+                        <li><strong>Diff the assembly before trusting a microbenchmark.</strong> If the code is the same and the time differs, suspect placement before suspecting the compiler. <code>-falign-loops=32</code>, interleaved samples, and a second build with the functions in a different order are cheap ways to find out.</li>
+                    </ul>
+                    <p class="imprint__text">All of this is specific to one Zen 2 laptop and these toolchain versions. The identical-assembly result should travel; the alignment numbers should not.</p>
+                </article>
+            </div>
+        </section>
+
+        <nav class="writing-index" aria-label="More posts">
+            <div class="writing-index__item">
+                <a href="container-from-scratch.html" class="writing-index__link">Building a container runtime from scratch</a>
+                <span class="writing-index__meta">2026-09-17 · Systems programming</span>
+            </div>
+            <div class="writing-index__item">
+                <a href="build-from-scratch.html" class="writing-index__link">Why I keep building things from scratch</a>
+                <span class="writing-index__meta">2026-08-26 · General</span>
+            </div>
+            <div class="writing-index__item">
+                <a href="elo-query-performance.html" class="writing-index__link">Getting Elo leaderboard queries under 100ms</a>
+                <span class="writing-index__meta">2026-08-25 · 42 Elo Leaderboard</span>
+            </div>
+            <div class="writing-index__item">
+                <a href="grpc-vs-rest.html" class="writing-index__link">gRPC versus REST: picking protocols at the Transcendence service boundary</a>
+                <span class="writing-index__meta">2026-08-23 · Transcendence</span>
+            </div>
+            <div class="writing-index__item">
+                <a href="ear-clipping.html" class="writing-index__link">Triangulating arbitrary polygons with ear clipping</a>
+                <span class="writing-index__meta">2026-08-23 · Go renderer</span>
+            </div>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <div class="footer__left">
+            <span class="footer__copy">© 2026 · Niklas Weber</span>
+            <span class="footer__note">Hand-built with three.js and plain HTML</span>
+        </div>
+        <div class="footer__right">
+            <a href="../index.html" class="footer__link">← Index</a>
+        </div>
+    </footer>
+
+    <script type="module" src="/src/pages.ts"></script>
+    <script data-goatcounter="https://mattz.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

@@ -282,6 +282,31 @@ h3.imprint__heading {
   text-align: left;
 }
 
+.imprint__block th {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.imprint__block td {
+  color: #d3cdc3;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 560px) {
+  .imprint__block th,
+  .imprint__block td {
+    padding: 0.5rem 0.35rem;
+  }
+
+  .imprint__block th {
+    letter-spacing: 0.04em;
+  }
+}
+
 /* Post lists. */
 .writing-index {
   margin-top: 3rem;
