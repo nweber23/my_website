@@ -1,43 +1,14 @@
 import * as THREE from 'three';
 import { TeapotGeometry } from 'three/addons/geometries/TeapotGeometry.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { AXIS_Y, DIORAMA_END, DIORAMA_X0, distanceToX } from './layout';
-import { STOP_X } from './lens';
-import { SUBJECTS, type Subject } from './subjects';
-import {
-  cardTexture,
-  checkerTexture,
-  chipEdgeTexture,
-  chipFaceTexture,
-  floorGridTexture,
-  podiumTexture,
-  railTexture,
-  terminalTexture,
-} from './textures';
+import { cardTexture, checkerTexture, chipEdgeTexture, chipFaceTexture, podiumTexture, terminalTexture } from './textures';
 
-export interface PlacedSubject {
-  subject: Subject;
-  group: THREE.Group;
-  /** World point the ray fan starts from. */
-  anchor: THREE.Vector3;
-  /** Where the label floats. */
-  labelAnchor: THREE.Object3D;
-  pickables: THREE.Object3D[];
-}
+// Project miniatures, each built at arbitrary scale and normalised to 1 unit tall.
 
-/** Lateral position of each subject as a fraction of the sensor's half-width. */
-const FRAME_X = [-0.55, 0.5, -0.2, 0.26, -0.02];
-/** Yaw toward the viewer; the sensor still sees each subject's front. */
-const YAW = [0.35, 0.5, 0.45, 0.2, 0.55];
-/** Subject height as a fraction of the frame height at its distance. */
-const FRAME_FILL = [0.36, 0.31, 0.26, 0.21, 0.23];
-const TAN_H = 18 / 50;
-const TAN_V = 12 / 50;
-
-const std = (color: number, roughness = 0.5, metalness = 0) =>
+export const std = (color: number, roughness = 0.5, metalness = 0) =>
   new THREE.MeshStandardMaterial({ color, roughness, metalness });
 
-function shadows(o: THREE.Object3D) {
+export function shadows(o: THREE.Object3D) {
   o.traverse((c) => {
     if (c instanceof THREE.Mesh) {
       c.castShadow = true;
@@ -48,7 +19,7 @@ function shadows(o: THREE.Object3D) {
 }
 
 /** Normalise a model so it is exactly 1 unit tall, sitting on y = 0. */
-function normalise(model: THREE.Object3D) {
+export function normalise(model: THREE.Object3D) {
   const box = new THREE.Box3().setFromObject(model);
   const size = box.getSize(new THREE.Vector3());
   const s = 1 / size.y;
@@ -60,7 +31,7 @@ function normalise(model: THREE.Object3D) {
   return wrap;
 }
 
-function casino() {
+export function casino() {
   const g = new THREE.Group();
   const felt = new THREE.Mesh(
     new RoundedBoxGeometry(1.1, 0.04, 0.8, 4, 0.03),
@@ -105,7 +76,7 @@ function casino() {
   return g;
 }
 
-function teapot() {
+export function teapot() {
   const g = new THREE.Group();
   const geo = new TeapotGeometry(0.3, 12);
   const solid = new THREE.Mesh(
@@ -124,7 +95,7 @@ function teapot() {
   return g;
 }
 
-function podium() {
+export function podium() {
   const g = new THREE.Group();
   const body = std(0x1b1a18, 0.55, 0.2);
   const steps: [string, number, number][] = [
@@ -160,7 +131,7 @@ function podium() {
   return g;
 }
 
-function raytraced() {
+export function raytraced() {
   const g = new THREE.Group();
   const floor = new THREE.Mesh(
     new THREE.BoxGeometry(1.1, 0.03, 1.1),
@@ -172,7 +143,7 @@ function raytraced() {
     [0.2, -0.05, -0.05, new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.02, metalness: 1 })],
     [0.14, -0.28, 0.3, new THREE.MeshPhysicalMaterial({ color: 0xc8321b, roughness: 0.15, clearcoat: 1 })],
     [0.11, 0.25, 0.26, std(0xe8e2d8, 0.9)],
-    [0.08, 0.28, -0.32, new THREE.MeshPhysicalMaterial({ color: 0xffffff, transmission: 1, roughness: 0.02, thickness: 0.2, ior: 1.5 })],
+    [0.08, 0.28, -0.32, new THREE.MeshPhysicalMaterial({ color: 0xd8f0ff, roughness: 0.02, clearcoat: 1, transparent: true, opacity: 0.45 })],
   ];
   for (const [r, x, z, m] of spheres) {
     const s = new THREE.Mesh(new THREE.SphereGeometry(r, 64, 32), m);
@@ -182,7 +153,7 @@ function raytraced() {
   return g;
 }
 
-function terminal() {
+export function terminal() {
   const g = new THREE.Group();
   const shell = new THREE.Mesh(new RoundedBoxGeometry(0.5, 0.62, 0.82, 6, 0.05), std(0x6f685d, 0.75));
   shell.position.set(0.06, 0.52, 0);
@@ -205,127 +176,4 @@ function terminal() {
   glow.position.set(-0.5, 0.55, 0);
   g.add(glow);
   return g;
-}
-
-const BUILDERS: Record<string, () => THREE.Object3D> = {
-  transcendence: casino,
-  'go-renderer': teapot,
-  elo: podium,
-  minirt: raytraced,
-  minishell: terminal,
-};
-
-export class Diorama {
-  readonly root = new THREE.Group();
-  readonly subjects: PlacedSubject[] = [];
-
-  constructor() {
-    this.buildBench();
-    SUBJECTS.forEach((subject, i) => this.place(subject, i));
-  }
-
-  private buildBench() {
-    const grid = floorGridTexture();
-    grid.repeat.set(30, 20);
-    const floor = new THREE.Mesh(
-      new THREE.PlaneGeometry(60, 40).rotateX(-Math.PI / 2),
-      new THREE.MeshStandardMaterial({ map: grid, roughness: 0.92, metalness: 0 })
-    );
-    floor.position.set(10, 0, 0);
-    floor.receiveShadow = true;
-    this.root.add(floor);
-
-    // Optical bench rail under sensor and lens, then a printed distance rule.
-    const railMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1d, roughness: 0.35, metalness: 0.8 });
-    const rail = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.06, 0.2), railMat);
-    rail.position.set(0.4, 0.03, 0);
-    rail.castShadow = rail.receiveShadow = true;
-    this.root.add(rail);
-
-    const x0 = DIORAMA_X0 - 0.3;
-    const x1 = DIORAMA_END;
-    const marks = [450, 500, 600, 700, 800, 1000, 1500, 2000, 3000, 5000, 7000, 10000].map((d) => ({
-      x: distanceToX(d),
-      label: d >= 1000 ? `${d / 1000} m` : `.${String(d / 10).padStart(2, '0')}`,
-    }));
-    const rule = new THREE.Mesh(
-      new THREE.PlaneGeometry(x1 - x0, 0.16).rotateX(-Math.PI / 2),
-      new THREE.MeshStandardMaterial({ map: railTexture(marks, x0, x1), roughness: 0.8 })
-    );
-    rule.position.set((x0 + x1) / 2, 0.003, 0);
-    rule.receiveShadow = true;
-    this.root.add(rule);
-
-    // Photo-studio sweep behind the far end: gives the sensor a soft backdrop.
-    const sweepR = 1.6;
-    const wallH = 7;
-    const cove = new THREE.PlaneGeometry(24, wallH + sweepR * 2, 1, 48);
-    const pos = cove.getAttribute('position');
-    const len = wallH + (Math.PI / 2) * sweepR;
-    for (let i = 0; i < pos.count; i++) {
-      const z = pos.getX(i);
-      // Arc length from the floor edge up the wall.
-      const t = ((pos.getY(i) + (wallH + sweepR * 2) / 2) / (wallH + sweepR * 2)) * len;
-      let x: number;
-      let y: number;
-      if (t < (Math.PI / 2) * sweepR) {
-        const a = t / sweepR;
-        x = Math.sin(a) * sweepR;
-        y = sweepR - Math.cos(a) * sweepR;
-      } else {
-        x = sweepR;
-        y = sweepR + (t - (Math.PI / 2) * sweepR);
-      }
-      pos.setXYZ(i, x, y, z);
-    }
-    cove.computeVertexNormals();
-    const backdrop = new THREE.Mesh(
-      cove,
-      new THREE.MeshStandardMaterial({ color: 0x1a1a1d, roughness: 0.95, side: THREE.DoubleSide })
-    );
-    backdrop.position.set(DIORAMA_END + 0.4, 0.001, 0);
-    backdrop.receiveShadow = true;
-    this.root.add(backdrop);
-  }
-
-  private place(subject: Subject, i: number) {
-    const x = distanceToX(subject.distance);
-    const depth = x - STOP_X;
-    const size = FRAME_FILL[i] * depth * TAN_V * 2;
-    const z = FRAME_X[i] * depth * TAN_H;
-    // Centre the subject a little below the optical axis; far ones sit on the floor.
-    const centreY = AXIS_Y - depth * TAN_V * 0.28;
-    const plinthH = Math.max(0, centreY - size / 2);
-
-    const group = new THREE.Group();
-    group.position.set(x, 0, z);
-
-    if (plinthH > 0.02) {
-      const plinth = new THREE.Mesh(
-        new RoundedBoxGeometry(size * 1.05, plinthH, size * 1.05, 3, Math.min(0.02, plinthH / 4)),
-        std(0x19191c, 0.75, 0.1)
-      );
-      plinth.position.y = plinthH / 2;
-      group.add(plinth);
-    }
-
-    const model = normalise(BUILDERS[subject.id]());
-    model.scale.setScalar(size);
-    model.rotation.y = YAW[i];
-    model.position.y = plinthH;
-    group.add(model);
-    shadows(group);
-    this.root.add(group);
-
-    const labelAnchor = new THREE.Object3D();
-    labelAnchor.position.set(0, plinthH + size * 1.08, 0);
-    group.add(labelAnchor);
-
-    const anchor = new THREE.Vector3(x, plinthH + size * 0.55, z);
-    const pickables: THREE.Object3D[] = [];
-    model.traverse((o) => {
-      if (o instanceof THREE.Mesh) pickables.push(o);
-    });
-    this.subjects.push({ subject, group, anchor, labelAnchor, pickables });
-  }
 }

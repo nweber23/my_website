@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { APERTURES, ringFromFocus } from './optics';
 
 const MONO = '"JetBrains Mono Variable", ui-monospace, monospace';
 const SANS = '"Inter Variable", system-ui, sans-serif';
@@ -19,118 +18,6 @@ function canvasTexture(
   if (srgb) tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 8;
   return tex;
-}
-
-/**
- * Distance scale printed around the focus ring. u wraps the circumference;
- * a label for distance d sits at the angle the ring must turn to focus at d.
- */
-export function focusScaleTexture(sweep: number): THREE.CanvasTexture {
-  return canvasTexture(4096, 128, (ctx, w, h) => {
-    ctx.fillStyle = '#0d0d0f';
-    ctx.fillRect(0, 0, w, h);
-    const marks: [number, string, string][] = [
-      [Infinity, '∞', '#ece7df'],
-      [10000, '10', '#ece7df'],
-      [5000, '5', '#ece7df'],
-      [3000, '3', '#ece7df'],
-      [2000, '2', '#ece7df'],
-      [1500, '1.5', '#ece7df'],
-      [1000, '1', '#ff7a45'],
-      [800, '.8', '#ff7a45'],
-      [700, '.7', '#ff7a45'],
-      [600, '.6', '#ff7a45'],
-      [500, '.5', '#ff7a45'],
-      [450, '.45', '#ff7a45'],
-    ];
-    const toU = (t: number) => (((t * sweep) / (Math.PI * 2)) % 1 + 1) % 1;
-    // Fine ticks along the helicoid travel.
-    ctx.strokeStyle = 'rgba(236,231,223,0.45)';
-    ctx.lineWidth = 2;
-    for (let i = 0; i <= 60; i++) {
-      const x = toU(i / 60) * w;
-      ctx.beginPath();
-      ctx.moveTo(x, h * 0.78);
-      ctx.lineTo(x, h * (i % 5 === 0 ? 0.56 : 0.66));
-      ctx.stroke();
-    }
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    for (const [d, label, color] of marks) {
-      const x = toU(ringFromFocus(d)) * w;
-      ctx.fillStyle = color;
-      ctx.font = `600 ${label === '∞' ? 58 : 44}px ${MONO}`;
-      ctx.fillText(label, x, h * 0.3);
-    }
-    ctx.fillStyle = 'rgba(236,231,223,0.5)';
-    ctx.font = `500 26px ${MONO}`;
-    ctx.fillText('m', toU(0.97) * w, h * 0.3);
-  });
-}
-
-export function apertureScaleTexture(angleFor: (n: number) => number): THREE.CanvasTexture {
-  return canvasTexture(2048, 96, (ctx, w, h) => {
-    ctx.fillStyle = '#111114';
-    ctx.fillRect(0, 0, w, h);
-    const stops = [2, 2.8, 4, 5.6, 8, 11, 16];
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    for (const n of stops) {
-      const u = (((angleFor(n) / (Math.PI * 2)) % 1) + 1) % 1;
-      const major = (APERTURES as readonly number[]).includes(n);
-      ctx.fillStyle = major ? '#ece7df' : 'rgba(236,231,223,0.55)';
-      ctx.font = `${major ? 600 : 500} 40px ${MONO}`;
-      ctx.fillText(String(n), u * w, h * 0.5);
-    }
-  });
-}
-
-/** Ribbed rubber grip, used as a bump map on the focus ring. */
-export function knurlTexture(): THREE.CanvasTexture {
-  const tex = canvasTexture(
-    512,
-    64,
-    (ctx, w, h) => {
-      const grd = ctx.createLinearGradient(0, 0, w / 64, 0);
-      grd.addColorStop(0, '#000');
-      grd.addColorStop(0.5, '#fff');
-      grd.addColorStop(1, '#000');
-      ctx.fillStyle = grd;
-      for (let i = 0; i < 64; i++) {
-        ctx.save();
-        ctx.translate((i * w) / 64, 0);
-        ctx.fillRect(0, 0, w / 64, h);
-        ctx.restore();
-      }
-    },
-    false
-  );
-  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-  tex.repeat.set(4, 1);
-  return tex;
-}
-
-export function nameRingTexture(): THREE.CanvasTexture {
-  return canvasTexture(2048, 2048, (ctx, w, h) => {
-    ctx.fillStyle = '#0c0c0e';
-    ctx.fillRect(0, 0, w, h);
-    ctx.translate(w / 2, h / 2);
-    const text = 'NW·OPTIC  50mm  1:2  ·  PLANE OF FOCUS  ·  Ø52  ·  HEILBRONN  ·  ';
-    ctx.font = `600 64px ${MONO}`;
-    ctx.fillStyle = '#d9d3c9';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    const radius = w * 0.43;
-    const chars = [...text];
-    const step = (Math.PI * 2) / chars.length;
-    chars.forEach((c, i) => {
-      ctx.save();
-      ctx.rotate(i * step);
-      ctx.translate(0, -radius);
-      ctx.fillText(c, 0, 0);
-      ctx.restore();
-    });
-  });
 }
 
 export function chipEdgeTexture(base: string): THREE.CanvasTexture {
@@ -246,33 +133,6 @@ export function terminalTexture(): THREE.CanvasTexture {
   });
 }
 
-/** Distance rule printed along the optical bench rail. */
-export function railTexture(
-  marks: { x: number; label: string }[],
-  x0: number,
-  x1: number
-): THREE.CanvasTexture {
-  const W = 8192;
-  return canvasTexture(W, 128, (ctx, w, h) => {
-    ctx.fillStyle = '#151517';
-    ctx.fillRect(0, 0, w, h);
-    ctx.strokeStyle = 'rgba(236,231,223,0.35)';
-    ctx.fillStyle = 'rgba(236,231,223,0.8)';
-    ctx.lineWidth = 3;
-    ctx.font = `500 44px ${MONO}`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    for (const m of marks) {
-      const u = ((m.x - x0) / (x1 - x0)) * w;
-      ctx.beginPath();
-      ctx.moveTo(u, 0);
-      ctx.lineTo(u, h * 0.28);
-      ctx.stroke();
-      ctx.fillText(m.label, u, h * 0.62);
-    }
-  });
-}
-
 export function floorGridTexture(): THREE.CanvasTexture {
   const tex = canvasTexture(
     512,
@@ -296,4 +156,37 @@ export function floorGridTexture(): THREE.CanvasTexture {
   );
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   return tex;
+}
+
+/** A small mono label (process names, chip markings) on a dark plate. */
+export function labelTexture(text: string, color = '#ece7df', bg = '#141417', w = 256, h = 128): THREE.CanvasTexture {
+  return canvasTexture(w, h, (ctx) => {
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = color;
+    ctx.font = `600 ${Math.round(h * 0.38)}px ${MONO}`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, w / 2, h / 2 + 2);
+  });
+}
+
+/** Etched code along the front edge of a layer plate. */
+export function plateTexture(code: string, name: string, latency: string, color: string): THREE.CanvasTexture {
+  return canvasTexture(2048, 96, (ctx, w, h) => {
+    ctx.fillStyle = '#0f0f12';
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, 10, h);
+    ctx.textBaseline = 'middle';
+    ctx.font = `700 48px ${MONO}`;
+    ctx.fillText(code, 40, h / 2 + 2);
+    ctx.fillStyle = 'rgba(236,231,223,0.6)';
+    ctx.font = `500 34px ${MONO}`;
+    ctx.fillText(name.toUpperCase(), 230, h / 2 + 2);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = 'rgba(236,231,223,0.85)';
+    ctx.font = `600 40px ${MONO}`;
+    ctx.fillText(latency, w - 40, h / 2 + 2);
+  });
 }

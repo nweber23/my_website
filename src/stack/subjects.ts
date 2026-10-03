@@ -6,8 +6,6 @@ export interface Subject {
   short: string;
   kind: string;
   blurb: string;
-  /** Distance from the sensor plane, mm. */
-  distance: number;
   color: number;
   metrics: [string, string][];
   links: { label: string; href: string }[];
@@ -23,7 +21,6 @@ export const SUBJECTS: Subject[] = [
     kind: 'Real-time multiplayer casino',
     blurb:
       'Blackjack, Poker and slots spanning Go, C++ and React — bridged by gRPC and a hand-rolled WebSocket hub, with exact decimal money math.',
-    distance: 600,
     color: 0xff5a1f,
     metrics: [
       ['Games', '3 live'],
@@ -44,7 +41,6 @@ export const SUBJECTS: Subject[] = [
     kind: 'From-scratch OpenGL renderer',
     blurb:
       'Custom .obj/.mtl parsing, ear-clipping over Newell-normal planes and an OpenGL 4.1 pipeline with zero steady-state heap allocations.',
-    distance: 1100,
     color: 0x6fd3e8,
     metrics: [
       ['Allocs/frame', '0.06'],
@@ -62,7 +58,6 @@ export const SUBJECTS: Subject[] = [
     kind: 'Competitive rankings, Go + PostgreSQL',
     blurb:
       'Row-locked rating updates so concurrent match reports never clobber each other; composite indexes and Redis for a 30 ms average response.',
-    distance: 2000,
     color: 0xe9b65b,
     metrics: [
       ['Avg response', '30 ms'],
@@ -83,7 +78,6 @@ export const SUBJECTS: Subject[] = [
     kind: 'SIMD raytracer in C',
     blurb:
       'SSE/AVX intrinsics, structure-of-arrays memory layout and tile-based threading took it from 1–5 FPS to 120+ FPS — an 80× speed-up.',
-    distance: 3800,
     color: 0xd8d2c8,
     metrics: [
       ['Frame rate', '120+ fps'],
@@ -101,7 +95,6 @@ export const SUBJECTS: Subject[] = [
     kind: 'POSIX shell in C',
     blurb:
       'A hand-written lexer and recursive-descent parser over raw fork/execve, dup2 pipelines, here-docs and sigaction — no system(), no shortcuts.',
-    distance: 9000,
     color: 0x9be37a,
     metrics: [
       ['Standard', 'POSIX'],

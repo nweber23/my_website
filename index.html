@@ -268,35 +268,26 @@
     </header>
 
     <main id="main">
-        <!-- Fig. 1: the lens lab -->
+        <!-- Fig. 1: down the stack -->
         <section class="lab" id="lab" aria-labelledby="hero-title" data-lab>
             <div class="lab__stage" data-lab-stage>
                 <div class="lab__fallback" data-lab-fallback>
-                    <p>The interactive lens needs WebGL. Everything it shows is also written out below.</p>
+                    <p>The interactive machine needs WebGL. Everything it shows is also written out below.</p>
                 </div>
-                <figure class="viewfinder" data-viewfinder>
-                    <div class="viewfinder__screen" data-viewfinder-screen>
-                        <span class="viewfinder__af" aria-hidden="true"></span>
-                    </div>
-                    <figcaption class="viewfinder__caption">
-                        <span>Sensor view</span>
-                        <span data-viewfinder-meta>50 mm · f/2</span>
-                    </figcaption>
-                </figure>
             </div>
 
             <div class="lab__intro">
-                <p class="kicker">Fig. 1 — The plane of focus</p>
-                <h1 id="hero-title" class="lab__title">Niklas Weber <em>in&nbsp;focus.</em></h1>
-                <p class="lab__lede">Systems developer at 42 Heilbronn and Software Engineering student at Hochschule Heilbronn, building software close to the metal. Five projects sit at five distances on this bench — turn the focus ring and watch the glass move the sharp plane through them.</p>
-                <p class="lab__hint"><span class="lab__hint-key" aria-hidden="true">↕</span> Drag the rubber focus ring · click a subject</p>
+                <p class="kicker">Fig. 1 — Down the stack</p>
+                <h1 id="hero-title" class="lab__title">Niklas Weber <em>all the way down.</em></h1>
+                <p class="lab__lede">Systems developer at 42 Heilbronn and Software Engineering student at Hochschule Heilbronn. Five projects live on five layers of one machine — from a packet on the wire to a lane in the core. Drag to descend and follow a request down.</p>
+                <p class="lab__hint"><span class="lab__hint-key" aria-hidden="true">↕</span> Drag to descend · click a layer · type <b>help</b></p>
             </div>
 
-            <aside class="card" data-card aria-live="polite" aria-label="Project in focus">
+            <aside class="card" data-card aria-live="polite" aria-label="Project on this layer">
                 <div class="card__head">
-                    <span class="card__index" data-card-index>01</span>
+                    <span class="card__index" data-card-index>NET</span>
                     <span class="card__state" data-card-state>In focus</span>
-                    <span class="card__dist" data-card-dist>0.60 m</span>
+                    <span class="card__dist" data-card-dist>10 ms</span>
                 </div>
                 <div class="card__body" data-card-body>
                     <h2 class="card__title" data-card-title>Transcendence Casino</h2>
@@ -307,39 +298,51 @@
                 </div>
             </aside>
 
-            <div class="dock" role="group" aria-label="Lens controls">
-                <div class="dock__group dock__subjects" role="group" aria-label="Focus on a subject" data-subjects>
-                    <button type="button" data-subject="0"><span>01</span> Casino</button>
-                    <button type="button" data-subject="1"><span>02</span> Renderer</button>
-                    <button type="button" data-subject="2"><span>03</span> ELO</button>
-                    <button type="button" data-subject="3"><span>04</span> miniRT</button>
-                    <button type="button" data-subject="4"><span>05</span> minishell</button>
+            <section class="term" data-term aria-label="Terminal">
+                <header class="term__head">
+                    <span class="term__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                    <span>nweber@stack: ~</span>
+                    <span class="term__meta">tty1</span>
+                </header>
+                <div class="term__log" data-term-log role="log" aria-live="polite"></div>
+                <form class="term__form" data-term-form>
+                    <label class="term__prompt" for="term-input">$</label>
+                    <input id="term-input" class="term__input" data-term-input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="help" aria-label="Terminal command">
+                </form>
+            </section>
+
+            <div class="dock" role="group" aria-label="Stack controls">
+                <div class="dock__group dock__subjects" role="group" aria-label="Go to a layer">
+                    <button type="button" data-layer="0"><span>NET</span> Casino</button>
+                    <button type="button" data-layer="1"><span>OS</span> minishell</button>
+                    <button type="button" data-layer="2"><span>RAM</span> ELO</button>
+                    <button type="button" data-layer="3"><span>L2</span> Renderer</button>
+                    <button type="button" data-layer="4"><span>CORE</span> miniRT</button>
                 </div>
                 <label class="dock__group dock__focus">
-                    <span class="dock__label">Focus</span>
-                    <input type="range" min="0" max="1000" value="0" step="1" data-focus aria-label="Focus distance">
-                    <output data-focus-out>∞</output>
+                    <span class="dock__label">Depth</span>
+                    <input type="range" min="0" max="1000" value="0" step="1" data-depth aria-label="Depth in the stack">
+                    <output data-depth-out>10 ms</output>
                 </label>
-                <div class="dock__group dock__aperture" role="radiogroup" aria-label="Aperture" data-apertures>
-                    <span class="dock__label">Aperture</span>
-                    <button type="button" role="radio" aria-checked="true" data-aperture="2">f/2</button>
-                    <button type="button" role="radio" aria-checked="false" data-aperture="5.6">f/5.6</button>
-                    <button type="button" role="radio" aria-checked="false" data-aperture="16">f/16</button>
+                <div class="dock__group dock__aperture" role="radiogroup" aria-label="Cache hit rate">
+                    <span class="dock__label">Hit rate</span>
+                    <button type="button" role="radio" aria-checked="false" data-hit="0.5">50%</button>
+                    <button type="button" role="radio" aria-checked="true" data-hit="0.9">90%</button>
+                    <button type="button" role="radio" aria-checked="false" data-hit="0.99">99%</button>
                 </div>
                 <div class="dock__group dock__toggles">
-                    <button type="button" aria-pressed="false" data-explode><span class="kbd">X</span> Exploded</button>
-                    <button type="button" aria-pressed="true" data-sensor-toggle><span class="kbd">S</span> Sensor</button>
+                    <button type="button" class="dock__trace" data-trace><span class="kbd">T</span> Trace request</button>
                 </div>
             </div>
 
             <div class="lab__meta">
             <dl class="readout" data-readout>
-                <div><dt>Focus</dt><dd data-r="focus">∞</dd></div>
-                <div><dt>Sharp zone</dt><dd data-r="zone">—</dd></div>
-                <div><dt>Depth of field</dt><dd data-r="dof">—</dd></div>
-                <div><dt>Hyperfocal</dt><dd data-r="hyper">—</dd></div>
-                <div><dt>Helicoid travel</dt><dd data-r="travel">0.00 mm</dd></div>
-                <div><dt>Blur disc</dt><dd data-r="blur">—</dd></div>
+                <div><dt>Layer</dt><dd data-r="layer">NET · Network</dd></div>
+                <div><dt>Latency</dt><dd data-r="latency">10 ms</dd></div>
+                <div><dt>If 1 ns were 1 s</dt><dd data-r="human">3.8 months</dd></div>
+                <div><dt>Cycles @ 4 GHz</dt><dd data-r="cycles">40.0 M</dd></div>
+                <div><dt>Avg. memory access</dt><dd data-r="amat">1.6 ns @ 90%</dd></div>
+                <div><dt>SIMD</dt><dd data-r="simd">AVX ×8</dd></div>
             </dl>
             </div>
         </section>
@@ -349,15 +352,15 @@
             <header class="manual__head">
                 <span class="manual__num">§ 1</span>
                 <h2 id="work-title" class="manual__title">Subjects</h2>
-                <p class="manual__intro">Five projects, 2025–26, ordered from the foreground to infinity. Each sits at its own distance on the bench above.</p>
+                <p class="manual__intro">Five projects, 2025–26. Each lives on the layer of the machine it is really about — from the network down to the core.</p>
             </header>
 
             <article class="spec" id="project-transcendence" data-reveal>
                 <div class="spec__rail">
                     <span class="spec__num">01</span>
-                    <span class="spec__at">at 0.60 m</span>
+                    <span class="spec__at">NET · 10 ms</span>
                     <span class="spec__year">MMXXVI</span>
-                    <button type="button" class="spec__rack" data-rack="0">Focus in lab ↑</button>
+                    <button type="button" class="spec__rack" data-rack="0">Find in stack ↑</button>
                 </div>
                 <div class="spec__main">
                     <header class="spec__header">
@@ -403,9 +406,9 @@
             <article class="spec" id="project-go-renderer" data-reveal>
                 <div class="spec__rail">
                     <span class="spec__num">02</span>
-                    <span class="spec__at">at 1.10 m</span>
+                    <span class="spec__at">L2 · 4 ns</span>
                     <span class="spec__year">MMXXVI</span>
-                    <button type="button" class="spec__rack" data-rack="1">Focus in lab ↑</button>
+                    <button type="button" class="spec__rack" data-rack="1">Find in stack ↑</button>
                 </div>
                 <div class="spec__main">
                     <header class="spec__header">
@@ -452,9 +455,9 @@
             <article class="spec" id="project-elo" data-reveal>
                 <div class="spec__rail">
                     <span class="spec__num">03</span>
-                    <span class="spec__at">at 2.00 m</span>
+                    <span class="spec__at">RAM · 80 ns</span>
                     <span class="spec__year">MMXXVI</span>
-                    <button type="button" class="spec__rack" data-rack="2">Focus in lab ↑</button>
+                    <button type="button" class="spec__rack" data-rack="2">Find in stack ↑</button>
                 </div>
                 <div class="spec__main">
                     <header class="spec__header">
@@ -500,9 +503,9 @@
             <article class="spec" id="project-minirt" data-reveal>
                 <div class="spec__rail">
                     <span class="spec__num">04</span>
-                    <span class="spec__at">at 3.80 m</span>
+                    <span class="spec__at">CORE · 1 ns</span>
                     <span class="spec__year">MMXXV</span>
-                    <button type="button" class="spec__rack" data-rack="3">Focus in lab ↑</button>
+                    <button type="button" class="spec__rack" data-rack="3">Find in stack ↑</button>
                 </div>
                 <div class="spec__main">
                     <header class="spec__header">
@@ -546,9 +549,9 @@
             <article class="spec spec--quote" id="project-minishell" data-reveal>
                 <div class="spec__rail">
                     <span class="spec__num">05</span>
-                    <span class="spec__at">at 9.00 m</span>
+                    <span class="spec__at">OS · 100 µs</span>
                     <span class="spec__year">MMXXV</span>
-                    <button type="button" class="spec__rack" data-rack="4">Focus in lab ↑</button>
+                    <button type="button" class="spec__rack" data-rack="4">Find in stack ↑</button>
                 </div>
                 <div class="spec__main">
                     <header class="spec__header">
@@ -670,7 +673,7 @@
 
     <footer class="footer">
         <span>© 2026 · Niklas Weber · Heilbronn, Germany</span>
-        <span class="footer__note">Hand-built with three.js — every lens element, ray and blur disc computed live.</span>
+        <span class="footer__note">Hand-built with three.js — every layer, packet and cache line animated live.</span>
         <nav class="footer__nav" aria-label="Footer">
             <a href="writing.html">Writing</a>
             <a href="imprint.html">Imprint</a>

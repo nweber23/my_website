@@ -1,26 +1,30 @@
-# Personal Portfolio — The Plane of Focus
+# Personal Portfolio — Down the Stack
 
-Portfolio of Niklas Weber, built around an interactive lens lab. The hero is a
-procedurally generated 50 mm lens on an optical bench: turn its focus ring and the
-glass elements travel on their helicoid, moving the plane of focus through a
-diorama where each project sits at its own distance.
+Portfolio of Niklas Weber, built around an interactive model of one machine. The
+hero is a stack of five layers — network, kernel & processes, main memory, cache
+and an execution core — and each project lives on the layer it is really about.
+Drag down through the stack and the camera descends; the layer you are on is in
+focus while the ones above and below blur away.
 
 ## What the lab does
 
-- **Real thin-lens optics** — focus distance, near/far limits, depth of field,
-  hyperfocal distance, helicoid travel and blur-disc size are computed live for a
-  50 mm lens on a 36 × 24 mm sensor (`src/lab/optics.ts`).
-- **Procedural lens** — a six-element double-Gauss design with ED glass, a
-  nine-blade iris, focus and aperture rings with printed scales, shown as a
-  cutaway. Press **X** for the exploded view.
-- **Light paths** — ray cones from the subject through the lens to the sensor,
-  converging (or not) on the sensor plane; blur discs for every subject.
-- **Sensor view** — a second camera at the lens's principal point, rendered with
-  a custom bokeh shader that uses the same blur-disc formula as the readouts. The
-  image also appears, upside down, on the 3D sensor.
-- **Project card** — literally out of focus until you focus on its subject.
-- Keyboard: arrow keys turn the ring, **1–5** focus on a project, **A** cycles the
-  aperture, **X** exploded view, **S** sensor view.
+- **Five layers, five projects** — Transcendence on the network (WebSocket
+  packets hopping between routers), minishell in the kernel (a shell forking
+  `cat | grep | wc` inside a namespace), the ELO leaderboard in DRAM (rows
+  refreshing), the Go renderer in the cache (64-byte lines flashing hit or miss)
+  and miniRT in the core (SIMD lanes advancing in lockstep).
+- **Real numbers** — latency per layer on a log scale, cycles at 4 GHz, the
+  "if 1 ns were 1 s" intuition and the average memory access time
+  `AMAT = t1 + (1−h)(t2 + (1−h)(t3 + (1−h)·t_mem))` for the chosen hit rate
+  (`src/stack/layers.ts`).
+- **Trace a request** — one packet travels down the bus through every layer and
+  back, with a hop log; whether it touches DRAM depends on the cache hit rate.
+- **Terminal** — `help`, `ls`, `cd ram`, `cat minirt`, `open elo`, `trace`,
+  `hitrate 99`, `simd 4`, `whoami`.
+- **Depth of field** — a bokeh pass focused on the current layer; the project
+  card blurs while you are between layers.
+- Keyboard: arrow keys move between layers, **1–5** jump to a layer, **T** traces
+  a request.
 
 All project content is also written out as regular HTML below the lab, so the
 page stays readable without WebGL and for search engines.
@@ -60,23 +64,21 @@ detailed deployment instructions, see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 ## Project Structure
 
 ```
-├── index.html              # Home: lens lab + projects, writing, about, contact
+├── index.html              # Home: stack lab + projects, writing, about, contact
 ├── writing.html            # Writing index
 ├── writing/                # Posts
 ├── imprint.html            # Legal notice
 ├── src/
 │   ├── main.ts             # Home entry (clock, GitHub stats, lazy lab import)
 │   ├── pages.ts            # Entry for writing/imprint pages
-│   ├── lab/                # The lens lab
-│   │   ├── optics.ts       # Thin-lens formulas
-│   │   ├── layout.ts       # Bench layout and log distance scale
-│   │   ├── lens.ts         # Procedural lens model
-│   │   ├── diorama.ts      # Project miniatures, bench, backdrop
-│   │   ├── rays.ts         # Ray cones, blur discs, plane of focus, DoF zone
-│   │   ├── sensorView.ts   # Sensor camera + bokeh shader
-│   │   ├── textures.ts     # Canvas textures (scales, cards, terminal)
+│   ├── stack/              # The machine-stack lab
+│   │   ├── layers.ts       # Layers, latencies, AMAT and other formulas
+│   │   ├── machine.ts      # Layer plates, machinery, bus, request packet
+│   │   ├── models.ts       # Project miniatures
+│   │   ├── terminal.ts     # The tiny shell that drives the lab
+│   │   ├── textures.ts     # Canvas textures (labels, cards, terminal)
 │   │   ├── subjects.ts     # Project data shown in the lab
-│   │   └── lab.ts          # Renderer, interaction, UI binding
+│   │   └── stack.ts        # Renderer, camera, depth of field, UI binding
 │   ├── shared/             # Clock, GitHub stats
 │   └── styles/             # base, home and page styles
 ├── public/                 # Copied as-is: assets/, robots.txt, sitemap.xml, llms.txt

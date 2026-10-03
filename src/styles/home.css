@@ -70,7 +70,7 @@
   display: grid;
 }
 
-.lab.is-fallback .viewfinder,
+.lab.is-fallback .term,
 .lab.is-fallback .dock,
 .lab.is-fallback .lab__meta {
   display: none;
@@ -261,79 +261,135 @@
   color: #0b0b0c;
 }
 
-/* Sensor view (the canvas draws the image underneath the transparent screen). */
-.viewfinder {
+/* Terminal that drives the lab. */
+.term {
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   right: var(--gutter);
-  bottom: calc(1.25rem + 4.2rem + 0.9rem);
+  bottom: calc(1.25rem + 4.2rem + 1rem);
   width: 22rem;
-  margin: 0;
-  pointer-events: none;
-}
-
-.viewfinder[hidden] {
-  display: none;
-}
-
-.viewfinder__screen {
-  position: relative;
-  aspect-ratio: 3 / 2;
-  border: 1px solid var(--line-strong);
-  border-bottom: 0;
-  border-radius: 12px 12px 0 0;
-}
-
-.viewfinder__screen::before,
-.viewfinder__screen::after {
-  content: '';
-  position: absolute;
-  inset: 8%;
-  border: 1px solid rgba(236, 231, 223, 0.28);
-  -webkit-mask: linear-gradient(#000 0 0) top left / 14% 22% no-repeat, linear-gradient(#000 0 0) top right / 14% 22% no-repeat,
-    linear-gradient(#000 0 0) bottom left / 14% 22% no-repeat, linear-gradient(#000 0 0) bottom right / 14% 22% no-repeat;
-  mask: linear-gradient(#000 0 0) top left / 14% 22% no-repeat, linear-gradient(#000 0 0) top right / 14% 22% no-repeat,
-    linear-gradient(#000 0 0) bottom left / 14% 22% no-repeat, linear-gradient(#000 0 0) bottom right / 14% 22% no-repeat;
-}
-
-.viewfinder__screen::after {
-  inset: 33.33% 33.33%;
-  border-color: rgba(236, 231, 223, 0.1);
-  -webkit-mask: none;
-  mask: none;
-}
-
-.viewfinder__af {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 0.9rem;
-  height: 0.9rem;
-  border: 1.5px solid var(--accent);
-  border-radius: 2px;
-  transform: translate(-50%, -50%);
-  opacity: 0.8;
-}
-
-.viewfinder__caption {
+  height: min(16.5rem, 30vh);
   display: flex;
-  justify-content: space-between;
-  padding: 0.55rem 0.75rem;
-  background: var(--panel);
+  flex-direction: column;
+  background: rgba(8, 9, 8, 0.86);
   border: 1px solid var(--line-strong);
-  border-radius: 0 0 12px 12px;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  border-radius: var(--radius);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   font-family: var(--mono);
-  font-size: 0.66rem;
-  color: var(--muted);
-  letter-spacing: 0.04em;
+  font-size: 0.7rem;
+  line-height: 1.55;
+  overflow: hidden;
 }
 
-.viewfinder__caption span:first-child {
+.term__head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.7rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.64rem;
+}
+
+.term__dots {
+  display: inline-flex;
+  gap: 0.3rem;
+}
+
+.term__dots i {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--line-strong);
+}
+
+.term__dots i:first-child {
+  background: var(--accent);
+}
+
+.term__meta {
+  margin-left: auto;
+  color: var(--faint);
+}
+
+.term__log {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.55rem 0.75rem 0.2rem;
+  color: #d8f5c8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  scrollbar-width: thin;
+}
+
+.term__log b {
   color: var(--text);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+}
+
+.t-dim {
+  color: var(--faint);
+}
+
+.t-prompt,
+.t-cmd {
+  color: #9be37a;
+}
+
+.t-hop {
+  color: var(--c, var(--accent));
+  font-weight: 600;
+}
+
+.t-time {
+  color: var(--accent-2);
+}
+
+.term__form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.75rem 0.6rem;
+}
+
+.term__prompt {
+  color: #9be37a;
+}
+
+.term__input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  outline: none;
+  caret-color: var(--accent);
+}
+
+/* 16px stops iOS from zooming into the field. */
+@media (pointer: coarse) {
+  .term__input {
+    font-size: 16px;
+  }
+}
+
+.term__input::placeholder {
+  color: var(--faint);
+}
+
+.term:focus-within {
+  border-color: color-mix(in srgb, #9be37a 45%, transparent);
+}
+
+.dock__trace {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent) !important;
+  color: var(--text);
+}
+
+.dock__trace[aria-busy='true'] {
+  background: var(--accent-soft) !important;
 }
 
 /* Control dock. */
@@ -561,9 +617,10 @@
 .tag3d__idx {
   display: inline-grid;
   place-items: center;
-  width: 1.3rem;
+  min-width: 1.3rem;
   height: 1.3rem;
-  border-radius: 50%;
+  padding: 0 0.35rem;
+  border-radius: 999px;
   background: var(--bg-3);
   color: var(--text);
   font-size: 0.6rem;
@@ -589,80 +646,17 @@
   color: var(--accent-2);
 }
 
-.part3d {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.05rem;
-  padding: 0.25rem 0.5rem;
-  border-left: 1px solid var(--accent);
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  line-height: 1.3;
-  color: var(--muted);
-  white-space: nowrap;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.part3d b {
-  font-weight: 600;
-  color: var(--text);
-}
-
-.plane3d {
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-  background: rgba(255, 90, 31, 0.14);
-  border: 1px solid rgba(255, 90, 31, 0.4);
-  font-family: var(--mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.06em;
-  color: var(--accent-2);
-  white-space: nowrap;
-  text-transform: uppercase;
-}
-
-.plane3d b {
-  color: var(--text);
-  font-weight: 600;
-}
-
-.lim3d {
-  font-family: var(--mono);
-  font-size: 0.58rem;
-  color: rgba(255, 138, 85, 0.75);
-  white-space: nowrap;
-}
-
-.lab.is-exploded .plane3d,
-.lab.is-exploded .lim3d,
-.lab.is-exploded .tag3d {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* The exploded view belongs to the lens alone. */
-.card,
-.viewfinder {
-  transition: opacity 0.5s var(--ease);
-}
-
-@media (min-width: 961px) {
-  .lab.is-exploded .card,
-  .lab.is-exploded .viewfinder {
-    opacity: 0;
-    pointer-events: none;
-  }
+.card {
+  transition: opacity 0.5s var(--ease), border-color 0.4s;
 }
 
 /* Hide the scene chrome until the lab has booted. */
-.lab:not(.is-live) .viewfinder,
+.lab:not(.is-live) .term,
 .lab:not(.is-live) .lab__meta {
   opacity: 0;
 }
 
-.lab .viewfinder,
+.lab .term,
 .lab .lab__meta {
   transition: opacity 0.8s 0.4s;
 }
@@ -672,7 +666,7 @@
     width: min(26rem, 44vw);
   }
   .card,
-  .viewfinder {
+  .term {
     width: 19rem;
   }
   .lab__meta {
@@ -751,23 +745,16 @@
   }
 
   .card {
-    order: 5;
+    order: 6;
     margin: 1rem var(--gutter) 0;
   }
 
-  .viewfinder {
-    right: 0.75rem;
-    bottom: 0.75rem;
-    width: min(46%, 15rem);
-  }
-
-  .viewfinder__caption {
-    font-size: 0.56rem;
-    padding: 0.35rem 0.5rem;
-  }
-
-  .viewfinder__caption span:first-child {
-    display: none;
+  .term {
+    position: static;
+    order: 5;
+    width: auto;
+    height: 14rem;
+    margin: 1rem var(--gutter) 0;
   }
 }
 
@@ -780,7 +767,7 @@
     display: none;
   }
   .tag3d__idx {
-    width: 1.1rem;
+    min-width: 1.1rem;
     height: 1.1rem;
   }
 }

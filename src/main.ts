@@ -48,8 +48,8 @@ if (lab) {
     document.fonts.load('600 40px "Inter Variable"'),
   ])
     .catch(() => {})
-    .then(() => import('./lab/lab'))
-    .then(({ startLab }) => startLab(lab))
+    .then(() => import('./stack/stack'))
+    .then(({ startStack }) => startStack(lab))
     .catch((err) => {
       lab.classList.add('is-fallback');
       console.warn(err);
