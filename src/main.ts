@@ -42,7 +42,7 @@ document.querySelectorAll<HTMLVideoElement>('video[data-lazy-video]').forEach((v
 
 const lab = document.querySelector<HTMLElement>('[data-lab]');
 if (lab) {
-  // Canvas textures print the lens scales, so the fonts must be ready first.
+  // Canvas textures print labels, so the fonts must be ready first.
   Promise.all([
     document.fonts.load('600 40px "JetBrains Mono Variable"'),
     document.fonts.load('600 40px "Inter Variable"'),

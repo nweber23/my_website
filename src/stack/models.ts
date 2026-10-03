@@ -105,7 +105,7 @@ export function podium() {
   ];
   for (const [label, x, h] of steps) {
     const face = new THREE.MeshStandardMaterial({ map: podiumTexture(label), roughness: 0.5 });
-    // The label faces the lens (−x).
+    // The label faces −x.
     const box = new THREE.Mesh(new THREE.BoxGeometry(0.24, h, 0.24), [body, face, body, body, body, body]);
     box.position.set(0, h / 2, x);
     g.add(box);
