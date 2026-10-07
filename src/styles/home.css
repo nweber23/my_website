@@ -366,11 +366,6 @@ main,
   letter-spacing: -0.01em;
 }
 
-.panel .translation {
-  max-width: 460px;
-  margin: 0 0 10px;
-}
-
 .panel--photo {
   gap: 10px;
 }
@@ -379,7 +374,8 @@ main,
   position: relative;
   width: clamp(190px, 18vw, 270px);
   aspect-ratio: 400 / 520;
-  margin: 0 0 22px;
+  /* Room for the text ring, which extends ~12% beyond the photo. */
+  margin: 34px 0 58px;
 }
 
 .oval img {
@@ -395,8 +391,9 @@ main,
   inset: -12%;
   width: 124%;
   height: 124%;
+  /* Override the global svg max-width so the ring wraps the photo evenly. */
+  max-width: none;
   overflow: visible;
-  animation: spin 36s linear infinite;
 }
 
 .oval__ring text {

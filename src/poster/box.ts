@@ -48,9 +48,10 @@ export class PosterBox {
       const tex = new THREE.CanvasTexture(c);
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.anisotropy = 8;
-      // Zoomed in a little so the words can slide (parallax) within the face.
-      tex.repeat.set(0.86, 0.86);
-      tex.offset.set(0.07, 0.14);
+      // Barely zoomed: the words keep their full width, with just enough
+      // headroom to slide up a little (parallax) without being cropped.
+      tex.repeat.set(0.96, 0.96);
+      tex.offset.set(0.02, 0.04);
       this.maps.push(tex);
       return new THREE.MeshStandardMaterial({ map: tex, roughness: 0.92, metalness: 0, bumpMap: tex, bumpScale: 0.6 });
     });
@@ -80,7 +81,7 @@ export class PosterBox {
     // Fit the box into the hero stage element.
     // The hero sits at the top of the page, so offsets are viewport offsets.
     // Leave room for the info card under the box on narrow screens.
-    const sh = Math.max(160, this.stage.offsetHeight) * (w < 760 ? 0.62 : 0.8);
+    const sh = Math.max(160, this.stage.offsetHeight) * (w < 760 ? 0.7 : 0.94);
     const visH = (H + 0.3) / (sh / h);
     this.base.d = visH / (2 * Math.tan(THREE.MathUtils.degToRad(FOV / 2))) + D / 2;
     const cy = this.stage.offsetTop + this.stage.offsetHeight * (w < 760 ? 0.4 : 0.5);
@@ -91,28 +92,31 @@ export class PosterBox {
   update() {
     const p = this.progress;
     const a = smooth(0, 0.35, p);
-    const b = smooth(0.28, 1, p);
+    // The dive finishes at 80% so the flat poster holds before the wall arrives.
+    const b = smooth(0.25, 0.8, p);
     // Swing the right face into view, then all the way to the front.
     this.box.rotation.y = lerp(0, -0.62, a) + (-Math.PI / 2 + 0.62) * b;
     this.box.position.y = lerp(this.base.y, 0, b);
 
     // Camera ends up square in front of the right face, filling the screen.
     const tan = Math.tan(THREE.MathUtils.degToRad(FOV / 2));
-    const fill = (Math.min(H, W / this.camera.aspect) * 0.94) / (2 * tan) + W / 2;
+    // Fit the whole face (contain, not cover) so no poster word is cut off.
+    const fill = Math.max(H * 1.24, (W * 1.24) / this.camera.aspect) / (2 * tan) + W / 2;
     const d = lerp(this.base.d, fill, b);
     const lift = Math.sin(b * Math.PI) * 1.3;
     this.tilt.lerp(this.mouse, 0.05);
     const tx = this.tilt.x * 0.055 * (1 - b);
     const ty = this.tilt.y * 0.035 * (1 - b);
     // The camera stays on the page axis; the box starts low and rises to it.
-    this.camera.position.set(Math.sin(tx) * d, lift - Math.sin(ty) * d * 0.5, Math.cos(tx) * d);
-    this.camera.lookAt(0, 0, 0);
+    // Aim slightly high at the end so the poster centres below the header.
+    const aim = 0.12 * b;
+    this.camera.position.set(Math.sin(tx) * d, aim + lift - Math.sin(ty) * d * 0.5, Math.cos(tx) * d);
+    this.camera.lookAt(0, aim, 0);
 
     // Poster words slide up at different speeds per face.
-    const speeds = [0.1, 0.16, 0.12, 0.08];
+    const speeds = [0.03, 0.04, 0.035, 0.025];
     this.maps.forEach((m, i) => {
-      m.offset.y = 0.14 - p * speeds[i];
-      m.repeat.setScalar(0.86 - p * 0.06 * (i + 1) * 0.5);
+      m.offset.y = 0.04 - p * speeds[i];
     });
   }
 

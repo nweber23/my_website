@@ -297,7 +297,6 @@
                 <div class="hero__intro" data-hero-intro>
                     <h1 id="hero-title" class="sr-only">Niklas Weber — Systems Developer</h1>
                     <p>Niklas Weber is a systems developer at 42 Heilbronn and a Software Engineering student at Hochschule Heilbronn. He writes shells, raytracers, renderers and real-time services from first principles — in C, Go and whatever the problem needs.</p>
-                    <span class="translation">Systementwickler an der 42 Heilbronn, Software-Engineering-Student an der Hochschule Heilbronn. Baut Shells, Raytracer, Renderer und Echtzeitsysteme von Grund auf.</span>
                 </div>
                 <div class="strips" data-strips aria-hidden="true"><i></i><i></i><i></i><i></i></div>
                 <div class="hero__stage" data-hero-stage aria-hidden="true"></div>
@@ -339,7 +338,6 @@
                 <article class="panel" data-panel>
                     <span class="panel__idx mono">(1)</span>
                     <p class="panel__text">I build the parts that matter by hand — a shell's process handling, a WebSocket hub, an .obj parser — and reach for a library everywhere else.</p>
-                    <span class="translation">Die entscheidenden Teile baue ich selbst – Prozesssteuerung einer Shell, einen WebSocket-Hub, einen .obj-Parser – und nehme überall sonst eine Bibliothek.</span>
                     <a class="btn" href="writing/build-from-scratch.html">[Read: why from scratch]</a>
                 </article>
                 <article class="panel panel--photo" data-panel>
@@ -347,17 +345,16 @@
                     <figure class="oval" data-oval>
                         <img src="/assets/minirt.webp" alt="miniRT raytracer output: reflective spheres with shadows" loading="lazy" decoding="async">
                         <svg class="oval__ring" viewBox="0 0 400 520" aria-hidden="true">
-                            <defs><path id="ovalPath" d="M200 10a190 250 0 1 1 0 500a190 250 0 1 1 0-500"/></defs>
-                            <text><textPath href="#ovalPath">SIMD · CACHE LINES · TILE THREADS · 120 FPS · STRUCTURE OF ARRAYS · PERF · SIMD · CACHE LINES · TILE THREADS · 120 FPS ·</textPath></text>
+                            <!-- The ellipse is traced twice so the text can loop seamlessly. -->
+                            <defs><path id="ovalPath" d="M200 10a190 250 0 1 1 0 500a190 250 0 1 1 0-500a190 250 0 1 1 0 500a190 250 0 1 1 0-500"/></defs>
+                            <text><textPath href="#ovalPath" data-oval-text>SIMD · CACHE LINES · TILE THREADS · 120 FPS · STRUCTURE OF ARRAYS · PERF ·</textPath></text>
                         </svg>
                     </figure>
                     <p class="panel__text">Performance is measured, not guessed. EXPLAIN ANALYZE, perf, a profiler — that is how miniRT went from 5 to 120 frames per second.</p>
-                    <span class="translation">Performance wird gemessen, nicht geraten. So kam miniRT von 5 auf 120 Bilder pro Sekunde.</span>
                 </article>
                 <article class="panel" data-panel>
                     <span class="panel__idx mono">(3)</span>
                     <p class="panel__text">Two schools at once: peer-to-peer projects at 42 Heilbronn, Software Engineering at Hochschule Heilbronn. Build to understand, understand to build better.</p>
-                    <span class="translation">Zwei Schulen gleichzeitig: Peer-to-Peer-Projekte an der 42 Heilbronn, Software Engineering an der Hochschule Heilbronn.</span>
                     <p class="hand" data-hand>build, break, rebuild.</p>
                 </article>
             </div>

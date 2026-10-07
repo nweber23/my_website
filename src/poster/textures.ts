@@ -142,9 +142,10 @@ export function posterCanvas(spec: PosterSpec, w = 1024, h = 1408) {
   for (const word of spec.words) {
     ctx.font = `400 ${lineH * 1.08}px ${CONDENSED}`;
     const m = ctx.measureText(word);
-    const sx = (w * 0.9) / m.width;
+    // Generous side margins so the words never touch the face edges.
+    const sx = (w * 0.82) / m.width;
     ctx.save();
-    ctx.translate(w * 0.05, y + lineH * 0.92);
+    ctx.translate(w * 0.09, y + lineH * 0.92);
     ctx.scale(sx, 1);
     ctx.fillText(word, 0, 0);
     ctx.restore();
@@ -169,7 +170,7 @@ export function posterCanvas(spec: PosterSpec, w = 1024, h = 1408) {
   // Annotations.
   ctx.fillStyle = ink;
   ctx.font = `400 ${w * 0.022}px ${MONO}`;
-  ctx.fillText(spec.caption, w * 0.05, h * 0.06);
+  ctx.fillText(spec.caption, w * 0.09, h * 0.06);
   ctx.save();
   ctx.translate(w * 0.955, h * 0.12);
   ctx.rotate(Math.PI / 2);
