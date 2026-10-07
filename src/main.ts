@@ -542,10 +542,39 @@ function setupManifesto() {
   };
   window.setTimeout(glitch, 2500);
 
+  // Tag words on a drum: each word is placed from its offset to the centre, so the
+  // centre word is full size and its neighbours squash, shrink and fade toward the
+  // rim. Scroll sets a target (with a dwell per word); a ticker eases toward it.
+  const WHEEL_END = 0.62;
+  const wheel = { pos: 0, target: 0, last: -1 };
+  const n = words.length;
+  const placeWords = () => {
+    const R = drum.clientHeight * 0.42;
+    words.forEach((w, i) => {
+      const d = i - wheel.pos;
+      const a = Math.max(-1.6, Math.min(1.6, d * 0.62));
+      const vis = Math.abs(d) < 3;
+      w.style.visibility = vis ? 'visible' : 'hidden';
+      if (!vis) return;
+      const c = Math.cos(a);
+      w.style.transform = `translate3d(0, ${(Math.sin(a) * R).toFixed(2)}px, 0) scale(${(0.72 + 0.28 * c).toFixed(4)}, ${Math.max(0.05, c).toFixed(4)})`;
+      w.style.opacity = Math.max(0, c * c - 0.05 * Math.abs(d)).toFixed(3);
+      w.classList.toggle('is-active', Math.abs(d) < 0.5);
+    });
+  };
+  placeWords();
+  gsap.ticker.add((_t, dtMs) => {
+    wheel.pos += (wheel.target - wheel.pos) * (1 - Math.exp((-dtMs / 1000) * 6));
+    if (Math.abs(wheel.target - wheel.pos) < 1e-4) wheel.pos = wheel.target;
+    if (wheel.pos === wheel.last) return;
+    wheel.last = wheel.pos;
+    placeWords();
+  });
+  window.addEventListener('resize', placeWords);
+
   const tl = gsap.timeline({ defaults: { ease: 'none' } });
-  // Tag words turn on a cylinder.
-  tl.to(drum, { rotationX: (words.length - 1) * 36, duration: 0.62 }, 0)
-    .to(['.manifesto__label', '.manifesto__quote', '.wheel'], { opacity: 0, duration: 0.06 }, 0.62)
+  tl.to({}, { duration: WHEEL_END }, 0)
+    .to(['.manifesto__label', '.manifesto__quote', '.wheel'], { opacity: 0, duration: 0.06 }, WHEEL_END)
     // Exit: the screen shrinks to a small portrait while it bleaches to the cream page.
     .to(frame, {
       clipPath: () => `inset(${Math.max(0, (innerHeight - 245) / 2)}px ${Math.max(0, (innerWidth - 160) / 2)}px)`,
@@ -563,6 +592,7 @@ function setupManifesto() {
     scrub: 1,
     animation: tl,
     invalidateOnRefresh: true,
+    onUpdate: (st) => (wheel.target = dwell(Math.min(1, st.progress / WHEEL_END) * (n - 1), n)),
   });
   // Header turns light while the video is dark.
   ScrollTrigger.create({
