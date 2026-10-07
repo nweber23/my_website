@@ -587,16 +587,23 @@ main,
   padding: 20px 8px;
   cursor: pointer;
   list-style: none;
-  transition: background 0.25s var(--ease), color 0.25s var(--ease);
+  transition: background-size 0.45s var(--ease), color 0.3s var(--ease);
 }
 
 .row__head::-webkit-details-marker {
   display: none;
 }
 
+.row__head,
+.notes__list a {
+  background: linear-gradient(var(--ink), var(--ink)) left / 0% 100% no-repeat;
+}
+
+/* Hover: the ink sweeps in from the left. */
 .row__head:hover,
-.row[open] .row__head {
-  background: var(--ink);
+.row[open] .row__head,
+.notes__list a:hover {
+  background-size: 100% 100%;
   color: var(--bg);
 }
 
@@ -780,12 +787,7 @@ main,
   padding: 22px 8px;
   border-bottom: var(--hairline);
   text-decoration: none;
-  transition: background 0.25s var(--ease), color 0.25s var(--ease);
-}
-
-.notes__list a:hover {
-  background: var(--ink);
-  color: var(--bg);
+  transition: background-size 0.45s var(--ease), color 0.3s var(--ease);
 }
 
 .notes__title {

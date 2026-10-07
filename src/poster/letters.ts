@@ -164,10 +164,9 @@ export class Letters {
       if (!mesh.visible) continue;
       const enter = this.reduced ? 1 : smooth(0, 0.3, p);
       const exit = this.reduced ? 0 : smooth(0.72, 1, p);
-      const offX = cue.side * 1.45;
-      const nx = THREE.MathUtils.lerp(THREE.MathUtils.lerp(offX, cue.x, enter), -offX, exit);
+      const nx = cue.x + (exit - (1 - enter)) * 0.18 * cue.side;
       const float = this.reduced ? 0 : Math.sin((t / 4) * Math.PI * 2 + cue.x * 3) * 0.025;
-      const ny = cue.y + float + (p - 0.5) * 0.12;
+      const ny = THREE.MathUtils.lerp(THREE.MathUtils.lerp(-1.5, cue.y, enter), 1.5, exit) + float;
       mesh.position.set(nx * halfW, ny * halfH, 0);
       // Sized against the viewport height; tall phone screens get smaller letters.
       const fit = Math.min(1, this.camera.aspect * 1.05);
@@ -176,9 +175,9 @@ export class Letters {
       if (this.reduced) {
         mesh.rotation.set(0.2, -0.4, 0);
       } else {
-        mesh.rotation.y = p * Math.PI * 1.6 * cue.side + Math.sin(t * 0.6) * 0.08;
-        mesh.rotation.z = (enter - exit) * 0.32 * cue.side * (1 - p) + exit * Math.PI * 0.5 * cue.side;
-        mesh.rotation.x = 0.25 + Math.sin(t * 0.5) * 0.06;
+        mesh.rotation.x = 0.2 + (1 - enter) * -Math.PI * 0.9 + exit * Math.PI * 0.9 + Math.sin(t * 0.5) * 0.05;
+        mesh.rotation.y = (p - 0.5) * 1.2 * cue.side + Math.sin(t * 0.6) * 0.1;
+        mesh.rotation.z = (enter - exit) * 0.18 * cue.side;
       }
     }
     this.renderer.render(this.scene, this.camera);
