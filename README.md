@@ -1,35 +1,44 @@
-# Personal Portfolio — The Plane of Focus
+# Personal Portfolio — Poster System
 
-Portfolio of Niklas Weber, built around an interactive lens lab. The hero is a
-procedurally generated 50 mm lens on an optical bench: turn its focus ring and the
-glass elements travel on their helicoid, moving the plane of focus through a
-diorama where each project sits at its own distance.
+Portfolio of Niklas Weber in an experimental print/poster brutalism: crinkled
+paper, heavy black type, tiny mono annotations and glossy pearl-white 3D letters.
+Strictly monochrome — colour only ever comes from the project imagery.
 
-## What the lab does
+## Motion system
 
-- **Real thin-lens optics** — focus distance, near/far limits, depth of field,
-  hyperfocal distance, helicoid travel and blur-disc size are computed live for a
-  50 mm lens on a 36 × 24 mm sensor (`src/lab/optics.ts`).
-- **Procedural lens** — a six-element double-Gauss design with ED glass, a
-  nine-blade iris, focus and aperture rings with printed scales, shown as a
-  cutaway. Press **X** for the exploded view.
-- **Light paths** — ray cones from the subject through the lens to the sensor,
-  converging (or not) on the sensor plane; blur discs for every subject.
-- **Sensor view** — a second camera at the lens's principal point, rendered with
-  a custom bokeh shader that uses the same blur-disc formula as the readouts. The
-  image also appears, upside down, on the 3D sensor.
-- **Project card** — literally out of focus until you focus on its subject.
-- Keyboard: arrow keys turn the ring, **1–5** focus on a project, **A** cycles the
-  aperture, **X** exploded view, **S** sensor view.
+Lenis inertial scrolling drives GSAP ScrollTrigger timelines; nearly everything
+is tied to scroll progress.
 
-All project content is also written out as regular HTML below the lab, so the
-page stays readable without WebGL and for search engines.
+1. **Loader** — black screen, live `LOADING n%` counter over the real boot work
+   (fonts, poster textures, WebGL), pill progress bar with a dashed core.
+2. **Header** — fixed mono header with a dashed nav pill whose grey fill follows
+   the section in view; turns light over the dark manifesto.
+3. **Hero** — a Three.js billboard covered in procedurally drawn posters. The
+   right face swings in, then the camera moves over the box until one poster
+   fills the screen.
+4. **Poster wall** — full-bleed crumpled paper, sparkle stars, skewed poster type.
+5. **Giant text rows** — rows slide in alternating directions and flatten as
+   they reach the centre; a self-drawing ellipse, spinning globes, flickering QR
+   blocks.
+6. **Values** — pinned horizontal track with ghost words at 1.3× speed, an oval
+   photo with rotating text on a path and one handwritten line.
+7. **Projects** — a pinned CSS 3D prism that steps one project per scroll
+   segment, with barcode and frame overlays.
+8. **Index & field notes** — every case study in full, as expandable rows.
+9. **Manifesto** — black-and-white video with scanlines, RGB split and glitch
+   jitter, a cylinder of tag words, then a shrink into a small bleached portrait.
+10. **Footer** — dot-matrix headline that pulses with scroll and ripples around
+    the cursor.
+
+Pearl letters (N, W, O, C, S) fly through the page, one per section.
+`prefers-reduced-motion` removes pins, parallax and 3D motion and keeps simple
+fades. 3D renders only while it is on screen.
 
 ## Technology Stack
 
 | Layer | Technologies |
 |-------|---|
-| **Frontend** | HTML, CSS, TypeScript, three.js |
+| **Frontend** | HTML, CSS, TypeScript, three.js, GSAP + ScrollTrigger, Lenis |
 | **Build** | Vite (multi-page), self-hosted fonts via Fontsource |
 | **Server** | Nginx with reverse proxy configuration |
 | **Containerization** | Docker (multi-stage build) + Docker Compose |
@@ -60,23 +69,18 @@ detailed deployment instructions, see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 ## Project Structure
 
 ```
-├── index.html              # Home: lens lab + projects, writing, about, contact
+├── index.html              # Home: poster system + projects, writing, about, contact
 ├── writing.html            # Writing index
 ├── writing/                # Posts
 ├── imprint.html            # Legal notice
 ├── src/
-│   ├── main.ts             # Home entry (clock, GitHub stats, lazy lab import)
+│   ├── main.ts             # Home entry: loader, Lenis, all ScrollTrigger timelines
 │   ├── pages.ts            # Entry for writing/imprint pages
-│   ├── lab/                # The lens lab
-│   │   ├── optics.ts       # Thin-lens formulas
-│   │   ├── layout.ts       # Bench layout and log distance scale
-│   │   ├── lens.ts         # Procedural lens model
-│   │   ├── diorama.ts      # Project miniatures, bench, backdrop
-│   │   ├── rays.ts         # Ray cones, blur discs, plane of focus, DoF zone
-│   │   ├── sensorView.ts   # Sensor camera + bokeh shader
-│   │   ├── textures.ts     # Canvas textures (scales, cards, terminal)
-│   │   ├── subjects.ts     # Project data shown in the lab
-│   │   └── lab.ts          # Renderer, interaction, UI binding
+│   ├── poster/             # The poster system
+│   │   ├── textures.ts     # Crumpled paper and poster canvases
+│   │   ├── box.ts          # Hero billboard (Three.js)
+│   │   ├── letters.ts      # Pearl 3D letters
+│   │   └── dots.ts         # Footer dot matrix
 │   ├── shared/             # Clock, GitHub stats
 │   └── styles/             # base, home and page styles
 ├── public/                 # Copied as-is: assets/, robots.txt, sitemap.xml, llms.txt

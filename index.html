@@ -13,8 +13,8 @@
     <meta name="author" content="Niklas Weber">
     <meta name="robots" content="index, follow">
     <meta name="last-modified" content="2026-09-28">
-    <meta name="theme-color" content="#0b0b0c">
-    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#ececec">
+    <meta name="color-scheme" content="light">
     <link rel="canonical" href="https://nweber.me/">
 
     <!-- Open Graph Meta Tags -->
@@ -246,435 +246,394 @@
 <body>
     <a href="#main" class="skip-link">Skip to content</a>
 
-    <header class="topbar">
-        <a href="/" class="topbar__brand" aria-label="Niklas Weber — home">
-            <svg class="topbar__mark" viewBox="0 0 32 32" aria-hidden="true">
-                <circle cx="16" cy="16" r="14.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
-                <circle cx="16" cy="16" r="9" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".55"/>
-                <circle cx="16" cy="16" r="2.2" fill="var(--accent)"/>
-            </svg>
-            <span>Niklas Weber</span>
-        </a>
-        <nav class="topbar__nav" aria-label="Main navigation">
-            <a href="#work">Subjects</a>
-            <a href="writing.html">Writing</a>
-            <a href="#about">About</a>
-            <a href="#contact">Contact</a>
-        </nav>
-        <div class="topbar__meta">
-            <span class="topbar__status"><span class="dot" aria-hidden="true"></span>Available</span>
-            <span class="topbar__clock" data-clock aria-label="Current time in Heilbronn">—</span>
+    <!-- 1. Loader ------------------------------------------------------------ -->
+    <div class="loader" data-loader aria-hidden="true">
+        <div class="loader__center">
+            <p class="loader__label">LOADING <span data-loader-pct>0</span>%</p>
+            <div class="loader__bar"><div class="loader__fill" data-loader-fill></div></div>
         </div>
+        <p class="loader__text">Niklas Weber builds software close to the metal — shells, raytracers, renderers and real-time systems, written from first principles at 42 Heilbronn and Hochschule Heilbronn.</p>
+    </div>
+
+    <div class="grain" aria-hidden="true"></div>
+    <!-- Two WebGL layers: the poster box sits behind the sections, the pearl letters above them. -->
+    <canvas class="gl" data-gl-box aria-hidden="true"></canvas>
+    <canvas class="gl gl--top" data-gl-letters aria-hidden="true"></canvas>
+    <svg class="sr-only" aria-hidden="true" focusable="false">
+        <!-- Analog RGB split for the manifesto video. -->
+        <filter id="rgbsplit" color-interpolation-filters="sRGB">
+            <feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="r"/>
+            <feOffset in="r" dx="3" dy="0" result="r2" data-split-r/>
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="g"/>
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="b"/>
+            <feOffset in="b" dx="-3" dy="0" result="b2" data-split-b/>
+            <feBlend in="r2" in2="g" mode="screen" result="rg"/>
+            <feBlend in="rg" in2="b2" mode="screen"/>
+        </filter>
+    </svg>
+
+    <!-- 2. Header ------------------------------------------------------------ -->
+    <header class="hdr" data-header>
+        <a class="hdr__stack" href="/" aria-label="Niklas Weber — home">
+            <span>Niklas_Weber</span>
+            <span class="is-secondary">Systems_developer</span>
+            <span class="is-secondary">42_+_HHN</span>
+        </a>
+        <span class="hdr__mid is-secondary">[01-05 WORK]</span>
+        <nav class="pill" aria-label="Main navigation" data-pill>
+            <a href="#work" data-nav="work">Work</a>
+            <a href="#about" data-nav="about">About</a>
+            <a href="#contact" data-nav="contact">Contact</a>
+            <span class="pill__slide" aria-hidden="true"></span>
+        </nav>
+        <a class="hdr__mid is-secondary link" href="writing.html">Writing_(5)</a>
+        <span class="hdr__geo"><svg class="globe" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="20" cy="20" r="18"/><ellipse cx="20" cy="20" rx="8" ry="18"/><ellipse cx="20" cy="20" rx="14" ry="18"/><path d="M2 20h36M5 11h30M5 29h30M20 2v36"/></g></svg><span>Heilbronn,_DE</span></span>
     </header>
 
     <main id="main">
-        <!-- Fig. 1: the lens lab -->
-        <section class="lab" id="lab" aria-labelledby="hero-title" data-lab>
-            <div class="lab__stage" data-lab-stage>
-                <div class="lab__fallback" data-lab-fallback>
-                    <p>The interactive lens needs WebGL. Everything it shows is also written out below.</p>
+        <!-- 3. Hero: scroll-driven 3D poster box ----------------------------- -->
+        <section class="hero" data-hero aria-labelledby="hero-title">
+            <div class="hero__inner">
+                <div class="hero__intro" data-hero-intro>
+                    <h1 id="hero-title" class="sr-only">Niklas Weber — Systems Developer</h1>
+                    <p>Niklas Weber is a systems developer at 42 Heilbronn and a Software Engineering student at Hochschule Heilbronn. He writes shells, raytracers, renderers and real-time services from first principles — in C, Go and whatever the problem needs.</p>
+                    <span class="translation">Systementwickler an der 42 Heilbronn, Software-Engineering-Student an der Hochschule Heilbronn. Baut Shells, Raytracer, Renderer und Echtzeitsysteme von Grund auf.</span>
                 </div>
-                <figure class="viewfinder" data-viewfinder>
-                    <div class="viewfinder__screen" data-viewfinder-screen>
-                        <span class="viewfinder__af" aria-hidden="true"></span>
+                <div class="strips" data-strips aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+                <div class="hero__stage" data-hero-stage aria-hidden="true"></div>
+                <aside class="infocard" data-infocard aria-label="Profile">
+                    <div class="infocard__top">
+                        <span class="infocard__v mono-s">(c)&nbsp;2026</span>
+                        <p class="infocard__t">Systems · Performance<br>Built from scratch<br>Heilbronn, Germany</p>
                     </div>
-                    <figcaption class="viewfinder__caption">
-                        <span>Sensor view</span>
-                        <span data-viewfinder-meta>50 mm · f/2</span>
+                    <div class="infocard__bottom">
+                        <span class="mono-s">Niklas_Weber</span>
+                        <span class="mono-s">05</span>
+                    </div>
+                </aside>
+                <p class="hero__hint mono-s" data-hero-hint>(SCROLL)</p>
+            </div>
+        </section>
+
+        <!-- 4. Poster wall ------------------------------------------------------ -->
+        <section class="wall" data-wall aria-label="Poster wall">
+            <div class="wall__paper" data-paper></div>
+            <p class="wall__label mono" data-wall-label>[02 — FIRST_PRINCIPLES]</p>
+            <div class="wall__stars" aria-hidden="true"><svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 0c1.6 11.5 8.5 18.4 20 20-11.5 1.6-18.4 8.5-20 20-1.6-11.5-8.5-18.4-20-20C11.5 18.4 18.4 11.5 20 0z" fill="currentColor"/></svg><svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 0c1.6 11.5 8.5 18.4 20 20-11.5 1.6-18.4 8.5-20 20-1.6-11.5-8.5-18.4-20-20C11.5 18.4 18.4 11.5 20 0z" fill="currentColor"/></svg><svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 0c1.6 11.5 8.5 18.4 20 20-11.5 1.6-18.4 8.5-20 20-1.6-11.5-8.5-18.4-20-20C11.5 18.4 18.4 11.5 20 0z" fill="currentColor"/></svg><svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 0c1.6 11.5 8.5 18.4 20 20-11.5 1.6-18.4 8.5-20 20-1.6-11.5-8.5-18.4-20-20C11.5 18.4 18.4 11.5 20 0z" fill="currentColor"/></svg><svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 0c1.6 11.5 8.5 18.4 20 20-11.5 1.6-18.4 8.5-20 20-1.6-11.5-8.5-18.4-20-20C11.5 18.4 18.4 11.5 20 0z" fill="currentColor"/></svg></div>
+            <p class="wall__poster poster" aria-hidden="true">Build<br>Break<br>Rebuild</p>
+        </section>
+
+        <!-- 5. Giant text rows ----------------------------------------------------- -->
+        <section class="rows" data-rows aria-label="What I build">
+            <div class="rows__row rows__row--display" data-row="0"><span>SHELLS <i class="ico"><svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 0c1.6 11.5 8.5 18.4 20 20-11.5 1.6-18.4 8.5-20 20-1.6-11.5-8.5-18.4-20-20C11.5 18.4 18.4 11.5 20 0z" fill="currentColor"/></svg></i> RAYTRACERS <i class="ico"><svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 0c1.6 11.5 8.5 18.4 20 20-11.5 1.6-18.4 8.5-20 20-1.6-11.5-8.5-18.4-20-20C11.5 18.4 18.4 11.5 20 0z" fill="currentColor"/></svg></i> RENDERERS <i class="ico"><svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 0c1.6 11.5 8.5 18.4 20 20-11.5 1.6-18.4 8.5-20 20-1.6-11.5-8.5-18.4-20-20C11.5 18.4 18.4 11.5 20 0z" fill="currentColor"/></svg></i> SHELLS</span></div><div class="rows__row rows__row--poster" data-row="1"><span>BUILT FROM <span class="circled">SCRATCH<svg viewBox="0 0 300 120" preserveAspectRatio="none" aria-hidden="true"><path d="M150 8C70 6 10 30 12 62s70 52 146 50 136-24 134-56S226 6 140 12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></span> IN C &amp; GO</span></div><div class="rows__row rows__row--display" data-row="2"><span>FORK · EXEC · PIPE · DUP2 · WAITPID · FORK · EXEC</span></div><div class="rows__row rows__row--poster" data-row="3"><span><i class="ico ico--globe"><svg class="globe" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="20" cy="20" r="18"/><ellipse cx="20" cy="20" rx="8" ry="18"/><ellipse cx="20" cy="20" rx="14" ry="18"/><path d="M2 20h36M5 11h30M5 29h30M20 2v36"/></g></svg></i> REAL-TIME SYSTEMS <i class="ico ico--globe"><svg class="globe" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="20" cy="20" r="18"/><ellipse cx="20" cy="20" rx="8" ry="18"/><ellipse cx="20" cy="20" rx="14" ry="18"/><path d="M2 20h36M5 11h30M5 29h30M20 2v36"/></g></svg></i> GRPC <i class="ico ico--globe"><svg class="globe" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="20" cy="20" r="18"/><ellipse cx="20" cy="20" rx="8" ry="18"/><ellipse cx="20" cy="20" rx="14" ry="18"/><path d="M2 20h36M5 11h30M5 29h30M20 2v36"/></g></svg></i></span></div><div class="rows__row rows__row--display" data-row="4"><span>ZER<span class="smile" aria-label="o">☺</span> ALLOCATIONS PER FRAME · ZER<span class="smile" aria-label="o">☺</span></span></div><div class="rows__row rows__row--poster" data-row="5"><span>SIMD <i class="ico ico--qr" data-flicker><svg class="qr" viewBox="0 0 9 9" aria-hidden="true" shape-rendering="crispEdges"><g fill="currentColor"><rect x="0" y="0" width="1" height="1"/><rect x="1" y="0" width="1" height="1"/><rect x="2" y="0" width="1" height="1"/><rect x="5" y="0" width="1" height="1"/><rect x="6" y="0" width="1" height="1"/><rect x="7" y="0" width="1" height="1"/><rect x="8" y="0" width="1" height="1"/><rect x="0" y="1" width="1" height="1"/><rect x="1" y="1" width="1" height="1"/><rect x="2" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/><rect x="6" y="1" width="1" height="1"/><rect x="7" y="1" width="1" height="1"/><rect x="8" y="1" width="1" height="1"/><rect x="0" y="2" width="1" height="1"/><rect x="1" y="2" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="4" y="2" width="1" height="1"/><rect x="6" y="2" width="1" height="1"/><rect x="7" y="2" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/><rect x="4" y="3" width="1" height="1"/><rect x="7" y="3" width="1" height="1"/><rect x="8" y="3" width="1" height="1"/><rect x="0" y="4" width="1" height="1"/><rect x="2" y="4" width="1" height="1"/><rect x="4" y="4" width="1" height="1"/><rect x="0" y="5" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="3" y="5" width="1" height="1"/><rect x="5" y="5" width="1" height="1"/><rect x="0" y="6" width="1" height="1"/><rect x="1" y="6" width="1" height="1"/><rect x="2" y="6" width="1" height="1"/><rect x="3" y="6" width="1" height="1"/><rect x="6" y="6" width="1" height="1"/><rect x="0" y="7" width="1" height="1"/><rect x="1" y="7" width="1" height="1"/><rect x="2" y="7" width="1" height="1"/><rect x="3" y="7" width="1" height="1"/><rect x="4" y="7" width="1" height="1"/><rect x="6" y="7" width="1" height="1"/><rect x="7" y="7" width="1" height="1"/><rect x="8" y="7" width="1" height="1"/><rect x="0" y="8" width="1" height="1"/><rect x="1" y="8" width="1" height="1"/><rect x="2" y="8" width="1" height="1"/><rect x="3" y="8" width="1" height="1"/><rect x="5" y="8" width="1" height="1"/><rect x="8" y="8" width="1" height="1"/></g></svg></i> CACHE LINES <i class="ico ico--qr" data-flicker><svg class="qr" viewBox="0 0 9 9" aria-hidden="true" shape-rendering="crispEdges"><g fill="currentColor"><rect x="0" y="0" width="1" height="1"/><rect x="1" y="0" width="1" height="1"/><rect x="2" y="0" width="1" height="1"/><rect x="4" y="0" width="1" height="1"/><rect x="5" y="0" width="1" height="1"/><rect x="6" y="0" width="1" height="1"/><rect x="7" y="0" width="1" height="1"/><rect x="8" y="0" width="1" height="1"/><rect x="0" y="1" width="1" height="1"/><rect x="1" y="1" width="1" height="1"/><rect x="2" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/><rect x="5" y="1" width="1" height="1"/><rect x="6" y="1" width="1" height="1"/><rect x="7" y="1" width="1" height="1"/><rect x="8" y="1" width="1" height="1"/><rect x="0" y="2" width="1" height="1"/><rect x="1" y="2" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="4" y="2" width="1" height="1"/><rect x="5" y="2" width="1" height="1"/><rect x="6" y="2" width="1" height="1"/><rect x="7" y="2" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/><rect x="0" y="3" width="1" height="1"/><rect x="4" y="3" width="1" height="1"/><rect x="5" y="3" width="1" height="1"/><rect x="7" y="3" width="1" height="1"/><rect x="8" y="3" width="1" height="1"/><rect x="0" y="4" width="1" height="1"/><rect x="1" y="4" width="1" height="1"/><rect x="4" y="4" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="3" y="5" width="1" height="1"/><rect x="4" y="5" width="1" height="1"/><rect x="6" y="5" width="1" height="1"/><rect x="0" y="6" width="1" height="1"/><rect x="1" y="6" width="1" height="1"/><rect x="2" y="6" width="1" height="1"/><rect x="3" y="6" width="1" height="1"/><rect x="4" y="6" width="1" height="1"/><rect x="5" y="6" width="1" height="1"/><rect x="6" y="6" width="1" height="1"/><rect x="0" y="7" width="1" height="1"/><rect x="1" y="7" width="1" height="1"/><rect x="2" y="7" width="1" height="1"/><rect x="5" y="7" width="1" height="1"/><rect x="7" y="7" width="1" height="1"/><rect x="0" y="8" width="1" height="1"/><rect x="1" y="8" width="1" height="1"/><rect x="2" y="8" width="1" height="1"/><rect x="3" y="8" width="1" height="1"/><rect x="4" y="8" width="1" height="1"/><rect x="7" y="8" width="1" height="1"/></g></svg></i> GOROUTINES</span></div><div class="rows__row rows__row--display" data-row="6"><span>UNDERSTAND THE LAYERS BENEATH THE ABSTRACTION</span></div>
+            <p class="rows__caption mono-s">Five projects.<br>Two schools.<br>One habit: build it yourself.</p>
+        </section>
+
+        <!-- 6. Values: pinned horizontal scroll ------------------------------------------------ -->
+        <section class="values" id="about" data-values aria-labelledby="values-title">
+            <h2 id="values-title" class="sr-only">About — how I work</h2>
+            <div class="values__track" data-values-track>
+                <div class="values__ghosts" data-ghosts aria-hidden="true">
+                    <span class="ghost">Scratch</span><span class="ghost">Measure</span><span class="ghost">Rebuild</span>
+                </div>
+                <article class="panel" data-panel>
+                    <span class="panel__idx mono">(1)</span>
+                    <p class="panel__text">I build the parts that matter by hand — a shell's process handling, a WebSocket hub, an .obj parser — and reach for a library everywhere else.</p>
+                    <span class="translation">Die entscheidenden Teile baue ich selbst – Prozesssteuerung einer Shell, einen WebSocket-Hub, einen .obj-Parser – und nehme überall sonst eine Bibliothek.</span>
+                    <a class="btn" href="writing/build-from-scratch.html">[Read: why from scratch]</a>
+                </article>
+                <article class="panel panel--photo" data-panel>
+                    <span class="panel__idx mono">(2)</span>
+                    <figure class="oval" data-oval>
+                        <img src="/assets/minirt.webp" alt="miniRT raytracer output: reflective spheres with shadows" loading="lazy" decoding="async">
+                        <svg class="oval__ring" viewBox="0 0 400 520" aria-hidden="true">
+                            <defs><path id="ovalPath" d="M200 10a190 250 0 1 1 0 500a190 250 0 1 1 0-500"/></defs>
+                            <text><textPath href="#ovalPath">SIMD · CACHE LINES · TILE THREADS · 120 FPS · STRUCTURE OF ARRAYS · PERF · SIMD · CACHE LINES · TILE THREADS · 120 FPS ·</textPath></text>
+                        </svg>
+                    </figure>
+                    <p class="panel__text">Performance is measured, not guessed. EXPLAIN ANALYZE, perf, a profiler — that is how miniRT went from 5 to 120 frames per second.</p>
+                    <span class="translation">Performance wird gemessen, nicht geraten. So kam miniRT von 5 auf 120 Bilder pro Sekunde.</span>
+                </article>
+                <article class="panel" data-panel>
+                    <span class="panel__idx mono">(3)</span>
+                    <p class="panel__text">Two schools at once: peer-to-peer projects at 42 Heilbronn, Software Engineering at Hochschule Heilbronn. Build to understand, understand to build better.</p>
+                    <span class="translation">Zwei Schulen gleichzeitig: Peer-to-Peer-Projekte an der 42 Heilbronn, Software Engineering an der Hochschule Heilbronn.</span>
+                    <p class="hand" data-hand>build, break, rebuild.</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- 7. Projects: rotating prism carousel ----------------------------------------- -->
+        <section class="projects" id="work" data-projects aria-labelledby="work-title">
+            <h2 id="work-title" class="sr-only">Selected work</h2>
+            <div class="projects__pin" data-projects-pin>
+                <span class="projects__edge projects__edge--l mono-s">[03] SELECTED_WORK</span>
+                <span class="projects__edge projects__edge--r mono-s">SCROLL_TO_ROTATE ↓</span>
+                <div class="cube" data-cube-scene>
+                    <div class="cube__prism" data-cube>
+                <figure class="face" data-face="0">
+                    <img src="/assets/ft_casino.webp" alt="" loading="lazy" decoding="async">
+                    <svg class="barcode" viewBox="0 0 62 20" aria-hidden="true" preserveAspectRatio="none"><g fill="currentColor"><rect x="0" y="0" width="1" height="20"/><rect x="2" y="0" width="2" height="20"/><rect x="6" y="0" width="1" height="20"/><rect x="9" y="0" width="2" height="20"/><rect x="12" y="0" width="3" height="20"/><rect x="17" y="0" width="3" height="20"/><rect x="21" y="0" width="1" height="20"/><rect x="24" y="0" width="1" height="20"/><rect x="26" y="0" width="1" height="20"/><rect x="28" y="0" width="2" height="20"/><rect x="32" y="0" width="3" height="20"/><rect x="37" y="0" width="3" height="20"/><rect x="42" y="0" width="1" height="20"/><rect x="46" y="0" width="2" height="20"/><rect x="50" y="0" width="2" height="20"/><rect x="54" y="0" width="2" height="20"/><rect x="58" y="0" width="1" height="20"/></g></svg>
+                    <figcaption class="face__frame">
+                        <span class="mono-s">[01] Transcendence_casino</span>
+                        <span class="face__quote">Three games, one protobuf contract.</span>
                     </figcaption>
                 </figure>
-            </div>
-
-            <div class="lab__intro">
-                <p class="kicker">Fig. 1 — The plane of focus</p>
-                <h1 id="hero-title" class="lab__title">Niklas Weber <em>in&nbsp;focus.</em></h1>
-                <p class="lab__lede">Systems developer at 42 Heilbronn and Software Engineering student at Hochschule Heilbronn, building software close to the metal. Five projects sit at five distances on this bench — turn the focus ring and watch the glass move the sharp plane through them.</p>
-                <p class="lab__hint"><span class="lab__hint-key" aria-hidden="true">↕</span> Drag the rubber focus ring · click a subject</p>
-            </div>
-
-            <aside class="card" data-card aria-live="polite" aria-label="Project in focus">
-                <div class="card__head">
-                    <span class="card__index" data-card-index>01</span>
-                    <span class="card__state" data-card-state>In focus</span>
-                    <span class="card__dist" data-card-dist>0.60 m</span>
+                <figure class="face" data-face="1">
+                    <img src="/assets/go_renderer_thumb.webp" alt="" loading="lazy" decoding="async">
+                    <svg class="barcode" viewBox="0 0 62 20" aria-hidden="true" preserveAspectRatio="none"><g fill="currentColor"><rect x="7" y="0" width="1" height="20"/><rect x="13" y="0" width="2" height="20"/><rect x="19" y="0" width="2" height="20"/><rect x="25" y="0" width="1" height="20"/><rect x="28" y="0" width="3" height="20"/><rect x="32" y="0" width="1" height="20"/><rect x="38" y="0" width="2" height="20"/><rect x="41" y="0" width="3" height="20"/><rect x="46" y="0" width="3" height="20"/><rect x="56" y="0" width="3" height="20"/></g></svg>
+                    <figcaption class="face__frame">
+                        <span class="mono-s">[02] 3D_go_renderer</span>
+                        <span class="face__quote">Zero allocations per frame.</span>
+                    </figcaption>
+                </figure>
+                <figure class="face" data-face="2">
+                    <img src="/assets/42_ELO_Leaderboard.webp" alt="" loading="lazy" decoding="async">
+                    <svg class="barcode" viewBox="0 0 62 20" aria-hidden="true" preserveAspectRatio="none"><g fill="currentColor"><rect x="0" y="0" width="2" height="20"/><rect x="3" y="0" width="3" height="20"/><rect x="7" y="0" width="1" height="20"/><rect x="9" y="0" width="2" height="20"/><rect x="12" y="0" width="3" height="20"/><rect x="16" y="0" width="1" height="20"/><rect x="23" y="0" width="1" height="20"/><rect x="25" y="0" width="1" height="20"/><rect x="30" y="0" width="1" height="20"/><rect x="49" y="0" width="1" height="20"/><rect x="55" y="0" width="3" height="20"/><rect x="59" y="0" width="3" height="20"/></g></svg>
+                    <figcaption class="face__frame">
+                        <span class="mono-s">[03] 42_elo_leaderboard</span>
+                        <span class="face__quote">Row locks, not race conditions.</span>
+                    </figcaption>
+                </figure>
+                <figure class="face" data-face="3">
+                    <img src="/assets/minirt.webp" alt="" loading="lazy" decoding="async">
+                    <svg class="barcode" viewBox="0 0 62 20" aria-hidden="true" preserveAspectRatio="none"><g fill="currentColor"><rect x="0" y="0" width="1" height="20"/><rect x="9" y="0" width="2" height="20"/><rect x="12" y="0" width="3" height="20"/><rect x="16" y="0" width="1" height="20"/><rect x="19" y="0" width="1" height="20"/><rect x="22" y="0" width="1" height="20"/><rect x="25" y="0" width="2" height="20"/><rect x="28" y="0" width="1" height="20"/><rect x="31" y="0" width="1" height="20"/><rect x="33" y="0" width="2" height="20"/><rect x="36" y="0" width="1" height="20"/><rect x="42" y="0" width="1" height="20"/><rect x="44" y="0" width="1" height="20"/><rect x="47" y="0" width="2" height="20"/><rect x="57" y="0" width="1" height="20"/></g></svg>
+                    <figcaption class="face__frame">
+                        <span class="mono-s">[04] mini_rt</span>
+                        <span class="face__quote">From 5 to 120 frames per second.</span>
+                    </figcaption>
+                </figure>
+                <figure class="face" data-face="4">
+                    <pre class="face__term" aria-hidden="true">$ echo "hello" | tr a-z A-Z
+HELLO
+$ cat &lt;&lt; EOF &gt; notes
+&gt; fork · execve · dup2
+&gt; EOF
+$ ls -l | grep .c | wc -l
+42
+$ export FOCUS=systems
+$ echo $FOCUS
+systems
+$ _</pre>
+                    <svg class="barcode" viewBox="0 0 62 20" aria-hidden="true" preserveAspectRatio="none"><g fill="currentColor"><rect x="0" y="0" width="2" height="20"/><rect x="6" y="0" width="2" height="20"/><rect x="15" y="0" width="1" height="20"/><rect x="17" y="0" width="1" height="20"/><rect x="23" y="0" width="1" height="20"/><rect x="25" y="0" width="2" height="20"/><rect x="28" y="0" width="2" height="20"/><rect x="31" y="0" width="1" height="20"/><rect x="36" y="0" width="1" height="20"/><rect x="39" y="0" width="3" height="20"/><rect x="44" y="0" width="3" height="20"/><rect x="48" y="0" width="1" height="20"/><rect x="50" y="0" width="1" height="20"/><rect x="53" y="0" width="2" height="20"/></g></svg>
+                    <figcaption class="face__frame">
+                        <span class="mono-s">[05] mini_shell</span>
+                        <span class="face__quote">No system(), no shortcuts.</span>
+                    </figcaption>
+                </figure>
+                    </div>
                 </div>
-                <div class="card__body" data-card-body>
-                    <h2 class="card__title" data-card-title>Transcendence Casino</h2>
-                    <p class="card__kind" data-card-kind>Real-time multiplayer casino</p>
-                    <p class="card__blurb" data-card-blurb>Blackjack, Poker and slots spanning Go, C++ and React — bridged by gRPC and a hand-rolled WebSocket hub, with exact decimal money math.</p>
-                    <dl class="card__metrics" data-card-metrics></dl>
-                    <div class="card__links" data-card-links></div>
-                </div>
-            </aside>
-
-            <div class="dock" role="group" aria-label="Lens controls">
-                <div class="dock__group dock__subjects" role="group" aria-label="Focus on a subject" data-subjects>
-                    <button type="button" data-subject="0"><span>01</span> Casino</button>
-                    <button type="button" data-subject="1"><span>02</span> Renderer</button>
-                    <button type="button" data-subject="2"><span>03</span> ELO</button>
-                    <button type="button" data-subject="3"><span>04</span> miniRT</button>
-                    <button type="button" data-subject="4"><span>05</span> minishell</button>
-                </div>
-                <label class="dock__group dock__focus">
-                    <span class="dock__label">Focus</span>
-                    <input type="range" min="0" max="1000" value="0" step="1" data-focus aria-label="Focus distance">
-                    <output data-focus-out>∞</output>
-                </label>
-                <div class="dock__group dock__aperture" role="radiogroup" aria-label="Aperture" data-apertures>
-                    <span class="dock__label">Aperture</span>
-                    <button type="button" role="radio" aria-checked="true" data-aperture="2">f/2</button>
-                    <button type="button" role="radio" aria-checked="false" data-aperture="5.6">f/5.6</button>
-                    <button type="button" role="radio" aria-checked="false" data-aperture="16">f/16</button>
-                </div>
-                <div class="dock__group dock__toggles">
-                    <button type="button" aria-pressed="false" data-explode><span class="kbd">X</span> Exploded</button>
-                    <button type="button" aria-pressed="true" data-sensor-toggle><span class="kbd">S</span> Sensor</button>
-                </div>
-            </div>
-
-            <div class="lab__meta">
-            <dl class="readout" data-readout>
-                <div><dt>Focus</dt><dd data-r="focus">∞</dd></div>
-                <div><dt>Sharp zone</dt><dd data-r="zone">—</dd></div>
-                <div><dt>Depth of field</dt><dd data-r="dof">—</dd></div>
-                <div><dt>Hyperfocal</dt><dd data-r="hyper">—</dd></div>
-                <div><dt>Helicoid travel</dt><dd data-r="travel">0.00 mm</dd></div>
-                <div><dt>Blur disc</dt><dd data-r="blur">—</dd></div>
-            </dl>
+                <div class="cube__caps" aria-live="polite"><p class="cube__cap is-active" data-cap="0">Real-time multiplayer casino. Go backend, C++ engine over gRPC, React front, hand-rolled WebSocket hub.<br><a class="link mono-s" href="#project-transcendence">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="1">From-scratch OpenGL 4.1 renderer in Go. Own .obj parser, ear clipping, 0.06 allocs per frame.<br><a class="link mono-s" href="#project-go-renderer">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="2">Ranking system for 42 Heilbronn in Go and PostgreSQL. 30 ms average response, 99.9% uptime.<br><a class="link mono-s" href="#project-elo">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="3">SIMD raytracer in C. SSE/AVX, structure-of-arrays, tile threads. 80 times the baseline.<br><a class="link mono-s" href="#project-minirt">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="4">POSIX shell in C. Own lexer and parser, fork/execve, dup2 pipelines, here-docs, sigaction.<br><a class="link mono-s" href="#project-minishell">(CASE_STUDY ↓)</a></p></div>
+                <p class="projects__count mono-s"><span data-cube-index>01</span> / 05</p>
             </div>
         </section>
 
-        <!-- § 1 Subjects -->
-        <section class="manual" id="work" aria-labelledby="work-title">
-            <header class="manual__head">
-                <span class="manual__num">§ 1</span>
-                <h2 id="work-title" class="manual__title">Subjects</h2>
-                <p class="manual__intro">Five projects, 2025–26, ordered from the foreground to infinity. Each sits at its own distance on the bench above.</p>
+        <!-- Project index: every case study in full ------------------------------------- -->
+        <section class="index" aria-labelledby="index-title">
+            <header class="sec-head">
+                <span class="mono">[04]</span>
+                <h2 id="index-title" class="display sec-head__title">Index</h2>
+                <span class="mono-s">Click a row for the full case study</span>
             </header>
-
-            <article class="spec" id="project-transcendence" data-reveal>
-                <div class="spec__rail">
-                    <span class="spec__num">01</span>
-                    <span class="spec__at">at 0.60 m</span>
-                    <span class="spec__year">MMXXVI</span>
-                    <button type="button" class="spec__rack" data-rack="0">Focus in lab ↑</button>
+            <details class="row" id="project-transcendence">
+                <summary class="row__head">
+                    <span class="mono">[01]</span>
+                    <span class="row__title">Transcendence Casino</span>
+                    <span class="row__kind">Real-time multiplayer online casino</span>
+                    <span class="mono-s row__stack">Go · C++ · TypeScript · React · PostgreSQL</span>
+                    <span class="mono-s">MMXXVI</span>
+                    <span class="row__toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="row__body">
+                    <figure class="row__figure"><img src="/assets/ft_casino.webp" alt="Transcendence Casino real-time multiplayer interface showing blackjack table with player hands and chips" width="1231" height="749" loading="lazy" decoding="async">
+                        <figcaption class="mono-s"><span>Fig. 1.1 — Casino table interface</span><span>[live]</span></figcaption></figure>
+                    <div class="row__text">
+                        <p class="row__summary">A real-time multiplayer casino — Blackjack, Poker, and slots — spanning Go, C++, and React, bridged by gRPC and a hand-rolled WebSocket hub, with a full Prometheus/Grafana monitoring stack.</p>
+                        <dl class="row__metrics"><div><dt>Games</dt><dd>3 live</dd></div><div><dt>Architecture</dt><dd>3-tier gRPC</dd></div><div><dt>Monitoring</dt><dd>6 dashboards</dd></div></dl>
+                        <div class="row__prose"><p><strong>Problem:</strong> Transcendence is 42's capstone project format — a large, module-scored web application with strict architectural requirements: a typed backend, a real database, containerized services, real-time multiplayer gameplay, security, and production-grade monitoring. The brief here was a full online casino — Blackjack, Texas Hold'em Poker, and a slot machine — playable live over WebSockets, not a static demo.</p><p><strong>Solution:</strong> The result is a three-tier system: a Go and Gin backend handling auth, wallets, and REST/WebSocket traffic; a standalone C++ engine handling the actual game rules — card shuffling, hand evaluation, poker betting rounds, slot RNG — over a <strong>gRPC</strong> contract; and a React/TypeScript frontend on top, themed as a from-scratch "luxury casino" design system rather than a reskinned component kit, with cross-browser support and a spectator mode so a live hand can be watched by other users in real time.</p><p><strong>Technical Approach:</strong> Two details push this past a CRUD app with a casino skin. Every balance-changing operation — a bet, a deposit, a payout — runs inside a locked database transaction using exact decimal arithmetic, since float math is unacceptable for money; the transactions table is an append-only, independently auditable ledger. And the real-time layer is a hand-rolled <strong>WebSocket</strong> hub, not a pub/sub library — it tracks per-user, per-tab, per-topic subscriptions and debounces presence so a page refresh doesn't flicker a player's status offline. Similar cross-language, protocol-level thinking shows up in the <a href="#project-elo">ELO Leaderboard</a>'s concurrent match processing.</p><p><strong>Results &amp; Learnings:</strong> The stack also carries a full observability layer — Prometheus scraping six targets and six auto-provisioned Grafana dashboards, with alerting routed to Discord. OAuth2, 2FA, and a custom music module are still in progress. Working across three languages bridged by a single protobuf contract made the tradeoffs of IPC design concrete in a way a single-language stack never does.</p></div>
+                        <dl class="row__details"><div><dt>Stack</dt><dd>Go · C++ · TypeScript · React · PostgreSQL</dd></div><div><dt>Focus</dt><dd>Real-time multiplayer · financial correctness</dd></div><div><dt>Demo</dt><dd><a href="https://transcendence.nweber.me" target="_blank" rel="noopener noreferrer">transcendence.nweber.me</a></dd></div><div><dt>Source</dt><dd><a href="https://github.com/nweber23/transcendence" target="_blank" rel="noopener noreferrer">github.com/nweber23/transcendence</a></dd></div></dl>
+                        <ul class="row__related" role="list"><li><a class="link" href="#project-elo">42 ELO Leaderboard — Go concurrency and real-time systems</a></li><li><a class="link" href="#project-minirt">miniRT — Performance-minded C-family engineering</a></li><li><a class="link" href="writing/grpc-vs-rest.html">Writing: gRPC versus REST at the service boundary</a></li></ul>
+                    </div>
                 </div>
-                <div class="spec__main">
-                    <header class="spec__header">
-                        <h3 class="spec__title">Transcendence Casino</h3>
-                        <p class="spec__kind">Real-time multiplayer online casino</p>
-                    </header>
-                    <figure class="spec__figure">
-                        <img src="/assets/ft_casino.webp" alt="Transcendence Casino real-time multiplayer interface showing blackjack table with player hands and chips" width="1231" height="749" loading="lazy" decoding="async">
-                        <figcaption><span>Fig. 1.1 — Casino table interface</span><span class="tag tag--live">live</span></figcaption>
-                    </figure>
-                    <dl class="spec__metrics">
-                        <div><dt>Games</dt><dd class="is-accent">3 live</dd></div>
-                        <div><dt>Architecture</dt><dd>3-tier gRPC</dd></div>
-                        <div><dt>Monitoring</dt><dd>6 dashboards</dd></div>
-                    </dl>
-                    <p class="spec__summary">A real-time multiplayer casino — Blackjack, Poker, and slots — spanning Go, C++, and React, bridged by gRPC and a hand-rolled WebSocket hub, with a full Prometheus/Grafana monitoring stack.</p>
-                    <details class="spec__case">
-                        <summary>Read the full case study</summary>
-                        <div class="spec__prose">
-                            <p><strong>Problem:</strong> Transcendence is 42's capstone project format — a large, module-scored web application with strict architectural requirements: a typed backend, a real database, containerized services, real-time multiplayer gameplay, security, and production-grade monitoring. The brief here was a full online casino — Blackjack, Texas Hold'em Poker, and a slot machine — playable live over WebSockets, not a static demo.</p>
-                            <p><strong>Solution:</strong> The result is a three-tier system: a Go and Gin backend handling auth, wallets, and REST/WebSocket traffic; a standalone C++ engine handling the actual game rules — card shuffling, hand evaluation, poker betting rounds, slot RNG — over a <strong>gRPC</strong> contract; and a React/TypeScript frontend on top, themed as a from-scratch "luxury casino" design system rather than a reskinned component kit, with cross-browser support and a spectator mode so a live hand can be watched by other users in real time.</p>
-                            <p><strong>Technical Approach:</strong> Two details push this past a CRUD app with a casino skin. Every balance-changing operation — a bet, a deposit, a payout — runs inside a locked database transaction using exact decimal arithmetic, since float math is unacceptable for money; the transactions table is an append-only, independently auditable ledger. And the real-time layer is a hand-rolled <strong>WebSocket</strong> hub, not a pub/sub library — it tracks per-user, per-tab, per-topic subscriptions and debounces presence so a page refresh doesn't flicker a player's status offline. Similar cross-language, protocol-level thinking shows up in the <a href="#project-elo">ELO Leaderboard</a>'s concurrent match processing.</p>
-                            <p><strong>Results &amp; Learnings:</strong> The stack also carries a full observability layer — Prometheus scraping six targets and six auto-provisioned Grafana dashboards, with alerting routed to Discord. OAuth2, 2FA, and a custom music module are still in progress. Working across three languages bridged by a single protobuf contract made the tradeoffs of IPC design concrete in a way a single-language stack never does.</p>
-                        </div>
-                    </details>
-                    <dl class="spec__details">
-                        <div><dt>Stack</dt><dd>Go · C++ · TypeScript · React · PostgreSQL</dd></div>
-                        <div><dt>Focus</dt><dd>Real-time multiplayer · financial correctness</dd></div>
-                        <div><dt>Demo</dt><dd><a href="https://transcendence.nweber.me" target="_blank" rel="noopener noreferrer">transcendence.nweber.me</a></dd></div>
-                        <div><dt>Source</dt><dd><a href="https://github.com/nweber23/transcendence" target="_blank" rel="noopener noreferrer">github.com/nweber23/transcendence</a></dd></div>
-                    </dl>
-                    <nav class="spec__related" aria-label="Related to Transcendence Casino">
-                        <p>Related</p>
-                        <ul role="list">
-                            <li><a href="#project-elo">42 ELO Leaderboard — Go concurrency and real-time systems</a></li>
-                            <li><a href="#project-minirt">miniRT — Performance-minded C-family engineering</a></li>
-                            <li><a href="writing/grpc-vs-rest.html">Writing: gRPC versus REST at the service boundary</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </article>
-
-            <article class="spec" id="project-go-renderer" data-reveal>
-                <div class="spec__rail">
-                    <span class="spec__num">02</span>
-                    <span class="spec__at">at 1.10 m</span>
-                    <span class="spec__year">MMXXVI</span>
-                    <button type="button" class="spec__rack" data-rack="1">Focus in lab ↑</button>
-                </div>
-                <div class="spec__main">
-                    <header class="spec__header">
-                        <h3 class="spec__title">3D Go Renderer</h3>
-                        <p class="spec__kind">From-scratch OpenGL renderer in Go</p>
-                    </header>
-                    <figure class="spec__figure">
-                        <video width="1280" height="720" muted loop playsinline disablepictureinpicture preload="none" poster="/assets/go_renderer_thumb.webp" data-lazy-video aria-label="3D Go Renderer orbit camera demo, rendering a textured .obj model in real time">
+            </details>
+            <details class="row" id="project-go-renderer">
+                <summary class="row__head">
+                    <span class="mono">[02]</span>
+                    <span class="row__title">3D Go Renderer</span>
+                    <span class="row__kind">From-scratch OpenGL renderer in Go</span>
+                    <span class="mono-s row__stack">Go</span>
+                    <span class="mono-s">MMXXVI</span>
+                    <span class="row__toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="row__body">
+                    <figure class="row__figure"><video width="1280" height="720" muted loop playsinline disablepictureinpicture preload="none" poster="/assets/go_renderer_thumb.webp" data-lazy-video aria-label="3D Go Renderer orbit camera demo, rendering a textured .obj model in real time">
                             <source data-src="/assets/go_renderer.mp4" type="video/mp4">
                         </video>
-                        <figcaption><span>Fig. 1.2 — Orbit camera demo</span><span class="tag">opengl 4.1</span></figcaption>
-                    </figure>
-                    <dl class="spec__metrics">
-                        <div><dt>Allocs/frame</dt><dd class="is-accent">0.06</dd></div>
-                        <div><dt>Parser</dt><dd>Concurrent</dd></div>
-                        <div><dt>UV modes</dt><dd>3</dd></div>
-                    </dl>
-                    <p class="spec__summary">A from-scratch 3D renderer in Go — custom .obj/.mtl parsing, ear-clipping triangulation, and an OpenGL 4.1 pipeline with zero steady-state heap allocations.</p>
-                    <details class="spec__case">
-                        <summary>Read the full case study</summary>
-                        <div class="spec__prose">
-                            <p><strong>Problem:</strong> scop is 42's OpenGL project — render a 3D <code>.obj</code> model with only a math library and raw OpenGL bindings as external dependencies. There's no scene-graph, no asset pipeline, no glTF loader to lean on: the file parser, the vector and matrix math, the triangulation, and the camera all have to be built from first principles.</p>
-                            <p><strong>Solution:</strong> The result is a Go renderer on <strong>OpenGL 4.1 core</strong> with GLFW for windowing. Custom <code>.obj</code> and <code>.mtl</code> parsers handle geometry and material properties (Ka/Kd/Ks/Ns/map_Kd) with graceful degradation when texture files are missing, and three automatic UV-generation modes — planar, cylindrical, spherical — cover models that ship without texture coordinates. An orbit and free-fly camera sit on top of hand-written vec2/3/4 types and column-major mat4 math, including perspective and lookAt transforms, with no external math dependency.</p>
-                            <p><strong>Technical Approach:</strong> Two problems needed real solving. Arbitrary polygons — including concave, non-planar, and degenerate ones — get triangulated with <strong>ear clipping over each face's Newell-normal plane</strong>, so geometry stays correct regardless of how the source .obj was authored. And the render loop is allocation-free at steady state: a single VAO/VBO/EBO per model with vertex deduplication, Gribb–Hartmann frustum culling, and texture-state batching bring it to 0.06 allocs/frame under <code>-debug</code>. Parsing itself is parallelized — worker goroutines pre-parse vertex and face data per line-aligned chunk, the same concurrency discipline behind the <a href="#project-elo">ELO Leaderboard</a>'s match processing.</p>
-                            <p><strong>Results &amp; Learnings:</strong> On the Utah teapot, concurrent parsing cut load time from 9.9ms to 7.0ms, and unit tests cover the parser, triangulation, UV generation, math, camera, and frustum culling. Building a rasterization pipeline by hand — after a SIMD <a href="#project-minirt">raytracer</a> the semester before — made the tradeoffs between rasterization and ray tracing concrete in a way tutorials never do.</p>
-                        </div>
-                    </details>
-                    <dl class="spec__details">
-                        <div><dt>Language</dt><dd>Go</dd></div>
-                        <div><dt>Graphics</dt><dd>OpenGL 4.1 · GLFW</dd></div>
-                        <div><dt>Source</dt><dd><a href="https://github.com/nweber23/3D-Go-Renderer" target="_blank" rel="noopener noreferrer">github.com/nweber23/3D-Go-Renderer</a></dd></div>
-                    </dl>
-                    <nav class="spec__related" aria-label="Related to 3D Go Renderer">
-                        <p>Related</p>
-                        <ul role="list">
-                            <li><a href="#project-minirt">miniRT — Rasterization vs. ray tracing, C-family graphics work</a></li>
-                            <li><a href="#project-elo">42 ELO Leaderboard — Goroutine-based concurrent parsing</a></li>
-                            <li><a href="writing/ear-clipping.html">Writing: triangulating polygons with ear clipping</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </article>
-
-            <article class="spec" id="project-elo" data-reveal>
-                <div class="spec__rail">
-                    <span class="spec__num">03</span>
-                    <span class="spec__at">at 2.00 m</span>
-                    <span class="spec__year">MMXXVI</span>
-                    <button type="button" class="spec__rack" data-rack="2">Focus in lab ↑</button>
-                </div>
-                <div class="spec__main">
-                    <header class="spec__header">
-                        <h3 class="spec__title">42 ELO Leaderboard</h3>
-                        <p class="spec__kind">Competitive rankings system for 42 Heilbronn</p>
-                    </header>
-                    <figure class="spec__figure">
-                        <img src="/assets/42_ELO_Leaderboard.webp" alt="42 ELO Leaderboard competitive ranking interface with player ratings and match history" width="1231" height="749" loading="lazy" decoding="async">
-                        <figcaption><span>Fig. 1.3 — Leaderboard interface</span><span class="tag tag--muted">archived</span></figcaption>
-                    </figure>
-                    <dl class="spec__metrics">
-                        <div><dt>Avg response</dt><dd class="is-accent">30ms</dd></div>
-                        <div><dt>Status</dt><dd>Archived</dd></div>
-                        <div><dt>Query target</dt><dd>&lt;100ms</dd></div>
-                    </dl>
-                    <p class="spec__summary">High-performance ELO ranking system in Go and PostgreSQL, built for real-time match submissions with live leaderboards and historical data. No longer actively maintained.</p>
-                    <details class="spec__case">
-                        <summary>Read the full case study</summary>
-                        <div class="spec__prose">
-                            <p><strong>Problem:</strong> The 42 Heilbronn community ran table football and table tennis tournaments with no shared way to track who was actually good. Beyond just storing results, two students could report the same match slot within seconds of each other — naive rating recalculation is a textbook race condition, since an Elo update is a read-modify-write against a shared score and two concurrent submissions can't be allowed to read the same stale rating and both write back.</p>
-                            <p><strong>Solution:</strong> I built a complete Elo ranking system in Go with PostgreSQL, optimized from the ground up for performance. Match submissions run inside a transaction that locks both players' rows before applying the rating update, so concurrent reports serialize instead of clobbering each other, while reads — the public leaderboard, player profiles, match history — stay on a separate fast path. The backend served a React frontend with live leaderboards, detailed player profiles, and historical match data.</p>
-                            <p><strong>Technical Approach:</strong> Composite indexes on the columns the leaderboard and history views actually filter and sort by, plus Redis for the aggregate stats (win/loss streaks, rating deltas) that don't need to be recomputed on every request and get invalidated on write instead. Go's goroutines handled concurrent API traffic cleanly since each match update was isolated to its own transaction. I profiled throughout development to find and remove the slow paths rather than guessing at them. Similar optimization patterns appear in other <a href="#work">systems projects</a> like the <a href="https://github.com/nweber23/miniRT" target="_blank" rel="noopener noreferrer">raytracer</a>, where every algorithmic decision has direct performance implications.</p>
-                            <p><strong>Results &amp; Learnings:</strong> The system achieved 30ms average response times and maintained 99.9% uptime across tournament seasons, and the row-locking approach never produced a double-counted match under concurrent load in practice. <strong>Query optimization</strong> and profiling-driven development are non-negotiable for systems that prioritize performance. The project is now archived and no longer under active development.</p>
-                        </div>
-                    </details>
-                    <dl class="spec__details">
-                        <div><dt>Stack</dt><dd>Go · TypeScript · React · PostgreSQL</dd></div>
-                        <div><dt>Role</dt><dd>Full implementation</dd></div>
-                        <div><dt>Demo</dt><dd><a href="https://eloleaderboard.de" target="_blank" rel="noopener noreferrer">eloleaderboard.de</a> — archived, unmaintained</dd></div>
-                        <div><dt>Source</dt><dd><a href="https://github.com/nweber23/42_ELO_Leaderboard" target="_blank" rel="noopener noreferrer">github.com/nweber23/42_ELO_Leaderboard</a></dd></div>
-                    </dl>
-                    <nav class="spec__related" aria-label="Related to 42 ELO Leaderboard">
-                        <p>Related</p>
-                        <ul role="list">
-                            <li><a href="#project-go-renderer">3D Go Renderer — Goroutine-based concurrent parsing</a></li>
-                            <li><a href="#project-transcendence">Transcendence Casino — Real-time multiplayer systems</a></li>
-                            <li><a href="writing/elo-query-performance.html">Writing: getting leaderboard queries under 100ms</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </article>
-
-            <article class="spec" id="project-minirt" data-reveal>
-                <div class="spec__rail">
-                    <span class="spec__num">04</span>
-                    <span class="spec__at">at 3.80 m</span>
-                    <span class="spec__year">MMXXV</span>
-                    <button type="button" class="spec__rack" data-rack="3">Focus in lab ↑</button>
-                </div>
-                <div class="spec__main">
-                    <header class="spec__header">
-                        <h3 class="spec__title">miniRT</h3>
-                        <p class="spec__kind">High-performance raytracer in C</p>
-                    </header>
-                    <figure class="spec__figure">
-                        <img src="/assets/minirt.webp" alt="miniRT raytracer C implementation with sphere rendering, shadows, reflections and Phong lighting" width="1912" height="1071" loading="lazy" decoding="async">
-                        <figcaption><span>Fig. 1.4 — Rendered output</span><span class="tag">120 fps</span></figcaption>
-                    </figure>
-                    <dl class="spec__metrics">
-                        <div><dt>Frame rate</dt><dd class="is-accent">120+ fps</dd></div>
-                        <div><dt>Speed-up</dt><dd>80×</dd></div>
-                        <div><dt>SIMD</dt><dd>SSE/AVX</dd></div>
-                    </dl>
-                    <p class="spec__summary">120+ FPS raytracer built on SIMD vectorization, cache-efficient data structures, and tile-based multi-threaded rendering.</p>
-                    <details class="spec__case">
-                        <summary>Read the full case study</summary>
-                        <div class="spec__prose">
-                            <p><strong>Problem:</strong> I started building a basic raytracer in C to understand computer graphics fundamentals. The initial naive implementation achieved only 1–5 FPS when rendering complex scenes with multiple light sources.</p>
-                            <p><strong>Solution:</strong> I rebuilt the core rendering loop with <strong>C systems programming</strong> principles at its foundation. The approach combined SIMD vectorization using SSE/AVX intrinsics for batch vector operations, cache-efficient data structures using structure-of-arrays layouts instead of array-of-structures, and multi-threaded tile-based rendering to leverage multiple CPU cores.</p>
-                            <p><strong>Technical Approach:</strong> Three pillars: vectorization, memory hierarchy, parallelism. SSE intrinsics process 4 floats in parallel, AVX handles 8. I restructured data to exploit CPU cache locality by storing all X-coordinates contiguously, then Y, then Z. The renderer divides the framebuffer into tiles, with each thread processing one tile independently. Profiling with <code>perf</code> and cycle-accurate analysis revealed that the ray-primitive intersection test was the hottest code path.</p>
-                            <p><strong>Results &amp; Learnings:</strong> The optimized raytracer renders at 120+ FPS — an 80× improvement over the baseline. Systems programming at the graphics layer isn't just about algorithms; it's about respecting CPU cache behavior, instruction pipelines, and memory bandwidth.</p>
-                        </div>
-                    </details>
-                    <dl class="spec__details">
-                        <div><dt>Language</dt><dd>C</dd></div>
-                        <div><dt>Concepts</dt><dd>Linear algebra · optics simulation</dd></div>
-                        <div><dt>Source</dt><dd><a href="https://github.com/nweber23/miniRT" target="_blank" rel="noopener noreferrer">github.com/nweber23/miniRT</a></dd></div>
-                    </dl>
-                    <nav class="spec__related" aria-label="Related to miniRT">
-                        <p>Related</p>
-                        <ul role="list">
-                            <li><a href="#project-minishell">minishell — C fundamentals and Unix system calls</a></li>
-                            <li><a href="#project-go-renderer">3D Go Renderer — Rasterization vs. ray tracing</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </article>
-
-            <article class="spec spec--quote" id="project-minishell" data-reveal>
-                <div class="spec__rail">
-                    <span class="spec__num">05</span>
-                    <span class="spec__at">at 9.00 m</span>
-                    <span class="spec__year">MMXXV</span>
-                    <button type="button" class="spec__rack" data-rack="4">Focus in lab ↑</button>
-                </div>
-                <div class="spec__main">
-                    <header class="spec__header">
-                        <h3 class="spec__title">minishell</h3>
-                        <p class="spec__kind">POSIX-compliant shell in C</p>
-                    </header>
-                    <figure class="spec__figure spec__figure--quote">
-                        <blockquote><p>“The shell is a window into the operating system's soul.”</p></blockquote>
-                    </figure>
-                    <dl class="spec__metrics">
-                        <div><dt>Standard</dt><dd class="is-accent">POSIX</dd></div>
-                        <div><dt>Primitives</dt><dd>fork/exec</dd></div>
-                        <div><dt>Signals</dt><dd>sigaction</dd></div>
-                    </dl>
-                    <p class="spec__summary">Unix shell from scratch — process management, file descriptors, pipes, I/O redirection, environment expansion, signal handling.</p>
-                    <details class="spec__case">
-                        <summary>Read the full case study</summary>
-                        <div class="spec__prose">
-                            <p><strong>Problem:</strong> Understanding how a Unix shell works requires deep knowledge of operating system fundamentals, and 42's minishell project forbids leaning on any of them from a library — no shell libraries, only raw libc and system calls. That means quoting, expansion, redirection, and pipelines all have to be built from first principles, and getting any one of them subtly wrong (a heredoc that doesn't respect quoted delimiters, an <code>unset</code> that leaves a stale env var visible to a child) is invisible until it breaks a specific command.</p>
-                            <p><strong>Solution:</strong> A POSIX-compliant shell in C that replicates bash's core behavior. A hand-written lexer and recursive-descent parser turn raw input into a token stream that respects single/double-quote semantics and here-doc boundaries, then an execution engine walks that structure using genuine Unix <strong>system calls</strong> — no <code>system()</code>, no shortcuts.</p>
-                            <p><strong>Technical Approach:</strong> Three systems-programming concepts carry the implementation. Process management via <code>fork</code>/<code>execve</code> with correct PATH resolution and exit-status propagation back through pipelines. File descriptor manipulation through <code>dup2()</code> for multi-stage pipes and I/O redirection (<code>&lt;</code>, <code>&gt;</code>, <code>&gt;&gt;</code>, here-docs), including keeping descriptors from leaking into children that shouldn't inherit them. And signal handling with <code>sigaction()</code> so <code>SIGINT</code>/<code>SIGQUIT</code> behave differently at the prompt versus inside a running child, without ever leaving a zombie process behind.</p>
-                            <p><strong>Results &amp; Learnings:</strong> Building minishell transformed my understanding of Unix architecture — shells are orchestrators of the OS, not autonomous entities, and the same process/IPC discipline is exactly what shows up later in <a href="#project-transcendence">gRPC-bridged services</a> or a <a href="#project-minirt">multi-threaded render loop</a>. Hands-on exploration of process management, file descriptors, and IPC deepened my appreciation for why <strong>low-level programming</strong> discipline matters.</p>
-                        </div>
-                    </details>
-                    <dl class="spec__details">
-                        <div><dt>Language</dt><dd>C</dd></div>
-                        <div><dt>Focus</dt><dd>Unix internals · syscalls</dd></div>
-                        <div><dt>Source</dt><dd><a href="https://github.com/nweber23/minishell" target="_blank" rel="noopener noreferrer">github.com/nweber23/minishell</a></dd></div>
-                    </dl>
-                    <nav class="spec__related" aria-label="Related to minishell">
-                        <p>Related</p>
-                        <ul role="list">
-                            <li><a href="#project-minirt">miniRT — C optimization at the system level</a></li>
-                            <li><a href="#project-elo">42 ELO Leaderboard — Concurrent systems with performance discipline</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </article>
-        </section>
-
-        <!-- § 2 Writing -->
-        <section class="manual" id="writing" aria-labelledby="writing-title">
-            <header class="manual__head">
-                <span class="manual__num">§ 2</span>
-                <h2 id="writing-title" class="manual__title">Field notes</h2>
-                <p class="manual__intro">Things I had to actually understand before I could ship them. <a href="writing.html">All writing →</a></p>
-            </header>
-            <ol class="notes" role="list" data-reveal>
-                <li><a href="writing/container-from-scratch.html"><span class="notes__date">2026-09-17</span><span class="notes__title">Building a container runtime from scratch: namespaces, pivot_root, cgroups v2, and OverlayFS in pure Go</span><span class="notes__topic">Systems programming</span></a></li>
-                <li><a href="writing/build-from-scratch.html"><span class="notes__date">2026-08-26</span><span class="notes__title">Why I keep building from scratch: process handling, WebSocket hubs, and .obj parsers</span><span class="notes__topic">General</span></a></li>
-                <li><a href="writing/elo-query-performance.html"><span class="notes__date">2026-08-25</span><span class="notes__title">Getting Elo leaderboard queries under 100ms: indexes, caching, and profiling instead of guessing</span><span class="notes__topic">42 ELO Leaderboard</span></a></li>
-                <li><a href="writing/grpc-vs-rest.html"><span class="notes__date">2026-08-23</span><span class="notes__title">gRPC versus REST: picking protocols at the Transcendence service boundary</span><span class="notes__topic">Transcendence</span></a></li>
-                <li><a href="writing/ear-clipping.html"><span class="notes__date">2026-08-23</span><span class="notes__title">Triangulating arbitrary polygons with ear clipping over a Newell-normal plane</span><span class="notes__topic">Go renderer</span></a></li>
-            </ol>
-        </section>
-
-        <!-- § 3 About -->
-        <section class="manual" id="about" aria-labelledby="about-title">
-            <header class="manual__head">
-                <span class="manual__num">§ 3</span>
-                <h2 id="about-title" class="manual__title">Behind the lens</h2>
-                <p class="manual__intro">Build to understand. Understand to build better.</p>
-            </header>
-            <div class="about" data-reveal>
-                <div class="about__lead">
-                    <p class="about__big">I'm at 42 Heilbronn, a peer-to-peer programming school where we learn by building real things.</p>
-                    <p>In parallel I'm enrolled in <strong>Software Engineering at Hochschule Heilbronn</strong> (Heilbronn University of Applied Sciences) — the theory and engineering discipline to go with 42's build-first approach.</p>
-                    <p>My passion is <a href="#project-elo">systems programming</a> — where software meets hardware. There's something satisfying about understanding how things work at the deepest level: memory, scheduling, protocols, performance.</p>
-                    <p>I work with <a href="#project-minishell">C and Unix</a>, <a href="#project-elo">Go for concurrent systems</a>, and TypeScript when the problem needs it. Always learning, always optimizing.</p>
-                    <div class="about__focus">
-                        <h3>Current focus — Sep 2026</h3>
-                        <p><a href="#project-elo">Concurrency patterns in Go</a>. Distributed systems. Writing up the internals behind the <a href="#project-go-renderer">Go renderer</a> and a container runtime — see <a href="writing.html">Writing</a>.</p>
+                        <figcaption class="mono-s"><span>Fig. 1.2 — Orbit camera demo</span><span>[opengl 4.1]</span></figcaption></figure>
+                    <div class="row__text">
+                        <p class="row__summary">A from-scratch 3D renderer in Go — custom .obj/.mtl parsing, ear-clipping triangulation, and an OpenGL 4.1 pipeline with zero steady-state heap allocations.</p>
+                        <dl class="row__metrics"><div><dt>Allocs/frame</dt><dd>0.06</dd></div><div><dt>Parser</dt><dd>Concurrent</dd></div><div><dt>UV modes</dt><dd>3</dd></div></dl>
+                        <div class="row__prose"><p><strong>Problem:</strong> scop is 42's OpenGL project — render a 3D <code>.obj</code> model with only a math library and raw OpenGL bindings as external dependencies. There's no scene-graph, no asset pipeline, no glTF loader to lean on: the file parser, the vector and matrix math, the triangulation, and the camera all have to be built from first principles.</p><p><strong>Solution:</strong> The result is a Go renderer on <strong>OpenGL 4.1 core</strong> with GLFW for windowing. Custom <code>.obj</code> and <code>.mtl</code> parsers handle geometry and material properties (Ka/Kd/Ks/Ns/map_Kd) with graceful degradation when texture files are missing, and three automatic UV-generation modes — planar, cylindrical, spherical — cover models that ship without texture coordinates. An orbit and free-fly camera sit on top of hand-written vec2/3/4 types and column-major mat4 math, including perspective and lookAt transforms, with no external math dependency.</p><p><strong>Technical Approach:</strong> Two problems needed real solving. Arbitrary polygons — including concave, non-planar, and degenerate ones — get triangulated with <strong>ear clipping over each face's Newell-normal plane</strong>, so geometry stays correct regardless of how the source .obj was authored. And the render loop is allocation-free at steady state: a single VAO/VBO/EBO per model with vertex deduplication, Gribb–Hartmann frustum culling, and texture-state batching bring it to 0.06 allocs/frame under <code>-debug</code>. Parsing itself is parallelized — worker goroutines pre-parse vertex and face data per line-aligned chunk, the same concurrency discipline behind the <a href="#project-elo">ELO Leaderboard</a>'s match processing.</p><p><strong>Results &amp; Learnings:</strong> On the Utah teapot, concurrent parsing cut load time from 9.9ms to 7.0ms, and unit tests cover the parser, triangulation, UV generation, math, camera, and frustum culling. Building a rasterization pipeline by hand — after a SIMD <a href="#project-minirt">raytracer</a> the semester before — made the tradeoffs between rasterization and ray tracing concrete in a way tutorials never do.</p></div>
+                        <dl class="row__details"><div><dt>Language</dt><dd>Go</dd></div><div><dt>Graphics</dt><dd>OpenGL 4.1 · GLFW</dd></div><div><dt>Source</dt><dd><a href="https://github.com/nweber23/3D-Go-Renderer" target="_blank" rel="noopener noreferrer">github.com/nweber23/3D-Go-Renderer</a></dd></div></dl>
+                        <ul class="row__related" role="list"><li><a class="link" href="#project-minirt">miniRT — Rasterization vs. ray tracing, C-family graphics work</a></li><li><a class="link" href="#project-elo">42 ELO Leaderboard — Goroutine-based concurrent parsing</a></li><li><a class="link" href="writing/ear-clipping.html">Writing: triangulating polygons with ear clipping</a></li></ul>
                     </div>
                 </div>
-                <div class="about__side">
-                    <div class="gh" data-github-stats>
-                        <h3 class="gh__title">Live from GitHub</h3>
-                        <dl class="gh__stats">
-                            <div><dt>Repos</dt><dd data-gh-repos>39</dd></div>
-                            <div><dt>Stars</dt><dd data-gh-stars>15</dd></div>
-                            <div><dt>Followers</dt><dd data-gh-followers>33</dd></div>
-                            <div><dt>Commits · 12mo</dt><dd data-gh-commits>—</dd></div>
-                        </dl>
-                        <div class="gh__graph" data-gh-graph role="img" aria-label="Niklas Weber's GitHub contribution graph over the last twelve months"></div>
-                        <a href="https://github.com/nweber23" target="_blank" rel="noopener noreferrer" class="gh__link">github.com/nweber23 ↗</a>
+            </details>
+            <details class="row" id="project-elo">
+                <summary class="row__head">
+                    <span class="mono">[03]</span>
+                    <span class="row__title">42 ELO Leaderboard</span>
+                    <span class="row__kind">Competitive rankings system for 42 Heilbronn</span>
+                    <span class="mono-s row__stack">Go · TypeScript · React · PostgreSQL</span>
+                    <span class="mono-s">MMXXVI</span>
+                    <span class="row__toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="row__body">
+                    <figure class="row__figure"><img src="/assets/42_ELO_Leaderboard.webp" alt="42 ELO Leaderboard competitive ranking interface with player ratings and match history" width="1231" height="749" loading="lazy" decoding="async">
+                        <figcaption class="mono-s"><span>Fig. 1.3 — Leaderboard interface</span><span>[archived]</span></figcaption></figure>
+                    <div class="row__text">
+                        <p class="row__summary">High-performance ELO ranking system in Go and PostgreSQL, built for real-time match submissions with live leaderboards and historical data. No longer actively maintained.</p>
+                        <dl class="row__metrics"><div><dt>Avg response</dt><dd>30ms</dd></div><div><dt>Status</dt><dd>Archived</dd></div><div><dt>Query target</dt><dd>&lt;100ms</dd></div></dl>
+                        <div class="row__prose"><p><strong>Problem:</strong> The 42 Heilbronn community ran table football and table tennis tournaments with no shared way to track who was actually good. Beyond just storing results, two students could report the same match slot within seconds of each other — naive rating recalculation is a textbook race condition, since an Elo update is a read-modify-write against a shared score and two concurrent submissions can't be allowed to read the same stale rating and both write back.</p><p><strong>Solution:</strong> I built a complete Elo ranking system in Go with PostgreSQL, optimized from the ground up for performance. Match submissions run inside a transaction that locks both players' rows before applying the rating update, so concurrent reports serialize instead of clobbering each other, while reads — the public leaderboard, player profiles, match history — stay on a separate fast path. The backend served a React frontend with live leaderboards, detailed player profiles, and historical match data.</p><p><strong>Technical Approach:</strong> Composite indexes on the columns the leaderboard and history views actually filter and sort by, plus Redis for the aggregate stats (win/loss streaks, rating deltas) that don't need to be recomputed on every request and get invalidated on write instead. Go's goroutines handled concurrent API traffic cleanly since each match update was isolated to its own transaction. I profiled throughout development to find and remove the slow paths rather than guessing at them. Similar optimization patterns appear in other <a href="#work">systems projects</a> like the <a href="https://github.com/nweber23/miniRT" target="_blank" rel="noopener noreferrer">raytracer</a>, where every algorithmic decision has direct performance implications.</p><p><strong>Results &amp; Learnings:</strong> The system achieved 30ms average response times and maintained 99.9% uptime across tournament seasons, and the row-locking approach never produced a double-counted match under concurrent load in practice. <strong>Query optimization</strong> and profiling-driven development are non-negotiable for systems that prioritize performance. The project is now archived and no longer under active development.</p></div>
+                        <dl class="row__details"><div><dt>Stack</dt><dd>Go · TypeScript · React · PostgreSQL</dd></div><div><dt>Role</dt><dd>Full implementation</dd></div><div><dt>Demo</dt><dd><a href="https://eloleaderboard.de" target="_blank" rel="noopener noreferrer">eloleaderboard.de</a> — archived, unmaintained</dd></div><div><dt>Source</dt><dd><a href="https://github.com/nweber23/42_ELO_Leaderboard" target="_blank" rel="noopener noreferrer">github.com/nweber23/42_ELO_Leaderboard</a></dd></div></dl>
+                        <ul class="row__related" role="list"><li><a class="link" href="#project-go-renderer">3D Go Renderer — Goroutine-based concurrent parsing</a></li><li><a class="link" href="#project-transcendence">Transcendence Casino — Real-time multiplayer systems</a></li><li><a class="link" href="writing/elo-query-performance.html">Writing: getting leaderboard queries under 100ms</a></li></ul>
                     </div>
-                    <dl class="vocab">
-                        <div><dt>Studies</dt><dd>Software Engineering · <a href="https://www.hs-heilbronn.de" target="_blank" rel="noopener noreferrer">Hochschule Heilbronn</a></dd></div>
-                        <div><dt>School</dt><dd>42 Heilbronn · peer-to-peer, project-based</dd></div>
-                        <div><dt>Languages</dt><dd>Go · C · C++ · Python · TypeScript · JavaScript · Java</dd></div>
-                        <div><dt>Frontend</dt><dd>React · Tailwind · Vite · Electron · HTML · three.js</dd></div>
-                        <div><dt>Backend</dt><dd>Node.js · PostgreSQL · Redis · Nginx · gRPC</dd></div>
+                </div>
+            </details>
+            <details class="row" id="project-minirt">
+                <summary class="row__head">
+                    <span class="mono">[04]</span>
+                    <span class="row__title">miniRT</span>
+                    <span class="row__kind">High-performance raytracer in C</span>
+                    <span class="mono-s row__stack">C</span>
+                    <span class="mono-s">MMXXV</span>
+                    <span class="row__toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="row__body">
+                    <figure class="row__figure"><img src="/assets/minirt.webp" alt="miniRT raytracer C implementation with sphere rendering, shadows, reflections and Phong lighting" width="1912" height="1071" loading="lazy" decoding="async">
+                        <figcaption class="mono-s"><span>Fig. 1.4 — Rendered output</span><span>[120 fps]</span></figcaption></figure>
+                    <div class="row__text">
+                        <p class="row__summary">120+ FPS raytracer built on SIMD vectorization, cache-efficient data structures, and tile-based multi-threaded rendering.</p>
+                        <dl class="row__metrics"><div><dt>Frame rate</dt><dd>120+ fps</dd></div><div><dt>Speed-up</dt><dd>80×</dd></div><div><dt>SIMD</dt><dd>SSE/AVX</dd></div></dl>
+                        <div class="row__prose"><p><strong>Problem:</strong> I started building a basic raytracer in C to understand computer graphics fundamentals. The initial naive implementation achieved only 1–5 FPS when rendering complex scenes with multiple light sources.</p><p><strong>Solution:</strong> I rebuilt the core rendering loop with <strong>C systems programming</strong> principles at its foundation. The approach combined SIMD vectorization using SSE/AVX intrinsics for batch vector operations, cache-efficient data structures using structure-of-arrays layouts instead of array-of-structures, and multi-threaded tile-based rendering to leverage multiple CPU cores.</p><p><strong>Technical Approach:</strong> Three pillars: vectorization, memory hierarchy, parallelism. SSE intrinsics process 4 floats in parallel, AVX handles 8. I restructured data to exploit CPU cache locality by storing all X-coordinates contiguously, then Y, then Z. The renderer divides the framebuffer into tiles, with each thread processing one tile independently. Profiling with <code>perf</code> and cycle-accurate analysis revealed that the ray-primitive intersection test was the hottest code path.</p><p><strong>Results &amp; Learnings:</strong> The optimized raytracer renders at 120+ FPS — an 80× improvement over the baseline. Systems programming at the graphics layer isn't just about algorithms; it's about respecting CPU cache behavior, instruction pipelines, and memory bandwidth.</p></div>
+                        <dl class="row__details"><div><dt>Language</dt><dd>C</dd></div><div><dt>Concepts</dt><dd>Linear algebra · optics simulation</dd></div><div><dt>Source</dt><dd><a href="https://github.com/nweber23/miniRT" target="_blank" rel="noopener noreferrer">github.com/nweber23/miniRT</a></dd></div></dl>
+                        <ul class="row__related" role="list"><li><a class="link" href="#project-minishell">minishell — C fundamentals and Unix system calls</a></li><li><a class="link" href="#project-go-renderer">3D Go Renderer — Rasterization vs. ray tracing</a></li></ul>
+                    </div>
+                </div>
+            </details>
+            <details class="row" id="project-minishell">
+                <summary class="row__head">
+                    <span class="mono">[05]</span>
+                    <span class="row__title">minishell</span>
+                    <span class="row__kind">POSIX-compliant shell in C</span>
+                    <span class="mono-s row__stack">C</span>
+                    <span class="mono-s">MMXXV</span>
+                    <span class="row__toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="row__body">
+                    <figure class="row__figure"><blockquote><p>“The shell is a window into the operating system's soul.”</p></blockquote></figure>
+                    <div class="row__text">
+                        <p class="row__summary">Unix shell from scratch — process management, file descriptors, pipes, I/O redirection, environment expansion, signal handling.</p>
+                        <dl class="row__metrics"><div><dt>Standard</dt><dd>POSIX</dd></div><div><dt>Primitives</dt><dd>fork/exec</dd></div><div><dt>Signals</dt><dd>sigaction</dd></div></dl>
+                        <div class="row__prose"><p><strong>Problem:</strong> Understanding how a Unix shell works requires deep knowledge of operating system fundamentals, and 42's minishell project forbids leaning on any of them from a library — no shell libraries, only raw libc and system calls. That means quoting, expansion, redirection, and pipelines all have to be built from first principles, and getting any one of them subtly wrong (a heredoc that doesn't respect quoted delimiters, an <code>unset</code> that leaves a stale env var visible to a child) is invisible until it breaks a specific command.</p><p><strong>Solution:</strong> A POSIX-compliant shell in C that replicates bash's core behavior. A hand-written lexer and recursive-descent parser turn raw input into a token stream that respects single/double-quote semantics and here-doc boundaries, then an execution engine walks that structure using genuine Unix <strong>system calls</strong> — no <code>system()</code>, no shortcuts.</p><p><strong>Technical Approach:</strong> Three systems-programming concepts carry the implementation. Process management via <code>fork</code>/<code>execve</code> with correct PATH resolution and exit-status propagation back through pipelines. File descriptor manipulation through <code>dup2()</code> for multi-stage pipes and I/O redirection (<code>&lt;</code>, <code>&gt;</code>, <code>&gt;&gt;</code>, here-docs), including keeping descriptors from leaking into children that shouldn't inherit them. And signal handling with <code>sigaction()</code> so <code>SIGINT</code>/<code>SIGQUIT</code> behave differently at the prompt versus inside a running child, without ever leaving a zombie process behind.</p><p><strong>Results &amp; Learnings:</strong> Building minishell transformed my understanding of Unix architecture — shells are orchestrators of the OS, not autonomous entities, and the same process/IPC discipline is exactly what shows up later in <a href="#project-transcendence">gRPC-bridged services</a> or a <a href="#project-minirt">multi-threaded render loop</a>. Hands-on exploration of process management, file descriptors, and IPC deepened my appreciation for why <strong>low-level programming</strong> discipline matters.</p></div>
+                        <dl class="row__details"><div><dt>Language</dt><dd>C</dd></div><div><dt>Focus</dt><dd>Unix internals · syscalls</dd></div><div><dt>Source</dt><dd><a href="https://github.com/nweber23/minishell" target="_blank" rel="noopener noreferrer">github.com/nweber23/minishell</a></dd></div></dl>
+                        <ul class="row__related" role="list"><li><a class="link" href="#project-minirt">miniRT — C optimization at the system level</a></li><li><a class="link" href="#project-elo">42 ELO Leaderboard — Concurrent systems with performance discipline</a></li></ul>
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <section class="notes" aria-labelledby="notes-title">
+            <header class="sec-head">
+                <span class="mono">[05]</span>
+                <h2 id="notes-title" class="display sec-head__title">Field notes</h2>
+                <a class="btn" href="writing.html">[All writing]</a>
+            </header>
+            <ol class="notes__list" role="list"><li><a href="writing/container-from-scratch.html"><span class="mono-s">2026-09-17</span><span class="notes__title">Building a container runtime from scratch: namespaces, pivot_root, cgroups v2, and OverlayFS in pure Go</span><span class="mono-s">Systems_programming</span></a></li><li><a href="writing/build-from-scratch.html"><span class="mono-s">2026-08-26</span><span class="notes__title">Why I keep building from scratch: process handling, WebSocket hubs, and .obj parsers</span><span class="mono-s">General</span></a></li><li><a href="writing/elo-query-performance.html"><span class="mono-s">2026-08-25</span><span class="notes__title">Getting Elo leaderboard queries under 100ms: indexes, caching, and profiling instead of guessing</span><span class="mono-s">42_ELO_leaderboard</span></a></li><li><a href="writing/grpc-vs-rest.html"><span class="mono-s">2026-08-23</span><span class="notes__title">gRPC versus REST: picking protocols at the Transcendence service boundary</span><span class="mono-s">Transcendence</span></a></li><li><a href="writing/ear-clipping.html"><span class="mono-s">2026-08-23</span><span class="notes__title">Triangulating arbitrary polygons with ear clipping over a Newell-normal plane</span><span class="mono-s">Go_renderer</span></a></li></ol>
+        </section>
+
+        <!-- 8. Manifesto video --------------------------------------------------------------- -->
+        <section class="manifesto" data-manifesto aria-label="Manifesto">
+            <div class="manifesto__pin" data-manifesto-pin>
+                <div class="manifesto__frame" data-manifesto-frame>
+                    <video class="manifesto__video" data-manifesto-video muted loop playsinline preload="none" poster="/assets/go_renderer_thumb.webp" aria-hidden="true">
+                        <source data-src="/assets/go_renderer.mp4" type="video/mp4">
+                    </video>
+                    <div class="manifesto__scan" aria-hidden="true"></div>
+                    <div class="manifesto__bleach" data-manifesto-bleach aria-hidden="true"></div>
+                </div>
+                <p class="manifesto__label mono">[06 — MANIFESTO]</p>
+                <blockquote class="manifesto__quote"><p>The best way to learn is to build, break, and rebuild.</p></blockquote>
+                <div class="wheel" aria-hidden="true"><div class="wheel__drum" data-wheel><span class="wheel__word" style="--i:0">C</span><span class="wheel__word" style="--i:1">GO</span><span class="wheel__word" style="--i:2">POSIX</span><span class="wheel__word" style="--i:3">SIMD</span><span class="wheel__word" style="--i:4">GRPC</span><span class="wheel__word" style="--i:5">OPENGL</span><span class="wheel__word" style="--i:6">POSTGRES</span><span class="wheel__word" style="--i:7">REDIS</span><span class="wheel__word" style="--i:8">DOCKER</span><span class="wheel__word" style="--i:9">LINUX</span></div></div>
+            </div>
+        </section>
+
+        <!-- Profile cards ------------------------------------------------------------------------ -->
+        <section class="profile" aria-labelledby="profile-title">
+            <header class="sec-head">
+                <span class="mono">[07]</span>
+                <h2 id="profile-title" class="display sec-head__title">Profile</h2>
+                <span class="mono-s">Heilbronn · CET</span>
+            </header>
+            <div class="cards">
+                <div class="card">
+                    <span class="card__v mono-s">EDU</span>
+                    <div class="card__t">
+                        <p>Software Engineering<br><a class="link" href="https://www.hs-heilbronn.de" target="_blank" rel="noopener noreferrer">Hochschule Heilbronn</a></p>
+                        <p>42 Heilbronn<br>Peer-to-peer, project-based</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <span class="card__v mono-s">STACK</span>
+                    <dl class="card__t card__dl">
+                        <div><dt>Lang</dt><dd>Go · C · C++ · Python · TypeScript · JavaScript · Java</dd></div>
+                        <div><dt>Front</dt><dd>React · Tailwind · Vite · Electron · three.js</dd></div>
+                        <div><dt>Back</dt><dd>Node.js · PostgreSQL · Redis · Nginx · gRPC</dd></div>
                         <div><dt>Infra</dt><dd>Linux · Docker · Git · GitHub · pnpm</dd></div>
                     </dl>
                 </div>
-            </div>
-            <blockquote class="pull" data-reveal><p>The best way to learn is to build, break, and rebuild.</p></blockquote>
-        </section>
-
-        <!-- § 4 Contact -->
-        <section class="manual manual--contact" id="contact" aria-labelledby="contact-title">
-            <header class="manual__head">
-                <span class="manual__num">§ 4</span>
-                <h2 id="contact-title" class="manual__title">Contact</h2>
-                <p class="manual__intro">Available for collaboration.</p>
-            </header>
-            <div class="contact" data-reveal>
-                <p class="contact__big">Let's discuss <em>your project.</em></p>
-                <p class="contact__text">Let's work on systems, performance, and problems where understanding the fundamentals makes a real difference.</p>
-                <address class="contact__links">
-                    <a href="mailto:contact@nweber.me"><span>Email</span>contact@nweber.me</a>
-                    <a href="https://github.com/nweber23" target="_blank" rel="noopener noreferrer"><span>GitHub</span>github.com/nweber23</a>
-                    <a href="https://profile.intra.42.fr/users/nweber" target="_blank" rel="noopener noreferrer"><span>42 Intra</span>intra.42.fr/nweber</a>
-                    <a href="https://www.linkedin.com/in/niklas-weber-488576329/" target="_blank" rel="noopener noreferrer"><span>LinkedIn</span>linkedin.com/in/niklas-weber</a>
-                </address>
+                <div class="card card--gh" data-github-stats>
+                    <span class="card__v mono-s">GITHUB</span>
+                    <div class="card__t">
+                        <dl class="gh">
+                            <div><dt>Repos</dt><dd data-gh-repos>39</dd></div>
+                            <div><dt>Stars</dt><dd data-gh-stars>15</dd></div>
+                            <div><dt>Followers</dt><dd data-gh-followers>33</dd></div>
+                            <div><dt>Commits_12mo</dt><dd data-gh-commits>—</dd></div>
+                        </dl>
+                        <div class="gh__graph" data-gh-graph role="img" aria-label="GitHub contribution graph over the last twelve months"></div>
+                        <a class="link mono-s" href="https://github.com/nweber23" target="_blank" rel="noopener noreferrer">github.com/nweber23 ↗</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <span class="card__v mono-s">NOW</span>
+                    <div class="card__t">
+                        <p>Concurrency patterns in Go. Distributed systems. Writing up a container runtime in pure Go.</p>
+                        <p class="mono-s">Status: available_for_collaboration</p>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
 
-    <footer class="footer">
-        <span>© 2026 · Niklas Weber · Heilbronn, Germany</span>
-        <span class="footer__note">Hand-built with three.js — every lens element, ray and blur disc computed live.</span>
-        <nav class="footer__nav" aria-label="Footer">
-            <a href="writing.html">Writing</a>
-            <a href="imprint.html">Imprint</a>
-        </nav>
+    <!-- 9. Footer -------------------------------------------------------------------------- -->
+    <footer class="foot" id="contact" data-foot>
+        <canvas class="foot__dots" data-dots aria-hidden="true"></canvas>
+        <p class="sr-only">Contact</p>
+        <a class="foot__logo poster" href="mailto:contact@nweber.me">Niklas Weber</a>
+        <p class="foot__row mono">
+            <span>© 2026 Niklas_Weber</span>
+            <a class="link" href="mailto:contact@nweber.me">contact@nweber.me</a>
+            <a class="link" href="https://github.com/nweber23" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a class="link" href="https://www.linkedin.com/in/niklas-weber-488576329/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a class="link" href="https://profile.intra.42.fr/users/nweber" target="_blank" rel="noopener noreferrer">42_Intra</a>
+            <a class="foot__doc" href="imprint.html">Imprint</a>
+        </p>
+        <div class="foot__bar">
+            <div class="foot__icons"><svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 0c1.6 11.5 8.5 18.4 20 20-11.5 1.6-18.4 8.5-20 20-1.6-11.5-8.5-18.4-20-20C11.5 18.4 18.4 11.5 20 0z" fill="currentColor"/></svg><svg class="sun" viewBox="0 0 40 40" aria-hidden="true"><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="20" y1="3" x2="20" y2="11" transform="rotate(0 20 20)"/><line x1="20" y1="3" x2="20" y2="11" transform="rotate(30 20 20)"/><line x1="20" y1="3" x2="20" y2="11" transform="rotate(60 20 20)"/><line x1="20" y1="3" x2="20" y2="11" transform="rotate(90 20 20)"/><line x1="20" y1="3" x2="20" y2="11" transform="rotate(120 20 20)"/><line x1="20" y1="3" x2="20" y2="11" transform="rotate(150 20 20)"/><line x1="20" y1="3" x2="20" y2="11" transform="rotate(180 20 20)"/><line x1="20" y1="3" x2="20" y2="11" transform="rotate(210 20 20)"/><line x1="20" y1="3" x2="20" y2="11" transform="rotate(240 20 20)"/><line x1="20" y1="3" x2="20" y2="11" transform="rotate(270 20 20)"/><line x1="20" y1="3" x2="20" y2="11" transform="rotate(300 20 20)"/><line x1="20" y1="3" x2="20" y2="11" transform="rotate(330 20 20)"/></g><circle cx="20" cy="20" r="5" fill="currentColor"/></svg></div>
+            <p class="foot__desc">Hand-built with three.js, GSAP and Lenis.<br>Every poster, glyph and dot is generated in code.<br>Monochrome by rule — colour only comes from the work.</p>
+            <svg class="qr foot__qr" viewBox="0 0 11 11" aria-hidden="true" shape-rendering="crispEdges"><g fill="currentColor"><rect x="0" y="0" width="1" height="1"/><rect x="1" y="0" width="1" height="1"/><rect x="2" y="0" width="1" height="1"/><rect x="3" y="0" width="1" height="1"/><rect x="7" y="0" width="1" height="1"/><rect x="8" y="0" width="1" height="1"/><rect x="9" y="0" width="1" height="1"/><rect x="10" y="0" width="1" height="1"/><rect x="0" y="1" width="1" height="1"/><rect x="1" y="1" width="1" height="1"/><rect x="2" y="1" width="1" height="1"/><rect x="3" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/><rect x="8" y="1" width="1" height="1"/><rect x="9" y="1" width="1" height="1"/><rect x="10" y="1" width="1" height="1"/><rect x="0" y="2" width="1" height="1"/><rect x="1" y="2" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="4" y="2" width="1" height="1"/><rect x="7" y="2" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/><rect x="9" y="2" width="1" height="1"/><rect x="10" y="2" width="1" height="1"/><rect x="0" y="3" width="1" height="1"/><rect x="2" y="3" width="1" height="1"/><rect x="3" y="3" width="1" height="1"/><rect x="5" y="3" width="1" height="1"/><rect x="6" y="3" width="1" height="1"/><rect x="9" y="3" width="1" height="1"/><rect x="2" y="4" width="1" height="1"/><rect x="3" y="4" width="1" height="1"/><rect x="4" y="4" width="1" height="1"/><rect x="5" y="4" width="1" height="1"/><rect x="6" y="4" width="1" height="1"/><rect x="7" y="4" width="1" height="1"/><rect x="9" y="4" width="1" height="1"/><rect x="10" y="4" width="1" height="1"/><rect x="0" y="5" width="1" height="1"/><rect x="1" y="5" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="3" y="5" width="1" height="1"/><rect x="0" y="6" width="1" height="1"/><rect x="5" y="6" width="1" height="1"/><rect x="6" y="6" width="1" height="1"/><rect x="7" y="6" width="1" height="1"/><rect x="9" y="6" width="1" height="1"/><rect x="1" y="7" width="1" height="1"/><rect x="2" y="7" width="1" height="1"/><rect x="3" y="7" width="1" height="1"/><rect x="4" y="7" width="1" height="1"/><rect x="5" y="7" width="1" height="1"/><rect x="6" y="7" width="1" height="1"/><rect x="0" y="8" width="1" height="1"/><rect x="1" y="8" width="1" height="1"/><rect x="2" y="8" width="1" height="1"/><rect x="4" y="8" width="1" height="1"/><rect x="5" y="8" width="1" height="1"/><rect x="7" y="8" width="1" height="1"/><rect x="9" y="8" width="1" height="1"/><rect x="0" y="9" width="1" height="1"/><rect x="1" y="9" width="1" height="1"/><rect x="2" y="9" width="1" height="1"/><rect x="5" y="9" width="1" height="1"/><rect x="7" y="9" width="1" height="1"/><rect x="8" y="9" width="1" height="1"/><rect x="0" y="10" width="1" height="1"/><rect x="1" y="10" width="1" height="1"/><rect x="2" y="10" width="1" height="1"/><rect x="3" y="10" width="1" height="1"/><rect x="4" y="10" width="1" height="1"/><rect x="8" y="10" width="1" height="1"/><rect x="9" y="10" width="1" height="1"/></g></svg>
+        </div>
     </footer>
 
     <script type="module" src="/src/main.ts"></script>
