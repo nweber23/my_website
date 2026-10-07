@@ -1401,3 +1401,34 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* Scroll cue: the lab never locks the page. */
+.lab__scroll {
+  position: absolute;
+  z-index: 3;
+  right: var(--gutter);
+  top: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.lab__scroll i {
+  font-style: normal;
+  animation: lab-nudge 1.8s ease-in-out infinite;
+}
+
+@keyframes lab-nudge {
+  50% { transform: translateY(4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab__scroll i { animation: none; }
+}

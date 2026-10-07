@@ -168,6 +168,8 @@ export class Lab {
     this.controls.dampingFactor = 0.08;
     this.controls.enablePan = false;
     this.controls.enableZoom = !this.coarse;
+    // Plain wheel scrolls the page; zoom needs Ctrl/⌘ (or trackpad pinch). Capture on the parent so OrbitControls never sees it.
+    canvas.parentElement?.addEventListener('wheel', (e) => e.ctrlKey || e.metaKey || e.stopPropagation(), { capture: true });
     this.controls.zoomToCursor = false;
     this.controls.minDistance = 2.5;
     this.controls.maxDistance = 16;
