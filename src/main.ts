@@ -54,7 +54,7 @@ class Loader {
     this.shown += (Math.min(this.target, cap) - this.shown) * (1 - Math.exp(-dt * 9));
     if (this.target >= 100 && cap >= 100 && this.shown > 99.4) this.shown = 100;
     this.pct.textContent = String(Math.floor(this.shown));
-    this.fill.style.width = `${this.shown}%`;
+    this.fill.style.width = `${(Math.floor(this.shown / (100 / 24)) * 100) / 24}%`;
   };
   async finished() {
     while (this.shown < 100) await new Promise((r) => setTimeout(r, 30));
@@ -124,7 +124,7 @@ async function boot() {
   ScrollTrigger.refresh();
 }
 
-/** Loader dissolves → mid navy → cream page; then the hero assembles. */
+/** Loader text drops out, then the navy sheet is pulled up off the page. */
 function intro(loaderEl: HTMLElement, box: PosterBox | null) {
   const tl = gsap.timeline();
   const kids = $$('.loader__center, .loader__text', loaderEl);
@@ -138,12 +138,10 @@ function intro(loaderEl: HTMLElement, box: PosterBox | null) {
     gsap.set('[data-gl-letters]', { opacity: 1 });
     return Promise.resolve();
   }
-  tl.to(kids, { color: '#22396f', duration: 0.35, ease: 'power1.in' })
-    .to(kids, { opacity: 0, duration: 0.8, ease: 'power2.out' }, '<0.1')
-    .to(loaderEl, { backgroundColor: '#22396f', duration: 0.35, ease: 'power1.out' }, '-=0.35')
-    .to(loaderEl, { backgroundColor: '#fcf1d0', duration: 0.55, ease: 'power2.out' })
+  tl.to(kids, { yPercent: 40, opacity: 0, duration: 0.5, stagger: 0.06, ease: 'power3.in' })
+    .to(loaderEl, { clipPath: 'inset(0% 0% 100% 0%)', duration: 0.9, ease: 'expo.inOut' }, '-=0.1')
     .set(loaderEl, { display: 'none' })
-    .to(box ? box.element : {}, { opacity: 1, duration: 1.1, ease: EASE }, '-=0.3')
+    .to(box ? box.element : {}, { opacity: 1, duration: 1.1, ease: EASE }, '-=0.45')
     .to(strips, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.1, stagger: 0.1, ease: EASE }, '<')
     .to('[data-gl-letters]', { opacity: 1, duration: 0.01 }, '<')
     .to([header, '[data-hero-intro]', '[data-infocard]', '[data-hero-hint]'], { opacity: 1, y: 0, duration: 1, stagger: 0.08, ease: EASE }, '-=0.6');
@@ -232,12 +230,22 @@ function setupMotion({ box, letters, dots, lenis }: Stage) {
         { xPercent: left ? 0 : -travel },
         { xPercent: left ? -travel : 0, ease: 'none', scrollTrigger: { trigger: rowsSection, start: 'top bottom', end: 'bottom top', scrub: 1 } }
       );
-      // Like paper being flattened as it reaches the centre.
-      gsap.fromTo(
-        row,
-        { rotationX: 4, transformPerspective: 900 },
-        { rotationX: 0, ease: 'none', scrollTrigger: { trigger: row, start: 'top bottom', end: 'center center', scrub: true } }
-      );
+    });
+    // Rows lean into the scroll: skew follows scroll velocity and springs back.
+    const skewTo = $$('[data-row]', rowsSection).map((row, i) => {
+      const to = gsap.quickTo(row, 'skewX', { duration: 0.6, ease: 'power3.out' });
+      return (v: number) => to(i % 2 ? -v : v);
+    });
+    ScrollTrigger.create({
+      trigger: rowsSection,
+      start: 'top bottom',
+      end: 'bottom top',
+      onUpdate: (s) => {
+        const v = gsap.utils.clamp(-9, 9, s.getVelocity() / 260);
+        skewTo.forEach((to) => to(v));
+      },
+      onLeave: () => skewTo.forEach((to) => to(0)),
+      onLeaveBack: () => skewTo.forEach((to) => to(0)),
     });
   }
   const circle = $('.circled path', rowsSection);
@@ -322,7 +330,12 @@ function setupMotion({ box, letters, dots, lenis }: Stage) {
   $$('.sec-head, .row, .notes__list li, .card, .foot__logo, .foot__row').forEach((el) => el.setAttribute('data-reveal', ''));
   ScrollTrigger.batch('[data-reveal]', {
     start: 'top 85%',
-    onEnter: (batch) => gsap.to(batch, { opacity: 1, y: 0, duration: 1, stagger: 0.12, ease: EASE, overwrite: true }),
+    onEnter: (batch) =>
+      gsap.fromTo(
+        batch,
+        { opacity: 1, y: 14, clipPath: 'inset(100% 0% 0% 0%)' },
+        { y: 0, clipPath: 'inset(0% 0% 0% 0%)', duration: 1.1, stagger: 0.1, ease: 'expo.out', overwrite: true, clearProps: 'clipPath' }
+      ),
   });
 
   // --- 8. Manifesto video -------------------------------------------------------------
@@ -334,8 +347,8 @@ function setupMotion({ box, letters, dots, lenis }: Stage) {
     start: 'top bottom',
     end: 'bottom bottom',
     onUpdate: (s) => (dots.progress = s.progress),
-    onToggle: (s) => (dots.visible = s.isActive),
   });
+  new IntersectionObserver(([e]) => (dots.visible = e.isIntersecting)).observe($('[data-dots]'));
 
   // Nav pill follows the section in view.
   setupNav();
@@ -414,7 +427,7 @@ function setupPrism() {
     if (i === index) return;
     index = i;
     // Rest slightly off-axis so two faces are visible at a diagonal.
-    gsap.to(state, { angle: -i * step - 18, duration: reduced ? 0 : 1, ease: 'power2.inOut', onUpdate: apply });
+    gsap.to(state, { angle: -i * step - 18, duration: reduced ? 0 : 1.1, ease: 'back.inOut(1.6)', onUpdate: apply });
     caps.forEach((c, k) => c.classList.toggle('is-active', k === i));
     counter.textContent = String(i + 1).padStart(2, '0');
   };
