@@ -11,6 +11,7 @@ import { POSTERS, paperCanvas, posterCanvas } from './poster/textures';
 import { PosterBox } from './poster/box';
 import { Letters, type LetterCue } from './poster/letters';
 import { DotMatrix } from './poster/dots';
+import { Halftone } from './poster/halftone';
 import { githubStats } from './shared/github';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -283,6 +284,7 @@ function setupMotion({ box, letters, dots, lenis }: Stage) {
   });
 
   // --- 6. Values: pinned horizontal track ---------------------------------------
+  const halftone = new Halftone($<HTMLCanvasElement>('[data-halftone]'), '/assets/minirt.webp', reduced);
   const values = $('[data-values]');
   const track = $('[data-values-track]');
   const fadeLayer = document.createElement('div');
@@ -324,6 +326,8 @@ function setupMotion({ box, letters, dots, lenis }: Stage) {
         const d = i - st.pos;
         panel.style.setProperty('--d', d.toFixed(4));
         panel.style.setProperty('--a', Math.min(1, Math.abs(d)).toFixed(4));
+        // The halftone screen resolves from coarse to fine as its panel centres.
+        if (panel.contains(halftone.element)) halftone.setDistance(Math.abs(d) * 1.4);
       });
       const active = Math.round(st.pos);
       marks.forEach((m, i) => m.classList.toggle('is-active', i === active));
@@ -334,14 +338,6 @@ function setupMotion({ box, letters, dots, lenis }: Stage) {
       gsap.from(panel.children, { opacity: 0, y: 30, duration: 1, stagger: 0.12, ease: EASE, scrollTrigger: { trigger: panel, start: 'top 75%' } })
     );
   }
-  // Text runs around the photo's outline; the photo itself stays still.
-  const ovalText = $<SVGTextPathElement>('[data-oval-text]');
-  const ovalPath = $<SVGPathElement>('#ovalPath');
-  const loop = ovalPath.getTotalLength() / 2;
-  ovalText.setAttribute('textLength', String(loop));
-  ovalText.setAttribute('lengthAdjust', 'spacing');
-  if (!reduced) gsap.fromTo(ovalText, { attr: { startOffset: 0 } }, { attr: { startOffset: loop }, duration: 36, ease: 'none', repeat: -1 });
-
   // --- 7. Projects: rotating prism ------------------------------------------------
   setupPrism();
 

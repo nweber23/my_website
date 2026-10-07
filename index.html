@@ -345,14 +345,16 @@
                 </article>
                 <article class="panel panel--photo" data-panel>
                     <span class="panel__idx mono">(2)</span>
-                    <figure class="oval" data-oval>
-                        <img src="/assets/minirt.webp" alt="miniRT raytracer output: reflective spheres with shadows" loading="lazy" decoding="async">
-                        <svg class="oval__ring" viewBox="0 0 400 520" aria-hidden="true">
-                            <!-- The ellipse is traced twice so the text can loop seamlessly. -->
-                            <defs><path id="ovalPath" d="M200 10a190 250 0 1 1 0 500a190 250 0 1 1 0-500a190 250 0 1 1 0 500a190 250 0 1 1 0-500"/></defs>
-                            <text><textPath href="#ovalPath" data-oval-text>SIMD · CACHE LINES · TILE THREADS · 120 FPS · STRUCTURE OF ARRAYS · PERF ·</textPath></text>
-                        </svg>
+                    <figure class="print">
+                        <canvas class="print__screen" data-halftone role="img" aria-label="miniRT raytracer render, printed as a navy halftone; hover to see the original colours"></canvas>
+                        <span class="print__marks" aria-hidden="true"></span>
+                        <figcaption class="print__cap mono-s"><span>FIG. 02 — miniRT, 1920×1080</span><span>Hover: colour</span></figcaption>
                     </figure>
+                    <dl class="print__stats">
+                        <div><dt>Baseline</dt><dd>1–5 fps</dd></div>
+                        <div><dt>Optimised</dt><dd>120+ fps</dd></div>
+                        <div><dt>Speed-up</dt><dd>80×</dd></div>
+                    </dl>
                     <p class="panel__text">Performance is measured, not guessed. EXPLAIN ANALYZE, perf, a profiler — that is how miniRT went from 5 to 120 frames per second.</p>
                 </article>
                 <article class="panel" data-panel>
