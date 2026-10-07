@@ -10,16 +10,17 @@ on cream (`#FCF1D0`) — other colours only come from the project imagery.
 Lenis inertial scrolling drives GSAP ScrollTrigger timelines; nearly everything
 is tied to scroll progress.
 
-1. **Loader** — midnight-navy screen, live `LOADING n%` counter over the real boot work
-   (fonts, poster textures, WebGL), pill progress bar with a dashed core.
+1. **Loader** — midnight-navy screen, live `BOOTING n%` counter over the real boot work
+   (fonts, poster textures, WebGL), a pill bar that fills block by block; the
+   navy sheet is then pulled up off the page.
 2. **Header** — fixed mono header with a dashed nav pill whose navy fill follows
    the section in view; turns light over the dark manifesto.
 3. **Hero** — a Three.js billboard covered in procedurally drawn posters. The
    right face swings in, then the camera moves over the box until one poster
    fills the screen.
 4. **Poster wall** — full-bleed crumpled paper, sparkle stars, skewed poster type.
-5. **Giant text rows** — rows slide in alternating directions and flatten as
-   they reach the centre; a self-drawing ellipse, spinning globes, flickering QR
+5. **Giant text rows** — rows slide in alternating directions and lean into the
+   scroll (skew follows scroll velocity); a self-drawing ellipse, spinning globes, flickering QR
    blocks.
 6. **Values** — pinned horizontal track with ghost words at 1.3× speed, an oval
    photo with rotating text on a path and one handwritten line.
@@ -31,7 +32,9 @@ is tied to scroll progress.
 10. **Footer** — dot-matrix headline that pulses with scroll and ripples around
     the cursor.
 
-Pearl letters (N, W, O, C, S) fly through the page, one per section.
+Pearl letters (N, W, O, C, S) rise through the page, one per section, tumbling
+in from below and out through the top. Blocks are revealed with a masked wipe,
+and index rows fill with ink from the left on hover.
 `prefers-reduced-motion` removes pins, parallax and 3D motion and keeps simple
 fades. 3D renders only while it is on screen.
 
