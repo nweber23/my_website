@@ -21,6 +21,17 @@ if (reduced) document.documentElement.classList.add('is-reduced');
 const $ = <T extends Element = HTMLElement>(sel: string, root: ParentNode = document) => root.querySelector<T>(sel)!;
 const $$ = <T extends Element = HTMLElement>(sel: string, root: ParentNode = document) => [...root.querySelectorAll<T>(sel)];
 const EASE = 'expo.out'; // closest GSAP curve to cubic-bezier(0.16, 1, 0.3, 1)
+/**
+ * Map a continuous position (0..n-1) to one with a resting zone at every whole
+ * number: the middle 64% of each step moves, the rest holds still.
+ */
+function dwell(x: number, n: number) {
+  const i = Math.min(n - 1, Math.floor(x));
+  if (i >= n - 1) return n - 1;
+  const t = Math.min(1, Math.max(0, (x - i - 0.18) / 0.64));
+  return i + t * t * t * (t * (t * 6 - 15) + 10);
+}
+
 const nextFrame = () => new Promise<void>((r) => setTimeout(r, 0));
 
 const header = $('[data-header]');
@@ -274,39 +285,55 @@ function setupMotion({ box, letters, dots, lenis }: Stage) {
   // --- 6. Values: pinned horizontal track ---------------------------------------
   const values = $('[data-values]');
   const track = $('[data-values-track]');
-  let trackTween: gsap.core.Tween | null = null;
   const fadeLayer = document.createElement('div');
   fadeLayer.style.cssText = 'position:absolute;inset:0;background:var(--bg-gradient);opacity:0;pointer-events:none;';
   values.prepend(fadeLayer);
   if (!reduced) {
+    // Scroll sets a target position in panel units; one ticker eases toward it.
+    // Each panel gets a dwell zone, so it settles centred before the next slides in.
+    const panels = $$('[data-panel]', values);
+    const ghosts = $('[data-ghosts]');
+    const marks = $$('[data-values-progress] span', values);
+    const bar = $('[data-values-progress] i', values);
+    const n = panels.length;
     const dist = () => track.scrollWidth - innerWidth;
-    trackTween = gsap.to(track, {
-      x: () => -dist(),
-      ease: 'none',
-      scrollTrigger: { trigger: values, pin: true, start: 'top top', end: () => `+=${dist()}`, scrub: 1, invalidateOnRefresh: true },
+    const st = { pos: 0, target: 0, last: -1 };
+    panels.forEach((panel) => [...panel.children].forEach((c, j) => (c as HTMLElement).style.setProperty('--px', String(36 + j * 26))));
+    ScrollTrigger.create({
+      trigger: values,
+      pin: true,
+      start: 'top top',
+      end: () => `+=${innerHeight * (n - 1) * 1.5}`,
+      invalidateOnRefresh: true,
+      onUpdate: (s) => {
+        st.target = dwell(s.progress * (n - 1), n);
+        fadeLayer.style.opacity = s.progress.toFixed(3);
+      },
+      onRefresh: () => (st.last = -1),
     });
-    // Ghost words travel ~1.3× the track speed.
-    gsap.to('[data-ghosts]', {
-      x: () => -dist() * 0.3,
-      ease: 'none',
-      scrollTrigger: { trigger: values, start: 'top top', end: () => `+=${dist()}`, scrub: 1, invalidateOnRefresh: true },
+    gsap.ticker.add((_t, dtMs) => {
+      st.pos += (st.target - st.pos) * (1 - Math.exp((-dtMs / 1000) * 7));
+      if (Math.abs(st.target - st.pos) < 1e-4) st.pos = st.target;
+      if (st.pos === st.last) return;
+      st.last = st.pos;
+      const x = -(st.pos / (n - 1)) * dist();
+      track.style.transform = `translate3d(${x}px,0,0)`;
+      // Ghost words sit inside the track: an extra 0.3× makes them run at 1.3×.
+      ghosts.style.transform = `translate3d(${x * 0.3}px,0,0)`;
+      panels.forEach((panel, i) => {
+        const d = i - st.pos;
+        panel.style.setProperty('--d', d.toFixed(4));
+        panel.style.setProperty('--a', Math.min(1, Math.abs(d)).toFixed(4));
+      });
+      const active = Math.round(st.pos);
+      marks.forEach((m, i) => m.classList.toggle('is-active', i === active));
+      bar.style.transform = `scaleX(${(st.pos / (n - 1)).toFixed(4)})`;
     });
-    gsap.to(fadeLayer, { opacity: 1, ease: 'none', scrollTrigger: { trigger: values, start: 'top top', end: () => `+=${dist()}`, scrub: true } });
+  } else {
+    $$('[data-panel]', values).forEach((panel) =>
+      gsap.from(panel.children, { opacity: 0, y: 30, duration: 1, stagger: 0.12, ease: EASE, scrollTrigger: { trigger: panel, start: 'top 75%' } })
+    );
   }
-  $$('[data-panel]', values).forEach((panel, i) => {
-    gsap.from(panel.children, {
-      opacity: 0,
-      y: 30,
-      duration: 1,
-      stagger: 0.12,
-      ease: EASE,
-      // The first panel is on screen as soon as the section pins.
-      scrollTrigger: trackTween && i > 0
-        ? { trigger: panel, containerAnimation: trackTween, start: 'left 60%' }
-        : { trigger: values, start: 'top 60%' },
-    });
-  });
-  const oval = $('[data-oval]');
   // Text runs around the photo's outline; the photo itself stays still.
   const ovalText = $<SVGTextPathElement>('[data-oval-text]');
   const ovalPath = $<SVGPathElement>('#ovalPath');
@@ -314,14 +341,6 @@ function setupMotion({ box, letters, dots, lenis }: Stage) {
   ovalText.setAttribute('textLength', String(loop));
   ovalText.setAttribute('lengthAdjust', 'spacing');
   if (!reduced) gsap.fromTo(ovalText, { attr: { startOffset: 0 } }, { attr: { startOffset: loop }, duration: 36, ease: 'none', repeat: -1 });
-  if (trackTween) {
-    gsap.fromTo(oval, { xPercent: 45, scale: 0.9 }, {
-      xPercent: 0,
-      scale: 1,
-      ease: 'none',
-      scrollTrigger: { trigger: oval.closest('[data-panel]')!, containerAnimation: trackTween, start: 'left right', end: 'center center', scrub: true },
-    });
-  }
 
   // --- 7. Projects: rotating prism ------------------------------------------------
   setupPrism();
@@ -405,56 +424,76 @@ function setupPrism() {
   const faces = $$('[data-face]', prism);
   const caps = $$('[data-cap]');
   const counter = $('[data-cube-index]');
+  const bar = $('[data-cube-bar]');
   const n = faces.length;
   const step = 360 / n;
-  const state = { angle: -18, tiltX: 0, tiltY: 0 };
+  // pos is in project units (0..n-1). Scroll sets target; a ticker eases pos toward
+  // it, so the prism turns continuously with the scroll instead of jumping.
+  const st = { pos: 0, target: 0, tiltX: 0, tiltY: 0, tx: 0, ty: 0, dirty: true };
   let radius = 0;
 
+  const apply = () => {
+    // Mid-turn the prism eases back and tips a little, like a drum being spun.
+    const turn = Math.abs(st.pos - Math.round(st.pos));
+    const lift = Math.sin(turn * Math.PI);
+    const angle = -st.pos * step - 18;
+    prism.style.transform = `translateZ(${-radius - lift * radius * 0.45}px) rotateX(${st.tiltX - lift * 5}deg) rotateY(${angle + st.tiltY}deg)`;
+    faces.forEach((f, i) => {
+      // Faces turned away from the viewer darken, so the front one reads first.
+      const rel = ((((i * step + angle) % 360) + 540) % 360) - 180;
+      f.style.setProperty('--shade', Math.min(0.62, (Math.abs(rel) / 100) * 0.5).toFixed(3));
+    });
+    bar.style.transform = `scaleX(${(st.pos / (n - 1)).toFixed(4)})`;
+  };
   const layout = () => {
-    const w = prism.offsetWidth;
-    radius = w / (2 * Math.tan(Math.PI / n));
+    radius = prism.offsetWidth / (2 * Math.tan(Math.PI / n));
     faces.forEach((f, i) => (f.style.transform = `rotateY(${i * step}deg) translateZ(${radius}px)`));
     apply();
-  };
-  const apply = () => {
-    prism.style.transform = `translateZ(${-radius}px) rotateX(${state.tiltX}deg) rotateY(${state.angle + state.tiltY}deg)`;
   };
   layout();
   window.addEventListener('resize', layout);
 
   let index = 0;
-  const show = (i: number) => {
+  const setActive = (i: number) => {
     if (i === index) return;
     index = i;
-    // Rest slightly off-axis so two faces are visible at a diagonal.
-    gsap.to(state, { angle: -i * step - 18, duration: reduced ? 0 : 1.1, ease: 'back.inOut(1.6)', onUpdate: apply });
     caps.forEach((c, k) => c.classList.toggle('is-active', k === i));
     counter.textContent = String(i + 1).padStart(2, '0');
   };
+
+  gsap.ticker.add((_t, dtMs) => {
+    const k = (rate: number) => (reduced ? 1 : 1 - Math.exp((-dtMs / 1000) * rate));
+    const before = st.pos + st.tiltX * 7 + st.tiltY * 13;
+    st.pos += (st.target - st.pos) * k(6);
+    st.tiltX += (st.tx - st.tiltX) * k(5);
+    st.tiltY += (st.ty - st.tiltY) * k(5);
+    if (Math.abs(st.target - st.pos) < 1e-4) st.pos = st.target;
+    const after = st.pos + st.tiltX * 7 + st.tiltY * 13;
+    if (!st.dirty && Math.abs(after - before) < 1e-5) return;
+    st.dirty = false;
+    apply();
+    setActive(Math.round(st.pos));
+  });
 
   if (!reduced) {
     ScrollTrigger.create({
       trigger: '[data-projects-pin]',
       start: 'top top',
-      end: '+=400%',
+      end: () => `+=${innerHeight * (n - 1) * 1.1}`,
       pin: true,
-      onUpdate: (s) => show(Math.min(n - 1, Math.floor(s.progress * n))),
+      invalidateOnRefresh: true,
+      onUpdate: (s) => (st.target = dwell(s.progress * (n - 1), n)),
     });
-    // Subtle tilt toward the cursor.
+    // Subtle tilt toward the cursor, eased by the same ticker.
     scene.addEventListener('pointermove', (e) => {
       const r = scene.getBoundingClientRect();
-      gsap.to(state, {
-        tiltX: -((e.clientY - r.top) / r.height - 0.5) * 10,
-        tiltY: ((e.clientX - r.left) / r.width - 0.5) * 10,
-        duration: 0.6,
-        ease: 'power2.out',
-        onUpdate: apply,
-      });
+      st.tx = -((e.clientY - r.top) / r.height - 0.5) * 10;
+      st.ty = ((e.clientX - r.left) / r.width - 0.5) * 10;
     });
-    scene.addEventListener('pointerleave', () => gsap.to(state, { tiltX: 0, tiltY: 0, duration: 0.8, onUpdate: apply }));
+    scene.addEventListener('pointerleave', () => (st.tx = st.ty = 0));
   } else {
-    // Without the pin, let the counter and captions step with a click.
-    scene.addEventListener('click', () => show((index + 1) % n));
+    // Without the pin, step through the projects with a click.
+    scene.addEventListener('click', () => (st.target = (Math.round(st.target) + 1) % n));
   }
 
   // A face opens its case study in the index.
