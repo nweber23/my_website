@@ -171,8 +171,10 @@ button {
   transition: background-size 0.3s var(--ease);
 }
 
-.link:hover {
-  background-size: 100% 1px;
+@media (hover: hover) and (pointer: fine) {
+  .link:hover {
+    background-size: 100% 1px;
+  }
 }
 
 .btn {
@@ -184,12 +186,18 @@ button {
   font-size: 15px;
   text-decoration: none;
   text-transform: uppercase;
-  transition: background 0.25s var(--ease), color 0.25s var(--ease);
+  transition: background 0.2s var(--ease), color 0.2s var(--ease), transform 0.15s var(--ease);
 }
 
-.btn:hover {
-  background: var(--ink);
-  color: var(--bg);
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover {
+    background: var(--ink);
+    color: var(--bg);
+  }
+}
+
+.btn:active {
+  transform: scale(0.97);
 }
 
 .sr-only {
@@ -323,11 +331,17 @@ button {
   z-index: 1;
   padding: 7px 18px 6px;
   border-radius: 999px;
-  transition: color 0.4s var(--ease), opacity 0.3s;
+  transition: color 0.3s var(--ease), opacity 0.2s var(--ease), transform 0.15s var(--ease);
 }
 
-.pill a:hover {
-  opacity: 0.6;
+@media (hover: hover) and (pointer: fine) {
+  .pill a:hover {
+    opacity: 0.6;
+  }
+}
+
+.pill a:active {
+  transform: scale(0.97);
 }
 
 .pill a.is-active {
@@ -343,7 +357,7 @@ button {
   width: 0;
   border-radius: 999px;
   background: var(--pill-active-bg);
-  transition: transform 0.4s var(--ease), width 0.4s var(--ease), opacity 0.3s;
+  transition: transform 0.3s var(--ease), width 0.3s var(--ease), opacity 0.2s var(--ease);
   opacity: 0;
 }
 
