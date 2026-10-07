@@ -1,17 +1,18 @@
 # Personal Portfolio — Poster System
 
 Portfolio of Niklas Weber in an experimental print/poster brutalism: crinkled
-paper, heavy black type, tiny mono annotations and glossy pearl-white 3D letters.
-Strictly monochrome — colour only ever comes from the project imagery.
+paper, heavy navy type, tiny mono annotations and glossy pearl 3D letters.
+Two inks, like a riso print: midnight navy (`#010736`, `#0D1C42`, `#22396F`)
+on cream (`#FCF1D0`) — other colours only come from the project imagery.
 
 ## Motion system
 
 Lenis inertial scrolling drives GSAP ScrollTrigger timelines; nearly everything
 is tied to scroll progress.
 
-1. **Loader** — black screen, live `LOADING n%` counter over the real boot work
+1. **Loader** — midnight-navy screen, live `LOADING n%` counter over the real boot work
    (fonts, poster textures, WebGL), pill progress bar with a dashed core.
-2. **Header** — fixed mono header with a dashed nav pill whose grey fill follows
+2. **Header** — fixed mono header with a dashed nav pill whose navy fill follows
    the section in view; turns light over the dark manifesto.
 3. **Hero** — a Three.js billboard covered in procedurally drawn posters. The
    right face swings in, then the camera moves over the box until one poster
@@ -25,7 +26,7 @@ is tied to scroll progress.
 7. **Projects** — a pinned CSS 3D prism that steps one project per scroll
    segment, with barcode and frame overlays.
 8. **Index & field notes** — every case study in full, as expandable rows.
-9. **Manifesto** — black-and-white video with scanlines, RGB split and glitch
+9. **Manifesto** — navy duotone video with scanlines, RGB split and glitch
    jitter, a cylinder of tag words, then a shrink into a small bleached portrait.
 10. **Footer** — dot-matrix headline that pulses with scroll and ripples around
     the cursor.

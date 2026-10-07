@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
-// Glossy pearl-white letters that fly through the page. Each one is a thick
+// Glossy cream-pearl letters that fly through the page. Each one is a thick
 // rounded tube bent into a glyph, so it reads like an inflated, extruded
 // letter with soft speculars. One letter per section; scroll progress
 // through that section drives its entry, drift, spin and exit.
@@ -106,7 +106,7 @@ export class Letters {
     this.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.03).texture;
     const key = new THREE.DirectionalLight(0xffffff, 1.4);
     key.position.set(-2, 4, 6);
-    this.scene.add(key, new THREE.HemisphereLight(0xffffff, 0xaebccb, 0.9));
+    this.scene.add(key, new THREE.HemisphereLight(0xfff8e6, 0x9fb0d6, 0.9));
     this.camera.position.z = DIST;
     window.addEventListener('pointermove', (e) => this.mouse.set((e.clientX / innerWidth) * 2 - 1, (e.clientY / innerHeight) * 2 - 1));
     this.resize();
@@ -114,16 +114,16 @@ export class Letters {
   }
 
   private material() {
-    // Pearl: white base, soft clearcoat, a blue-grey sheen in the shadows.
+    // Pearl: warm cream base, soft clearcoat, a navy-blue sheen in the shadows.
     return new THREE.MeshPhysicalMaterial({
-      color: 0xf6f7f8,
+      color: 0xfffaf0,
       roughness: 0.22,
       metalness: 0,
       clearcoat: 1,
       clearcoatRoughness: 0.12,
       sheen: 0.8,
       sheenRoughness: 0.4,
-      sheenColor: new THREE.Color(0xbfcbd8),
+      sheenColor: new THREE.Color(0x9fb0d6),
       iridescence: 0.12,
       iridescenceIOR: 1.3,
       envMapIntensity: 1.15,

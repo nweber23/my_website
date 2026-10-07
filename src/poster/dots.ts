@@ -95,9 +95,10 @@ export class DotMatrix {
       boost = Math.min(1, boost);
       const lit = d.on ? 1 : 0.18;
       const r = base * (d.on ? pulse : 0.55) * (1 + boost * 0.9);
-      // Light grey dots on a slightly lighter ground; near the cursor they darken.
-      const g = Math.round(205 - (d.on ? 28 : 0) - boost * 150 * lit);
-      ctx.fillStyle = `rgb(${g},${g},${g})`;
+      // Faint navy dots on cream; near the cursor they swell and darken.
+      const k = Math.min(1, (d.on ? 0.2 : 0.07) + boost * 0.75 * lit);
+      const c = (a: number, b: number) => Math.round(a + (b - a) * k);
+      ctx.fillStyle = `rgb(${c(244, 1)},${c(230, 7)},${c(192, 54)})`;
       ctx.beginPath();
       ctx.arc(d.x, d.y, r, 0, Math.PI * 2);
       ctx.fill();
