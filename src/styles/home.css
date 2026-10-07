@@ -330,6 +330,54 @@ main,
   will-change: transform;
 }
 
+/* Panel depth: --d is the panel's offset from centre in panel widths (-1..1),
+   --a its absolute value. Content drifts in layers, turns slightly like a page
+   and fades toward the edges; each child gets its own drift (--px). */
+.panel {
+  perspective: 1400px;
+}
+
+.panel > * {
+  transform: translate3d(calc(var(--d, 0) * var(--px, 40) * 1px), 0, 0) rotateY(calc(var(--d, 0) * -14deg));
+  opacity: calc(1 - var(--a, 0) * 0.85);
+  will-change: transform, opacity;
+}
+
+.panel .oval {
+  scale: calc(1 - var(--a, 0) * 0.14);
+}
+
+.values__progress {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: 36px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  transform: translateX(-50%);
+}
+
+.values__progress span {
+  opacity: 0.35;
+  transition: opacity 0.3s var(--ease);
+}
+
+.values__progress span.is-active {
+  opacity: 1;
+}
+
+.values__progress i {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -10px;
+  height: 1px;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
 .values__ghosts {
   opacity: 0.75;
   position: absolute;
@@ -456,6 +504,24 @@ main,
   will-change: transform;
 }
 
+.projects__bar {
+  display: inline-block;
+  position: relative;
+  width: 90px;
+  height: 1px;
+  margin-left: 12px;
+  vertical-align: middle;
+  background: rgba(1, 7, 54, 0.2);
+}
+
+.projects__bar i {
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
 .face {
   position: absolute;
   inset: 0;
@@ -500,7 +566,8 @@ main,
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(1, 7, 54, 0.28);
+  /* --shade is set per face from its angle to the viewer. */
+  background: rgba(1, 7, 54, calc(0.14 + var(--shade, 0.14)));
   pointer-events: none;
 }
 
@@ -1212,7 +1279,8 @@ main,
   width: auto;
 }
 
-.is-reduced .values__ghosts {
+.is-reduced .values__ghosts,
+.is-reduced .values__progress {
   display: none;
 }
 

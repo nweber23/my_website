@@ -331,6 +331,9 @@
         <!-- 6. Values: pinned horizontal scroll ------------------------------------------------ -->
         <section class="values" id="about" data-values aria-labelledby="values-title">
             <h2 id="values-title" class="sr-only">About — how I work</h2>
+            <div class="values__progress mono-s" data-values-progress aria-hidden="true">
+                <span class="is-active">(1)</span><span>(2)</span><span>(3)</span><i></i>
+            </div>
             <div class="values__track" data-values-track>
                 <div class="values__ghosts" data-ghosts aria-hidden="true">
                     <span class="ghost">Scratch</span><span class="ghost">Measure</span><span class="ghost">Rebuild</span>
@@ -421,7 +424,7 @@ $ _</pre>
                     </div>
                 </div>
                 <div class="cube__caps" aria-live="polite"><p class="cube__cap is-active" data-cap="0">Real-time multiplayer casino. Go backend, C++ engine over gRPC, React front, hand-rolled WebSocket hub.<br><a class="link mono-s" href="#project-transcendence">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="1">From-scratch OpenGL 4.1 renderer in Go. Own .obj parser, ear clipping, 0.06 allocs per frame.<br><a class="link mono-s" href="#project-go-renderer">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="2">Ranking system for 42 Heilbronn in Go and PostgreSQL. 30 ms average response, 99.9% uptime.<br><a class="link mono-s" href="#project-elo">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="3">SIMD raytracer in C. SSE/AVX, structure-of-arrays, tile threads. 80 times the baseline.<br><a class="link mono-s" href="#project-minirt">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="4">POSIX shell in C. Own lexer and parser, fork/execve, dup2 pipelines, here-docs, sigaction.<br><a class="link mono-s" href="#project-minishell">(CASE_STUDY ↓)</a></p></div>
-                <p class="projects__count mono-s"><span data-cube-index>01</span> / 05</p>
+                <p class="projects__count mono-s"><span data-cube-index>01</span> / 05 <span class="projects__bar" aria-hidden="true"><i data-cube-bar></i></span></p>
             </div>
         </section>
 
