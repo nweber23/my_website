@@ -912,7 +912,8 @@ main,
 .manifesto {
   position: relative;
   z-index: 6;
-  height: 320vh;
+  /* Longer runway so ten words can each settle before the next arrives. */
+  height: 440vh;
   background: var(--bg-soft);
 }
 
@@ -986,7 +987,7 @@ main,
 }
 
 .manifesto__quote {
-  top: 46%;
+  top: 30%;
   margin: 0 auto;
   padding: 0 var(--margin);
   font-size: clamp(22px, 2.4vw, 32px);
@@ -1000,21 +1001,20 @@ main,
 }
 
 .wheel {
-  bottom: 2vh;
-  height: 32vh;
-  perspective: 1100px;
-  overflow: hidden;
+  bottom: 0;
+  height: 44vh;
+  /* Fade the rim instead of clipping words with a hard edge. */
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
+  pointer-events: none;
 }
 
 .wheel__drum {
   position: absolute;
   inset: 0;
-  transform-style: preserve-3d;
-  will-change: transform;
 }
 
 .wheel__word {
-  --step: 36deg;
   position: absolute;
   left: 0;
   right: 0;
@@ -1026,10 +1026,14 @@ main,
   line-height: 1;
   letter-spacing: -0.04em;
   text-transform: uppercase;
-  /* Words sit on a cylinder; the far side is hidden, the neighbours squash. */
-  --r: clamp(150px, 22vh, 240px);
-  transform: rotateX(calc(var(--i) * var(--step) * -1)) translateZ(var(--r));
-  backface-visibility: hidden;
+  color: rgba(252, 241, 208, 0.55);
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+  transition: color 0.35s var(--ease);
+}
+
+.wheel__word.is-active {
+  color: var(--cream);
 }
 
 /* --- Profile cards -------------------------------------------------------------------------- */
