@@ -343,9 +343,6 @@ main,
   will-change: transform, opacity;
 }
 
-.panel .oval {
-  scale: calc(1 - var(--a, 0) * 0.14);
-}
 
 .values__progress {
   position: absolute;
@@ -418,37 +415,67 @@ main,
   gap: 10px;
 }
 
-.oval {
+/* Halftone print: navy dots on cream, with crop marks like a proof sheet. */
+.print {
   position: relative;
-  width: clamp(190px, 18vw, 270px);
-  aspect-ratio: 400 / 520;
-  /* Room for the text ring, which extends ~12% beyond the photo. */
-  margin: 34px 0 58px;
+  width: min(360px, 70vw);
+  margin: 6px 0 10px;
+  padding: 14px;
 }
 
-.oval img {
+.print__screen {
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  filter: grayscale(0.15);
+  aspect-ratio: 4 / 3;
+  max-width: 100%;
+  border: var(--hairline);
+  cursor: crosshair;
 }
 
-.oval__ring {
+/* Four crop marks, drawn as short hairlines just outside the image. */
+.print__marks {
   position: absolute;
-  inset: -12%;
-  width: 124%;
-  height: 124%;
-  /* Override the global svg max-width so the ring wraps the photo evenly. */
-  max-width: none;
-  overflow: visible;
+  inset: 0;
+  pointer-events: none;
+  --m: linear-gradient(var(--ink), var(--ink));
+  background:
+    var(--m) 0 14px / 10px 1px no-repeat, var(--m) 14px 0 / 1px 10px no-repeat,
+    var(--m) 100% 14px / 10px 1px no-repeat, var(--m) calc(100% - 14px) 0 / 1px 10px no-repeat,
+    var(--m) 0 calc(100% - 14px) / 10px 1px no-repeat, var(--m) 14px 100% / 1px 10px no-repeat,
+    var(--m) 100% calc(100% - 14px) / 10px 1px no-repeat, var(--m) calc(100% - 14px) 100% / 1px 10px no-repeat;
 }
 
-.oval__ring text {
+.print__cap {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  text-align: left;
+}
+
+.print__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: min(360px, 80vw);
+  margin: 0 0 14px;
+  border-top: var(--hairline);
+}
+
+.print__stats div {
+  padding-top: 8px;
+}
+
+.print__stats dt {
   font-family: var(--mono);
-  font-size: 15px;
-  letter-spacing: 0.08em;
-  fill: var(--ink);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.print__stats dd {
+  margin: 2px 0 0;
+  font-family: var(--condensed);
+  font-size: 30px;
+  line-height: 1;
 }
 
 .hand {
