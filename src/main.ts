@@ -124,7 +124,7 @@ async function boot() {
   ScrollTrigger.refresh();
 }
 
-/** Loader dissolves → mid grey → page grey; then the hero assembles. */
+/** Loader dissolves → mid navy → cream page; then the hero assembles. */
 function intro(loaderEl: HTMLElement, box: PosterBox | null) {
   const tl = gsap.timeline();
   const kids = $$('.loader__center, .loader__text', loaderEl);
@@ -138,10 +138,10 @@ function intro(loaderEl: HTMLElement, box: PosterBox | null) {
     gsap.set('[data-gl-letters]', { opacity: 1 });
     return Promise.resolve();
   }
-  tl.to(kids, { color: '#3a3a3a', duration: 0.35, ease: 'power1.in' })
+  tl.to(kids, { color: '#22396f', duration: 0.35, ease: 'power1.in' })
     .to(kids, { opacity: 0, duration: 0.8, ease: 'power2.out' }, '<0.1')
-    .to(loaderEl, { backgroundColor: '#a0a0a0', duration: 0.35, ease: 'power1.out' }, '-=0.35')
-    .to(loaderEl, { backgroundColor: '#ececec', duration: 0.55, ease: 'power2.out' })
+    .to(loaderEl, { backgroundColor: '#22396f', duration: 0.35, ease: 'power1.out' }, '-=0.35')
+    .to(loaderEl, { backgroundColor: '#fcf1d0', duration: 0.55, ease: 'power2.out' })
     .set(loaderEl, { display: 'none' })
     .to(box ? box.element : {}, { opacity: 1, duration: 1.1, ease: EASE }, '-=0.3')
     .to(strips, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.1, stagger: 0.1, ease: EASE }, '<')
@@ -498,7 +498,7 @@ function setupManifesto() {
   // Tag words turn on a cylinder.
   tl.to(drum, { rotationX: (words.length - 1) * 36, duration: 0.62 }, 0)
     .to(['.manifesto__label', '.manifesto__quote', '.wheel'], { opacity: 0, duration: 0.06 }, 0.62)
-    // Exit: the screen shrinks to a small portrait while it bleaches to page grey.
+    // Exit: the screen shrinks to a small portrait while it bleaches to the cream page.
     .to(frame, {
       clipPath: () => `inset(${Math.max(0, (innerHeight - 245) / 2)}px ${Math.max(0, (innerWidth - 160) / 2)}px)`,
       duration: 0.3,

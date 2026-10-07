@@ -14,8 +14,8 @@ interface Stats {
 
 const CACHE_KEY = 'gh-stats-v3';
 const CACHE_TTL = 1000 * 60 * 60 * 6;
-// Monochrome: contribution levels as ink density.
-const LEVELS = ['rgba(18,18,18,0.07)', 'rgba(18,18,18,0.28)', 'rgba(18,18,18,0.5)', 'rgba(18,18,18,0.75)', '#121212'];
+// Two-ink palette: contribution levels as navy ink density.
+const LEVELS = ['rgba(1,7,54,0.07)', 'rgba(34,57,111,0.35)', 'rgba(34,57,111,0.65)', '#22396f', '#010736'];
 
 /** Live GitHub numbers + contribution graph; the markup carries static fallbacks. */
 export async function githubStats(root: HTMLElement) {

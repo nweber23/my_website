@@ -41,7 +41,7 @@ export class PosterBox {
     this.scene.environmentIntensity = 0.55;
     const key = new THREE.DirectionalLight(0xffffff, 1.6);
     key.position.set(-3, 5, 6);
-    this.scene.add(key, new THREE.HemisphereLight(0xffffff, 0xb9c3cc, 1.1));
+    this.scene.add(key, new THREE.HemisphereLight(0xfff8e6, 0xb8c2dc, 1.1));
 
     // Poster faces: front, right, back, left.
     const faces = posters.map((c) => {
@@ -55,7 +55,8 @@ export class PosterBox {
       this.maps.push(tex);
       return new THREE.MeshStandardMaterial({ map: tex, roughness: 0.92, metalness: 0, bumpMap: tex, bumpScale: 0.6 });
     });
-    const dark = new THREE.MeshStandardMaterial({ color: 0x1d1d1f, roughness: 0.35, metalness: 0.8 });
+    // Rounded top edge in the palette's dark navy metal.
+    const dark = new THREE.MeshStandardMaterial({ color: 0x0d1c42, roughness: 0.35, metalness: 0.75 });
     // BoxGeometry material order: +x, -x, +y, -y, +z, -z.
     const body = new THREE.Mesh(new THREE.BoxGeometry(W, H, D), [faces[1], faces[3], dark, dark, faces[0], faces[2]]);
     const top = new THREE.Mesh(new RoundedBoxGeometry(W + 0.16, 0.18, D + 0.16, 5, 0.08), dark);

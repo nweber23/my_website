@@ -17,7 +17,7 @@ function rng(seed: number) {
  * Crinkled paper: fine fibre noise, soft blotches and creases. A crease is a
  * thin line with a light side and a dark side, like a fold catching light.
  */
-export function drawPaper(ctx: CanvasRenderingContext2D, w: number, h: number, seed = 7, base = '#e9e9e7') {
+export function drawPaper(ctx: CanvasRenderingContext2D, w: number, h: number, seed = 7, base = '#f4e6bf') {
   const rand = rng(seed);
   ctx.fillStyle = base;
   ctx.fillRect(0, 0, w, h);
@@ -29,8 +29,8 @@ export function drawPaper(ctx: CanvasRenderingContext2D, w: number, h: number, s
     const r = (0.15 + rand() * 0.35) * Math.max(w, h);
     const g = ctx.createRadialGradient(x, y, 0, x, y, r);
     const light = rand() > 0.5;
-    g.addColorStop(0, light ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.06)');
-    g.addColorStop(1, 'rgba(0,0,0,0)');
+    g.addColorStop(0, light ? 'rgba(255,250,236,0.3)' : 'rgba(1,7,54,0.05)');
+    g.addColorStop(1, 'rgba(1,7,54,0)');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, w, h);
   }
@@ -47,8 +47,8 @@ export function drawPaper(ctx: CanvasRenderingContext2D, w: number, h: number, s
     const ny = Math.cos(a);
     const side = rand() > 0.5 ? 1 : -1;
     const g = ctx.createLinearGradient(x, y, x + nx * reach * side, y + ny * reach * side);
-    g.addColorStop(0, `rgba(0,0,0,${alpha})`);
-    g.addColorStop(1, 'rgba(0,0,0,0)');
+    g.addColorStop(0, `rgba(1,7,54,${alpha * 0.9})`);
+    g.addColorStop(1, 'rgba(1,7,54,0)');
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(a);
@@ -56,7 +56,7 @@ export function drawPaper(ctx: CanvasRenderingContext2D, w: number, h: number, s
       ctx.fillStyle = g;
       ctx.fillRect(-len / 2, side > 0 ? 0 : -reach, len, reach);
     }
-    ctx.strokeStyle = `rgba(255,255,255,${alpha * 3.2})`;
+    ctx.strokeStyle = `rgba(255,250,236,${alpha * 3.2})`;
     ctx.lineWidth = Math.max(1, S / 1400);
     ctx.beginPath();
     ctx.moveTo(-len / 2, -side);
@@ -90,7 +90,7 @@ export function paperCanvas(w: number, h: number, seed = 7) {
 
 function globe(ctx: CanvasRenderingContext2D, x: number, y: number, r: number) {
   ctx.save();
-  ctx.strokeStyle = '#121212';
+  ctx.strokeStyle = '#010736';
   ctx.lineWidth = Math.max(1.5, r / 40);
   ctx.beginPath();
   ctx.arc(x, y, r, 0, Math.PI * 2);
@@ -130,9 +130,9 @@ export function posterCanvas(spec: PosterSpec, w = 1024, h = 1408) {
   const rand = rng(spec.seed * 31);
 
   // Stacked words, each scaled to the poster width.
-  const ink = spec.invert ? '#e9e9e7' : '#121212';
+  const ink = spec.invert ? '#fcf1d0' : '#010736';
   if (spec.invert) {
-    ctx.fillStyle = 'rgba(18,18,18,0.92)';
+    ctx.fillStyle = 'rgba(13,28,66,0.94)';
     ctx.fillRect(0, 0, w, h);
   }
   ctx.fillStyle = ink;

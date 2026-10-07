@@ -23,7 +23,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--margin);
-  background: linear-gradient(to bottom, rgba(236, 236, 236, 0.96), rgba(236, 236, 236, 0));
+  background: linear-gradient(to bottom, rgba(252, 241, 208, 0.96), rgba(252, 241, 208, 0));
 }
 
 .nav__list {
