@@ -17,7 +17,7 @@ function rng(seed: number) {
  * Crinkled paper: fine fibre noise, soft blotches and creases. A crease is a
  * thin line with a light side and a dark side, like a fold catching light.
  */
-export function drawPaper(ctx: CanvasRenderingContext2D, w: number, h: number, seed = 7, base = '#f4e6bf') {
+export function drawPaper(ctx: CanvasRenderingContext2D, w: number, h: number, seed = 7, base = '#f6e9c6') {
   const rand = rng(seed);
   ctx.fillStyle = base;
   ctx.fillRect(0, 0, w, h);
@@ -29,7 +29,7 @@ export function drawPaper(ctx: CanvasRenderingContext2D, w: number, h: number, s
     const r = (0.15 + rand() * 0.35) * Math.max(w, h);
     const g = ctx.createRadialGradient(x, y, 0, x, y, r);
     const light = rand() > 0.5;
-    g.addColorStop(0, light ? 'rgba(255,250,236,0.3)' : 'rgba(1,7,54,0.05)');
+    g.addColorStop(0, light ? 'rgba(255,250,236,0.35)' : 'rgba(1,7,54,0.018)');
     g.addColorStop(1, 'rgba(1,7,54,0)');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, w, h);
@@ -64,18 +64,26 @@ export function drawPaper(ctx: CanvasRenderingContext2D, w: number, h: number, s
     ctx.stroke();
     ctx.restore();
   };
-  for (let i = 0; i < 26; i++) fold(S * (0.04 + rand() * 0.14), 0.035 + rand() * 0.035);
+  // Navy shading stacks up quickly on cream, so keep each fold faint.
+  for (let i = 0; i < 26; i++) fold(S * (0.04 + rand() * 0.14), 0.012 + rand() * 0.014);
   // Small wrinkles: short ridges only (shaded short folds read as stripes).
   for (let i = 0; i < 110; i++) fold(0, 0.025 + rand() * 0.04, S * (0.03 + rand() * 0.12), false);
 
-  // Fibre noise.
+  // Fibre noise, then a duotone pass: every pixel is re-inked by its
+  // brightness between navy (#010736) and cream (#FCF1D0), so creases read
+  // as darker cream instead of grey, like a two-colour print.
   const img = ctx.getImageData(0, 0, w, h);
   const d = img.data;
+  const ref = 0.299 * 246 + 0.587 * 233 + 0.114 * 198;
   for (let i = 0; i < d.length; i += 4) {
-    const n = (rand() - 0.5) * 14;
-    d[i] += n;
-    d[i + 1] += n;
-    d[i + 2] += n;
+    const n = (rand() - 0.5) * 12;
+    const l = (0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2] + n) / ref;
+    // Gentle curve: a deep crease only takes on ~15% navy.
+    const t = Math.min(1, Math.max(0, 1 - (1 - l) * 0.4));
+    const hi = Math.max(0, l - 1) * 3;
+    d[i] = 1 + (252 - 1) * t + 3 * hi;
+    d[i + 1] = 7 + (241 - 7) * t + 9 * hi;
+    d[i + 2] = 54 + (208 - 54) * t + 28 * hi;
   }
   ctx.putImageData(img, 0, 0);
 }

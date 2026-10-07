@@ -33,7 +33,7 @@ export class PosterBox {
   constructor(private canvas: HTMLCanvasElement, private stage: HTMLElement, posters: HTMLCanvasElement[]) {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
     this.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.renderer.toneMapping = THREE.NeutralToneMapping;
     this.renderer.toneMappingExposure = 1.05;
 
     const pmrem = new THREE.PMREMGenerator(this.renderer);
