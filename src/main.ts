@@ -299,6 +299,13 @@ function setupMotion({ box, letters, dots, lenis }: Stage) {
     });
   });
   const oval = $('[data-oval]');
+  // Text runs around the photo's outline; the photo itself stays still.
+  const ovalText = $<SVGTextPathElement>('[data-oval-text]');
+  const ovalPath = $<SVGPathElement>('#ovalPath');
+  const loop = ovalPath.getTotalLength() / 2;
+  ovalText.setAttribute('textLength', String(loop));
+  ovalText.setAttribute('lengthAdjust', 'spacing');
+  if (!reduced) gsap.fromTo(ovalText, { attr: { startOffset: 0 } }, { attr: { startOffset: loop }, duration: 36, ease: 'none', repeat: -1 });
   if (trackTween) {
     gsap.fromTo(oval, { xPercent: 45, scale: 0.9 }, {
       xPercent: 0,
