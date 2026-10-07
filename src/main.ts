@@ -138,7 +138,7 @@ function intro(loaderEl: HTMLElement, box: PosterBox | null) {
     gsap.set('[data-gl-letters]', { opacity: 1 });
     return Promise.resolve();
   }
-  tl.to(kids, { yPercent: 40, opacity: 0, duration: 0.5, stagger: 0.06, ease: 'power3.in' })
+  tl.to(kids, { yPercent: 40, opacity: 0, duration: 0.5, stagger: 0.06, ease: 'power3.out' })
     .to(loaderEl, { clipPath: 'inset(0% 0% 100% 0%)', duration: 0.9, ease: 'expo.inOut' }, '-=0.1')
     .set(loaderEl, { display: 'none' })
     .to(box ? box.element : {}, { opacity: 1, duration: 1.1, ease: EASE }, '-=0.45')

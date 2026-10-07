@@ -465,11 +465,17 @@ main,
   color: var(--cream);
   backface-visibility: hidden;
   cursor: pointer;
-  transition: scale 0.4s var(--ease);
+  transition: scale 0.25s var(--ease);
 }
 
-.face:hover {
-  scale: 1.02;
+@media (hover: hover) and (pointer: fine) {
+  .face:hover {
+    scale: 1.02;
+  }
+}
+
+.face:active {
+  scale: 0.985;
 }
 
 .face img,
@@ -587,7 +593,7 @@ main,
   padding: 20px 8px;
   cursor: pointer;
   list-style: none;
-  transition: background-size 0.45s var(--ease), color 0.3s var(--ease);
+  transition: background-size 0.25s var(--ease), color 0.2s var(--ease);
 }
 
 .row__head::-webkit-details-marker {
@@ -600,11 +606,17 @@ main,
 }
 
 /* Hover: the ink sweeps in from the left. */
-.row__head:hover,
-.row[open] .row__head,
-.notes__list a:hover {
+.row[open] .row__head {
   background-size: 100% 100%;
   color: var(--bg);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .row__head:hover,
+  .notes__list a:hover {
+    background-size: 100% 100%;
+    color: var(--bg);
+  }
 }
 
 .row__title {
@@ -787,7 +799,7 @@ main,
   padding: 22px 8px;
   border-bottom: var(--hairline);
   text-decoration: none;
-  transition: background-size 0.45s var(--ease), color 0.3s var(--ease);
+  transition: background-size 0.25s var(--ease), color 0.2s var(--ease);
 }
 
 .notes__title {

@@ -47,9 +47,11 @@ body {
   transition: background 0.3s var(--ease), color 0.3s var(--ease);
 }
 
-.nav__link:hover {
-  background: var(--pill-active-bg);
-  color: var(--pill-active-text);
+@media (hover: hover) and (pointer: fine) {
+  .nav__link:hover {
+    background: var(--pill-active-bg);
+    color: var(--pill-active-text);
+  }
 }
 
 .nav__right {
@@ -85,8 +87,10 @@ body {
   text-decoration: none;
 }
 
-.breadcrumb__link:hover {
-  text-decoration: underline;
+@media (hover: hover) and (pointer: fine) {
+  .breadcrumb__link:hover {
+    text-decoration: underline;
+  }
 }
 
 .breadcrumb__current {
@@ -299,9 +303,11 @@ h3.imprint__heading {
   transition: background 0.25s var(--ease), color 0.25s var(--ease);
 }
 
-.writing-index__item:hover {
-  background: var(--ink);
-  color: var(--bg);
+@media (hover: hover) and (pointer: fine) {
+  .writing-index__item:hover {
+    background: var(--ink);
+    color: var(--bg);
+  }
 }
 
 .writing-index__link {
