@@ -1234,6 +1234,52 @@ main,
   text-transform: uppercase;
 }
 
+/* --- Motion polish: scroll progress, smooth project rows -------------------------------------- */
+
+:root {
+  interpolate-size: allow-keywords;
+}
+
+.progress {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 70;
+  height: 2px;
+  background: var(--ink);
+  transform-origin: left;
+  transform: scaleX(0);
+  pointer-events: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  .progress {
+    animation: progress linear both;
+    animation-timeline: scroll(root);
+  }
+  @keyframes progress {
+    to { transform: scaleX(1); }
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .row::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition: block-size 0.45s var(--ease), content-visibility 0.45s allow-discrete;
+  }
+  .row[open]::details-content {
+    block-size: auto;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .row__title {
+      transition: transform 0.3s var(--ease);
+    }
+    .row__head:hover .row__title {
+      transform: translateX(10px);
+    }
+  }
+}
+
 /* --- Reveal ------------------------------------------------------------------------------------- */
 
 .js [data-reveal] {
