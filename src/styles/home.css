@@ -4,7 +4,7 @@ body {
   background: var(--bg);
 }
 
-/* Fixed WebGL layer: the poster box and the pearl letters. */
+/* Fixed WebGL layer: the pearl letters. */
 .gl {
   position: fixed;
   inset: 0;
@@ -44,29 +44,92 @@ main,
   text-align: right;
 }
 
-/* --- 3. Hero ----------------------------------------------------------------- */
+/* --- 3. Hero: the loader's name, held on the navy sheet ------------------------ */
 
 .hero {
   position: relative;
-  /* Above the box canvas; transparent, so the box shows through. */
   z-index: 6;
   height: 100vh;
   height: 100svh;
+  overflow: hidden;
+  background: var(--loader-bg);
+  color: var(--loader-fg);
 }
 
+/* Same grid as the loader, so its name hands over to this one without a jump. */
 .hero__inner {
   position: relative;
   height: 100%;
+  display: grid;
+  grid-template-rows: 1fr auto 1fr;
+  justify-items: center;
+  padding: 40px var(--margin);
+}
+
+.hero__log {
+  align-self: end;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 26px;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre;
+  text-transform: none;
+}
+
+.hero__center {
+  grid-row: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: calc(var(--header-h) + 26px) var(--margin) 0;
+  gap: 22px;
+  width: 100%;
+}
+
+.hero__title {
+  margin: 0;
+  font-family: var(--condensed);
+  font-size: clamp(64px, 15vw, 250px);
+  line-height: 0.9;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.hero__title span {
+  display: inline-block;
+  will-change: transform;
+}
+
+.hero__cursor {
+  display: inline-block;
+  width: 0.6em;
+  height: 1em;
+  vertical-align: text-bottom;
+  background: currentColor;
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__cursor { animation: none; }
+}
+
+.hero__status {
+  margin: 8px 0 0;
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
 }
 
 .hero__intro {
-  position: relative;
-  z-index: 6;
+  grid-row: 3;
+  align-self: start;
   max-width: 760px;
+  padding-top: 34px;
   text-align: center;
 }
 
@@ -90,6 +153,13 @@ main,
   border: 1px solid currentColor;
   border-radius: 999px;
   padding: 7px 16px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hero__cta .btn:hover {
+    background: var(--cream);
+    color: var(--navy-900);
+  }
 }
 
 .hero__avail {
@@ -116,84 +186,18 @@ main,
   .hero__avail i { animation: none; }
 }
 
-.strips {
-  position: relative;
-  z-index: 6;
-  display: flex;
-  gap: 14px;
-  margin-top: 28px;
-}
-
-.strips i {
-  width: clamp(54px, 9vw, 130px);
-  height: 9px;
-  border: 1px solid rgba(255, 250, 236, 0.95);
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(255, 250, 236, 0.7), rgba(34, 57, 111, 0.12));
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-}
-
-.hero__stage {
-  flex: 1;
-  width: 100%;
-}
-
-.infocard {
-  position: absolute;
-  z-index: 6;
-  left: var(--margin);
-  bottom: 34px;
-  width: 315px;
-  border: var(--hairline);
-  background: var(--bg);
-}
-
-.infocard__top {
-  display: grid;
-  grid-template-columns: 30px 1fr;
-  border-bottom: var(--hairline);
-}
-
-.infocard__v {
-  display: grid;
-  place-items: center;
-  border-right: var(--hairline);
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  font-size: 11px;
-}
-
-.infocard__t {
-  margin: 0;
-  padding: 9px 12px;
-  font-size: 13px;
-  line-height: 1.25;
-  text-transform: uppercase;
-}
-
-.infocard__bottom {
-  display: grid;
-  grid-template-columns: 1fr 44px;
-}
-
-.infocard__bottom span {
-  padding: 5px 12px;
-}
-
-.infocard__bottom span + span {
-  border-left: var(--hairline);
-  text-align: center;
-  padding: 5px 0;
-}
-
 .hero__hint {
   position: absolute;
-  z-index: 6;
-  bottom: 34px;
+  bottom: 24px;
   left: 50%;
   margin: 0;
   transform: translateX(-50%);
+}
+
+@media (max-height: 620px) {
+  .hero__log {
+    display: none;
+  }
 }
 
 /* --- 4. Poster wall ------------------------------------------------------------ */
@@ -1337,11 +1341,6 @@ main,
   }
   .hero__intro p {
     font-size: 17px;
-  }
-  .infocard {
-    width: auto;
-    right: var(--margin);
-    bottom: 18px;
   }
   .hero__hint {
     display: none;

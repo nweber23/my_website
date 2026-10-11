@@ -249,16 +249,14 @@
     <!-- 1. Loader ------------------------------------------------------------ -->
     <div class="loader" data-loader aria-hidden="true">
         <div class="loader__center">
+            <p class="loader__name" data-loader-name>Niklas Weber</p>
             <p class="loader__label">BOOTING <span data-loader-pct>0</span>%</p>
-            <div class="loader__bar"><div class="loader__fill" data-loader-fill></div></div>
         </div>
-        <p class="loader__text">I build software close to the metal — shells, raytracers, renderers and real-time systems, written from first principles at 42 Heilbronn and Hochschule Heilbronn.</p>
     </div>
 
     <div class="progress" aria-hidden="true"></div>
     <div class="grain" aria-hidden="true"></div>
-    <!-- Two WebGL layers: the poster box sits behind the sections, the pearl letters above them. -->
-    <canvas class="gl" data-gl-box aria-hidden="true"></canvas>
+    <!-- WebGL layer: the pearl letters sit above the sections. -->
     <canvas class="gl gl--top" data-gl-letters aria-hidden="true"></canvas>
     <svg class="sr-only" aria-hidden="true" focusable="false">
         <!-- Analog RGB split for the manifesto video. -->
@@ -295,8 +293,20 @@
         <!-- 3. Hero: scroll-driven 3D poster box ----------------------------- -->
         <section class="hero" data-hero aria-labelledby="hero-title">
             <div class="hero__inner">
+                <h1 id="hero-title" class="sr-only">Niklas Weber — Systems Developer</h1>
+                <div class="hero__log mono-s" data-hero-log aria-hidden="true">
+                    <span>$ make</span>
+                    <span>cc  minishell ........ ok</span>
+                    <span>cc  miniRT ........... ok</span>
+                    <span>go  renderer ......... ok</span>
+                    <span>go  casino ........... ok</span>
+                    <span>$ ./niklas <i class="hero__cursor"></i></span>
+                </div>
+                <div class="hero__center" aria-hidden="true">
+                    <p class="hero__title">Niklas Weber</p>
+                    <p class="hero__status" data-hero-status>BOOTING <span>100</span>%</p>
+                </div>
                 <div class="hero__intro" data-hero-intro>
-                    <h1 id="hero-title" class="sr-only">Niklas Weber — Systems Developer</h1>
                     <p>I'm Niklas, a systems developer at 42 Heilbronn and a Software Engineering student at Hochschule Heilbronn. I write shells, raytracers, renderers and real-time services from first principles — in C, Go and whatever the problem needs.</p>
                     <p class="hero__cta">
                         <a class="btn" href="#work">See work</a>
@@ -304,18 +314,6 @@
                         <a class="hero__avail mono-s" href="mailto:contact@nweber.me"><i aria-hidden="true"></i>Available for collaboration</a>
                     </p>
                 </div>
-                <div class="strips" data-strips aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-                <div class="hero__stage" data-hero-stage aria-hidden="true"></div>
-                <aside class="infocard" data-infocard aria-label="Profile">
-                    <div class="infocard__top">
-                        <span class="infocard__v mono-s">(c)&nbsp;2026</span>
-                        <p class="infocard__t">Systems · Performance<br>Built from scratch<br>Heilbronn, Germany</p>
-                    </div>
-                    <div class="infocard__bottom">
-                        <span class="mono-s">Niklas_Weber</span>
-                        <span class="mono-s">05</span>
-                    </div>
-                </aside>
                 <p class="hero__hint mono-s" data-hero-hint>(SCROLL)</p>
             </div>
         </section>
