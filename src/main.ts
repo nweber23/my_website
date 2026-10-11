@@ -7,8 +7,7 @@ import './styles/home.css';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
-import { POSTERS, paperCanvas, posterCanvas } from './poster/textures';
-import { PosterBox } from './poster/box';
+import { paperCanvas } from './poster/textures';
 import { Letters, type LetterCue } from './poster/letters';
 import { DotMatrix } from './poster/dots';
 import { Halftone } from './poster/halftone';
@@ -49,7 +48,7 @@ class Loader {
   private start = performance.now();
   private last = performance.now();
   private pct = $('[data-loader-pct]');
-  private fill = $('[data-loader-fill]');
+  private name = $('[data-loader-name]');
   constructor(private total: number) {
     gsap.ticker.add(this.tick);
   }
@@ -66,7 +65,7 @@ class Loader {
     this.shown += (Math.min(this.target, cap) - this.shown) * (1 - Math.exp(-dt * 9));
     if (this.target >= 100 && cap >= 100 && this.shown > 99.4) this.shown = 100;
     this.pct.textContent = String(Math.floor(this.shown));
-    this.fill.style.width = `${(Math.floor(this.shown / (100 / 24)) * 100) / 24}%`;
+    this.name.style.setProperty('--p', this.shown.toFixed(1));
   };
   async finished() {
     while (this.shown < 100) await new Promise((r) => setTimeout(r, 30));
@@ -80,8 +79,8 @@ class Loader {
 
 async function boot() {
   const loaderEl = $('[data-loader]');
-  // Steps: fonts, one per poster, paper, WebGL, dot matrix.
-  const loader = new Loader(POSTERS.length + 4);
+  // Steps: fonts, paper, WebGL, dot matrix.
+  const loader = new Loader(4);
 
   // Fonts the canvases need.
   await Promise.all([
@@ -91,14 +90,6 @@ async function boot() {
   ]).catch(() => {});
   loader.step();
 
-  // Posters for the 3D box, one per frame so the counter keeps moving.
-  const posters: HTMLCanvasElement[] = [];
-  for (const spec of POSTERS) {
-    await nextFrame();
-    posters.push(posterCanvas(spec));
-    loader.step();
-  }
-
   // Full-bleed crinkled paper for the poster wall and the values section.
   await nextFrame();
   const paper = paperCanvas(1600, 1000, 19).toDataURL('image/jpeg', 0.86);
@@ -107,10 +98,8 @@ async function boot() {
   $('[data-values]').style.backgroundSize = 'cover';
   loader.step();
 
-  let box: PosterBox | null = null;
   let letters: Letters | null = null;
   try {
-    box = new PosterBox($<HTMLCanvasElement>('[data-gl-box]'), $('[data-hero-stage]'), posters);
     letters = new Letters($<HTMLCanvasElement>('[data-gl-letters]'), reduced);
   } catch (err) {
     console.warn('WebGL unavailable, continuing without 3D', err);
@@ -128,36 +117,40 @@ async function boot() {
     gsap.ticker.lagSmoothing(0);
   }
 
-  setupMotion({ box, letters, dots, lenis });
+  setupMotion({ letters, dots, lenis });
 
   await loader.finished();
-  await intro(loaderEl, box);
+  await intro(loaderEl);
   lenis?.start();
   ScrollTrigger.refresh();
 }
 
-/** Loader text drops out, then the navy sheet is pulled up off the page. */
-function intro(loaderEl: HTMLElement, box: PosterBox | null) {
-  const tl = gsap.timeline();
-  const kids = $$('.loader__center, .loader__text', loaderEl);
-  const strips = $$('[data-strips] i');
-  gsap.set([header, '[data-hero-intro]', '[data-infocard]', '[data-hero-hint]'], { opacity: 0, y: 12 });
-  gsap.set(strips, { opacity: 0, y: 18, filter: 'blur(12px)' });
+/** The loader fades into the hero (same name, same spot); then the build log types out. */
+function intro(loaderEl: HTMLElement) {
+  const log = $$('[data-hero-log] span');
+  const status = $('[data-hero-status]');
+  const rest = [header, '[data-hero-intro]', '[data-hero-hint]'];
+  gsap.set(log, { clipPath: 'inset(0 100% 0 0)' });
+  gsap.set(rest, { opacity: 0, y: 12 });
   if (reduced) {
     loaderEl.remove();
-    gsap.set([header, '[data-hero-intro]', '[data-infocard]', '[data-hero-hint]', ...strips], { opacity: 1, y: 0, filter: 'none' });
-    if (box) gsap.set(box.element, { opacity: 1 });
+    gsap.set(log, { clipPath: 'none' });
+    gsap.set(rest, { opacity: 1, y: 0 });
+    status.textContent = 'READY';
     gsap.set('[data-gl-letters]', { opacity: 1 });
     return Promise.resolve();
   }
-  tl.to(kids, { yPercent: 40, opacity: 0, duration: 0.5, stagger: 0.06, ease: 'power3.out' })
-    .to(loaderEl, { clipPath: 'inset(0% 0% 100% 0%)', duration: 0.9, ease: 'expo.inOut' }, '-=0.1')
-    .set(loaderEl, { display: 'none' })
-    .to(box ? box.element : {}, { opacity: 1, duration: 1.1, ease: EASE }, '-=0.45')
-    .to(strips, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.1, stagger: 0.1, ease: EASE }, '<')
-    .to('[data-gl-letters]', { opacity: 1, duration: 0.01 }, '<')
-    .to([header, '[data-hero-intro]', '[data-infocard]', '[data-hero-hint]'], { opacity: 1, y: 0, duration: 1, stagger: 0.08, ease: EASE }, '-=0.6');
-  return tl.then();
+  return new Promise<void>((resolve) => {
+    gsap
+      .timeline()
+      .to(loaderEl, { opacity: 0, duration: 0.7, ease: 'power1.inOut' })
+      .set(loaderEl, { display: 'none' })
+      .call(resolve) // scrolling unlocks while the log is still typing
+      .to(log, { clipPath: 'inset(0 0% 0 0)', duration: 0.4, ease: 'steps(20)', stagger: 0.22 })
+      .call(() => { status.textContent = 'READY'; })
+      .to('[data-gl-letters]', { opacity: 1, duration: 0.01 }, '<')
+      .to(rest, { opacity: 1, y: 0, duration: 1, stagger: 0.1, ease: EASE }, '-=0.5');
+  });
 }
 
 // =========================================================================
@@ -165,13 +158,12 @@ function intro(loaderEl: HTMLElement, box: PosterBox | null) {
 // =========================================================================
 
 interface Stage {
-  box: PosterBox | null;
   letters: Letters | null;
   dots: DotMatrix;
   lenis: Lenis | null;
 }
 
-function setupMotion({ box, letters, dots, lenis }: Stage) {
+function setupMotion({ letters, dots, lenis }: Stage) {
   // --- 2. Global: header nudge, nav pill, anchor links --------------------
   lenis?.on('scroll', ({ scroll }: { scroll: number }) => header.classList.toggle('is-scrolled', scroll > 8));
   if (!lenis) window.addEventListener('scroll', () => header.classList.toggle('is-scrolled', scrollY > 8), { passive: true });
@@ -188,24 +180,9 @@ function setupMotion({ box, letters, dots, lenis }: Stage) {
     })
   );
 
-  // --- 3. Hero: pinned 3D poster box ---------------------------------------
-  if (!reduced) {
-    const fade = gsap.timeline({ defaults: { ease: 'none' } });
-    fade
-      .to(['[data-hero-intro]', '[data-infocard]'], { opacity: 0.35, duration: 0.12 })
-      .to(['[data-hero-intro]', '[data-infocard]', '[data-hero-hint]', '[data-strips]'], { opacity: 0, y: 20, duration: 0.14 }, 0.16)
-      // Pad to 1 so the fades happen in the first third of the pinned scroll.
-      .to({}, { duration: 0.7 });
-    ScrollTrigger.create({
-      trigger: hero,
-      start: 'top top',
-      end: '+=200%',
-      pin: true,
-      scrub: true,
-      animation: fade,
-      onUpdate: (s) => box && (box.progress = s.progress),
-    });
-  }
+  // --- 3. Hero: living name, then the wall slides up and pushes it away --------
+  header.classList.add('is-dark'); // light header over the navy sheet
+  setupHero();
 
   // --- 4. Poster wall ---------------------------------------------------------
   const wall = $('[data-wall]');
@@ -404,19 +381,86 @@ function setupMotion({ box, letters, dots, lenis }: Stage) {
 
   // --- Render loop: draw only what is on screen ----------------------------------------
   let lettersWere = false;
-  const heroEnd = () => hero.offsetTop + innerHeight * 3.2;
   gsap.ticker.add((time) => {
-    const y = lenis ? lenis.scroll : scrollY;
-    if (box) {
-      box.visible = y < heroEnd();
-      box.render();
-    }
     if (letters) {
       const active = letters.active;
       if (active || lettersWere) letters.render(time);
       lettersWere = active;
     }
     if (dots.visible || reduced) dots.draw(performance.now());
+  });
+}
+
+// --- 3. Hero ----------------------------------------------------------------------------------
+function setupHero() {
+  if (reduced) {
+    ScrollTrigger.create({
+      trigger: hero,
+      start: 0,
+      end: 'bottom 6%',
+      onUpdate: (st) => header.classList.toggle('is-dark', st.progress < 1),
+    });
+    return;
+  }
+  const title = $('.hero__title');
+  gsap.set(title, { transformOrigin: '50% 100%' });
+  // One span per letter so each can move on its own.
+  const letters = [...title.textContent!].map((ch) => {
+    const el = document.createElement('span');
+    el.textContent = ch === ' ' ? '\u00a0' : ch;
+    return el;
+  });
+  title.replaceChildren(...letters);
+
+  // Idle wave plus a lift toward the pointer, only while the hero is on screen.
+  const pointer = { x: -9999, y: -9999 };
+  window.addEventListener('pointermove', (e) => { pointer.x = e.clientX; pointer.y = e.clientY; }, { passive: true });
+  let on = true;
+  new IntersectionObserver(([e]) => (on = e.isIntersecting)).observe(hero);
+  const cur = letters.map(() => ({ y: 0, r: 0 }));
+  gsap.ticker.add((t) => {
+    if (!on) return;
+    const hits = letters.map((el) => el.getBoundingClientRect());
+    letters.forEach((el, i) => {
+      const r = hits[i];
+      const dx = pointer.x - (r.left + r.width / 2);
+      const dy = pointer.y - (r.top + r.height / 2);
+      const k = Math.max(0, 1 - Math.hypot(dx, dy) / 280);
+      const wave = Math.sin(t * 1.6 + i * 0.55) * 0.02;
+      cur[i].y += (-k * k * 0.08 + wave - cur[i].y) * 0.12;
+      cur[i].r += (Math.sign(dx) * k * 2.5 - cur[i].r) * 0.12;
+      el.style.transform = `translateY(${(cur[i].y * 100).toFixed(2)}%) rotate(${cur[i].r.toFixed(2)}deg)`;
+    });
+  });
+
+  // Scroll: the build log and intro clear out, the poster wall rises and pushes the name up.
+  const tl = gsap.timeline({ defaults: { ease: 'none' } });
+  tl.to(['[data-hero-log]', '[data-hero-intro]', '[data-hero-hint]', '[data-hero-status]'], { opacity: 0, y: -30, duration: 0.3 }, 0);
+  ScrollTrigger.create({
+    trigger: hero,
+    start: 'top top',
+    end: '+=100%',
+    pin: true,
+    pinSpacing: false, // the poster wall slides up over the pinned hero: no empty scroll
+    scrub: true,
+    animation: tl,
+    onUpdate: (st) => {
+      header.classList.toggle('is-dark', st.progress < 0.9);
+      // The wall's top edge sits at innerHeight * (1 - progress). It pushes the name up; the name shrinks
+      // to stay whole between the header and that edge, then fades out at the very end.
+      const edge = innerHeight * (1 - st.progress);
+      const box = title.getBoundingClientRect(); // scaled about the bottom, so the bottom is unaffected by scale
+      const rest = box.bottom - Number(gsap.getProperty(title, 'y'));
+      const h = title.offsetHeight;
+      const room = edge - 24 - header.offsetHeight;
+      const scale = Math.max(0.12, Math.min(1, room / h));
+      gsap.set(title, {
+        y: Math.min(0, edge - 24 - rest),
+        scale,
+        opacity: Math.min(1, Math.max(0, (room / h - 0.04) / 0.1)),
+      });
+    },
+    onLeaveBack: () => header.classList.add('is-dark'),
   });
 }
 

@@ -414,54 +414,31 @@ button {
   flex-direction: column;
   align-items: center;
   gap: 22px;
-  width: min(670px, 100%);
+  width: 100%;
+}
+
+.loader__name {
+  --p: 0;
+  margin: 0;
+  font-family: var(--condensed);
+  font-size: clamp(64px, 15vw, 250px);
+  line-height: 0.9;
+  white-space: nowrap;
+  text-transform: uppercase;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--loader-fg);
+  /* Ink rises through the letters as the page loads. */
+  background: linear-gradient(to top, var(--loader-fg) calc(var(--p) * 1%), transparent calc(var(--p) * 1%));
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 
 .loader__label {
-  margin: 0;
+  margin: 8px 0 0;
   font-family: var(--mono);
   font-size: 14px;
   letter-spacing: 0.04em;
   font-variant-numeric: tabular-nums;
-}
-
-.loader__bar {
-  position: relative;
-  width: 100%;
-  height: 22px;
-  border: 1px solid var(--loader-fg);
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.loader__fill {
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 0%;
-  border-radius: 999px;
-  background: repeating-linear-gradient(90deg, var(--loader-fg) 0 22px, transparent 22px 26px);
-  box-shadow: 0 0 20px rgba(252, 241, 208, 0.55);
-}
-
-.loader__fill::after {
-  content: '';
-  position: absolute;
-  left: 6px;
-  right: 6px;
-  top: 50%;
-  border-top: 1px dashed var(--loader-bg);
-}
-
-.loader__text {
-  grid-row: 3;
-  align-self: end;
-  max-width: 760px;
-  margin: 0;
-  font-family: var(--grotesk);
-  font-size: 16px;
-  line-height: 1.25;
-  text-align: center;
-  text-transform: uppercase;
 }
 
 .loader.is-done {
