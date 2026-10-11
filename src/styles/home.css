@@ -598,16 +598,6 @@ main,
   pointer-events: none;
 }
 
-.face .barcode {
-  position: absolute;
-  z-index: 2;
-  top: 14px;
-  right: 14px;
-  width: 62px;
-  height: 20px;
-  color: var(--cream);
-}
-
 .face__frame {
   position: absolute;
   z-index: 2;
@@ -1087,7 +1077,7 @@ main,
 .card__dl div,
 .gh div {
   display: grid;
-  grid-template-columns: 64px minmax(0, 1fr);
+  grid-template-columns: 76px minmax(0, 1fr);
   gap: 12px;
   padding: 6px 0;
   border-bottom: 1px solid rgba(1, 7, 54, 0.18);
@@ -1204,12 +1194,6 @@ main,
   text-transform: uppercase;
 }
 
-.foot__qr {
-  justify-self: end;
-  width: 64px;
-  height: 64px;
-}
-
 /* --- Reveal ------------------------------------------------------------------------------------- */
 
 .js [data-reveal] {
@@ -1256,15 +1240,7 @@ main,
     grid-template-columns: minmax(0, 1fr);
     justify-items: center;
   }
-  .foot__qr {
-    justify-self: center;
-  }
-  .foot__icons {
-    flex-direction: row;
-  }
-}
-
-@media (max-width: 760px) {
+  @media (max-width: 760px) {
   body {
     font-size: 17px;
   }

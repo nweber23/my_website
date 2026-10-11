@@ -365,6 +365,9 @@ function setupMotion({ box, letters, dots, lenis }: Stage) {
   });
   new IntersectionObserver(([e]) => (dots.visible = e.isIntersecting)).observe($('[data-dots]'));
 
+  // Opening a project changes the page height; re-measure so the pinned manifesto scrubs from true positions.
+  $$('details.row').forEach((d) => d.addEventListener('toggle', () => ScrollTrigger.refresh()));
+
   // Nav pill follows the section in view.
   setupNav();
 
