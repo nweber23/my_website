@@ -320,15 +320,19 @@ function setupMotion({ letters, dots, lenis }: Stage) {
 
   // Reveal for the index, notes and profile blocks.
   $$('.sec-head, .row, .notes__list li, .card, .foot__logo, .foot__row').forEach((el) => el.setAttribute('data-reveal', ''));
-  ScrollTrigger.batch('[data-reveal]', {
-    start: 'top 85%',
-    onEnter: (batch) =>
-      gsap.fromTo(
-        batch,
-        { opacity: 1, y: 14, clipPath: 'inset(100% 0% 0% 0%)' },
-        { y: 0, clipPath: 'inset(0% 0% 0% 0%)', duration: 1.1, stagger: 0.1, ease: 'expo.out', overwrite: true, clearProps: 'clipPath' }
-      ),
-  });
+  // Footer items sit at the very end of the page, where 'top 85%' can be unreachable at max scroll.
+  const reveal = (targets: string, start: string) =>
+    ScrollTrigger.batch(targets, {
+      start,
+      onEnter: (batch) =>
+        gsap.fromTo(
+          batch,
+          { opacity: 1, y: 14, clipPath: 'inset(100% 0% 0% 0%)' },
+          { y: 0, clipPath: 'inset(0% 0% 0% 0%)', duration: 1.1, stagger: 0.1, ease: 'expo.out', overwrite: true, clearProps: 'clipPath' }
+        ),
+    });
+  reveal('[data-reveal]:not(.foot__logo):not(.foot__row)', 'top 85%');
+  reveal('.foot__logo, .foot__row', 'top bottom');
 
   // --- 8. Manifesto video -------------------------------------------------------------
   setupManifesto();
@@ -377,7 +381,7 @@ function setupMotion({ letters, dots, lenis }: Stage) {
 
   // GitHub numbers (static fallbacks in the markup).
   const gh = $('[data-github-stats]');
-  if (gh) githubStats(gh);
+  if (gh) githubStats(gh).finally(() => ScrollTrigger.refresh()); // graph changes page height
 
   // --- Render loop: draw only what is on screen ----------------------------------------
   let lettersWere = false;
