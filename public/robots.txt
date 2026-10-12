@@ -4,6 +4,16 @@
 User-agent: *
 Allow: /
 
+# Search engines
+User-agent: Bravebot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
 # Explicit AI crawler rules
 User-agent: GPTBot
 Allow: /
