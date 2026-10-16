@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teaching a neural network to play Tetris, one layer at a time — Niklas Weber</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%23010736'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='10.5'%20fill='none'%20stroke='%23fcf1d0'%20stroke-width='1.6'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='6'%20fill='none'%20stroke='%23fcf1d0'%20stroke-opacity='.5'%20stroke-width='1.4'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='2.2'%20fill='%23fcf1d0'/%3E%3C/svg%3E">
+
+    <meta name="description" content="Building a Tetris engine in Go, a DQN agent in PyTorch and a viewer to watch it learn: the baseline, the Go-Python bridge, what worked (+44% over a heuristic) and what did not (shaped rewards, Double DQN).">
+    <meta name="robots" content="index, follow">
+    <meta name="last-modified" content="2026-10-16">
+    <meta name="theme-color" content="#fcf1d0">
+    <link rel="canonical" href="https://nweber.me/writing/tetris-reinforcement-learning.html">
+
+    <meta property="og:title" content="Teaching a neural network to play Tetris, one layer at a time">
+    <meta property="og:description" content="Building a Tetris engine in Go, a DQN agent in PyTorch and a viewer to watch it learn: the baseline, the Go-Python bridge, what worked (+44% over a heuristic) and what did not (shaped rewards, Double DQN).">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://nweber.me/writing/tetris-reinforcement-learning.html">
+    <meta property="og:image" content="https://nweber.me/assets/late.gif">
+    <meta property="og:site_name" content="Niklas Weber Portfolio">
+    <meta property="og:locale" content="en_US">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Teaching a neural network to play Tetris, one layer at a time">
+    <meta name="twitter:description" content="Building a Tetris engine in Go, a DQN agent in PyTorch and a viewer to watch it learn: the baseline, the Go-Python bridge, what worked (+44% over a heuristic) and what did not (shaped rewards, Double DQN).">
+    <meta name="twitter:image" content="https://nweber.me/assets/late.gif">
+
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://nweber.me/" },
+        { "@type": "ListItem", "position": 2, "name": "Writing", "item": "https://nweber.me/writing.html" },
+        { "@type": "ListItem", "position": 3, "name": "Teaching a neural network to play Tetris, one layer at a time", "item": "https://nweber.me/writing/tetris-reinforcement-learning.html" }
+      ]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "@id": "https://nweber.me/writing/tetris-reinforcement-learning.html",
+      "headline": "Teaching a neural network to play Tetris, one layer at a time",
+      "description": "Why Transcendence's casino uses REST/WebSocket at the browser-facing edge but a gRPC/protobuf contract between the Go backend and the C++ game engine, and what that split actually buys.",
+      "author": {
+        "@type": "Person",
+        "@id": "https://nweber.me/#person",
+        "name": "Niklas Weber",
+        "url": "https://nweber.me",
+        "jobTitle": "Systems Developer",
+        "description": "Systems Developer at 42 Heilbronn and Software Engineering student at Hochschule Heilbronn, specializing in C, Go, and low-level programming.",
+        "sameAs": [
+          "https://github.com/nweber23",
+          "https://profile.intra.42.fr/users/nweber",
+          "https://www.linkedin.com/in/niklas-weber-488576329/"
+        ]
+      },
+      "datePublished": "2026-10-16",
+      "dateModified": "2026-10-16",
+      "mainEntityOfPage": "https://nweber.me/writing/tetris-reinforcement-learning.html",
+      "about": { "@type": "SoftwareSourceCode", "name": "Tetris ML", "codeRepository": "https://github.com/nweber23/tetri_ml", "programmingLanguage": ["Go", "Python"] },
+      "image": "https://nweber.me/assets/late.gif",
+      "keywords": "reinforcement learning, DQN, Double DQN, Tetris, PyTorch, Go, gRPC, Gymnasium, Ebitengine, afterstate, reward shaping"
+    }
+    </script>
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <div class="scroll-progress" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <nav class="nav" aria-label="Main navigation">
+        <ul class="nav__list" role="list">
+            <li><a href="../index.html" class="nav__link" data-idx="00">← Back</a></li>
+        </ul>
+
+        <div class="nav__right">
+            <span class="nav__time" aria-label="Current time in CET">—</span>
+            <button class="nav__toggle" aria-label="Open menu" aria-expanded="false">
+                <span class="nav__toggle-bar"></span>
+                <span class="nav__toggle-bar"></span>
+            </button>
+        </div>
+    </nav>
+
+    <main id="main" class="main">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol class="breadcrumb__list">
+                <li class="breadcrumb__item"><a href="/" class="breadcrumb__link">home</a></li>
+                <li class="breadcrumb__item breadcrumb__sep"><a href="../writing.html" class="breadcrumb__link">writing</a></li>
+                <li class="breadcrumb__item breadcrumb__sep"><span class="breadcrumb__current" aria-current="page">tetris and reinforcement learning</span></li>
+            </ol>
+        </nav>
+
+        <section class="section section--imprint" aria-labelledby="tetris-title" id="tetris-rl">
+            <div class="section__head">
+                <h1 id="tetris-title" class="section__title">Teaching a neural network to play Tetris, <em>one layer at a time</em></h1>
+                <span class="section__aside">2026-10-16 · Reinforcement learning</span>
+            </div>
+
+            <div class="imprint__layout imprint__layout--full">
+                <article class="imprint__block">
+                    <p class="imprint__text">I wanted to learn reinforcement learning by building every layer myself: the game, the baseline to beat, the bridge to Python, the agent, and a way to watch it. The result is <a href="https://github.com/nweber23/tetri_ml">Tetris ML</a>, a Tetris engine in Go, a DQN agent trained with PyTorch, and a viewer that shows the agent playing and learning. This post goes through it in order and spends as much time on what did not work as on what did.</p>
+                    <figure class="article__figure"><img src="../assets/late.gif" alt="The trained agent playing Tetris" loading="lazy" width="480"><figcaption>The final agent playing a baseline seed.</figcaption></figure>
+                    <h2 class="imprint__heading">Why Tetris, and why Go</h2>
+                    <p class="imprint__text">Tetris is small enough to train on a laptop and still has the parts that make RL interesting: a long horizon (a bad placement hurts ten pieces later), a reward that is rare early on (you cannot clear a line by chance), and a state space too big to enumerate.</p>
+                    <p class="imprint__text">I wrote the game in Go because I wanted a fast, deterministic engine with no rendering in it, and did the learning in Python because PyTorch lives there. The one rule I held myself to: <strong>training never depends on rendering.</strong></p>
+                    <pre class="article__code"><code>engine (Go, deterministic)
+  → server (gRPC, one game per stream)
+    → Gymnasium env (Python)
+      → DQN training (PyTorch)
+        → metrics + snapshots → viewer (Ebitengine)
+        → exported agents/*.json → viewer</code></pre>
+                    <h2 class="imprint__heading">The engine</h2>
+                    <p class="imprint__text">The engine has the board, the seven tetrominoes, a 7-bag randomizer, SRS rotation with wall kicks, gravity, locking, line clears and game over. Two decisions mattered later:</p>
+                    <ul><li><strong>Everything is seeded.</strong> One seed fixes the whole piece sequence, so any game can be replayed exactly and two agents can be compared on identical games. This paid off three times: in the baseline, in checking the Go-Python bridge, and in the viewer's replays.</li><li><strong>Rows grow upward and four hidden rows sit above the visible 20.</strong> Pieces spawn in the hidden rows; a game ends when a new piece overlaps the stack or a piece locks entirely above the field.</li></ul>
+                    <p class="imprint__text">Gravity is simple on purpose: each <code>Step</code> applies one action and then one gravity tick, and a piece that cannot fall locks at once. There is no lock delay. That keeps the environment small, at the cost of realism. (The viewer needed gravity on a timer, so I later split <code>Step</code> into <code>Apply</code> and <code>Gravity</code> without changing <code>Step</code>.)</p>
+                    <h2 class="imprint__heading">A baseline before any learning</h2>
+                    <p class="imprint__text">Before training anything I wanted a number to beat. The usual cheap trick is to stop thinking in moves and think in <strong>placements</strong>: for each piece, list every (rotation, column) it can be dropped at, look at the board that would result, and score it. The score is a weighted sum of four features: aggregate height, holes, bumpiness and lines cleared. I used a widely published set of weights (from Yiyuan Lee's Tetris AI write-up) and did not tune them.</p>
+                    <p class="imprint__text">On 100 seeded games, capped at 1000 pieces per game, that heuristic scored 42,591 on average and survived the cap in 96 of 100 games.</p>
+                    <p class="imprint__text">That last number was the first lesson. <strong>A baseline that never loses cannot rank anything on survival.</strong> Raising the cap to 10,000 pieces still left half the games capped (51 of 100). From here on I compared agents on score at a fixed cap and kept in mind that the cap hides differences.</p>
+                    <table><thead><tr><th>Cap (pieces)</th><th>Avg score</th><th>Avg lines</th><th>Avg pieces</th><th>Hit cap</th></tr></thead><tbody><tr><td>1,000</td><td>42,591</td><td>390.9</td><td>988.6</td><td>96/100</td></tr><tr><td>10,000</td><td>318,458</td><td>2,915.5</td><td>7,315.8</td><td>51/100</td></tr></tbody></table>
+                    <h2 class="imprint__heading">Bridging Go and Python</h2>
+                    <p class="imprint__text">The engine runs as a gRPC server: one bidirectional <code>Play</code> stream is one game. The client sends <code>Reset(seed)</code> and then placements, and every request gets back the state, the reward and the list of valid placements. A Python Gymnasium environment talks to it, and vectorized environments run several games in parallel. The action is a single integer, <code>rot * 12 + (x + 2)</code>, with an action mask for the valid ones. On my machine, 4 environments reached about 5,200 steps per second and 8 reached about 7,100, where a step is one piece placement.</p>
+                    <p class="imprint__text">Checking that the bridge was right was harder than building it. The obvious test, "a random agent gets the same numbers on both sides", does not work: a random agent almost never clears a line in its first 20 pieces, so the scores are near zero and tell you nothing, and Go and Python use different random number generators anyway. So I wrote a deterministic agent whose choice depends only on the piece count, ran it on both sides over 200 seeds, and compared score, lines and pieces per game.</p>
+                    <pre class="article__code"><code>placement index = (7 * pieces) mod count</code></pre>
+                    <p class="imprint__text">All 200 games matched. It does not test rewards (the Go unit tests do that), but it does prove both sides see the same game.</p>
+                    <h2 class="imprint__heading">The agent</h2>
+                    <p class="imprint__text">The network does not output a value per action. It scores the <strong>board after a placement</strong> (the afterstate) from the same four features the heuristic uses, and the agent plays the placement with the highest score. The training target is the usual DQN one: the reward plus the discounted best value among the next piece's placements, from a slowly updated target network.</p>
+                    <pre class="article__code"><code>target = r + gamma * max over next afterstates of V_target(s')</code></pre>
+                    <p class="imprint__text">The network is a small MLP (4-64-64-1). The rest is standard: a 50k replay buffer, a hard target update every 1,000 steps, Adam at 1e-3, batch 128, gamma 0.99, and epsilon decaying from 1 to 0.01 over 50,000 steps out of 100,000. Rewards are the line-clear score divided by 100. Training games use seeds from 1,000,000 up, validation (10 greedy games every 10,000 steps) uses 5001-5010 to pick the best checkpoint, and the final numbers use the baseline seeds 1-100, which the agent never trained on.</p>
+                    <p class="imprint__text">I ran two reward setups against each other. The raw one gives the line-clear score. The shaped one adds a potential-based term, which changes the learning signal without changing which policy is best:</p>
+                    <pre class="article__code"><code>shaping = gamma * phi(s') - phi(s)
+phi = -(0.5 * holes + 0.05 * aggregate_height)</code></pre>
+                    <figure class="article__figure"><img src="../assets/early.gif" alt="The untrained agent stacking pieces badly" loading="lazy" width="480"><figcaption>Step 0: the untrained network.</figcaption></figure>
+                    <figure class="article__figure"><img src="../assets/mid.gif" alt="The agent after 20,000 training steps" loading="lazy" width="480"><figcaption>Step 20,000, same seed.</figcaption></figure>
+                    <p class="imprint__text">The final network is the animation at the top.</p>
+                    <h2 class="imprint__heading">What worked</h2>
+                    <p class="imprint__text">On the baseline seeds, with a 3000-piece cap:</p>
+                    <table><thead><tr><th>Agent</th><th>Avg score</th><th>Avg lines</th><th>Avg pieces</th></tr></thead><tbody><tr><td>Random placement (1000-piece cap)</td><td>2</td><td>0.0</td><td>22.0</td></tr><tr><td>Heuristic</td><td>119,880</td><td>1,098.8</td><td>2,764.2</td></tr><tr><td>DQN, 3 training seeds (mean)</td><td>172,673</td><td>1,179.8</td><td>2,962.2</td></tr><tr><td>Double DQN, 3 training seeds (mean)</td><td>173,305</td><td>1,179.4</td><td>2,961.1</td></tr></tbody></table>
+                    <p class="imprint__text">The agent beats the heuristic it started from by about 44% on score. It plays about as many lines per game, because both are close to the cap, so the gain is in score. My guess, which I did not test, is that it clears lines in bigger groups, which the score rewards and the heuristic's weights do not know about. The heuristic's pieces are lower mainly because 17 of its 100 games ended before the cap; the learned agents rarely did.</p>
+                    <p class="imprint__text">The formulation did most of the work. Scoring afterstates and acting on placements shrinks the problem so much that the raw-reward agent was already reaching the 500-piece validation cap after 10,000 steps.</p>
+                    <h2 class="imprint__heading">What did not work, or did not matter</h2>
+                    <ul><li><strong>The shaped reward did not help, and it got worse before it got better.</strong> In its single run the validation score collapsed to about zero (roughly 20 pieces per game) between 20,000 and 60,000 steps and recovered only after epsilon reached its floor at 50,000. At the 1000-piece cap the final scores were 58,539 (raw) and 57,692 (shaped), which is within noise. I have a guess about why (the hole penalty rewarding safe-looking placements while the value estimates are still wrong) but I did not test it.</li><li><strong>Double DQN made no measurable difference.</strong> Over three seeds each, it was 0.4% ahead on score (+632), against a spread of about 2,400 points between seeds of the same variant. A likely reason, also untested: the value depends on only four features, so there is little overestimation to correct. I skipped dueling heads on purpose because the network has no per-action outputs to split.</li><li><strong>The measurement was the real problem.</strong> At a 1000-piece cap every agent looked the same, so I moved to 3000. The strongest agents still sit within a few percent of each other, and three seeds cannot rank them. I would need a different measure, such as score per piece or a much higher cap, before claiming anything finer.</li><li><strong>Things I did not try:</strong> PPO, a CNN on the raw board, and a human-versus-agent mode.</li></ul>
+                    <table><thead><tr><th>Agent</th><th>Training seed</th><th>Avg score</th><th>Avg lines</th><th>Avg pieces</th></tr></thead><tbody><tr><td>DQN</td><td>0</td><td>173,983</td><td>1,173.3</td><td>2,948.3</td></tr><tr><td>DQN</td><td>1</td><td>172,449</td><td>1,195.8</td><td>3,000.0</td></tr><tr><td>DQN</td><td>2</td><td>171,587</td><td>1,170.3</td><td>2,938.4</td></tr><tr><td>Double DQN</td><td>0</td><td>173,757</td><td>1,184.5</td><td>2,972.7</td></tr><tr><td>Double DQN</td><td>1</td><td>172,417</td><td>1,179.8</td><td>2,962.1</td></tr><tr><td>Double DQN</td><td>2</td><td>173,742</td><td>1,173.8</td><td>2,948.6</td></tr></tbody></table>
+                    <h2 class="imprint__heading">Watching it learn</h2>
+                    <p class="imprint__text">A plain learning curve says little, so I built a viewer with <a href="https://ebitengine.org">Ebitengine</a> and a training mode. The training process writes a metrics log and a snapshot of the network every 5,000 steps (including the untrained one at step 0), and the viewer replays the same seed with each snapshot, next to charts for score, validation, loss and epsilon. Because it just reads files, the same view works on a run that is still going. There is also a heatmap of the agent's value for every candidate placement of the current piece, which makes it easy to see when the agent is sure and when it is choosing between near-equal moves.</p>
+                    <p class="imprint__text">The viewer runs the exported network itself from JSON, no Python needed. Each exported file carries test vectors computed by PyTorch, and a Go test checks that the Go network reproduces them. The GIFs in this post were recorded by the viewer.</p>
+                    <h2 class="imprint__heading">Limits worth stating</h2>
+                    <ul><li>Actions are placements, so the agent never tucks or spins. It trains fast and plays within a ceiling.</li><li>No hold piece, no lock delay.</li><li>At most three training seeds per variant, and one for the shaped reward.</li><li>Evaluation is capped at 3000 pieces, which hides differences between the strongest agents.</li><li>Tested on Windows 11 and Linux.</li></ul>
+                    <h2 class="imprint__heading">What I would do next</h2>
+                    <p class="imprint__text">Evaluate on a harder measure than score at a cap, try PPO as a genuinely different algorithm instead of another variation on DQN, and add tucks and spins to the action space to see how much the placement shortcut costs.</p>
+                    <p class="imprint__text">The code, the original plan and all the run notes are in the <a href="https://github.com/nweber23/tetri_ml">repository</a>.</p>
+                </article>
+            </div>
+        </section>
+
+        <nav class="writing-index" aria-label="More posts">
+            <div class="writing-index__item">
+                <a href="container-from-scratch.html" class="writing-index__link">Building a container runtime from scratch</a>
+                <span class="writing-index__meta">2026-09-17 · Systems programming</span>
+            </div>
+            <div class="writing-index__item">
+                <a href="build-from-scratch.html" class="writing-index__link">Why I keep building things from scratch</a>
+                <span class="writing-index__meta">2026-08-26 · General</span>
+            </div>
+            <div class="writing-index__item">
+                <a href="elo-query-performance.html" class="writing-index__link">Getting Elo leaderboard queries under 100ms</a>
+                <span class="writing-index__meta">2026-08-25 · 42 Elo Leaderboard</span>
+            </div>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <div class="footer__left">
+            <span class="footer__copy">© 2026 · Niklas Weber</span>
+            <span class="footer__note">Hand-built with three.js and plain HTML</span>
+        </div>
+        <div class="footer__right">
+            <a href="../index.html" class="footer__link">← Index</a>
+        </div>
+    </footer>
+
+    <script type="module" src="/src/pages.ts"></script>
+    <script data-goatcounter="https://mattz.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
