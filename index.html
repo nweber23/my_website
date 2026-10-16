@@ -12,7 +12,7 @@
     <meta name="description" content="Systems Developer at 42 Heilbronn and Software Engineering student at Hochschule Heilbronn, specializing in C, Go, and low-level programming. Building real-time multiplayer systems, high-performance engines, and software from first principles.">
     <meta name="author" content="Niklas Weber">
     <meta name="robots" content="index, follow">
-    <meta name="last-modified" content="2026-09-28">
+    <meta name="last-modified" content="2026-10-16">
     <meta name="theme-color" content="#fcf1d0">
     <meta name="color-scheme" content="light">
     <link rel="canonical" href="https://nweber.me/">
@@ -73,7 +73,9 @@
         "WebSockets",
         "gRPC",
         "REST API Design",
-        "C++"
+        "C++",
+        "Reinforcement Learning",
+        "PyTorch"
       ],
       "knowsLanguage": [
         { "@type": "Language", "name": "English" },
@@ -198,6 +200,27 @@
     {
       "@context": "https://schema.org",
       "@type": "SoftwareSourceCode",
+      "@id": "https://nweber.me/#project-tetris-ml",
+      "name": "Tetris ML",
+      "description": "A Tetris engine in Go, a DQN reinforcement learning agent trained with PyTorch, and an Ebitengine viewer that shows the agent playing and learning. The agent scores about 44% higher than a hand-weighted heuristic baseline.",
+      "url": "https://nweber.me/writing/tetris-reinforcement-learning.html",
+      "codeRepository": "https://github.com/nweber23/tetri_ml",
+      "programmingLanguage": [
+        { "@type": "ComputerLanguage", "name": "Go" },
+        { "@type": "ComputerLanguage", "name": "Python" }
+      ],
+      "runtimePlatform": "Linux, Windows",
+      "keywords": "reinforcement learning, DQN, Double DQN, PyTorch, Tetris, Go, gRPC, Gymnasium, Ebitengine, afterstate",
+      "image": "https://nweber.me/assets/late.gif",
+      "creator": { "@id": "https://nweber.me/#person" },
+      "datePublished": "2026-10-16"
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareSourceCode",
       "@id": "https://nweber.me/#project-minishell",
       "name": "minishell",
       "description": "POSIX-Compliant Shell in C. Implemented complete shell with lexical analysis, parsing, pipes, I/O redirection, environment variable expansion, and signal handling using Unix system calls.",
@@ -238,7 +261,7 @@
       "about": { "@id": "https://nweber.me/#person" },
       "mainEntity": { "@id": "https://nweber.me/#person" },
       "datePublished": "2026-05-23",
-      "dateModified": "2026-09-28T00:00:00Z",
+      "dateModified": "2026-10-16T00:00:00Z",
       "inLanguage": "en"
     }
     </script>
@@ -522,9 +545,30 @@ $ _</pre>
                     </div>
                 </div>
             </details>
-            <details class="row" id="project-minishell">
+            <details class="row" id="project-tetris-ml">
                 <summary class="row__head">
                     <span class="mono">[05]</span>
+                    <span class="row__title">Tetris ML</span>
+                    <span class="row__kind">Tetris engine, DQN agent and training viewer</span>
+                    <span class="mono-s row__stack">Go · Python · PyTorch · gRPC · Ebitengine</span>
+                    <span class="mono-s">MMXXVI</span>
+                    <span class="row__toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="row__body">
+                    <figure class="row__figure"><img src="/assets/late.gif" alt="Trained reinforcement learning agent playing Tetris in the Ebitengine viewer" width="760" height="540" loading="lazy" decoding="async">
+                        <figcaption class="mono-s"><span>Fig. 1.5 — Trained agent, late training</span><span>[dqn]</span></figcaption></figure>
+                    <div class="row__text">
+                        <p class="row__summary">A Tetris engine in Go, a DQN agent trained with PyTorch, and a viewer that shows the agent playing and learning. Built to learn reinforcement learning by doing every layer myself.</p>
+                        <dl class="row__metrics"><div><dt>vs. heuristic</dt><dd>+44%</dd></div><div><dt>Avg score</dt><dd>173k</dd></div><div><dt>Bridge</dt><dd>7,100 steps/s</dd></div></dl>
+                        <div class="row__prose"><p><strong>Problem:</strong> Reinforcement learning is easy to follow in a tutorial and hard to trust in practice. I wanted to learn it by building the whole pipeline: a game with rules exact enough to compare agents on identical games, a baseline worth beating, and a way to see what the agent actually learned.</p><p><strong>Solution:</strong> A deterministic, seedable Tetris engine in Go (7-bag, SRS rotation and kicks, no rendering code) exposed over a gRPC stream, one game per stream. A Python Gymnasium environment sits on top of it and trains a DQN in PyTorch. A separate Ebitengine viewer plays human games, agent replays and training runs, and runs the exported networks itself without Python.</p><p><strong>Technical Approach:</strong> Actions are placements (a rotation and a column per piece), and the network scores the board after a placement, the afterstate, from four features: aggregate height, holes, bumpiness and lines cleared. That shrinks the problem enough to train on a laptop. The Go and Python sides were verified against each other with a deterministic agent over 200 seeds, since a random agent never clears a line and so proves nothing. The viewer re-reads snapshots written every 5,000 steps, so it can follow a run live.</p><p><strong>Results &amp; Learnings:</strong> On held-out seeds with a 3,000-piece cap, the agent averages about 173,000 points against 119,880 for the hand-weighted heuristic. Two things did not help: a potential-based shaped reward collapsed mid-training before recovering, and Double DQN was within seed noise. The real limit was measurement, since a cap hides differences between strong agents. The <a href="writing/tetris-reinforcement-learning.html">full write-up</a> covers what failed as well as what worked.</p></div>
+                        <dl class="row__details"><div><dt>Stack</dt><dd>Go · Python · PyTorch · Gymnasium · gRPC · Ebitengine</dd></div><div><dt>Role</dt><dd>Full implementation</dd></div><div><dt>Write-up</dt><dd><a href="writing/tetris-reinforcement-learning.html">Teaching a neural network to play Tetris</a></dd></div><div><dt>Source</dt><dd><a href="https://github.com/nweber23/tetri_ml" target="_blank" rel="noopener noreferrer">github.com/nweber23/tetri_ml</a></dd></div></dl>
+                        <ul class="row__related" role="list"><li><a class="link" href="#project-transcendence">Transcendence Casino — gRPC between Go and a game engine</a></li><li><a class="link" href="#project-go-renderer">3D Go Renderer — Go engine work with no rendering dependency</a></li><li><a class="link" href="writing/tetris-reinforcement-learning.html">Writing: teaching a neural network to play Tetris</a></li></ul>
+                    </div>
+                </div>
+            </details>
+            <details class="row" id="project-minishell">
+                <summary class="row__head">
+                    <span class="mono">[06]</span>
                     <span class="row__title">minishell</span>
                     <span class="row__kind">POSIX-compliant shell in C</span>
                     <span class="mono-s row__stack">C</span>

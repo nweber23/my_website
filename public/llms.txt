@@ -14,6 +14,11 @@ Go + PostgreSQL ranking system for 42 school.
 Key achievement: 30ms average response time, 99.9% uptime. Composite indexes, Redis caching, Go goroutines for concurrent match processing.
 - Source: [github.com/nweber23/42_ELO_Leaderboard](https://github.com/nweber23/42_ELO_Leaderboard)
 
+### [Tetris ML](https://nweber.me/writing/tetris-reinforcement-learning.html)
+Tetris engine in Go, DQN reinforcement learning agent in PyTorch, and an Ebitengine viewer for watching training. Go engine exposed over gRPC to a Python Gymnasium environment; the network scores afterstates from four board features.
+Key achievement: about 173k average score against 119.9k for a hand-weighted heuristic (+44%, 3,000-piece cap, held-out seeds).
+- Source: [github.com/nweber23/tetri_ml](https://github.com/nweber23/tetri_ml)
+
 ### miniRT
 High-performance raytracer in C. SIMD vectorization (SSE/AVX), cache-efficient structure-of-arrays layout, tile-based multi-threaded rendering.
 Key achievement: 120+ FPS, an 80x improvement over baseline (1920x1080, complex scene).
