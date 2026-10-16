@@ -16,14 +16,14 @@
     <meta property="og:description" content="Building a Tetris engine in Go, a DQN agent in PyTorch and a viewer to watch it learn: the baseline, the Go-Python bridge, what worked (+44% over a heuristic) and what did not (shaped rewards, Double DQN).">
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://nweber.me/writing/tetris-reinforcement-learning.html">
-    <meta property="og:image" content="https://nweber.me/assets/late.gif">
+    <meta property="og:image" content="https://nweber.me/assets/tetris_ml.webp">
     <meta property="og:site_name" content="Niklas Weber Portfolio">
     <meta property="og:locale" content="en_US">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Teaching a neural network to play Tetris, one layer at a time">
     <meta name="twitter:description" content="Building a Tetris engine in Go, a DQN agent in PyTorch and a viewer to watch it learn: the baseline, the Go-Python bridge, what worked (+44% over a heuristic) and what did not (shaped rewards, Double DQN).">
-    <meta name="twitter:image" content="https://nweber.me/assets/late.gif">
+    <meta name="twitter:image" content="https://nweber.me/assets/tetris_ml.webp">
 
 
     <script type="application/ld+json">
@@ -62,7 +62,7 @@
       "dateModified": "2026-10-16",
       "mainEntityOfPage": "https://nweber.me/writing/tetris-reinforcement-learning.html",
       "about": { "@type": "SoftwareSourceCode", "name": "Tetris ML", "codeRepository": "https://github.com/nweber23/tetri_ml", "programmingLanguage": ["Go", "Python"] },
-      "image": "https://nweber.me/assets/late.gif",
+      "image": "https://nweber.me/assets/tetris_ml.webp",
       "keywords": "reinforcement learning, DQN, Double DQN, Tetris, PyTorch, Go, gRPC, Gymnasium, Ebitengine, afterstate, reward shaping"
     }
     </script>
@@ -104,7 +104,7 @@
             <div class="imprint__layout imprint__layout--full">
                 <article class="imprint__block">
                     <p class="imprint__text">I wanted to learn reinforcement learning by building every layer myself: the game, the baseline to beat, the bridge to Python, the agent, and a way to watch it. The result is <a href="../index.html#project-tetris-ml">Tetris ML</a> (<a href="https://github.com/nweber23/tetri_ml">source</a>), a Tetris engine in Go, a DQN agent trained with PyTorch, and a viewer that shows the agent playing and learning. This post goes through it in order and spends as much time on what did not work as on what did.</p>
-                    <figure class="article__figure"><img src="../assets/late.gif" alt="The trained agent playing Tetris" loading="lazy" width="480"><figcaption>The final agent playing a baseline seed.</figcaption></figure>
+                    <figure class="article__figure"><img src="../assets/late.gif" alt="The trained agent playing Tetris" loading="lazy" width="760" height="540"><figcaption>The final agent playing a baseline seed.</figcaption></figure>
                     <h2 class="imprint__heading">Why Tetris, and why Go</h2>
                     <p class="imprint__text">Tetris is small enough to train on a laptop and still has the parts that make RL interesting: a long horizon (a bad placement hurts ten pieces later), a reward that is rare early on (you cannot clear a line by chance), and a state space too big to enumerate.</p>
                     <p class="imprint__text">I wrote the game in Go because I wanted a fast, deterministic engine with no rendering in it, and did the learning in Python because PyTorch lives there. The one rule I held myself to: <strong>training never depends on rendering.</strong></p>
@@ -135,8 +135,8 @@
                     <p class="imprint__text">I ran two reward setups against each other. The raw one gives the line-clear score. The shaped one adds a potential-based term, which changes the learning signal without changing which policy is best:</p>
                     <pre class="article__code"><code>shaping = gamma * phi(s') - phi(s)
 phi = -(0.5 * holes + 0.05 * aggregate_height)</code></pre>
-                    <figure class="article__figure"><img src="../assets/early.gif" alt="The untrained agent stacking pieces badly" loading="lazy" width="480"><figcaption>Step 0: the untrained network.</figcaption></figure>
-                    <figure class="article__figure"><img src="../assets/mid.gif" alt="The agent after 20,000 training steps" loading="lazy" width="480"><figcaption>Step 20,000, same seed.</figcaption></figure>
+                    <figure class="article__figure"><img src="../assets/early.gif" alt="The untrained agent stacking pieces badly" loading="lazy" width="760" height="540"><figcaption>Step 0: the untrained network.</figcaption></figure>
+                    <figure class="article__figure"><img src="../assets/mid.gif" alt="The agent after 20,000 training steps" loading="lazy" width="760" height="540"><figcaption>Step 20,000, same seed.</figcaption></figure>
                     <p class="imprint__text">The final network is the animation at the top.</p>
                     <h2 class="imprint__heading">What worked</h2>
                     <p class="imprint__text">On the baseline seeds, with a 3000-piece cap:</p>
