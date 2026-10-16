@@ -353,3 +353,20 @@ h3.imprint__heading {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+.article__figure {
+  margin: 6px 0 26px;
+}
+
+.article__figure img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border: var(--hairline);
+}
+
+.article__figure figcaption {
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 13px;
+}
