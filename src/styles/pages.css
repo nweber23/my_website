@@ -370,3 +370,10 @@ h3.imprint__heading {
   font-family: var(--mono);
   font-size: 13px;
 }
+
+.article__figure video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border: var(--hairline);
+}
