@@ -5,8 +5,8 @@
 ## Projects
 
 ### [Tetris ML](https://nweber.me/writing/tetris-reinforcement-learning.html)
-Tetris engine in Go, DQN reinforcement learning agent in PyTorch, and an Ebitengine viewer for watching training. Go engine exposed over gRPC to a Python Gymnasium environment; the network scores afterstates from four board features.
-Key achievement: about 173k average score against 119.9k for a hand-weighted heuristic (+44%, 3,000-piece cap, held-out seeds).
+Tetris engine in Go, DQN reinforcement learning agents in PyTorch, and an Ebitengine viewer for watching training. Go engine exposed over gRPC to a Python Gymnasium environment; the placement network scores afterstates from four board features. A second agent searches every reachable lock position (hold, tucks, spins, T-spins) and learns when its network cannot see the board.
+Key achievements: about 173k average score against 119.9k for a hand-weighted heuristic (+44%, 3,000-piece cap, held-out seeds); the move agent reaches about 240k with 233 T-spins per game but is less robust and unstable between checkpoints.
 - Source: [github.com/nweber23/tetri_ml](https://github.com/nweber23/tetri_ml)
 
 ### [Transcendence Casino](https://transcendence.nweber.me)
