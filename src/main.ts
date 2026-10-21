@@ -8,7 +8,6 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { paperCanvas } from './poster/textures';
-import { Letters, type LetterCue } from './poster/letters';
 import { DotMatrix } from './poster/dots';
 import { Halftone } from './poster/halftone';
 import { githubStats } from './shared/github';
@@ -80,7 +79,7 @@ class Loader {
 async function boot() {
   const loaderEl = $('[data-loader]');
   // Steps: fonts, paper, WebGL, dot matrix.
-  const loader = new Loader(4);
+  const loader = new Loader(3);
 
   // Fonts the canvases need.
   await Promise.all([
@@ -98,14 +97,6 @@ async function boot() {
   $('[data-values]').style.backgroundSize = 'cover';
   loader.step();
 
-  let letters: Letters | null = null;
-  try {
-    letters = new Letters($<HTMLCanvasElement>('[data-gl-letters]'), reduced);
-  } catch (err) {
-    console.warn('WebGL unavailable, continuing without 3D', err);
-  }
-  loader.step();
-
   const dots = new DotMatrix($<HTMLCanvasElement>('[data-dots]'), 'NWEBER', reduced);
   loader.step();
 
@@ -117,7 +108,7 @@ async function boot() {
     gsap.ticker.lagSmoothing(0);
   }
 
-  setupMotion({ letters, dots, lenis });
+  setupMotion({ dots, lenis });
 
   await loader.finished();
   await intro(loaderEl);
@@ -137,7 +128,6 @@ function intro(loaderEl: HTMLElement) {
     gsap.set(log, { clipPath: 'none' });
     gsap.set(rest, { opacity: 1, y: 0 });
     status.textContent = 'READY';
-    gsap.set('[data-gl-letters]', { opacity: 1 });
     return Promise.resolve();
   }
   return new Promise<void>((resolve) => {
@@ -148,7 +138,6 @@ function intro(loaderEl: HTMLElement) {
       .call(resolve) // scrolling unlocks while the log is still typing
       .to(log, { clipPath: 'inset(0 0% 0 0)', duration: 0.4, ease: 'steps(20)', stagger: 0.22 })
       .call(() => { status.textContent = 'READY'; })
-      .to('[data-gl-letters]', { opacity: 1, duration: 0.01 }, '<')
       .to(rest, { opacity: 1, y: 0, duration: 1, stagger: 0.1, ease: EASE }, '-=0.5');
   });
 }
@@ -158,12 +147,11 @@ function intro(loaderEl: HTMLElement) {
 // =========================================================================
 
 interface Stage {
-  letters: Letters | null;
   dots: DotMatrix;
   lenis: Lenis | null;
 }
 
-function setupMotion({ letters, dots, lenis }: Stage) {
+function setupMotion({ dots, lenis }: Stage) {
   // --- 2. Global: header nudge, nav pill, anchor links --------------------
   lenis?.on('scroll', ({ scroll }: { scroll: number }) => header.classList.toggle('is-scrolled', scroll > 8));
   if (!lenis) window.addEventListener('scroll', () => header.classList.toggle('is-scrolled', scrollY > 8), { passive: true });
@@ -356,41 +344,12 @@ function setupMotion({ letters, dots, lenis }: Stage) {
   // Nav pill follows the section in view.
   setupNav();
 
-  // Persistent pearl letters, one per section.
-  const spacer = (el: Element) => (el.parentElement?.classList.contains('pin-spacer') ? el.parentElement : el);
-  const cues: [string, LetterCue][] = [
-    ['[data-wall]', { glyph: 'N', side: 1, x: 0.52, y: 0.12, size: 0.3 }],
-    ['[data-rows]', { glyph: 'W', side: -1, x: -0.05, y: 0.18, size: 0.24 }],
-    ['[data-values]', { glyph: 'O', side: 1, x: 0.74, y: 0.42, size: 0.2 }],
-    ['[data-projects]', { glyph: 'C', side: -1, x: -0.66, y: 0.36, size: 0.17 }],
-    ['.profile', { glyph: 'S', side: 1, x: 0.8, y: 0.5, size: 0.2 }],
-  ];
-  if (letters) {
-    for (const [sel, cue] of cues) {
-      const set = letters.add(cue);
-      ScrollTrigger.create({
-        trigger: spacer($(sel)),
-        start: 'top bottom',
-        end: 'bottom top',
-        onUpdate: (s) => set(s.progress),
-        onLeave: () => set(1),
-        onLeaveBack: () => set(0),
-      });
-    }
-  }
-
   // GitHub numbers (static fallbacks in the markup).
   const gh = $('[data-github-stats]');
   if (gh) githubStats(gh).finally(() => ScrollTrigger.refresh()); // graph changes page height
 
   // --- Render loop: draw only what is on screen ----------------------------------------
-  let lettersWere = false;
-  gsap.ticker.add((time) => {
-    if (letters) {
-      const active = letters.active;
-      if (active || lettersWere) letters.render(time);
-      lettersWere = active;
-    }
+  gsap.ticker.add(() => {
     if (dots.visible || reduced) dots.draw(performance.now());
   });
 }
