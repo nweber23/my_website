@@ -4,21 +4,6 @@ body {
   background: var(--bg);
 }
 
-/* Fixed WebGL layer: the pearl letters. */
-.gl {
-  position: fixed;
-  inset: 0;
-  z-index: 5;
-  opacity: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-}
-
-.gl--top {
-  z-index: 40;
-}
-
 main,
 .foot {
   position: relative;
