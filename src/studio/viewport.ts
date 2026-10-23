@@ -19,7 +19,7 @@ interface Handle {
 }
 
 type Drag =
-  | { mode: 'orbit'; lastX: number; lastY: number }
+  | { mode: 'orbit'; lastX: number; lastY: number; downX: number; downY: number; moved: boolean; clickId: string | null }
   | { mode: 'pan'; lastX: number; lastY: number }
   | { mode: 'pinch'; dist: number; mx: number; my: number }
   | {
@@ -353,14 +353,16 @@ export class Viewport {
       return;
     }
     const hit = intersect(this.store.scene, cam, ray);
-    if (hit) {
+    const shape = hit && this.store.scene.shapes.find((s) => s.id === hit.id);
+    if (hit && shape && shape.kind !== 'plane') {
       this.store.select(hit.id);
       const it = this.store.selected;
       if (it) this.beginBody(it, x, y, ray);
       return;
     }
-    this.store.select(null);
-    this.drag = { mode: 'orbit', lastX: x, lastY: y };
+    // Empty space and planes orbit on drag and select on click. Planes are infinite, so inside a
+    // room they cover every pixel; dragging them would make the camera impossible to move.
+    this.drag = { mode: 'orbit', lastX: x, lastY: y, downX: x, downY: y, moved: false, clickId: shape ? shape.id : null };
   }
 
   private beginBody(it: Item, x: number, y: number, ray: Vec3) {
@@ -400,7 +402,11 @@ export class Viewport {
       return;
     }
 
-    if (d.mode === 'orbit') { this.orbitBy(x - d.lastX, y - d.lastY); d.lastX = x; d.lastY = y; this.bump(); return; }
+    if (d.mode === 'orbit') {
+      if (!d.moved && Math.hypot(x - d.downX, y - d.downY) < 4) return;
+      d.moved = true;
+      this.orbitBy(x - d.lastX, y - d.lastY); d.lastX = x; d.lastY = y; this.bump(); return;
+    }
     if (d.mode === 'pan') { this.panBy(x - d.lastX, y - d.lastY); d.lastX = x; d.lastY = y; this.bump(); return; }
     if (d.mode === 'pinch') {
       if (this.pointers.size < 2) return;
@@ -501,6 +507,8 @@ export class Viewport {
     if (!this.pointers.has(e.pointerId)) return;
     this.pointers.delete(e.pointerId);
     if (this.overlay.hasPointerCapture(e.pointerId)) this.overlay.releasePointerCapture(e.pointerId);
+    const d = this.drag;
+    if (d?.mode === 'orbit' && !d.moved && e.type === 'pointerup') this.store.select(d.clickId);
     this.finishDrag();
     this.drawOverlay();
   }
