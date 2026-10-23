@@ -1,5 +1,5 @@
 import { type Vec3, add, dot, mul, norm, sub } from './math';
-import type { Cylinder, Plane, Scene, Shape, Sphere } from './scene';
+import type { Cone, Cylinder, Plane, Scene, Shape, Sphere } from './scene';
 
 const EPS = 1e-4;
 
@@ -61,6 +61,52 @@ function hitCylinder(c: Cylinder, o: Vec3, d: Vec3): { t: number; normal: Vec3 }
   return best;
 }
 
+/** Cone with its apex at center + axis*h/2 and a base disc of the given radius. */
+function hitCone(c: Cone, o: Vec3, d: Vec3): { t: number; normal: Vec3 } | null {
+  const a = norm(c.axis);
+  const h = c.height;
+  const b = mul(a, -1); // from apex towards the base
+  const apex = add(c.center, mul(a, h / 2));
+  const k2 = (c.radius / h) ** 2;
+  let best: { t: number; normal: Vec3 } | null = null;
+  const take = (t: number, normal: Vec3) => { if (t > EPS && (!best || t < best.t)) best = { t, normal }; };
+
+  const oc = sub(o, apex);
+  const dB = dot(d, b);
+  const ocB = dot(oc, b);
+  const dp = sub(d, mul(b, dB));
+  const op = sub(oc, mul(b, ocB));
+  const qa = dot(dp, dp) - k2 * dB * dB;
+  const qb = 2 * (dot(dp, op) - k2 * dB * ocB);
+  const qc = dot(op, op) - k2 * ocB * ocB;
+  const roots: number[] = [];
+  if (Math.abs(qa) < 1e-12) {
+    if (Math.abs(qb) > 1e-12) roots.push(-qc / qb);
+  } else {
+    const disc = qb * qb - 4 * qa * qc;
+    if (disc >= 0) {
+      const sq = Math.sqrt(disc);
+      roots.push((-qb - sq) / (2 * qa), (-qb + sq) / (2 * qa));
+    }
+  }
+  for (const t of roots) {
+    const w = ocB + t * dB;
+    if (t <= EPS || w < 0 || w > h) continue;
+    const v = add(oc, mul(d, t));
+    const perp = sub(v, mul(b, w));
+    take(t, norm(sub(perp, mul(b, k2 * w))));
+  }
+  if (Math.abs(dB) > 1e-7) {
+    const t = (h - ocB) / dB;
+    if (t > EPS) {
+      const v = add(oc, mul(d, t));
+      const perp = sub(v, mul(b, h));
+      if (dot(perp, perp) <= c.radius * c.radius) take(t, b);
+    }
+  }
+  return best;
+}
+
 export function intersectShape(s: Shape, o: Vec3, d: Vec3): { t: number; normal: Vec3 } | null {
   if (s.kind === 'sphere') {
     const t = hitSphere(s, o, d);
@@ -70,7 +116,7 @@ export function intersectShape(s: Shape, o: Vec3, d: Vec3): { t: number; normal:
     const t = hitPlane(s, o, d);
     return t === null ? null : { t, normal: norm(s.normal) };
   }
-  return hitCylinder(s, o, d);
+  return s.kind === 'cone' ? hitCone(s, o, d) : hitCylinder(s, o, d);
 }
 
 /** Nearest shape along a ray. */

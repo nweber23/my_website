@@ -191,6 +191,7 @@ function addItem(kind: Kind) {
   if (kind === 'sphere') item = { id: newId(), kind, center: [p[0], 1, p[2]], radius: 1, mat: defaultMat(nextColour()) };
   else if (kind === 'plane') item = { id: newId(), kind, point: p, normal: [0, 1, 0], mat: defaultMat([225, 225, 225]) };
   else if (kind === 'cylinder') item = { id: newId(), kind, center: [p[0], 1, p[2]], axis: [0, 1, 0], radius: 0.6, height: 2, mat: defaultMat(nextColour()) };
+  else if (kind === 'cone') item = { id: newId(), kind, center: [p[0], 1.1, p[2]], axis: [0, 1, 0], radius: 0.8, height: 2.2, mat: defaultMat(nextColour()) };
   else item = { id: newId(), kind, pos: [p[0], 4, p[2]], brightness: 0.6, color: [255, 255, 255] };
   store.apply((s) => insertItem(s, item));
   store.select(item.id);
@@ -267,6 +268,7 @@ $('#export').addEventListener('click', () => {
   const notes: string[] = [];
   if (s.lights.length === 0) notes.push('No light in the scene. Most miniRT parsers require exactly one.');
   if (s.lights.length > 1) notes.push(`${s.lights.length} lights. The mandatory part allows one; extra lights need the bonus parser.`);
+  if (s.shapes.some((x) => x.kind === 'cone')) notes.push('Cones are written as "co x,y,z axis diameter height colour" with x,y,z at the centre of the base. Check that your parser reads the same layout.');
   if (s.lights.some((l) => l.color.some((c) => c !== 255))) notes.push('A coloured light is written as a fourth value, which only a bonus parser reads.');
   if (s.shapes.some((x) => x.mat.reflect > 0 || x.mat.checker) || s.look.bounces > 0) notes.push('Mirrors, checkerboards and specular settings are studio-only and are not in the file.');
   listIssues($('#export-notes'), notes);

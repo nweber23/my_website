@@ -1,7 +1,7 @@
 import { type Vec3, clamp, norm } from './math';
 import {
-  type Cylinder, type Light, type Material, type Plane, type RGB, type Scene, type Sphere,
-  LIMITS, MAX_BOUNCES, MAX_COORD, canAdd, cloneItem, insertItem, itemLabel, itemPosition, removeItem, setItemPosition,
+  type Axial, type Light, type Material, type Plane, type RGB, type Scene, type Sphere,
+  LIMITS, MAX_BOUNCES, MAX_COORD, canAdd, cloneItem, insertItem, isAxial, itemLabel, itemPosition, removeItem, setItemPosition,
 } from './scene';
 import type { Store } from './store';
 
@@ -202,9 +202,9 @@ export class Inspector {
       const sp = () => live() as Sphere | undefined;
       this.scalar(box, S, 'Diameter', () => { const s = sp(); return s ? s.radius * 2 : undefined; },
         (v) => edit(() => { const s = sp(); if (s) s.radius = Math.max(0.01, v) / 2; }), { min: 0.02, max: 1000, softMax: 12, step: 0.05 });
-    } else if (it.kind === 'cylinder') {
-      const cy = () => live() as Cylinder | undefined;
-      this.scalar(box, S, 'Diameter', () => { const c = cy(); return c ? c.radius * 2 : undefined; },
+    } else if (isAxial(it)) {
+      const cy = () => live() as Axial | undefined;
+      this.scalar(box, S, it.kind === 'cone' ? 'Base diameter' : 'Diameter', () => { const c = cy(); return c ? c.radius * 2 : undefined; },
         (v) => edit(() => { const c = cy(); if (c) c.radius = Math.max(0.01, v) / 2; }), { min: 0.02, max: 1000, softMax: 8, step: 0.05 });
       this.scalar(box, S, 'Height', () => cy()?.height,
         (v) => edit(() => { const c = cy(); if (c) c.height = Math.max(0.01, v); }), { min: 0.02, max: 1000, softMax: 12, step: 0.05 });

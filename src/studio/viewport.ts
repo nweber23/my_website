@@ -1,7 +1,7 @@
 import { type Vec3, add, closestOnLine, cross, dot, len, mul, norm, rayPlane, round, sub } from './math';
 import { intersect } from './pick';
 import { Renderer } from './renderer';
-import { type Item, type Light, MAX_COORD, itemPosition, setItemPosition } from './scene';
+import { type Item, type Light, MAX_COORD, isAxial, itemPosition, setItemPosition } from './scene';
 import type { Store } from './store';
 import { View } from './view';
 
@@ -257,11 +257,13 @@ export class Viewport {
 
     if (it.kind === 'sphere') {
       push('radius', add(P, mul(v.right, it.radius)), CREAM, 7);
-    } else if (it.kind === 'cylinder') {
+    } else if (isAxial(it)) {
       const a = norm(it.axis);
       let perp = sub(v.right, mul(a, dot(v.right, a)));
       perp = len(perp) < 1e-3 ? norm(cross(a, [0, 0, 1]), [1, 0, 0]) : norm(perp);
-      push('radius', add(P, mul(perp, it.radius)), CREAM, 7);
+      // A cone's radius lives at its base, not at the middle of the axis.
+      const ringAt = it.kind === 'cone' ? sub(P, mul(a, it.height / 2)) : P;
+      push('radius', add(ringAt, mul(perp, it.radius)), CREAM, 7);
       push('height', add(P, mul(a, it.height / 2)), CREAM, 7);
       push('dir', add(P, mul(a, it.height / 2 + L * 0.6)), '#ffd166', 8);
     } else if (it.kind === 'plane') {
@@ -377,7 +379,7 @@ export class Viewport {
   private dirHandleWorld(it: Item): Vec3 {
     const P = itemPosition(it);
     const L = this.view.pixelsToWorld(P, 86);
-    if (it.kind === 'cylinder') return add(P, mul(norm(it.axis), it.height / 2 + L * 0.6));
+    if (isAxial(it)) return add(P, mul(norm(it.axis), it.height / 2 + L * 0.6));
     if (it.kind === 'plane') return add(P, mul(norm(it.normal), L * 1.25));
     return P;
   }
@@ -450,25 +452,26 @@ export class Viewport {
       const next = this.snapPos(add(hit, d.offset), P);
       this.store.mutate(() => setItemPosition(it, next));
     } else if (d.id === 'radius') {
-      const hit = rayPlane(cam, ray, P, d.planeN);
+      const ring = it.kind === 'cone' ? sub(P, mul(norm(it.axis), it.height / 2)) : P;
+      const hit = rayPlane(cam, ray, ring, d.planeN);
       if (!hit) return;
-      let v = sub(hit, P);
-      if (it.kind === 'cylinder') { const a = norm(it.axis); v = sub(v, mul(a, dot(v, a))); }
+      let v = sub(hit, ring);
+      if (isAxial(it)) { const a = norm(it.axis); v = sub(v, mul(a, dot(v, a))); }
       let r = Math.max(0.02, Math.min(500, len(v)));
       if (this.snap) r = Math.max(0.05, round(r, 0.05));
-      this.store.mutate(() => { if (it.kind === 'sphere' || it.kind === 'cylinder') it.radius = r; });
-    } else if (d.id === 'height' && it.kind === 'cylinder') {
+      this.store.mutate(() => { if (it.kind === 'sphere' || isAxial(it)) it.radius = r; });
+    } else if (d.id === 'height' && isAxial(it)) {
       const s = closestOnLine(P, norm(it.axis), cam, ray);
       if (s === null) return;
       let h = Math.max(0.05, Math.min(1000, Math.abs(s) * 2));
       if (this.snap) h = Math.max(0.05, round(h, 0.25));
-      this.store.mutate(() => { if (it.kind === 'cylinder') it.height = h; });
+      this.store.mutate(() => { if (isAxial(it)) it.height = h; });
     } else if (d.id === 'dir') {
       const dir = this.arcball(P, d.R0, cam, ray);
       if (!dir) return;
       this.store.mutate(() => {
         if (it.kind === 'plane') it.normal = dir;
-        else if (it.kind === 'cylinder') it.axis = dir;
+        else if (isAxial(it)) it.axis = dir;
       });
     }
     this.bump();

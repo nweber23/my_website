@@ -14,6 +14,7 @@ precision highp int;
 #define MAX_SP ${LIMITS.sphere}
 #define MAX_PL ${LIMITS.plane}
 #define MAX_CY ${LIMITS.cylinder}
+#define MAX_CO ${LIMITS.cone}
 #define MAX_L ${LIMITS.light}
 #define MAX_BOUNCES ${MAX_BOUNCES}
 const float EPS = 1e-4;
@@ -35,6 +36,7 @@ uniform int uBounces;
 uniform int uNSp;
 uniform int uNPl;
 uniform int uNCy;
+uniform int uNCo;
 uniform int uNL;
 uniform int uSelType;
 uniform int uSelIdx;
@@ -46,6 +48,9 @@ uniform vec4 uPl2[MAX_PL];
 uniform vec4 uCy0[MAX_CY];
 uniform vec4 uCy1[MAX_CY];
 uniform vec4 uCy2[MAX_CY];
+uniform vec4 uCo0[MAX_CO];
+uniform vec4 uCo1[MAX_CO];
+uniform vec4 uCo2[MAX_CO];
 uniform vec4 uL0[MAX_L];
 uniform vec4 uL1[MAX_L];
 
@@ -54,7 +59,7 @@ out vec4 outColor;
 struct Hit {
   float t;
   vec3 n;
-  int type; // 1 sphere, 2 plane, 3 cylinder
+  int type; // 1 sphere, 2 plane, 3 cylinder, 4 cone
   int idx;
 };
 
@@ -120,6 +125,57 @@ float iCyl(vec3 o, vec3 d, vec3 c, vec3 a, float r, float h, out vec3 nrm) {
   return best;
 }
 
+// Cone with the apex at c + a*hh, opening to a base disc at c - a*hh.
+float iCone(vec3 o, vec3 d, vec3 c, vec3 a, float r, float hh, out vec3 nrm) {
+  nrm = vec3(0.0);
+  float h = hh * 2.0;
+  vec3 b = -a;
+  vec3 oc = o - (c + a * hh);
+  float k2 = (r / h) * (r / h);
+  float dB = dot(d, b);
+  float ocB = dot(oc, b);
+  vec3 dp = d - b * dB;
+  vec3 op = oc - b * ocB;
+  float qa = dot(dp, dp) - k2 * dB * dB;
+  float qb = 2.0 * (dot(dp, op) - k2 * dB * ocB);
+  float qc = dot(op, op) - k2 * ocB * ocB;
+  float best = FAR;
+  float t0 = FAR;
+  float t1 = FAR;
+  if (abs(qa) > 1e-9) {
+    float disc = qb * qb - 4.0 * qa * qc;
+    if (disc >= 0.0) {
+      float sq = sqrt(disc);
+      float ra = (-qb - sq) / (2.0 * qa);
+      float rb = (-qb + sq) / (2.0 * qa);
+      t0 = min(ra, rb);
+      t1 = max(ra, rb);
+    }
+  } else if (abs(qb) > 1e-9) {
+    t0 = -qc / qb;
+  }
+  for (int i = 0; i < 2; i++) {
+    float t = i == 0 ? t0 : t1;
+    float w = ocB + t * dB;
+    if (t > EPS && t < FAR && w >= 0.0 && w <= h) {
+      best = t;
+      nrm = normalize((oc + d * t - b * w) - b * (k2 * w));
+      break;
+    }
+  }
+  if (abs(dB) > 1e-7) {
+    float t = (h - ocB) / dB;
+    if (t > EPS && t < best) {
+      vec3 q = oc + d * t - b * h;
+      if (dot(q, q) <= r * r) {
+        best = t;
+        nrm = b;
+      }
+    }
+  }
+  return best;
+}
+
 bool trace(vec3 o, vec3 d, float tmax, bool anyHit, out Hit h) {
   h.t = tmax;
   h.type = 0;
@@ -151,11 +207,22 @@ bool trace(vec3 o, vec3 d, float tmax, bool anyHit, out Hit h) {
       if (anyHit) return true;
     }
   }
+  vec3 con = vec3(0.0);
+  for (int i = 0; i < MAX_CO; i++) {
+    if (i >= uNCo) break;
+    vec3 n;
+    float t = iCone(o, d, uCo0[i].xyz, uCo1[i].xyz, uCo0[i].w, uCo1[i].w, n);
+    if (t < h.t) {
+      h.t = t; h.type = 4; h.idx = i; con = n;
+      if (anyHit) return true;
+    }
+  }
   if (h.type == 0) return false;
   vec3 p = o + d * h.t;
   if (h.type == 1) h.n = normalize(p - uSp0[h.idx].xyz);
   else if (h.type == 2) h.n = normalize(uPl1[h.idx].xyz);
-  else h.n = cn;
+  else if (h.type == 3) h.n = cn;
+  else h.n = con;
   return true;
 }
 
@@ -208,6 +275,15 @@ void main() {
         vec3 t2; vec3 t1 = planeBasis(h.n, t2);
         vec3 q = p - uPl0[h.idx].xyz;
         chk = checkerAt(dot(q, t1) + 1e4, dot(q, t2) + 1e4);
+      }
+    } else if (h.type == 4) {
+      base = uCo2[h.idx].xyz; mat = uCo2[h.idx].w;
+      if (mat >= 5.0) {
+        vec3 a = uCo1[h.idx].xyz;
+        vec3 t2; vec3 t1 = planeBasis(a, t2);
+        vec3 q = p - uCo0[h.idx].xyz;
+        if (abs(dot(h.n, a)) > 0.99) chk = checkerAt(dot(q, t1) * 2.0 + 1e4, dot(q, t2) * 2.0 + 1e4);
+        else chk = checkerAt(atan(dot(q, t2), dot(q, t1)) / (2.0 * PI) * 12.0 + 12.0, dot(q, a) * 2.0 + 1e4);
       }
     } else {
       base = uCy2[h.idx].xyz; mat = uCy2[h.idx].w;
@@ -331,6 +407,7 @@ export class Renderer {
     const sp = scene.shapes.filter((s) => s.kind === 'sphere');
     const pl = scene.shapes.filter((s) => s.kind === 'plane');
     const cy = scene.shapes.filter((s) => s.kind === 'cylinder');
+    const co = scene.shapes.filter((s) => s.kind === 'cone');
     const code = (m: { reflect: number; checker: boolean }) => m.reflect + (m.checker ? 10 : 0);
     const c01 = (c: number[]) => [c[0] / 255, c[1] / 255, c[2] / 255];
 
@@ -354,6 +431,13 @@ export class Renderer {
       cy1.set([...norm(s.axis), s.height / 2], i * 4);
       cy2.set([...c01(s.mat.color), code(s.mat)], i * 4);
     });
+    const co0 = new Float32Array(LIMITS.cone * 4), co1 = new Float32Array(LIMITS.cone * 4), co2 = new Float32Array(LIMITS.cone * 4);
+    co.forEach((s, i) => {
+      if (s.kind !== 'cone') return;
+      co0.set([...s.center, s.radius], i * 4);
+      co1.set([...norm(s.axis), s.height / 2], i * 4);
+      co2.set([...c01(s.mat.color), code(s.mat)], i * 4);
+    });
     const l0 = new Float32Array(LIMITS.light * 4), l1 = new Float32Array(LIMITS.light * 4);
     scene.lights.forEach((l, i) => {
       l0.set([...l.pos, l.brightness], i * 4);
@@ -366,6 +450,7 @@ export class Renderer {
       if (i >= 0) { selType = 1; selIdx = i; }
       else if ((i = pl.findIndex((s) => s.id === opts.selectedId)) >= 0) { selType = 2; selIdx = i; }
       else if ((i = cy.findIndex((s) => s.id === opts.selectedId)) >= 0) { selType = 3; selIdx = i; }
+      else if ((i = co.findIndex((s) => s.id === opts.selectedId)) >= 0) { selType = 4; selIdx = i; }
     }
 
     const amb = c01(scene.ambient.color).map((v) => v * scene.ambient.ratio);
@@ -384,12 +469,14 @@ export class Renderer {
     gl.uniform1i(L.uNSp, sp.length);
     gl.uniform1i(L.uNPl, pl.length);
     gl.uniform1i(L.uNCy, cy.length);
+    gl.uniform1i(L.uNCo, co.length);
     gl.uniform1i(L.uNL, scene.lights.length);
     gl.uniform1i(L.uSelType, selType);
     gl.uniform1i(L.uSelIdx, selIdx);
     gl.uniform4fv(L.uSp0, sp0); gl.uniform4fv(L.uSp1, sp1);
     gl.uniform4fv(L.uPl0, pl0); gl.uniform4fv(L.uPl1, pl1); gl.uniform4fv(L.uPl2, pl2);
     gl.uniform4fv(L.uCy0, cy0); gl.uniform4fv(L.uCy1, cy1); gl.uniform4fv(L.uCy2, cy2);
+    gl.uniform4fv(L.uCo0, co0); gl.uniform4fv(L.uCo1, co1); gl.uniform4fv(L.uCo2, co2);
     gl.uniform4fv(L.uL0, l0); gl.uniform4fv(L.uL1, l1);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }

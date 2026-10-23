@@ -13,7 +13,12 @@ export interface Sphere { id: string; kind: 'sphere'; center: Vec3; radius: numb
 export interface Plane { id: string; kind: 'plane'; point: Vec3; normal: Vec3; mat: Material }
 export interface Cylinder { id: string; kind: 'cylinder'; center: Vec3; axis: Vec3; radius: number; height: number; mat: Material }
 export interface Light { id: string; kind: 'light'; pos: Vec3; brightness: number; color: RGB }
-export type Shape = Sphere | Plane | Cylinder;
+/** `center` is the middle of the axis, like a cylinder. The apex sits at +axis, the base disc at -axis. */
+export interface Cone { id: string; kind: 'cone'; center: Vec3; axis: Vec3; radius: number; height: number; mat: Material }
+export type Shape = Sphere | Plane | Cylinder | Cone;
+/** Shapes defined by an axis, a radius and a height. */
+export type Axial = Cylinder | Cone;
+export const isAxial = (it: Item | undefined): it is Axial => it?.kind === 'cylinder' || it?.kind === 'cone';
 export type Item = Shape | Light;
 export type Kind = Item['kind'];
 
@@ -27,7 +32,7 @@ export interface Scene {
 }
 
 /** Limits the shader can hold in uniforms. */
-export const LIMITS = { sphere: 16, plane: 8, cylinder: 16, light: 8 } as const;
+export const LIMITS = { sphere: 24, plane: 8, cylinder: 16, cone: 8, light: 8 } as const;
 
 export const MAX_COORD = 1000;
 
@@ -60,7 +65,7 @@ export function findItem(scene: Scene, id: string | null): Item | undefined {
 
 export function itemPosition(it: Item): Vec3 {
   switch (it.kind) {
-    case 'sphere': case 'cylinder': return it.center;
+    case 'sphere': case 'cylinder': case 'cone': return it.center;
     case 'plane': return it.point;
     case 'light': return it.pos;
   }
@@ -69,7 +74,7 @@ export function itemPosition(it: Item): Vec3 {
 export function setItemPosition(it: Item, p: Vec3) {
   const q: Vec3 = [clamp(p[0], -MAX_COORD, MAX_COORD), clamp(p[1], -MAX_COORD, MAX_COORD), clamp(p[2], -MAX_COORD, MAX_COORD)];
   switch (it.kind) {
-    case 'sphere': case 'cylinder': it.center = q; break;
+    case 'sphere': case 'cylinder': case 'cone': it.center = q; break;
     case 'plane': it.point = q; break;
     case 'light': it.pos = q; break;
   }
@@ -78,7 +83,7 @@ export function setItemPosition(it: Item, p: Vec3) {
 export function itemLabel(scene: Scene, it: Item): string {
   const list = it.kind === 'light' ? scene.lights : scene.shapes.filter((s) => s.kind === it.kind);
   const n = list.findIndex((x) => x.id === it.id) + 1;
-  const name = { sphere: 'Sphere', plane: 'Plane', cylinder: 'Cylinder', light: 'Light' }[it.kind];
+  const name = { sphere: 'Sphere', plane: 'Plane', cylinder: 'Cylinder', cone: 'Cone', light: 'Light' }[it.kind];
   return `${name} ${String(n).padStart(2, '0')}`;
 }
 
@@ -133,10 +138,10 @@ export function sanitize(raw: unknown): Scene | null {
     if (out.lights.length >= LIMITS.light) break;
     out.lights.push({ id: newId(), kind: 'light', pos: vec(l?.pos, [0, 5, 0]), brightness: num(l?.brightness, 0.7, 0, 1), color: rgb(l?.color, [255, 255, 255]) });
   }
-  const counts = { sphere: 0, plane: 0, cylinder: 0 };
+  const counts = { sphere: 0, plane: 0, cylinder: 0, cone: 0 };
   for (const s of Array.isArray(r.shapes) ? r.shapes : []) {
     const kind: unknown = s?.kind;
-    if (kind !== 'sphere' && kind !== 'plane' && kind !== 'cylinder') continue;
+    if (kind !== 'sphere' && kind !== 'plane' && kind !== 'cylinder' && kind !== 'cone') continue;
     if (counts[kind] >= LIMITS[kind]) continue;
     counts[kind]++;
     if (kind === 'sphere') {
@@ -144,7 +149,7 @@ export function sanitize(raw: unknown): Scene | null {
     } else if (kind === 'plane') {
       out.shapes.push({ id: newId(), kind, point: vec(s.point, [0, 0, 0]), normal: dir(s.normal, [0, 1, 0]), mat: mat(s.mat) });
     } else {
-      out.shapes.push({ id: newId(), kind: 'cylinder', center: vec(s.center, [0, 0, 0]), axis: dir(s.axis, [0, 1, 0]), radius: num(s.radius, 0.5, 0.01, 500), height: num(s.height, 2, 0.01, 1000), mat: mat(s.mat) });
+      out.shapes.push({ id: newId(), kind, center: vec(s.center, [0, 0, 0]), axis: dir(s.axis, [0, 1, 0]), radius: num(s.radius, 0.5, 0.01, 500), height: num(s.height, 2, 0.01, 1000), mat: mat(s.mat) });
     }
   }
   return out;

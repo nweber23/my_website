@@ -87,6 +87,16 @@ export function parseRt(text: string): ParseResult {
       if (!axis) return;
       if (scene.shapes.filter((s) => s.kind === 'cylinder').length >= LIMITS.cylinder) return bad(`more than ${LIMITS.cylinder} cylinders`);
       scene.shapes.push({ id: newId(), kind: 'cylinder', center: c, axis, radius: d / 2, height: h, mat: defaultMat(color(col, n)) });
+    } else if (id === 'co') {
+      // Bonus shape. Position is the centre of the base disc, the axis points to the apex.
+      const c = triple(t[1]); const a = triple(t[2]); const d = scalar(t[3]); const h = scalar(t[4]); const col = triple(t[5]);
+      if (t.length !== 6 || !c || !a || d === null || h === null || !col) return bad('expected "co x,y,z ax,ay,az diameter height r,g,b"');
+      if (d <= 0 || h <= 0) return bad('diameter and height must be positive');
+      const axis = direction(a, n);
+      if (!axis) return;
+      if (scene.shapes.filter((s) => s.kind === 'cone').length >= LIMITS.cone) return bad(`more than ${LIMITS.cone} cones`);
+      const mid: Vec3 = [c[0] + axis[0] * h / 2, c[1] + axis[1] * h / 2, c[2] + axis[2] * h / 2];
+      scene.shapes.push({ id: newId(), kind: 'cone', center: mid, axis, radius: d / 2, height: h, mat: defaultMat(color(col, n)) });
     } else {
       issues.push(`line ${n}: unknown identifier "${id}", skipped`);
     }
@@ -117,7 +127,11 @@ export function serializeRt(scene: Scene): string {
   for (const s of scene.shapes) {
     if (s.kind === 'sphere') out.push(`sp ${v3(s.center)} ${f(s.radius * 2)} ${rgb(s.mat.color)}`);
     else if (s.kind === 'plane') out.push(`pl ${v3(s.point)} ${v3(norm(s.normal))} ${rgb(s.mat.color)}`);
-    else out.push(`cy ${v3(s.center)} ${v3(norm(s.axis))} ${f(s.radius * 2)} ${f(s.height)} ${rgb(s.mat.color)}`);
+    else if (s.kind === 'cone') {
+      const a = norm(s.axis);
+      const base: Vec3 = [s.center[0] - a[0] * s.height / 2, s.center[1] - a[1] * s.height / 2, s.center[2] - a[2] * s.height / 2];
+      out.push(`co ${v3(base)} ${v3(a)} ${f(s.radius * 2)} ${f(s.height)} ${rgb(s.mat.color)}`);
+    } else out.push(`cy ${v3(s.center)} ${v3(norm(s.axis))} ${f(s.radius * 2)} ${f(s.height)} ${rgb(s.mat.color)}`);
   }
   return out.join('\n') + '\n';
 }

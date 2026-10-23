@@ -6,7 +6,7 @@
     <title>miniRT Studio — Build and Render Ray Tracer Scenes in the Browser | Niklas Weber</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%23010736'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='10.5'%20fill='none'%20stroke='%23fcf1d0'%20stroke-width='1.6'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='6'%20fill='none'%20stroke='%23fcf1d0'%20stroke-opacity='.5'%20stroke-width='1.4'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='2.2'%20fill='%23fcf1d0'/%3E%3C/svg%3E">
 
-    <meta name="description" content="Free in-browser studio for the 42 miniRT raytracer. Place spheres, planes, cylinders and lights with the mouse, see live Phong-shaded renders with shadows, then import or export real .rt scene files.">
+    <meta name="description" content="Free in-browser studio for the 42 miniRT raytracer. Place spheres, planes, cylinders, cones and lights with the mouse, see live Phong-shaded renders with shadows, then import or export real .rt scene files.">
     <meta name="author" content="Niklas Weber">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="last-modified" content="2026-10-23">
@@ -33,7 +33,7 @@
           "@id": "https://nweber.me/minirt-studio.html#app",
           "name": "miniRT Studio",
           "url": "https://nweber.me/minirt-studio.html",
-          "description": "An in-browser scene editor and ray tracer for the 42 miniRT project. Spheres, planes, cylinders and point lights are placed with the mouse and rendered live with WebGL2. Scenes import and export as .rt files.",
+          "description": "An in-browser scene editor and ray tracer for the 42 miniRT project. Spheres, planes, cylinders, cones and point lights are placed with the mouse and rendered live with WebGL2. Scenes import and export as .rt files.",
           "applicationCategory": "DeveloperApplication",
           "operatingSystem": "Any modern browser with WebGL2",
           "browserRequirements": "Requires WebGL2 and JavaScript",
@@ -85,6 +85,7 @@
                     <button class="sbtn" type="button" data-add="sphere">+ Sphere</button>
                     <button class="sbtn" type="button" data-add="plane">+ Plane</button>
                     <button class="sbtn" type="button" data-add="cylinder">+ Cylinder</button>
+                    <button class="sbtn" type="button" data-add="cone">+ Cone</button>
                     <button class="sbtn" type="button" data-add="light">+ Light</button>
                 </div>
             </section>
@@ -177,7 +178,7 @@
     <section class="about" aria-labelledby="about-title">
         <div class="about__inner">
             <h2 class="about__title" id="about-title">A scene builder for <em>miniRT</em></h2>
-            <p class="about__lead">miniRT is the 42 school project where you write a ray tracer in C. This studio is the same idea in the browser: a small renderer that traces every pixel against spheres, planes and capped cylinders, with ambient light, point lights, hard shadows and Phong shading.</p>
+            <p class="about__lead">miniRT is the 42 school project where you write a ray tracer in C. This studio is the same idea in the browser: a small renderer that traces every pixel against spheres, planes, capped cylinders and cones, with ambient light, point lights, hard shadows and Phong shading.</p>
             <div class="about__grid">
                 <article>
                     <h3>How to use it</h3>
@@ -185,11 +186,11 @@
                 </article>
                 <article>
                     <h3>Real .rt files</h3>
-                    <p>Import a scene from your own project and edit it with the mouse, or build one here and export it. The file uses the standard identifiers A, C, L, sp, pl and cy, so it loads in a miniRT that follows the subject. Studio-only extras such as mirrors and checkerboards stay out of the export.</p>
+                    <p>Import a scene from your own project and edit it with the mouse, or build one here and export it. The file uses the standard identifiers A, C, L, sp, pl and cy, plus co for cones, so it loads in a miniRT that follows the subject. Studio-only extras such as mirrors and checkerboards stay out of the export.</p>
                 </article>
                 <article>
                     <h3>How it renders</h3>
-                    <p>A WebGL2 fragment shader runs the same ray-sphere, ray-plane and ray-cylinder intersection math as the C version, one ray per pixel on the GPU. While you drag it draws a fast draft, then refines with jittered samples once you stop. Colours are clamped linear values, like the original.</p>
+                    <p>A WebGL2 fragment shader runs the same ray-sphere, ray-plane, ray-cylinder and ray-cone intersection math as the C version, one ray per pixel on the GPU. While you drag it draws a fast draft, then refines with jittered samples once you stop. Colours are clamped linear values, like the original.</p>
                 </article>
                 <article>
                     <h3>Share and save</h3>
