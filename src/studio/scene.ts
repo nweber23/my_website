@@ -132,15 +132,16 @@ export function sanitize(raw: unknown): Scene | null {
   }
   const counts = { sphere: 0, plane: 0, cylinder: 0 };
   for (const s of Array.isArray(r.shapes) ? r.shapes : []) {
-    const kind = s?.kind as keyof typeof counts;
-    if (!(kind in counts) || counts[kind] >= LIMITS[kind]) continue;
+    const kind: unknown = s?.kind;
+    if (kind !== 'sphere' && kind !== 'plane' && kind !== 'cylinder') continue;
+    if (counts[kind] >= LIMITS[kind]) continue;
     counts[kind]++;
     if (kind === 'sphere') {
       out.shapes.push({ id: newId(), kind, center: vec(s.center, [0, 0, 0]), radius: num(s.radius, 1, 0.01, 500), mat: mat(s.mat) });
     } else if (kind === 'plane') {
       out.shapes.push({ id: newId(), kind, point: vec(s.point, [0, 0, 0]), normal: dir(s.normal, [0, 1, 0]), mat: mat(s.mat) });
     } else {
-      out.shapes.push({ id: newId(), kind, center: vec(s.center, [0, 0, 0]), axis: dir(s.axis, [0, 1, 0]), radius: num(s.radius, 0.5, 0.01, 500), height: num(s.height, 2, 0.01, 1000), mat: mat(s.mat) });
+      out.shapes.push({ id: newId(), kind: 'cylinder', center: vec(s.center, [0, 0, 0]), axis: dir(s.axis, [0, 1, 0]), radius: num(s.radius, 0.5, 0.01, 500), height: num(s.height, 2, 0.01, 1000), mat: mat(s.mat) });
     }
   }
   return out;
