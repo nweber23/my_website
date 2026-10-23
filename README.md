@@ -77,6 +77,7 @@ detailed deployment instructions, see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 ├── writing.html            # Writing index
 ├── writing/                # Posts
 ├── imprint.html            # Legal notice
+├── minirt-studio.html      # miniRT Studio: in-browser scene editor and ray tracer
 ├── src/
 │   ├── main.ts             # Home entry: loader, Lenis, all ScrollTrigger timelines
 │   ├── pages.ts            # Entry for writing/imprint pages
@@ -86,6 +87,7 @@ detailed deployment instructions, see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 │   │   ├── letters.ts      # Pearl 3D letters
 │   │   └── dots.ts         # Footer dot matrix
 │   ├── shared/             # Clock, GitHub stats
+│   ├── studio/             # miniRT Studio: WebGL2 shader, .rt parser, picking, handles, undo
 │   └── styles/             # base, home and page styles
 ├── public/                 # Copied as-is: assets/, robots.txt, sitemap.xml, llms.txt
 ├── nginx/                  # Nginx server configuration

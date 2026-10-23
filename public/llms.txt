@@ -23,6 +23,7 @@ Key achievement: 30ms average response time, 99.9% uptime. Composite indexes, Re
 High-performance raytracer in C. SIMD vectorization (SSE/AVX), cache-efficient structure-of-arrays layout, tile-based multi-threaded rendering.
 Key achievement: 120+ FPS, an 80x improvement over baseline (1920x1080, complex scene).
 - Source: [github.com/nweber23/miniRT](https://github.com/nweber23/miniRT)
+- Live demo: [miniRT Studio](https://nweber.me/minirt-studio.html), a browser scene editor and WebGL2 ray tracer with mouse-driven move/scale/rotate handles, undo/redo, shareable links, and import/export of real .rt scene files.
 
 ### minishell
 POSIX-compliant shell in C implementing fork/exec, pipe chaining, redirections, signals (SIGCHLD with sigaction), and a recursive-descent parser.

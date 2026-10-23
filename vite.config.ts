@@ -19,6 +19,7 @@ export default defineConfig({
         index: resolve(root, 'index.html'),
         writing: resolve(root, 'writing.html'),
         imprint: resolve(root, 'imprint.html'),
+        studio: resolve(root, 'minirt-studio.html'),
         ...posts,
       },
     },

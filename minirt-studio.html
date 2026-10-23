@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>miniRT Studio — Build and Render Ray Tracer Scenes in the Browser | Niklas Weber</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%23010736'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='10.5'%20fill='none'%20stroke='%23fcf1d0'%20stroke-width='1.6'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='6'%20fill='none'%20stroke='%23fcf1d0'%20stroke-opacity='.5'%20stroke-width='1.4'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='2.2'%20fill='%23fcf1d0'/%3E%3C/svg%3E">
+
+    <meta name="description" content="Free in-browser studio for the 42 miniRT raytracer. Place spheres, planes, cylinders and lights with the mouse, see live Phong-shaded renders with shadows, then import or export real .rt scene files.">
+    <meta name="author" content="Niklas Weber">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="last-modified" content="2026-10-23">
+    <meta name="theme-color" content="#fcf1d0">
+    <link rel="canonical" href="https://nweber.me/minirt-studio.html">
+
+    <meta property="og:title" content="miniRT Studio — a ray tracer scene builder in the browser">
+    <meta property="og:description" content="Build miniRT scenes with mouse clicks. Live WebGL2 ray tracing with shadows and Phong lighting, plus .rt import and export for the 42 project.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nweber.me/minirt-studio.html">
+    <meta property="og:image" content="https://nweber.me/assets/minirt.webp">
+    <meta property="og:image:alt" content="A ray traced miniRT scene with spheres, a cylinder and a checkered floor">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="miniRT Studio — a ray tracer scene builder in the browser">
+    <meta name="twitter:description" content="Build miniRT scenes with mouse clicks. Live ray tracing, .rt import and export.">
+    <meta name="twitter:image" content="https://nweber.me/assets/minirt.webp">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebApplication",
+          "@id": "https://nweber.me/minirt-studio.html#app",
+          "name": "miniRT Studio",
+          "url": "https://nweber.me/minirt-studio.html",
+          "description": "An in-browser scene editor and ray tracer for the 42 miniRT project. Spheres, planes, cylinders and point lights are placed with the mouse and rendered live with WebGL2. Scenes import and export as .rt files.",
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Any modern browser with WebGL2",
+          "browserRequirements": "Requires WebGL2 and JavaScript",
+          "isAccessibleForFree": true,
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+          "featureList": "Mouse-driven move, scale and rotate handles, Undo and redo, Import and export of miniRT .rt files, Shareable scene links, Live shadows and Phong shading, PNG export",
+          "creator": { "@id": "https://nweber.me/#person" },
+          "isBasedOn": { "@id": "https://nweber.me/#project-minirt" },
+          "datePublished": "2026-10-23"
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://nweber.me/" },
+            { "@type": "ListItem", "position": 2, "name": "miniRT Studio", "item": "https://nweber.me/minirt-studio.html" }
+          ]
+        }
+      ]
+    }
+    </script>
+</head>
+<body class="studio-page">
+    <a href="#studio" class="skip-link">Skip to the studio</a>
+
+    <header class="sbar">
+        <a class="sbar__back" href="/#project-minirt">← miniRT</a>
+        <h1 class="sbar__title">miniRT <em>Studio</em></h1>
+        <div class="sbar__tools" role="toolbar" aria-label="Scene actions">
+            <button class="sbtn" type="button" id="undo" disabled title="Undo (Ctrl+Z)">Undo</button>
+            <button class="sbtn" type="button" id="redo" disabled title="Redo (Ctrl+Shift+Z)">Redo</button>
+            <span class="sbar__sep" aria-hidden="true"></span>
+            <button class="sbtn" type="button" id="import">Import .rt</button>
+            <button class="sbtn sbtn--solid" type="button" id="export">Export .rt</button>
+            <button class="sbtn" type="button" id="share">Share link</button>
+            <button class="sbtn" type="button" id="png">PNG</button>
+        </div>
+    </header>
+
+    <main class="studio" id="studio" data-tab="objects">
+        <div class="tabs" role="tablist" aria-label="Panels">
+            <button class="tabs__btn" type="button" role="tab" id="tab-objects" data-tab="objects" aria-selected="true" aria-controls="panel-objects">Objects</button>
+            <button class="tabs__btn" type="button" role="tab" id="tab-inspector" data-tab="inspector" aria-selected="false" aria-controls="panel-inspector">Inspector</button>
+        </div>
+
+        <aside class="panel panel--objects" id="panel-objects" aria-label="Objects and presets">
+            <section class="panel__block">
+                <h2 class="panel__title">Add</h2>
+                <div class="addgrid">
+                    <button class="sbtn" type="button" data-add="sphere">+ Sphere</button>
+                    <button class="sbtn" type="button" data-add="plane">+ Plane</button>
+                    <button class="sbtn" type="button" data-add="cylinder">+ Cylinder</button>
+                    <button class="sbtn" type="button" data-add="light">+ Light</button>
+                </div>
+            </section>
+            <section class="panel__block">
+                <h2 class="panel__title">Objects <span class="panel__count" id="count"></span></h2>
+                <ul class="olist" id="olist" role="list"></ul>
+            </section>
+            <section class="panel__block">
+                <h2 class="panel__title">Start from</h2>
+                <ul class="plist" id="plist" role="list"></ul>
+            </section>
+        </aside>
+
+        <section class="stage" aria-label="Render view">
+            <div class="stage__frame" id="stage">
+                <canvas class="stage__render" id="render" aria-hidden="true"></canvas>
+                <canvas class="stage__overlay" id="overlay" tabindex="0" role="application" aria-label="Scene view. Drag empty space to orbit, click a shape to select it, arrow keys move the selection, Delete removes it."></canvas>
+                <div class="stage__hud">
+                    <span class="hud__stat mono-s" id="stats">—</span>
+                    <label class="hud__ctl mono-s">Quality
+                        <select id="quality">
+                            <option value="0.5">0.5×</option>
+                            <option value="1" selected>1×</option>
+                            <option value="native">Native</option>
+                        </select>
+                    </label>
+                    <label class="hud__ctl mono-s"><input type="checkbox" id="snap"> Snap</label>
+                </div>
+                <p class="stage__hint mono-s" aria-hidden="true">
+                    <span class="hint--fine">Drag: orbit · Right-drag or Shift: pan · Wheel: zoom · Click: select · Del: delete</span>
+                    <span class="hint--coarse">Drag: orbit · Two fingers: pan and zoom · Tap: select</span>
+                </p>
+                <div class="stage__fallback" id="fallback" hidden>
+                    <p class="stage__fallback-title">WebGL2 is not available</p>
+                    <p>The live render needs WebGL2. The editor still works: change values on the right, then export the .rt file and run it in your own miniRT.</p>
+                </div>
+            </div>
+        </section>
+
+        <aside class="panel panel--inspector" id="panel-inspector" aria-label="Inspector">
+            <div class="insp" id="inspector"></div>
+        </aside>
+    </main>
+
+    <div class="toast mono-s" id="toast" role="status" aria-live="polite"></div>
+
+    <dialog class="dlg" id="dlg-import" aria-labelledby="dlg-import-title">
+        <form method="dialog" class="dlg__form">
+            <h2 class="dlg__title" id="dlg-import-title">Import a <em>.rt</em> scene</h2>
+            <p class="dlg__lead">Paste a scene file or choose one. Lines miniRT would reject are skipped and listed below.</p>
+            <textarea class="dlg__text" id="import-text" rows="10" spellcheck="false" aria-label="Scene file contents" placeholder="A 0.2 255,255,255&#10;C 0,2,-8 0,0,1 70&#10;L -4,6,-5 0.7&#10;sp 0,1,0 2 255,80,80"></textarea>
+            <ul class="dlg__issues" id="import-issues" role="list"></ul>
+            <div class="dlg__row">
+                <label class="sbtn sbtn--small">Choose file<input type="file" id="import-file" accept=".rt,text/plain" hidden></label>
+                <span class="dlg__spacer"></span>
+                <button class="sbtn" type="submit" value="cancel">Close</button>
+                <button class="sbtn sbtn--solid" type="button" id="import-go">Load scene</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog class="dlg" id="dlg-export" aria-labelledby="dlg-export-title">
+        <form method="dialog" class="dlg__form">
+            <h2 class="dlg__title" id="dlg-export-title">Export <em>.rt</em></h2>
+            <p class="dlg__lead">A scene file for the 42 miniRT parser.</p>
+            <ul class="dlg__issues" id="export-notes" role="list"></ul>
+            <textarea class="dlg__text" id="export-text" rows="12" readonly spellcheck="false" aria-label="Exported scene file"></textarea>
+            <div class="dlg__row">
+                <span class="dlg__spacer"></span>
+                <button class="sbtn" type="submit" value="cancel">Close</button>
+                <button class="sbtn" type="button" id="export-copy">Copy</button>
+                <button class="sbtn sbtn--solid" type="button" id="export-dl">Download scene.rt</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog class="dlg" id="dlg-share" aria-labelledby="dlg-share-title">
+        <form method="dialog" class="dlg__form">
+            <h2 class="dlg__title" id="dlg-share-title">Share this <em>scene</em></h2>
+            <p class="dlg__lead">The whole scene lives in the link, so no account or upload is needed. Anyone who opens it gets their own editable copy.</p>
+            <input class="dlg__line" id="share-url" readonly aria-label="Shareable link">
+            <div class="dlg__row">
+                <span class="dlg__spacer"></span>
+                <button class="sbtn" type="submit" value="cancel">Close</button>
+                <button class="sbtn sbtn--solid" type="button" id="share-copy">Copy link</button>
+            </div>
+        </form>
+    </dialog>
+
+    <section class="about" aria-labelledby="about-title">
+        <div class="about__inner">
+            <h2 class="about__title" id="about-title">A scene builder for <em>miniRT</em></h2>
+            <p class="about__lead">miniRT is the 42 school project where you write a ray tracer in C. This studio is the same idea in the browser: a small renderer that traces every pixel against spheres, planes and capped cylinders, with ambient light, point lights, hard shadows and Phong shading.</p>
+            <div class="about__grid">
+                <article>
+                    <h3>How to use it</h3>
+                    <p>Click a shape to select it, then drag its handles. Arrows move it along an axis, the square moves it across the floor, the squares on the shape change radius and height, and the yellow diamond points the axis or normal anywhere. Drag empty space to orbit the camera. Every change is undoable.</p>
+                </article>
+                <article>
+                    <h3>Real .rt files</h3>
+                    <p>Import a scene from your own project and edit it with the mouse, or build one here and export it. The file uses the standard identifiers A, C, L, sp, pl and cy, so it loads in a miniRT that follows the subject. Studio-only extras such as mirrors and checkerboards stay out of the export.</p>
+                </article>
+                <article>
+                    <h3>How it renders</h3>
+                    <p>A WebGL2 fragment shader runs the same ray-sphere, ray-plane and ray-cylinder intersection math as the C version, one ray per pixel on the GPU. While you drag it draws a fast draft, then refines with jittered samples once you stop. Colours are clamped linear values, like the original.</p>
+                </article>
+                <article>
+                    <h3>Share and save</h3>
+                    <p>The share link packs the scene into the URL. Your latest scene is also kept in this browser, and PNG saves a 1920 pixel wide render. The source of the C project is on <a href="https://github.com/nweber23/miniRT" target="_blank" rel="noopener noreferrer">GitHub</a>, and the case study sits on the <a href="/#project-minirt">portfolio</a>.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <noscript><p class="noscript">miniRT Studio needs JavaScript and WebGL2.</p></noscript>
+    <script type="module" src="/src/studio/main.ts"></script>
+    <script data-goatcounter="https://mattz.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
