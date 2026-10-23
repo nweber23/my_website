@@ -38,11 +38,62 @@ and index rows fill with ink from the left on hover.
 `prefers-reduced-motion` removes pins, parallax and 3D motion and keeps simple
 fades. 3D renders only while it is on screen.
 
+## miniRT Studio
+
+`/minirt-studio.html` is a scene builder and live ray tracer for the 42 miniRT
+project, written in TypeScript and WebGL2 with no framework. Spheres, planes,
+capped cylinders, cones and point lights are placed with the mouse and traced
+per pixel in a fragment shader (ambient light, Phong shading, hard shadows,
+optional mirrors and checkerboards).
+
+**Editing**
+- Click a shape or light to select it. Arrows move it along an axis, the centre
+  square moves it across the floor, square handles change radius and height, and
+  the yellow diamond points a cylinder or cone axis or a plane normal.
+- Drag empty space or a plane to orbit, right-drag or Shift-drag to pan, scroll
+  to zoom. Pinch and two-finger pan on touch screens.
+- Arrow keys and PageUp/PageDown nudge the selection, `Delete` removes it,
+  `Ctrl+D` duplicates it, `Ctrl+Z` / `Ctrl+Shift+Z` undo and redo. A Snap toggle
+  rounds positions to 0.25.
+- A numeric inspector covers everything the handles do, plus colour, camera,
+  ambient light and the studio-only surface settings.
+
+**Files and sharing**
+- Import and export standard `.rt` files (`A`, `C`, `L`, `sp`, `pl`, `cy`, and
+  `co` for cones). Bad lines are skipped and listed, never fatal. You can also
+  drop a file onto the view.
+- Share links hold the whole scene in the URL (deflate + base64url), with size
+  caps on both the link and the decompressed data. The last scene is kept in
+  `localStorage`. PNG export renders 1920 px wide.
+- Mirrors, checkerboards, specular settings and bounce depth are studio-only and
+  are not written to `.rt` files. Cones are exported as `co x,y,z axis diameter
+  height r,g,b` with `x,y,z` at the base centre; check that your parser agrees.
+
+**Limits** (every object lives in shader uniforms): 24 spheres, 8 planes,
+16 cylinders, 8 cones, 8 lights, 8 mirror bounces.
+
+**Conventions**: left-handed like most miniRT builds (facing +Z, +X is right,
++Y is up), colours are clamped linear values with no gamma, and the field of
+view is horizontal. Cylinder and cone positions are the middle of the axis.
+
+| File | Role |
+|------|------|
+| `scene.ts` | Scene model, limits, validation of untrusted data |
+| `rt.ts` | `.rt` parser and writer |
+| `renderer.ts` | WebGL2 program and the ray tracing shader |
+| `pick.ts`, `view.ts`, `math.ts` | CPU intersection for picking, camera projection, vector helpers |
+| `viewport.ts` | Render loop, orbit/pan/zoom, handles, pointer input |
+| `inspector.ts`, `main.ts` | Property panels, dialogs, toolbar, keyboard shortcuts |
+| `store.ts`, `share.ts`, `presets.ts` | Undo history, link encoding and storage, starter scenes |
+
+The CPU intersection code in `pick.ts` must stay in step with the shader, since
+selection uses it. Camera moves are a view change and stay out of undo.
+
 ## Technology Stack
 
 | Layer | Technologies |
 |-------|---|
-| **Frontend** | HTML, CSS, TypeScript, three.js, GSAP + ScrollTrigger, Lenis |
+| **Frontend** | HTML, CSS, TypeScript, three.js, GSAP + ScrollTrigger, Lenis, raw WebGL2 (miniRT Studio) |
 | **Build** | Vite (multi-page), self-hosted fonts via Fontsource |
 | **Server** | Nginx with reverse proxy configuration |
 | **Containerization** | Docker (multi-stage build) + Docker Compose |
