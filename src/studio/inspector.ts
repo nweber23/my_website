@@ -1,7 +1,7 @@
 import { type Vec3, clamp, norm } from './math';
 import {
   type Cylinder, type Light, type Material, type Plane, type RGB, type Scene, type Sphere,
-  LIMITS, MAX_COORD, canAdd, cloneItem, insertItem, itemLabel, itemPosition, removeItem, setItemPosition,
+  LIMITS, MAX_BOUNCES, MAX_COORD, canAdd, cloneItem, insertItem, itemLabel, itemPosition, removeItem, setItemPosition,
 } from './scene';
 import type { Store } from './store';
 
@@ -266,7 +266,7 @@ export class Inspector {
     box.append(el('h3', 'group', 'Surface look'));
     this.scalar(box, S, 'Specular', () => sc().look.specular, (v) => edit(() => { sc().look.specular = v; }), { min: 0, max: 1, step: 0.01, tag: 'studio' });
     this.scalar(box, S, 'Shininess', () => sc().look.shine, (v) => edit(() => { sc().look.shine = v; }), { min: 1, max: 256, step: 1, tag: 'studio' });
-    this.scalar(box, S, 'Mirror bounces', () => sc().look.bounces, (v) => edit(() => { sc().look.bounces = Math.round(v); }), { min: 0, max: 3, step: 1, tag: 'studio' });
+    this.scalar(box, S, 'Mirror bounces', () => sc().look.bounces, (v) => edit(() => { sc().look.bounces = Math.round(v); }), { min: 0, max: MAX_BOUNCES, step: 1, tag: 'studio' });
     this.sync();
   }
 

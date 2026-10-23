@@ -1,5 +1,5 @@
 import { cameraBasis, norm } from './math';
-import { LIMITS, type Scene } from './scene';
+import { LIMITS, MAX_BOUNCES, type Scene } from './scene';
 
 const VERT = `#version 300 es
 void main() {
@@ -15,6 +15,7 @@ precision highp int;
 #define MAX_PL ${LIMITS.plane}
 #define MAX_CY ${LIMITS.cylinder}
 #define MAX_L ${LIMITS.light}
+#define MAX_BOUNCES ${MAX_BOUNCES}
 const float EPS = 1e-4;
 const float FAR = 1e9;
 const float PI = 3.14159265359;
@@ -179,9 +180,13 @@ void main() {
   vec3 acc = vec3(0.0);
   vec3 thr = vec3(1.0);
 
-  for (int b = 0; b < 4; b++) {
+  for (int b = 0; b < MAX_BOUNCES + 1; b++) {
     Hit h;
-    if (!trace(o, d, FAR, false, h)) break;
+    if (!trace(o, d, FAR, false, h)) {
+      // Primary rays see black, like miniRT. Mirrors get a faint sky so they never read as holes.
+      if (b > 0) acc += thr * mix(vec3(0.03, 0.04, 0.09), vec3(0.32, 0.38, 0.55), clamp(d.y * 0.5 + 0.5, 0.0, 1.0));
+      break;
+    }
     vec3 p = o + d * h.t;
     vec3 n = h.n;
     if (dot(n, d) > 0.0) n = -n;

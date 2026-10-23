@@ -31,6 +31,9 @@ export const LIMITS = { sphere: 16, plane: 8, cylinder: 16, light: 8 } as const;
 
 export const MAX_COORD = 1000;
 
+/** Deepest mirror recursion the shader runs. Facing mirrors need depth to look endless. */
+export const MAX_BOUNCES = 8;
+
 let counter = 0;
 export const newId = () => `o${Date.now().toString(36)}${(counter++).toString(36)}`;
 
@@ -124,7 +127,7 @@ export function sanitize(raw: unknown): Scene | null {
   out.look = {
     specular: num(r.look?.specular, 0.35, 0, 1),
     shine: num(r.look?.shine, 48, 1, 256),
-    bounces: Math.round(num(r.look?.bounces, 0, 0, 3)),
+    bounces: Math.round(num(r.look?.bounces, 0, 0, MAX_BOUNCES)),
   };
   for (const l of Array.isArray(r.lights) ? r.lights : []) {
     if (out.lights.length >= LIMITS.light) break;
