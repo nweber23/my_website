@@ -81,7 +81,7 @@
 
     <nav class="nav" aria-label="Main navigation">
         <ul class="nav__list" role="list">
-            <li><a href="../index.html" class="nav__link" data-idx="00">← Back</a></li>
+            <li><a href="/" class="nav__link" data-idx="00">← Back</a></li>
         </ul>
 
         <div class="nav__right">
@@ -116,7 +116,7 @@
 
             <div class="imprint__layout imprint__layout--full">
                 <article class="imprint__block">
-                    <p class="imprint__text">Building the <a href="../index.html#project-go-renderer">3D Go Renderer</a> meant writing a <code>.obj</code> parser with no scene-graph library to lean on — and <code>.obj</code> files don't promise you triangles. A face line can list any number of vertices, and there's no requirement that they're convex, planar, or even non-degenerate. OpenGL, meanwhile, only draws triangles. Something has to turn an arbitrary N-gon into a triangle fan that renders identically to the original face, for every N-gon a modeling tool might export.</p>
+                    <p class="imprint__text">Building the <a href="/#project-go-renderer">3D Go Renderer</a> meant writing a <code>.obj</code> parser with no scene-graph library to lean on — and <code>.obj</code> files don't promise you triangles. A face line can list any number of vertices, and there's no requirement that they're convex, planar, or even non-degenerate. OpenGL, meanwhile, only draws triangles. Something has to turn an arbitrary N-gon into a triangle fan that renders identically to the original face, for every N-gon a modeling tool might export.</p>
 
                     <h2 class="imprint__heading">The naive approach breaks immediately</h2>
                     <p class="imprint__text">The obvious first move — a triangle fan from vertex 0 to every subsequent pair, <code>(v0, v1, v2), (v0, v2, v3), (v0, v3, v4)…</code> — only works for convex polygons. On a concave face, a fan drawn from a "dented in" vertex draws triangles that cut outside the polygon's boundary. It looks correct on a cube and quietly wrong on anything hand-sculpted, which is most real assets.</p>
@@ -142,9 +142,9 @@ nz += (x[i] - x[j]) * (y[i] + y[j])
                     <p class="imprint__text">Newell's method gives a stable normal even for near-planar or slightly noisy polygons, because it averages the contribution of every edge instead of trusting any single cross product. Ear clipping then runs in the 2D coordinate system defined by that normal — pick the two axes with the largest projection, or build an explicit tangent basis — so the convexity and containment tests stay correct regardless of how the source face is oriented in world space.</p>
 
                     <h2 class="imprint__heading">Why this mattered beyond "it renders"</h2>
-                    <p class="imprint__text">This is the kind of bug that doesn't show up on a cube or the Utah teapot's smoother patches — it shows up on one specific concave, slightly non-planar face in one specific model, and looks like a rendering glitch rather than a geometry bug. Testing it properly meant writing degenerate and concave fixtures deliberately rather than trusting whatever test models happened to be lying around, which is the same lesson that runs through the parser, UV generation, and frustum culling code in the rest of the <a href="../index.html#project-go-renderer">renderer</a>: the failure cases you don't construct on purpose are the ones that ship.</p>
+                    <p class="imprint__text">This is the kind of bug that doesn't show up on a cube or the Utah teapot's smoother patches — it shows up on one specific concave, slightly non-planar face in one specific model, and looks like a rendering glitch rather than a geometry bug. Testing it properly meant writing degenerate and concave fixtures deliberately rather than trusting whatever test models happened to be lying around, which is the same lesson that runs through the parser, UV generation, and frustum culling code in the rest of the <a href="/#project-go-renderer">renderer</a>: the failure cases you don't construct on purpose are the ones that ship.</p>
 
-                    <p class="imprint__text"><a href="../index.html#project-go-renderer">← Back to the 3D Go Renderer project</a></p>
+                    <p class="imprint__text"><a href="/#project-go-renderer">← Back to the 3D Go Renderer project</a></p>
                 </article>
             </div>
         </section>
@@ -179,7 +179,7 @@ nz += (x[i] - x[j]) * (y[i] + y[j])
             <span class="footer__note">Hand-built with three.js and plain HTML</span>
         </div>
         <div class="footer__right">
-            <a href="../index.html" class="footer__link">← Index</a>
+            <a href="/" class="footer__link">← Index</a>
         </div>
     </footer>
 

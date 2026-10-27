@@ -74,7 +74,7 @@
 
     <nav class="nav" aria-label="Main navigation">
         <ul class="nav__list" role="list">
-            <li><a href="../index.html" class="nav__link" data-idx="00">← Back</a></li>
+            <li><a href="/" class="nav__link" data-idx="00">← Back</a></li>
         </ul>
 
         <div class="nav__right">
@@ -103,7 +103,7 @@
 
             <div class="imprint__layout imprint__layout--full">
                 <article class="imprint__block">
-                    <p class="imprint__text">I wanted to learn reinforcement learning by building every layer myself: the game, the baseline to beat, the bridge to Python, the agent, and a way to watch it. The result is <a href="../index.html#project-tetris-ml">Tetris ML</a> (<a href="https://github.com/nweber23/tetri_ml">source</a>), a Tetris engine in Go, a DQN agent trained with PyTorch, and a viewer that shows the agent playing and learning. This post goes through it in order and spends as much time on what did not work as on what did.</p>
+                    <p class="imprint__text">I wanted to learn reinforcement learning by building every layer myself: the game, the baseline to beat, the bridge to Python, the agent, and a way to watch it. The result is <a href="/#project-tetris-ml">Tetris ML</a> (<a href="https://github.com/nweber23/tetri_ml">source</a>), a Tetris engine in Go, a DQN agent trained with PyTorch, and a viewer that shows the agent playing and learning. This post goes through it in order and spends as much time on what did not work as on what did.</p>
                     <figure class="article__figure"><video poster="../assets/tetris_late.webp" width="760" height="540" autoplay muted loop playsinline preload="metadata" aria-label="The trained placement agent playing Tetris"><source src="../assets/tetris_late.webm" type="video/webm"><source src="../assets/tetris_late.mp4" type="video/mp4"></video><figcaption>The final placement agent playing a baseline seed.</figcaption></figure>
                     <p class="imprint__text"><em>Updated 2026-10-19: two guesses from the first version are now tested, and there are three new sections on a second agent that uses hold, tucks, spins and T-spins, plus a short one on keeping the dependencies patched.</em></p>
                     <h2 class="imprint__heading">Why Tetris, and why Go</h2>
@@ -178,7 +178,7 @@ phi = -(0.5 * holes + 0.05 * aggregate_height)</code></pre>
                     <h2 class="imprint__heading">What I would do next</h2>
                     <p class="imprint__text">Fix the checkpoint instability first (more validation games, a decaying learning rate, averaging the last checkpoints), then give the move agent its board back without breaking it, for example with compact slot features such as column heights and wells instead of 200 raw cells. After that: PPO as a genuinely different algorithm instead of another variation on DQN, a survival-focused measure, and the other training seeds for the placement measurements above.</p>
                     <p class="imprint__text">The code, the original plan, the move-agent notes (<code>docs/MOVES.md</code>) and all the run notes are in the <a href="https://github.com/nweber23/tetri_ml">repository</a>.</p>
-                    <p class="imprint__text"><a href="../index.html#project-tetris-ml">← Back to the Tetris ML project</a></p>
+                    <p class="imprint__text"><a href="/#project-tetris-ml">← Back to the Tetris ML project</a></p>
                 </article>
             </div>
         </section>
@@ -209,7 +209,7 @@ phi = -(0.5 * holes + 0.05 * aggregate_height)</code></pre>
             <span class="footer__note">Hand-built with three.js and plain HTML</span>
         </div>
         <div class="footer__right">
-            <a href="../index.html" class="footer__link">← Index</a>
+            <a href="/" class="footer__link">← Index</a>
         </div>
     </footer>
 
