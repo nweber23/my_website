@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris ML: Tetris Engine and DQN Agent in Go and PyTorch | Niklas Weber</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%23010736'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='10.5'%20fill='none'%20stroke='%23fcf1d0'%20stroke-width='1.6'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='6'%20fill='none'%20stroke='%23fcf1d0'%20stroke-opacity='.5'%20stroke-width='1.4'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='2.2'%20fill='%23fcf1d0'/%3E%3C/svg%3E">
+
+    <meta name="description" content="A Tetris engine in Go, DQN agents trained with PyTorch and a viewer to watch them learn. The agent averages 173k points, 44% above a hand-tuned heuristic.">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#fcf1d0">
+    <link rel="canonical" href="https://nweber.me/projects/tetris-ml.html">
+
+    <meta property="og:title" content="Tetris ML: Tetris Engine and DQN Agent in Go and PyTorch | Niklas Weber">
+    <meta property="og:description" content="A Tetris engine in Go, DQN agents trained with PyTorch and a viewer to watch them learn. The agent averages 173k points, 44% above a hand-tuned heuristic.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nweber.me/projects/tetris-ml.html">
+    <meta property="og:image" content="https://nweber.me/assets/tetris_ml.webp">
+    <meta property="og:site_name" content="Niklas Weber Portfolio">
+    <meta property="og:locale" content="en_US">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Tetris ML: Tetris Engine and DQN Agent in Go and PyTorch | Niklas Weber">
+    <meta name="twitter:description" content="A Tetris engine in Go, DQN agents trained with PyTorch and a viewer to watch them learn. The agent averages 173k points, 44% above a hand-tuned heuristic.">
+    <meta name="twitter:image" content="https://nweber.me/assets/tetris_ml.webp">
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://nweber.me/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Tetris ML",
+      "item": "https://nweber.me/projects/tetris-ml.html"
+    }
+  ]
+}
+    </script>
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "@id": "https://nweber.me/projects/tetris-ml.html#software",
+  "name": "Tetris ML",
+  "description": "A Tetris engine in Go, DQN agents trained with PyTorch and a viewer to watch them learn. The agent averages 173k points, 44% above a hand-tuned heuristic.",
+  "url": "https://nweber.me/projects/tetris-ml.html",
+  "codeRepository": "https://github.com/nweber23/tetri_ml",
+  "programmingLanguage": [
+    {
+      "@type": "ComputerLanguage",
+      "name": "Go"
+    },
+    {
+      "@type": "ComputerLanguage",
+      "name": "Python"
+    }
+  ],
+  "runtimePlatform": "Linux, Windows",
+  "keywords": "reinforcement learning, DQN, Double DQN, PyTorch, Tetris, T-spin, hold piece, Go, gRPC, Gymnasium, Ebitengine, afterstate",
+  "image": "https://nweber.me/assets/tetris_ml.webp",
+  "creator": {
+    "@id": "https://nweber.me/#person"
+  },
+  "datePublished": "2026-10-16",
+  "dateModified": "2026-10-19",
+  "mainEntityOfPage": "https://nweber.me/projects/tetris-ml.html"
+}
+    </script>
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <div class="scroll-progress" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <nav class="nav" aria-label="Main navigation">
+        <ul class="nav__list" role="list">
+            <li><a href="/" class="nav__link" data-idx="00">← Back</a></li>
+        </ul>
+
+        <div class="nav__right">
+            <span class="nav__time" aria-label="Current time in CET">—</span>
+            <button class="nav__toggle" aria-label="Open menu" aria-expanded="false">
+                <span class="nav__toggle-bar"></span>
+                <span class="nav__toggle-bar"></span>
+            </button>
+        </div>
+    </nav>
+
+    <main id="main" class="main">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol class="breadcrumb__list">
+                <li class="breadcrumb__item">
+                    <a href="/" class="breadcrumb__link">home</a>
+                </li>
+                <li class="breadcrumb__item breadcrumb__sep">
+                    <span class="breadcrumb__current" aria-current="page">tetris ml</span>
+                </li>
+            </ol>
+        </nav>
+
+        <section class="section section--imprint" aria-labelledby="project-title" id="project-tetris-ml">
+            <div class="section__head">
+                <h1 id="project-title" class="section__title">Tetris ML</h1>
+                <span class="section__aside">Tetris engine, DQN agent and training viewer · MMXXVI</span>
+            </div>
+
+            <div class="project__body">
+                <figure class="project__figure"><video poster="/assets/tetris_moves_late.webp" width="760" height="540" autoplay muted loop playsinline preload="metadata" aria-label="Trained agent playing Tetris with hold and T-spins in the Ebitengine viewer"><source src="/assets/tetris_moves_late.webm" type="video/webm"><source src="/assets/tetris_moves_late.mp4" type="video/mp4"></video>
+                        <figcaption class="mono-s"><span>Fig. 1.1 — Move agent, 100,000 training steps</span><span>[dqn]</span></figcaption></figure>
+                <div class="project__text">
+                        <p class="project__summary">A Tetris engine in Go, DQN agents trained with PyTorch, and a viewer that shows them playing and learning. Built to learn reinforcement learning by doing every layer myself, including an agent that uses hold, tucks, spins and T-spins.</p>
+                        <dl class="project__metrics"><div><dt>vs. heuristic</dt><dd>+44%</dd></div><div><dt>Avg score</dt><dd>173k</dd></div><div><dt>T-spins / game</dt><dd>233</dd></div></dl>
+                        <div class="project__prose"><p><strong>Problem:</strong> Reinforcement learning is easy to follow in a tutorial and hard to trust in practice. I wanted to learn it by building the whole pipeline: a game with rules exact enough to compare agents on identical games, a baseline worth beating, and a way to see what the agent actually learned.</p><p><strong>Solution:</strong> A deterministic, seedable Tetris engine in Go (7-bag, SRS rotation and kicks, no rendering code) exposed over a gRPC stream, one game per stream. A Python Gymnasium environment sits on top of it and trains a DQN in PyTorch. A separate Ebitengine viewer plays human games, agent replays and training runs, and runs the exported networks itself without Python.</p><p><strong>Technical Approach:</strong> Actions are placements (a rotation and a column per piece), and the network scores the board after a placement, the afterstate, from four features: aggregate height, holes, bumpiness and lines cleared. That shrinks the problem enough to train on a laptop. The Go and Python sides were verified against each other with a deterministic agent over 200 seeds, since a random agent never clears a line and so proves nothing. The viewer re-reads snapshots written every 5,000 steps, so it can follow a run live.</p><p><strong>Results &amp; Learnings:</strong> On held-out seeds with a 3,000-piece cap, the agent averages about 173,000 points against 119,880 for the hand-weighted heuristic. Two things did not help: a potential-based shaped reward collapsed mid-training before recovering, and Double DQN was within seed noise. The real limit was measurement: a cap hides differences between strong agents, so I added score per piece and a 10,000-piece survival check. A second agent searches every reachable lock position and learns T-spins, scoring about 240,000 points with 233 T-spins per game, but only when its network cannot see the board, and its checkpoints vary more within one run than the gap to a scripted baseline. The <a href="/writing/tetris-reinforcement-learning.html">full write-up</a> covers what failed as well as what worked.</p></div>
+                        <dl class="project__details"><div><dt>Stack</dt><dd>Go · Python · PyTorch · Gymnasium · gRPC · Ebitengine</dd></div><div><dt>Role</dt><dd>Full implementation</dd></div><div><dt>Write-up</dt><dd><a href="/writing/tetris-reinforcement-learning.html">Teaching a neural network to play Tetris</a></dd></div><div><dt>Source</dt><dd><a href="https://github.com/nweber23/tetri_ml" target="_blank" rel="noopener noreferrer">github.com/nweber23/tetri_ml</a></dd></div></dl>
+                        <ul class="project__related" role="list"><li><a class="link" href="/projects/transcendence-casino.html">Transcendence Casino — gRPC between Go and a game engine</a></li><li><a class="link" href="/projects/go-renderer.html">3D Go Renderer — Go engine work with no rendering dependency</a></li><li><a class="link" href="/writing/tetris-reinforcement-learning.html">Writing: teaching a neural network to play Tetris</a></li></ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer__left">
+            <span class="footer__copy">© 2026 · Niklas Weber</span>
+            <span class="footer__note">Hand-built with three.js and plain HTML</span>
+        </div>
+        <div class="footer__right">
+            <a href="/" class="footer__link">← Index</a>
+        </div>
+    </footer>
+
+    <script type="module" src="/src/projects.ts"></script>
+    <script data-goatcounter="https://mattz.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

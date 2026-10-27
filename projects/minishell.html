@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>minishell: POSIX-Compliant Shell in C | Niklas Weber</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%23010736'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='10.5'%20fill='none'%20stroke='%23fcf1d0'%20stroke-width='1.6'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='6'%20fill='none'%20stroke='%23fcf1d0'%20stroke-opacity='.5'%20stroke-width='1.4'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='2.2'%20fill='%23fcf1d0'/%3E%3C/svg%3E">
+
+    <meta name="description" content="A Unix shell written from scratch in C: process management, pipes, I/O redirection, environment expansion and signal handling.">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#fcf1d0">
+    <link rel="canonical" href="https://nweber.me/projects/minishell.html">
+
+    <meta property="og:title" content="minishell: POSIX-Compliant Shell in C | Niklas Weber">
+    <meta property="og:description" content="A Unix shell written from scratch in C: process management, pipes, I/O redirection, environment expansion and signal handling.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nweber.me/projects/minishell.html">
+    <meta property="og:site_name" content="Niklas Weber Portfolio">
+    <meta property="og:locale" content="en_US">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="minishell: POSIX-Compliant Shell in C | Niklas Weber">
+    <meta name="twitter:description" content="A Unix shell written from scratch in C: process management, pipes, I/O redirection, environment expansion and signal handling.">
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://nweber.me/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "minishell",
+      "item": "https://nweber.me/projects/minishell.html"
+    }
+  ]
+}
+    </script>
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "@id": "https://nweber.me/projects/minishell.html#software",
+  "name": "minishell",
+  "description": "A Unix shell written from scratch in C: process management, pipes, I/O redirection, environment expansion and signal handling.",
+  "url": "https://github.com/nweber23/minishell",
+  "codeRepository": "https://github.com/nweber23/minishell",
+  "programmingLanguage": [
+    {
+      "@type": "ComputerLanguage",
+      "name": "C"
+    }
+  ],
+  "runtimePlatform": "Linux",
+  "keywords": "POSIX shell, Unix systems programming, process management, fork exec, file descriptors, signal handling, C programming, shell implementation",
+  "creator": {
+    "@id": "https://nweber.me/#person"
+  },
+  "datePublished": "2025-06-30",
+  "mainEntityOfPage": "https://nweber.me/projects/minishell.html"
+}
+    </script>
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <div class="scroll-progress" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <nav class="nav" aria-label="Main navigation">
+        <ul class="nav__list" role="list">
+            <li><a href="/" class="nav__link" data-idx="00">← Back</a></li>
+        </ul>
+
+        <div class="nav__right">
+            <span class="nav__time" aria-label="Current time in CET">—</span>
+            <button class="nav__toggle" aria-label="Open menu" aria-expanded="false">
+                <span class="nav__toggle-bar"></span>
+                <span class="nav__toggle-bar"></span>
+            </button>
+        </div>
+    </nav>
+
+    <main id="main" class="main">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol class="breadcrumb__list">
+                <li class="breadcrumb__item">
+                    <a href="/" class="breadcrumb__link">home</a>
+                </li>
+                <li class="breadcrumb__item breadcrumb__sep">
+                    <span class="breadcrumb__current" aria-current="page">minishell</span>
+                </li>
+            </ol>
+        </nav>
+
+        <section class="section section--imprint" aria-labelledby="project-title" id="project-minishell">
+            <div class="section__head">
+                <h1 id="project-title" class="section__title">minishell</h1>
+                <span class="section__aside">POSIX-compliant shell in C · MMXXV</span>
+            </div>
+
+            <div class="project__body">
+                <figure class="project__figure"><blockquote><p>“The shell is a window into the operating system's soul.”</p></blockquote></figure>
+                <div class="project__text">
+                        <p class="project__summary">Unix shell from scratch — process management, file descriptors, pipes, I/O redirection, environment expansion, signal handling.</p>
+                        <dl class="project__metrics"><div><dt>Standard</dt><dd>POSIX</dd></div><div><dt>Primitives</dt><dd>fork/exec</dd></div><div><dt>Signals</dt><dd>sigaction</dd></div></dl>
+                        <div class="project__prose"><p><strong>Problem:</strong> Understanding how a Unix shell works requires deep knowledge of operating system fundamentals, and 42's minishell project forbids leaning on any of them from a library — no shell libraries, only raw libc and system calls. That means quoting, expansion, redirection, and pipelines all have to be built from first principles, and getting any one of them subtly wrong (a heredoc that doesn't respect quoted delimiters, an <code>unset</code> that leaves a stale env var visible to a child) is invisible until it breaks a specific command.</p><p><strong>Solution:</strong> A POSIX-compliant shell in C that replicates bash's core behavior. A hand-written lexer and recursive-descent parser turn raw input into a token stream that respects single/double-quote semantics and here-doc boundaries, then an execution engine walks that structure using genuine Unix <strong>system calls</strong> — no <code>system()</code>, no shortcuts.</p><p><strong>Technical Approach:</strong> Three systems-programming concepts carry the implementation. Process management via <code>fork</code>/<code>execve</code> with correct PATH resolution and exit-status propagation back through pipelines. File descriptor manipulation through <code>dup2()</code> for multi-stage pipes and I/O redirection (<code>&lt;</code>, <code>&gt;</code>, <code>&gt;&gt;</code>, here-docs), including keeping descriptors from leaking into children that shouldn't inherit them. And signal handling with <code>sigaction()</code> so <code>SIGINT</code>/<code>SIGQUIT</code> behave differently at the prompt versus inside a running child, without ever leaving a zombie process behind.</p><p><strong>Results &amp; Learnings:</strong> Building minishell transformed my understanding of Unix architecture — shells are orchestrators of the OS, not autonomous entities, and the same process/IPC discipline is exactly what shows up later in <a href="/projects/transcendence-casino.html">gRPC-bridged services</a> or a <a href="/projects/minirt.html">multi-threaded render loop</a>. Hands-on exploration of process management, file descriptors, and IPC deepened my appreciation for why <strong>low-level programming</strong> discipline matters.</p></div>
+                        <dl class="project__details"><div><dt>Language</dt><dd>C</dd></div><div><dt>Focus</dt><dd>Unix internals · syscalls</dd></div><div><dt>Source</dt><dd><a href="https://github.com/nweber23/minishell" target="_blank" rel="noopener noreferrer">github.com/nweber23/minishell</a></dd></div></dl>
+                        <ul class="project__related" role="list"><li><a class="link" href="/projects/minirt.html">miniRT — C optimization at the system level</a></li><li><a class="link" href="/projects/elo-leaderboard.html">42 ELO Leaderboard — Concurrent systems with performance discipline</a></li></ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer__left">
+            <span class="footer__copy">© 2026 · Niklas Weber</span>
+            <span class="footer__note">Hand-built with three.js and plain HTML</span>
+        </div>
+        <div class="footer__right">
+            <a href="/" class="footer__link">← Index</a>
+        </div>
+    </footer>
+
+    <script type="module" src="/src/projects.ts"></script>
+    <script data-goatcounter="https://mattz.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

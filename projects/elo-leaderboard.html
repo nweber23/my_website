@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>42 ELO Leaderboard: Competitive Rankings in Go and PostgreSQL | Niklas Weber</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%23010736'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='10.5'%20fill='none'%20stroke='%23fcf1d0'%20stroke-width='1.6'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='6'%20fill='none'%20stroke='%23fcf1d0'%20stroke-opacity='.5'%20stroke-width='1.4'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='2.2'%20fill='%23fcf1d0'/%3E%3C/svg%3E">
+
+    <meta name="description" content="High-performance ELO ranking system in Go and PostgreSQL with real-time match submissions, live leaderboards and 30ms average response times.">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#fcf1d0">
+    <link rel="canonical" href="https://nweber.me/projects/elo-leaderboard.html">
+
+    <meta property="og:title" content="42 ELO Leaderboard: Competitive Rankings in Go and PostgreSQL | Niklas Weber">
+    <meta property="og:description" content="High-performance ELO ranking system in Go and PostgreSQL with real-time match submissions, live leaderboards and 30ms average response times.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nweber.me/projects/elo-leaderboard.html">
+    <meta property="og:image" content="https://nweber.me/assets/42_ELO_Leaderboard.webp">
+    <meta property="og:site_name" content="Niklas Weber Portfolio">
+    <meta property="og:locale" content="en_US">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="42 ELO Leaderboard: Competitive Rankings in Go and PostgreSQL | Niklas Weber">
+    <meta name="twitter:description" content="High-performance ELO ranking system in Go and PostgreSQL with real-time match submissions, live leaderboards and 30ms average response times.">
+    <meta name="twitter:image" content="https://nweber.me/assets/42_ELO_Leaderboard.webp">
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://nweber.me/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "42 ELO Leaderboard",
+      "item": "https://nweber.me/projects/elo-leaderboard.html"
+    }
+  ]
+}
+    </script>
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "@id": "https://nweber.me/projects/elo-leaderboard.html#software",
+  "name": "42 ELO Leaderboard",
+  "description": "High-performance ELO ranking system in Go and PostgreSQL with real-time match submissions, live leaderboards and 30ms average response times.",
+  "url": "https://eloleaderboard.de",
+  "codeRepository": "https://github.com/nweber23/42_ELO_Leaderboard",
+  "programmingLanguage": [
+    {
+      "@type": "ComputerLanguage",
+      "name": "Go"
+    },
+    {
+      "@type": "ComputerLanguage",
+      "name": "SQL"
+    },
+    {
+      "@type": "ComputerLanguage",
+      "name": "TypeScript"
+    }
+  ],
+  "runtimePlatform": "Linux",
+  "keywords": "ELO rating system, Go programming, PostgreSQL optimization, competitive ranking, real-time leaderboard, concurrent systems, performance",
+  "image": "https://nweber.me/assets/42_ELO_Leaderboard.webp",
+  "creator": {
+    "@id": "https://nweber.me/#person"
+  },
+  "datePublished": "2026-03-25",
+  "mainEntityOfPage": "https://nweber.me/projects/elo-leaderboard.html"
+}
+    </script>
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <div class="scroll-progress" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <nav class="nav" aria-label="Main navigation">
+        <ul class="nav__list" role="list">
+            <li><a href="/" class="nav__link" data-idx="00">← Back</a></li>
+        </ul>
+
+        <div class="nav__right">
+            <span class="nav__time" aria-label="Current time in CET">—</span>
+            <button class="nav__toggle" aria-label="Open menu" aria-expanded="false">
+                <span class="nav__toggle-bar"></span>
+                <span class="nav__toggle-bar"></span>
+            </button>
+        </div>
+    </nav>
+
+    <main id="main" class="main">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol class="breadcrumb__list">
+                <li class="breadcrumb__item">
+                    <a href="/" class="breadcrumb__link">home</a>
+                </li>
+                <li class="breadcrumb__item breadcrumb__sep">
+                    <span class="breadcrumb__current" aria-current="page">42 elo leaderboard</span>
+                </li>
+            </ol>
+        </nav>
+
+        <section class="section section--imprint" aria-labelledby="project-title" id="project-elo">
+            <div class="section__head">
+                <h1 id="project-title" class="section__title">42 ELO Leaderboard</h1>
+                <span class="section__aside">Competitive rankings system for 42 Heilbronn · MMXXVI</span>
+            </div>
+
+            <div class="project__body">
+                <figure class="project__figure"><img src="/assets/42_ELO_Leaderboard.webp" alt="42 ELO Leaderboard competitive ranking interface with player ratings and match history" width="1231" height="749" loading="lazy" decoding="async">
+                        <figcaption class="mono-s"><span>Fig. 1.4 — Leaderboard interface</span><span>[archived]</span></figcaption></figure>
+                <div class="project__text">
+                        <p class="project__summary">High-performance ELO ranking system in Go and PostgreSQL, built for real-time match submissions with live leaderboards and historical data. No longer actively maintained.</p>
+                        <dl class="project__metrics"><div><dt>Avg response</dt><dd>30ms</dd></div><div><dt>Status</dt><dd>Archived</dd></div><div><dt>Query target</dt><dd>&lt;100ms</dd></div></dl>
+                        <div class="project__prose"><p><strong>Problem:</strong> The 42 Heilbronn community ran table football and table tennis tournaments with no shared way to track who was actually good. Beyond just storing results, two students could report the same match slot within seconds of each other — naive rating recalculation is a textbook race condition, since an Elo update is a read-modify-write against a shared score and two concurrent submissions can't be allowed to read the same stale rating and both write back.</p><p><strong>Solution:</strong> I built a complete Elo ranking system in Go with PostgreSQL, optimized from the ground up for performance. Match submissions run inside a transaction that locks both players' rows before applying the rating update, so concurrent reports serialize instead of clobbering each other, while reads — the public leaderboard, player profiles, match history — stay on a separate fast path. The backend served a React frontend with live leaderboards, detailed player profiles, and historical match data.</p><p><strong>Technical Approach:</strong> Composite indexes on the columns the leaderboard and history views actually filter and sort by, plus Redis for the aggregate stats (win/loss streaks, rating deltas) that don't need to be recomputed on every request and get invalidated on write instead. Go's goroutines handled concurrent API traffic cleanly since each match update was isolated to its own transaction. I profiled throughout development to find and remove the slow paths rather than guessing at them. Similar optimization patterns appear in other <a href="#work">systems projects</a> like the <a href="https://github.com/nweber23/miniRT" target="_blank" rel="noopener noreferrer">raytracer</a>, where every algorithmic decision has direct performance implications.</p><p><strong>Results &amp; Learnings:</strong> The system achieved 30ms average response times and maintained 99.9% uptime across tournament seasons, and the row-locking approach never produced a double-counted match under concurrent load in practice. <strong>Query optimization</strong> and profiling-driven development are non-negotiable for systems that prioritize performance. The project is now archived and no longer under active development.</p></div>
+                        <dl class="project__details"><div><dt>Stack</dt><dd>Go · TypeScript · React · PostgreSQL</dd></div><div><dt>Role</dt><dd>Full implementation</dd></div><div><dt>Demo</dt><dd><a href="https://eloleaderboard.de" target="_blank" rel="noopener noreferrer">eloleaderboard.de</a> — archived, unmaintained</dd></div><div><dt>Source</dt><dd><a href="https://github.com/nweber23/42_ELO_Leaderboard" target="_blank" rel="noopener noreferrer">github.com/nweber23/42_ELO_Leaderboard</a></dd></div></dl>
+                        <ul class="project__related" role="list"><li><a class="link" href="/projects/go-renderer.html">3D Go Renderer — Goroutine-based concurrent parsing</a></li><li><a class="link" href="/projects/transcendence-casino.html">Transcendence Casino — Real-time multiplayer systems</a></li><li><a class="link" href="/writing/elo-query-performance.html">Writing: getting leaderboard queries under 100ms</a></li></ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer__left">
+            <span class="footer__copy">© 2026 · Niklas Weber</span>
+            <span class="footer__note">Hand-built with three.js and plain HTML</span>
+        </div>
+        <div class="footer__right">
+            <a href="/" class="footer__link">← Index</a>
+        </div>
+    </footer>
+
+    <script type="module" src="/src/projects.ts"></script>
+    <script data-goatcounter="https://mattz.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>miniRT: 120+ FPS SIMD Raytracer in C | Niklas Weber</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%23010736'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='10.5'%20fill='none'%20stroke='%23fcf1d0'%20stroke-width='1.6'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='6'%20fill='none'%20stroke='%23fcf1d0'%20stroke-opacity='.5'%20stroke-width='1.4'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='2.2'%20fill='%23fcf1d0'/%3E%3C/svg%3E">
+
+    <meta name="description" content="A 120+ FPS raytracer in C built on SIMD vectorization, cache-efficient data structures and tile-based multi-threaded rendering.">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#fcf1d0">
+    <link rel="canonical" href="https://nweber.me/projects/minirt.html">
+
+    <meta property="og:title" content="miniRT: 120+ FPS SIMD Raytracer in C | Niklas Weber">
+    <meta property="og:description" content="A 120+ FPS raytracer in C built on SIMD vectorization, cache-efficient data structures and tile-based multi-threaded rendering.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nweber.me/projects/minirt.html">
+    <meta property="og:image" content="https://nweber.me/assets/minirt.webp">
+    <meta property="og:site_name" content="Niklas Weber Portfolio">
+    <meta property="og:locale" content="en_US">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="miniRT: 120+ FPS SIMD Raytracer in C | Niklas Weber">
+    <meta name="twitter:description" content="A 120+ FPS raytracer in C built on SIMD vectorization, cache-efficient data structures and tile-based multi-threaded rendering.">
+    <meta name="twitter:image" content="https://nweber.me/assets/minirt.webp">
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://nweber.me/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "miniRT",
+      "item": "https://nweber.me/projects/minirt.html"
+    }
+  ]
+}
+    </script>
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "@id": "https://nweber.me/projects/minirt.html#software",
+  "name": "miniRT",
+  "description": "A 120+ FPS raytracer in C built on SIMD vectorization, cache-efficient data structures and tile-based multi-threaded rendering.",
+  "url": "https://github.com/nweber23/miniRT",
+  "codeRepository": "https://github.com/nweber23/miniRT",
+  "programmingLanguage": [
+    {
+      "@type": "ComputerLanguage",
+      "name": "C"
+    }
+  ],
+  "runtimePlatform": "Linux",
+  "keywords": "raytracer, SIMD vectorization, SSE AVX intrinsics, C programming, high performance rendering, multi-threaded tile rendering, computer graphics, performance optimization",
+  "image": "https://nweber.me/assets/minirt.webp",
+  "creator": {
+    "@id": "https://nweber.me/#person"
+  },
+  "datePublished": "2025-12-15",
+  "mainEntityOfPage": "https://nweber.me/projects/minirt.html"
+}
+    </script>
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <div class="scroll-progress" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <nav class="nav" aria-label="Main navigation">
+        <ul class="nav__list" role="list">
+            <li><a href="/" class="nav__link" data-idx="00">← Back</a></li>
+        </ul>
+
+        <div class="nav__right">
+            <span class="nav__time" aria-label="Current time in CET">—</span>
+            <button class="nav__toggle" aria-label="Open menu" aria-expanded="false">
+                <span class="nav__toggle-bar"></span>
+                <span class="nav__toggle-bar"></span>
+            </button>
+        </div>
+    </nav>
+
+    <main id="main" class="main">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol class="breadcrumb__list">
+                <li class="breadcrumb__item">
+                    <a href="/" class="breadcrumb__link">home</a>
+                </li>
+                <li class="breadcrumb__item breadcrumb__sep">
+                    <span class="breadcrumb__current" aria-current="page">minirt</span>
+                </li>
+            </ol>
+        </nav>
+
+        <section class="section section--imprint" aria-labelledby="project-title" id="project-minirt">
+            <div class="section__head">
+                <h1 id="project-title" class="section__title">miniRT</h1>
+                <span class="section__aside">High-performance raytracer in C · MMXXV</span>
+            </div>
+
+            <div class="project__body">
+                <figure class="project__figure"><img src="/assets/minirt.webp" alt="miniRT raytracer C implementation with sphere rendering, shadows, reflections and Phong lighting" width="1912" height="1071" loading="lazy" decoding="async">
+                        <figcaption class="mono-s"><span>Fig. 1.5 — Rendered output</span><span>[120 fps]</span></figcaption></figure>
+                <div class="project__text">
+                        <p class="project__summary">120+ FPS raytracer built on SIMD vectorization, cache-efficient data structures, and tile-based multi-threaded rendering.</p>
+                        <dl class="project__metrics"><div><dt>Frame rate</dt><dd>120+ fps</dd></div><div><dt>Speed-up</dt><dd>80×</dd></div><div><dt>SIMD</dt><dd>SSE/AVX</dd></div></dl>
+                        <div class="project__prose"><p><strong>Problem:</strong> I started building a basic raytracer in C to understand computer graphics fundamentals. The initial naive implementation achieved only 1–5 FPS when rendering complex scenes with multiple light sources.</p><p><strong>Solution:</strong> I rebuilt the core rendering loop with <strong>C systems programming</strong> principles at its foundation. The approach combined SIMD vectorization using SSE/AVX intrinsics for batch vector operations, cache-efficient data structures using structure-of-arrays layouts instead of array-of-structures, and multi-threaded tile-based rendering to leverage multiple CPU cores.</p><p><strong>Technical Approach:</strong> Three pillars: vectorization, memory hierarchy, parallelism. SSE intrinsics process 4 floats in parallel, AVX handles 8. I restructured data to exploit CPU cache locality by storing all X-coordinates contiguously, then Y, then Z. The renderer divides the framebuffer into tiles, with each thread processing one tile independently. Profiling with <code>perf</code> and cycle-accurate analysis revealed that the ray-primitive intersection test was the hottest code path.</p><p><strong>Results &amp; Learnings:</strong> The optimized raytracer renders at 120+ FPS — an 80× improvement over the baseline. Systems programming at the graphics layer isn't just about algorithms; it's about respecting CPU cache behavior, instruction pipelines, and memory bandwidth.</p></div>
+                        <dl class="project__details"><div><dt>Language</dt><dd>C</dd></div><div><dt>Concepts</dt><dd>Linear algebra · optics simulation</dd></div><div><dt>Demo</dt><dd><a href="/minirt-studio.html">miniRT Studio — build scenes in the browser</a></dd></div><div><dt>Source</dt><dd><a href="https://github.com/nweber23/miniRT" target="_blank" rel="noopener noreferrer">github.com/nweber23/miniRT</a></dd></div></dl>
+                        <ul class="project__related" role="list"><li><a class="link" href="/minirt-studio.html">miniRT Studio — live scene builder with .rt import and export</a></li><li><a class="link" href="/projects/minishell.html">minishell — C fundamentals and Unix system calls</a></li><li><a class="link" href="/projects/go-renderer.html">3D Go Renderer — Rasterization vs. ray tracing</a></li></ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer__left">
+            <span class="footer__copy">© 2026 · Niklas Weber</span>
+            <span class="footer__note">Hand-built with three.js and plain HTML</span>
+        </div>
+        <div class="footer__right">
+            <a href="/" class="footer__link">← Index</a>
+        </div>
+    </footer>
+
+    <script type="module" src="/src/projects.ts"></script>
+    <script data-goatcounter="https://mattz.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

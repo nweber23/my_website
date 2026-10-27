@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Go Renderer: From-Scratch OpenGL Renderer in Go | Niklas Weber</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%23010736'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='10.5'%20fill='none'%20stroke='%23fcf1d0'%20stroke-width='1.6'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='6'%20fill='none'%20stroke='%23fcf1d0'%20stroke-opacity='.5'%20stroke-width='1.4'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='2.2'%20fill='%23fcf1d0'/%3E%3C/svg%3E">
+
+    <meta name="description" content="A from-scratch 3D renderer in Go with custom .obj and .mtl parsing, ear-clipping triangulation and an OpenGL 4.1 pipeline with zero steady-state allocations.">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#fcf1d0">
+    <link rel="canonical" href="https://nweber.me/projects/go-renderer.html">
+
+    <meta property="og:title" content="3D Go Renderer: From-Scratch OpenGL Renderer in Go | Niklas Weber">
+    <meta property="og:description" content="A from-scratch 3D renderer in Go with custom .obj and .mtl parsing, ear-clipping triangulation and an OpenGL 4.1 pipeline with zero steady-state allocations.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nweber.me/projects/go-renderer.html">
+    <meta property="og:image" content="https://nweber.me/assets/go_renderer_thumb.webp">
+    <meta property="og:site_name" content="Niklas Weber Portfolio">
+    <meta property="og:locale" content="en_US">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="3D Go Renderer: From-Scratch OpenGL Renderer in Go | Niklas Weber">
+    <meta name="twitter:description" content="A from-scratch 3D renderer in Go with custom .obj and .mtl parsing, ear-clipping triangulation and an OpenGL 4.1 pipeline with zero steady-state allocations.">
+    <meta name="twitter:image" content="https://nweber.me/assets/go_renderer_thumb.webp">
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://nweber.me/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "3D Go Renderer",
+      "item": "https://nweber.me/projects/go-renderer.html"
+    }
+  ]
+}
+    </script>
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "@id": "https://nweber.me/projects/go-renderer.html#software",
+  "name": "3D Go Renderer",
+  "description": "A from-scratch 3D renderer in Go with custom .obj and .mtl parsing, ear-clipping triangulation and an OpenGL 4.1 pipeline with zero steady-state allocations.",
+  "codeRepository": "https://github.com/nweber23/3D-Go-Renderer",
+  "programmingLanguage": [
+    {
+      "@type": "ComputerLanguage",
+      "name": "Go"
+    }
+  ],
+  "runtimePlatform": "OpenGL 4.1 / Linux",
+  "keywords": "3D renderer, Go programming, OpenGL, rasterization, obj parser, mtl parser, triangulation, ear clipping, vector math, matrix math, frustum culling, computer graphics, zero-allocation, goroutines",
+  "video": {
+    "@id": "https://nweber.me/#video-go-renderer"
+  },
+  "creator": {
+    "@id": "https://nweber.me/#person"
+  },
+  "datePublished": "2026-07-03",
+  "mainEntityOfPage": "https://nweber.me/projects/go-renderer.html",
+  "image": "https://nweber.me/assets/go_renderer_thumb.webp"
+}
+    </script>
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <div class="scroll-progress" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <nav class="nav" aria-label="Main navigation">
+        <ul class="nav__list" role="list">
+            <li><a href="/" class="nav__link" data-idx="00">← Back</a></li>
+        </ul>
+
+        <div class="nav__right">
+            <span class="nav__time" aria-label="Current time in CET">—</span>
+            <button class="nav__toggle" aria-label="Open menu" aria-expanded="false">
+                <span class="nav__toggle-bar"></span>
+                <span class="nav__toggle-bar"></span>
+            </button>
+        </div>
+    </nav>
+
+    <main id="main" class="main">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol class="breadcrumb__list">
+                <li class="breadcrumb__item">
+                    <a href="/" class="breadcrumb__link">home</a>
+                </li>
+                <li class="breadcrumb__item breadcrumb__sep">
+                    <span class="breadcrumb__current" aria-current="page">3d go renderer</span>
+                </li>
+            </ol>
+        </nav>
+
+        <section class="section section--imprint" aria-labelledby="project-title" id="project-go-renderer">
+            <div class="section__head">
+                <h1 id="project-title" class="section__title">3D Go Renderer</h1>
+                <span class="section__aside">From-scratch OpenGL renderer in Go · MMXXVI</span>
+            </div>
+
+            <div class="project__body">
+                <figure class="project__figure"><video width="1280" height="720" autoplay muted loop playsinline preload="metadata" poster="/assets/go_renderer_thumb.webp" aria-label="3D Go Renderer orbit camera demo, rendering a textured .obj model in real time">
+                            <source data-src="/assets/go_renderer.mp4" type="video/mp4">
+                        </video>
+                        <figcaption class="mono-s"><span>Fig. 1.3 — Orbit camera demo</span><span>[opengl 4.1]</span></figcaption></figure>
+                <div class="project__text">
+                        <p class="project__summary">A from-scratch 3D renderer in Go — custom .obj/.mtl parsing, ear-clipping triangulation, and an OpenGL 4.1 pipeline with zero steady-state heap allocations.</p>
+                        <dl class="project__metrics"><div><dt>Allocs/frame</dt><dd>0.06</dd></div><div><dt>Parser</dt><dd>Concurrent</dd></div><div><dt>UV modes</dt><dd>3</dd></div></dl>
+                        <div class="project__prose"><p><strong>Problem:</strong> scop is 42's OpenGL project — render a 3D <code>.obj</code> model with only a math library and raw OpenGL bindings as external dependencies. There's no scene-graph, no asset pipeline, no glTF loader to lean on: the file parser, the vector and matrix math, the triangulation, and the camera all have to be built from first principles.</p><p><strong>Solution:</strong> The result is a Go renderer on <strong>OpenGL 4.1 core</strong> with GLFW for windowing. Custom <code>.obj</code> and <code>.mtl</code> parsers handle geometry and material properties (Ka/Kd/Ks/Ns/map_Kd) with graceful degradation when texture files are missing, and three automatic UV-generation modes — planar, cylindrical, spherical — cover models that ship without texture coordinates. An orbit and free-fly camera sit on top of hand-written vec2/3/4 types and column-major mat4 math, including perspective and lookAt transforms, with no external math dependency.</p><p><strong>Technical Approach:</strong> Two problems needed real solving. Arbitrary polygons — including concave, non-planar, and degenerate ones — get triangulated with <strong>ear clipping over each face's Newell-normal plane</strong>, so geometry stays correct regardless of how the source .obj was authored. And the render loop is allocation-free at steady state: a single VAO/VBO/EBO per model with vertex deduplication, Gribb–Hartmann frustum culling, and texture-state batching bring it to 0.06 allocs/frame under <code>-debug</code>. Parsing itself is parallelized — worker goroutines pre-parse vertex and face data per line-aligned chunk, the same concurrency discipline behind the <a href="/projects/elo-leaderboard.html">ELO Leaderboard</a>'s match processing.</p><p><strong>Results &amp; Learnings:</strong> On the Utah teapot, concurrent parsing cut load time from 9.9ms to 7.0ms, and unit tests cover the parser, triangulation, UV generation, math, camera, and frustum culling. Building a rasterization pipeline by hand — after a SIMD <a href="/projects/minirt.html">raytracer</a> the semester before — made the tradeoffs between rasterization and ray tracing concrete in a way tutorials never do.</p></div>
+                        <dl class="project__details"><div><dt>Language</dt><dd>Go</dd></div><div><dt>Graphics</dt><dd>OpenGL 4.1 · GLFW</dd></div><div><dt>Source</dt><dd><a href="https://github.com/nweber23/3D-Go-Renderer" target="_blank" rel="noopener noreferrer">github.com/nweber23/3D-Go-Renderer</a></dd></div></dl>
+                        <ul class="project__related" role="list"><li><a class="link" href="/projects/minirt.html">miniRT — Rasterization vs. ray tracing, C-family graphics work</a></li><li><a class="link" href="/projects/elo-leaderboard.html">42 ELO Leaderboard — Goroutine-based concurrent parsing</a></li><li><a class="link" href="/writing/ear-clipping.html">Writing: triangulating polygons with ear clipping</a></li></ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer__left">
+            <span class="footer__copy">© 2026 · Niklas Weber</span>
+            <span class="footer__note">Hand-built with three.js and plain HTML</span>
+        </div>
+        <div class="footer__right">
+            <a href="/" class="footer__link">← Index</a>
+        </div>
+    </footer>
+
+    <script type="module" src="/src/projects.ts"></script>
+    <script data-goatcounter="https://mattz.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

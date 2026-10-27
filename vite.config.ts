@@ -3,11 +3,14 @@ import { readdirSync } from 'node:fs';
 import { defineConfig } from 'vite';
 
 const root = import.meta.dirname;
-const posts = Object.fromEntries(
-  readdirSync(resolve(root, 'writing'))
-    .filter((f) => f.endsWith('.html'))
-    .map((f) => [`writing/${f.replace('.html', '')}`, resolve(root, 'writing', f)])
-);
+const pagesIn = (dir: string) =>
+  Object.fromEntries(
+    readdirSync(resolve(root, dir))
+      .filter((f) => f.endsWith('.html'))
+      .map((f) => [`${dir}/${f.replace('.html', '')}`, resolve(root, dir, f)])
+  );
+const posts = pagesIn('writing');
+const projects = pagesIn('projects');
 
 export default defineConfig({
   build: {
@@ -21,6 +24,7 @@ export default defineConfig({
         imprint: resolve(root, 'imprint.html'),
         studio: resolve(root, 'minirt-studio.html'),
         ...posts,
+        ...projects,
       },
     },
   },
