@@ -34,6 +34,9 @@ POSIX-compliant shell in C implementing fork/exec, pipe chaining, redirections, 
 ### [Teaching a neural network to play Tetris, one layer at a time](https://nweber.me/writing/tetris-reinforcement-learning.html)
 Building a Tetris engine in Go, a DQN agent in PyTorch and a viewer to watch it learn: the baseline, the Go-Python bridge, what worked (+44% over a heuristic) and what did not (shaped rewards, Double DQN).
 
+### [For vs while loops in C, C++ and Go: identical assembly, and what actually changes performance](https://nweber.me/writing/for-vs-while-loops.html)
+I compared for and while loops in C, C++ and Go at the machine-code level: identical. What actually changes performance is the counter type, calls in the loop condition, bounds checks, and loop alignment.
+
 ### [Building a container runtime from scratch: namespaces, pivot_root, cgroups v2, and OverlayFS in pure Go](https://nweber.me/writing/container-from-scratch.html)
 Writing a minimal container runtime in pure Go — PID/mount/UTS/network namespaces, pivot_root, cgroups v2, and OverlayFS — by hand, with the real debugging incidents along the way.
 
