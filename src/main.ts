@@ -263,7 +263,7 @@ function setupMotion({ dots, lenis }: Stage) {
     const marks = $$('[data-values-progress] span', values);
     const bar = $('[data-values-progress] i', values);
     const n = panels.length;
-    const dist = () => track.scrollWidth - innerWidth;
+    const dist = () => track.offsetWidth - innerWidth; // offsetWidth: scrollWidth also counts overflowing ghosts
     const st = { pos: 0, target: 0, last: -1 };
     panels.forEach((panel) => [...panel.children].forEach((c, j) => (c as HTMLElement).style.setProperty('--px', String(36 + j * 26))));
     ScrollTrigger.create({
