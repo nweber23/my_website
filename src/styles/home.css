@@ -50,6 +50,12 @@ main,
   font-family: var(--mono);
 }
 
+@media (max-width: 760px) {
+  .hero__ocean {
+    opacity: 0.5;
+  }
+}
+
 .hero__inner {
   position: relative;
   height: 100%;

@@ -672,7 +672,7 @@ function setupOcean() {
       accents: ['#fcf1d0', '#8fa6e0', '#22396f'],
     });
     const sharks = [1, 0.7, 0.84, 0.77].map((size) => ({ kind: 'classic', size }));
-    new OceanEngine(canvas, sharks, undefined, cfg);
+    new OceanEngine(canvas, sharks, innerWidth < 760 ? 70 : undefined, cfg);
   }, { rootMargin: '400px' });
   io.observe(canvas);
 }

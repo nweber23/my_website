@@ -379,6 +379,15 @@ button {
     grid-template-columns: 1fr auto;
     font-size: 12px;
   }
+  /* Opaque-ish bar on light sections so the pill stays readable over the giant type. */
+  .hdr:not(.is-dark) {
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+  .hdr.is-scrolled {
+    transform: none;
+  }
   .hdr__geo {
     display: none;
   }
