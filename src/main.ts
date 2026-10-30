@@ -656,4 +656,26 @@ function setupNav() {
   }
 }
 
+// Hero background: ASCII ocean, loaded after first paint.
+function setupOcean() {
+  const canvas = $<HTMLCanvasElement>('.hero__ocean');
+  const io = new IntersectionObserver(async ([e]) => {
+    if (!e.isIntersecting) return;
+    io.disconnect();
+    const { OceanEngine, defaultConfig } = await import('./poster/ocean');
+    const cfg = Object.assign(defaultConfig(), {
+      background: '#010736',
+      gridColor: 'rgba(252,241,208,0.08)',
+      fishRGB: [252, 241, 208],
+      wakeRGB: [60, 90, 170],
+      sharkTint: [1.05, 1.0, 0.85],
+      accents: ['#fcf1d0', '#8fa6e0', '#22396f'],
+    });
+    const sharks = [1, 0.7, 0.84, 0.77].map((size) => ({ kind: 'classic', size }));
+    new OceanEngine(canvas, sharks, undefined, cfg);
+  }, { rootMargin: '400px' });
+  io.observe(canvas);
+}
+setupOcean();
+
 boot();

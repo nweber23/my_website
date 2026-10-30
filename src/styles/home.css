@@ -42,6 +42,14 @@ main,
 }
 
 /* Same grid as the loader, so its name hands over to this one without a jump. */
+.hero__ocean {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  font-family: var(--mono);
+}
+
 .hero__inner {
   position: relative;
   height: 100%;
