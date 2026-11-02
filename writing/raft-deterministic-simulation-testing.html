@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing Raft with a Fake Clock — Niklas Weber</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%23010736'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='10.5'%20fill='none'%20stroke='%23fcf1d0'%20stroke-width='1.6'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='6'%20fill='none'%20stroke='%23fcf1d0'%20stroke-opacity='.5'%20stroke-width='1.4'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='2.2'%20fill='%23fcf1d0'/%3E%3C/svg%3E">
+
+    <meta name="description" content="How raftlab tests its Raft implementation: a core with no clock or sockets, a seeded chaos test that checks safety every 10 ms and replays any failure from its seed, and the stale-timer bug a fake clock cannot reproduce.">
+    <meta name="robots" content="index, follow">
+    <meta name="last-modified" content="2026-11-02">
+    <meta name="theme-color" content="#fcf1d0">
+    <link rel="canonical" href="https://nweber.me/writing/raft-deterministic-simulation-testing.html">
+
+    <meta property="og:title" content="Testing Raft with a Fake Clock">
+    <meta property="og:description" content="How raftlab tests its Raft implementation: a core with no clock or sockets, a seeded chaos test that checks safety every 10 ms and replays any failure from its seed, and the stale-timer bug a fake clock cannot reproduce.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://nweber.me/writing/raft-deterministic-simulation-testing.html">
+    <meta property="og:image" content="https://nweber.me/assets/raftlab.webp">
+    <meta property="og:site_name" content="Niklas Weber Portfolio">
+    <meta property="og:locale" content="en_US">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Testing Raft with a Fake Clock">
+    <meta name="twitter:description" content="How raftlab tests its Raft implementation: a core with no clock or sockets, a seeded chaos test that checks safety every 10 ms and replays any failure from its seed, and the stale-timer bug a fake clock cannot reproduce.">
+    <meta name="twitter:image" content="https://nweber.me/assets/raftlab.webp">
+
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://nweber.me/" },
+        { "@type": "ListItem", "position": 2, "name": "Writing", "item": "https://nweber.me/writing.html" },
+        { "@type": "ListItem", "position": 3, "name": "Testing Raft with a fake clock: deterministic chaos in Go", "item": "https://nweber.me/writing/raft-deterministic-simulation-testing.html" }
+      ]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "@id": "https://nweber.me/writing/raft-deterministic-simulation-testing.html",
+      "headline": "Testing Raft with a fake clock: deterministic chaos in Go",
+      "description": "How raftlab tests its Raft implementation: a core with no clock or sockets, a seeded chaos test that checks safety every 10 ms and replays any failure from its seed, and the stale-timer bug a fake clock cannot reproduce.",
+      "author": {
+        "@type": "Person",
+        "@id": "https://nweber.me/#person",
+        "name": "Niklas Weber",
+        "url": "https://nweber.me/",
+        "jobTitle": "Systems Developer",
+        "description": "Systems Developer at 42 Heilbronn and Software Engineering student at Hochschule Heilbronn, specializing in C, Go, and low-level programming.",
+        "sameAs": [
+          "https://github.com/nweber23",
+          "https://profile.intra.42.fr/users/nweber",
+          "https://www.linkedin.com/in/niklas-weber-488576329/"
+        ]
+      },
+      "datePublished": "2026-11-02",
+      "dateModified": "2026-11-02",
+      "mainEntityOfPage": "https://nweber.me/writing/raft-deterministic-simulation-testing.html",
+      "about": { "@id": "https://nweber.me/#project-raftlab" },
+      "image": "https://nweber.me/assets/raftlab.webp",
+      "keywords": "Raft, distributed systems, deterministic simulation testing, chaos testing, fake clock, Go, consensus, fault injection"
+    }
+    </script>
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <div class="scroll-progress" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <nav class="nav" aria-label="Main navigation">
+        <ul class="nav__list" role="list">
+            <li><a href="/" class="nav__link" data-idx="00">← Back</a></li>
+        </ul>
+
+        <div class="nav__right">
+            <span class="nav__time" aria-label="Current time in CET">—</span>
+            <button class="nav__toggle" aria-label="Open menu" aria-expanded="false">
+                <span class="nav__toggle-bar"></span>
+                <span class="nav__toggle-bar"></span>
+            </button>
+        </div>
+    </nav>
+
+    <main id="main" class="main">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol class="breadcrumb__list">
+                <li class="breadcrumb__item">
+                    <a href="/" class="breadcrumb__link">home</a>
+                </li>
+                <li class="breadcrumb__item breadcrumb__sep">
+                    <a href="../writing.html" class="breadcrumb__link">writing</a>
+                </li>
+                <li class="breadcrumb__item breadcrumb__sep">
+                    <span class="breadcrumb__current" aria-current="page">testing raft</span>
+                </li>
+            </ol>
+        </nav>
+
+        <section class="section section--imprint" aria-labelledby="raft-title" id="raft-testing">
+            <div class="section__head">
+                <h1 id="raft-title" class="section__title">Testing Raft with a <em>fake clock</em>: deterministic chaos in Go</h1>
+                <span class="section__aside">2026-11-02 · raftlab</span>
+            </div>
+
+            <div class="imprint__layout imprint__layout--full">
+                <article class="imprint__block">
+                    <p class="imprint__text">Raft is easy to read and hard to trust. The paper is a few pages long, and the bugs live in the interleavings: a message that arrives after a leader change, a timer that fires just before it is stopped, a crash halfway through a write. I wrote <a href="/projects/raftlab.html">raftlab</a>, a Raft implementation in Go with a replicated key-value store and a browser visualizer, and the part I would keep if I had to throw the rest away is how it is tested.</p>
+
+                    <figure class="article__figure"><img src="../assets/raftlab.webp" alt="raftlab visualizer during a network partition: five Raft nodes in a pentagon, two of them marked leader, with dashed red links where messages are dropped between the old leader and the rest" width="1600" height="1000" decoding="async">
+                        <figcaption>The visualizer during a partition. The old leader (N2, term 2) still believes it leads but cannot reach a majority. The other side has elected N5 in term 3. Red dashed links are dropped messages.</figcaption></figure>
+
+                    <h2 class="imprint__heading">Four seams and no clock</h2>
+                    <p class="imprint__text">The core, <code>raft.Node</code>, implements Figure 2 of the Raft paper and nothing else. It has no goroutines and no knowledge of sockets or wall-clock time. Everything it touches goes through one of four interfaces:</p>
+                    <pre class="article__code"><code>Transport     send RPCs to peers
+Clock         election and heartbeat timers
+Storage       durable term, vote, log, snapshot
+StateMachine  apply committed commands</code></pre>
+                    <p class="imprint__text">Each has a real implementation and a test one. <code>Transport</code> is HTTP in a real cluster, an in-process network with fault injection in the visualizer, and a manual in-memory one in unit tests. <code>Clock</code> is the system clock or a fake one. <code>Storage</code> is a checksummed write-ahead log. <code>StateMachine</code> is the key-value store, or a recorder in tests.</p>
+                    <p class="imprint__text">Because time and I/O are injected, a whole five-node cluster can run on the fake clock inside a single-threaded test. Nothing sleeps. The test advances virtual time in 10 ms steps and the fake network delivers messages when their virtual delay has passed. A run is then a pure function of its random seed: same seed, same elections, same failures.</p>
+
+                    <h2 class="imprint__heading">The chaos test</h2>
+                    <p class="imprint__text">The chaos test runs five nodes for 40 virtual seconds. It randomly crashes and restarts nodes, partitions the network, and injects loss, duplication and delay, while four clients write and read. After every 10 ms step it checks two safety properties: election safety (never two leaders in the same term) and committed-prefix agreement (no two nodes disagree about an entry they have both committed).</p>
+                    <p class="imprint__text">At the end it heals the cluster and checks three more things. The replicas converge, every acknowledged write survived, and every read returned the last acknowledged write. A failure prints its seed, and replaying it is one command:</p>
+                    <pre class="article__code"><code>CHAOS_SEED=17 go test -run Chaos ./internal/kv
+make test-chaos    # 100 seeds</code></pre>
+                    <p class="imprint__text">That replay is what makes the test useful. A distributed test that fails once in a hundred runs and never again teaches you nothing. A failing seed can be rerun, stepped through and kept as a regression test.</p>
+
+                    <h2 class="imprint__heading">What a fake clock cannot find</h2>
+                    <p class="imprint__text">The bug that stayed hidden longest was in the clock itself. A real clock can run a callback that fired just before <code>Stop</code> was called. In raftlab that means a stale election timer can still run, start a spurious election and depose a healthy leader. The fake clock cannot reproduce it, because the fake clock never runs a callback concurrently with a stop.</p>
+                    <p class="imprint__text">The fix is to replace timers instead of resetting them and to give each one a generation counter, so a callback from an old generation does nothing. A hand-driven clock covers it in tests. The lesson is the limit of the whole approach: deterministic simulation finds the interleavings you modelled, and the concurrency of the clock was not one of them.</p>
+
+                    <h2 class="imprint__heading">Two bugs about late and repeated messages</h2>
+                    <p class="imprint__text">Both come from the network delaying, reordering or duplicating messages, which is exactly what the fault injector does.</p>
+                    <p class="imprint__text"><strong>A delayed <code>AppendEntries</code> erased newer entries.</strong> An old request arriving late truncated the follower's log even though nothing in it conflicted. The log is now truncated only on a real conflict.</p>
+                    <p class="imprint__text"><strong>Reordered and duplicated replies moved <code>nextIndex</code> backwards.</strong> A stale reply made the leader forget how much of a follower's log it had already matched. Replies now carry <code>MatchIndex</code>, so a stale one cannot regress the leader's view of a follower.</p>
+
+                    <h2 class="imprint__heading">A bug only Windows could find</h2>
+                    <p class="imprint__text">I found this one while recording the demo, not in a test. Windows cannot rename over an open file, so the first time a node compacted its log it panicked. Compaction writes a new file, fsyncs it and renames it over the old one, so a crash leaves either the old file or the new one and never a mix. The write-ahead log now closes its handles before the rename and reopens them afterwards, and skips the directory fsync on Windows, where directories cannot be opened for sync. It is a reminder that the simulation checks the algorithm and not the operating system.</p>
+
+                    <h2 class="imprint__heading">What it still does not check</h2>
+                    <p class="imprint__text">The read check, that every read returns the last acknowledged write, is weaker than a real linearizability checker, which would verify every ordering the history allows. A Porcupine-style checker is on the roadmap, together with PreVote, CheckQuorum and membership changes through joint consensus. The design trade-offs, including why reads go through the log and cost a full replication round, are written down in the repository.</p>
+                    <p class="imprint__text">The source is at <a href="https://github.com/nweber23/raftlab" target="_blank" rel="noopener noreferrer">github.com/nweber23/raftlab</a>.</p>
+
+                    <p class="imprint__text"><a href="/projects/raftlab.html">← Back to the raftlab project</a></p>
+                </article>
+            </div>
+        </section>
+
+        <nav class="writing-index" aria-label="More posts">
+            <div class="writing-index__item">
+                <a href="for-vs-while-loops.html" class="writing-index__link">For vs while in C, C++ and Go: the assembly is identical</a>
+                <span class="writing-index__meta">2026-10-02 · Systems programming</span>
+            </div>
+            <div class="writing-index__item">
+                <a href="tetris-reinforcement-learning.html" class="writing-index__link">Teaching a neural network to play Tetris, one layer at a time</a>
+                <span class="writing-index__meta">2026-10-16 · Reinforcement learning</span>
+            </div>
+            <div class="writing-index__item">
+                <a href="container-from-scratch.html" class="writing-index__link">Building a container runtime from scratch</a>
+                <span class="writing-index__meta">2026-09-17 · Systems programming</span>
+            </div>
+            <div class="writing-index__item">
+                <a href="build-from-scratch.html" class="writing-index__link">Why I keep building things from scratch</a>
+                <span class="writing-index__meta">2026-08-26 · General</span>
+            </div>
+            <div class="writing-index__item">
+                <a href="elo-query-performance.html" class="writing-index__link">Getting Elo leaderboard queries under 100ms</a>
+                <span class="writing-index__meta">2026-08-25 · 42 Elo Leaderboard</span>
+            </div>
+            <div class="writing-index__item">
+                <a href="ear-clipping.html" class="writing-index__link">Triangulating arbitrary polygons with ear clipping</a>
+                <span class="writing-index__meta">2026-08-23 · Go renderer</span>
+            </div>
+            <div class="writing-index__item">
+                <a href="grpc-vs-rest.html" class="writing-index__link">gRPC versus REST: picking protocols at the Transcendence service boundary</a>
+                <span class="writing-index__meta">2026-08-23 · Transcendence</span>
+            </div>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <div class="footer__left">
+            <span class="footer__copy">© 2026 · Niklas Weber</span>
+            <span class="footer__note">Hand-built with three.js and plain HTML</span>
+        </div>
+        <div class="footer__right">
+            <a href="/" class="footer__link">← Index</a>
+        </div>
+    </footer>
+
+    <script type="module" src="/src/pages.ts"></script>
+    <script data-goatcounter="https://mattz.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
