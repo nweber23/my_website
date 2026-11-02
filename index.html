@@ -9,28 +9,28 @@
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%23010736'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='10.5'%20fill='none'%20stroke='%23fcf1d0'%20stroke-width='1.6'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='6'%20fill='none'%20stroke='%23fcf1d0'%20stroke-opacity='.5'%20stroke-width='1.4'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='2.2'%20fill='%23fcf1d0'/%3E%3C/svg%3E">
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Niklas Weber, systems developer at 42 Heilbronn. Go, C and C++ projects: a real-time casino, a SIMD raytracer, an OpenGL renderer and a Tetris RL agent.">
+    <meta name="description" content="Niklas Weber, systems developer at 42 Heilbronn. Go, C and C++ projects: Raft consensus, a real-time casino, a SIMD raytracer, an OpenGL renderer and a Tetris RL agent.">
     <meta name="author" content="Niklas Weber">
     <meta name="robots" content="index, follow">
-    <meta name="last-modified" content="2026-10-19">
+    <meta name="last-modified" content="2026-11-02">
     <meta name="theme-color" content="#fcf1d0">
     <meta name="color-scheme" content="light">
     <link rel="canonical" href="https://nweber.me/">
 
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="Niklas Weber | Go &amp; C Systems Developer, Heilbronn">
-    <meta property="og:description" content="Niklas Weber, systems developer at 42 Heilbronn. Go, C and C++ projects: a real-time casino, a SIMD raytracer, an OpenGL renderer and a Tetris RL agent.">
+    <meta property="og:description" content="Niklas Weber, systems developer at 42 Heilbronn. Go, C and C++ projects: Raft consensus, a real-time casino, a SIMD raytracer, an OpenGL renderer and a Tetris RL agent.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://nweber.me/">
-    <meta property="og:image" content="https://nweber.me/assets/tetris_ml.webp">
+    <meta property="og:image" content="https://nweber.me/assets/raftlab.webp">
     <meta property="og:site_name" content="Niklas Weber Portfolio">
     <meta property="og:locale" content="en_US">
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Niklas Weber | Go &amp; C Systems Developer, Heilbronn">
-    <meta name="twitter:description" content="Niklas Weber, systems developer at 42 Heilbronn. Go, C and C++ projects: a real-time casino, a SIMD raytracer, an OpenGL renderer and a Tetris RL agent.">
-    <meta name="twitter:image" content="https://nweber.me/assets/tetris_ml.webp">
+    <meta name="twitter:description" content="Niklas Weber, systems developer at 42 Heilbronn. Go, C and C++ projects: Raft consensus, a real-time casino, a SIMD raytracer, an OpenGL renderer and a Tetris RL agent.">
+    <meta name="twitter:image" content="https://nweber.me/assets/raftlab.webp">
 
     <link rel="preconnect" href="https://api.github.com" crossorigin>
     <link rel="preconnect" href="https://github-contributions-api.jogruber.de" crossorigin>
@@ -75,7 +75,9 @@
         "REST API Design",
         "C++",
         "Reinforcement Learning",
-        "PyTorch"
+        "PyTorch",
+        "Distributed Systems",
+        "Raft Consensus"
       ],
       "knowsLanguage": [
         { "@type": "Language", "name": "English" },
@@ -204,6 +206,27 @@
     {
       "@context": "https://schema.org",
       "@type": "SoftwareSourceCode",
+      "@id": "https://nweber.me/#project-raftlab",
+      "name": "raftlab",
+      "description": "Raft consensus implemented from scratch in Go, a linearizable replicated key-value store on top of it, and a browser UI where you can kill nodes, cut the network and watch the cluster recover. About 5,100 lines of Go with a seeded, deterministic chaos test that checks the safety properties of the algorithm.",
+      "url": "https://nweber.me/projects/raftlab.html",
+      "codeRepository": "https://github.com/nweber23/raftlab",
+      "programmingLanguage": [
+        { "@type": "ComputerLanguage", "name": "Go" },
+        { "@type": "ComputerLanguage", "name": "JavaScript" }
+      ],
+      "runtimePlatform": "Linux, Windows, macOS",
+      "keywords": "Raft, consensus algorithm, distributed systems, leader election, log replication, replicated state machine, key-value store, snapshots, write-ahead log, deterministic simulation testing, chaos testing, Go",
+      "image": "https://nweber.me/assets/raftlab.webp",
+      "creator": { "@id": "https://nweber.me/#person" },
+      "datePublished": "2026-11-02"
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareSourceCode",
       "@id": "https://nweber.me/#project-tetris-ml",
       "name": "Tetris ML",
       "description": "A Tetris engine in Go, DQN reinforcement learning agents trained with PyTorch, and an Ebitengine viewer that shows them playing and learning. The placement agent scores about 44% higher than a hand-weighted heuristic baseline, and a second agent searches every reachable lock position to learn T-spins.",
@@ -266,7 +289,7 @@
       "about": { "@id": "https://nweber.me/#person" },
       "mainEntity": { "@id": "https://nweber.me/#person" },
       "datePublished": "2026-05-23",
-      "dateModified": "2026-10-19T00:00:00Z",
+      "dateModified": "2026-11-02T00:00:00Z",
       "inLanguage": "en"
     }
     </script>
@@ -304,14 +327,14 @@
             <span class="is-secondary">Systems_developer</span>
             <span class="is-secondary">42_+_HHN</span>
         </a>
-        <span class="hdr__mid is-secondary">[01-06 WORK]</span>
+        <span class="hdr__mid is-secondary">[01-07 WORK]</span>
         <nav class="pill" aria-label="Main navigation" data-pill>
             <a href="#work" data-nav="work">Work</a>
             <a href="#about" data-nav="about">About</a>
             <a href="#contact" data-nav="contact">Contact</a>
             <span class="pill__slide" aria-hidden="true"></span>
         </nav>
-        <a class="hdr__mid is-secondary link" href="writing.html">Writing_(6)</a>
+        <a class="hdr__mid is-secondary link" href="writing.html">Writing_(8)</a>
         <span class="hdr__geo"><svg class="globe" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="20" cy="20" r="18"/><ellipse cx="20" cy="20" rx="8" ry="18"/><ellipse cx="20" cy="20" rx="14" ry="18"/><path d="M2 20h36M5 11h30M5 29h30M20 2v36"/></g></svg><span>Heilbronn,_DE</span></span>
     </header>
 
@@ -323,6 +346,7 @@
                 <h1 id="hero-title" class="sr-only">Niklas Weber — Systems Developer</h1>
                 <div class="hero__log mono-s" data-hero-log aria-hidden="true">
                     <span>$ make</span>
+                    <span>go  raftlab .......... ok</span>
                     <span>cc  minishell ........ ok</span>
                     <span>cc  miniRT ........... ok</span>
                     <span>go  renderer ......... ok</span>
@@ -356,7 +380,7 @@
         <!-- 5. Giant text rows ----------------------------------------------------- -->
         <section class="rows" data-rows aria-label="What I build">
             <div class="rows__row rows__row--display" data-row="0"><span>SHELLS <i class="ico"><svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 0c1.6 11.5 8.5 18.4 20 20-11.5 1.6-18.4 8.5-20 20-1.6-11.5-8.5-18.4-20-20C11.5 18.4 18.4 11.5 20 0z" fill="currentColor"/></svg></i> RAYTRACERS <i class="ico"><svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 0c1.6 11.5 8.5 18.4 20 20-11.5 1.6-18.4 8.5-20 20-1.6-11.5-8.5-18.4-20-20C11.5 18.4 18.4 11.5 20 0z" fill="currentColor"/></svg></i> RENDERERS <i class="ico"><svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 0c1.6 11.5 8.5 18.4 20 20-11.5 1.6-18.4 8.5-20 20-1.6-11.5-8.5-18.4-20-20C11.5 18.4 18.4 11.5 20 0z" fill="currentColor"/></svg></i> SHELLS</span></div><div class="rows__row rows__row--poster" data-row="1"><span>BUILT FROM <span class="circled">SCRATCH<svg viewBox="0 0 300 120" preserveAspectRatio="none" aria-hidden="true"><path d="M150 8C70 6 10 30 12 62s70 52 146 50 136-24 134-56S226 6 140 12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></span> IN C &amp; GO</span></div><div class="rows__row rows__row--display" data-row="2"><span>FORK · EXEC · PIPE · DUP2 · WAITPID · FORK · EXEC</span></div><div class="rows__row rows__row--poster" data-row="3"><span><i class="ico ico--globe"><svg class="globe" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="20" cy="20" r="18"/><ellipse cx="20" cy="20" rx="8" ry="18"/><ellipse cx="20" cy="20" rx="14" ry="18"/><path d="M2 20h36M5 11h30M5 29h30M20 2v36"/></g></svg></i> REAL-TIME SYSTEMS <i class="ico ico--globe"><svg class="globe" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="20" cy="20" r="18"/><ellipse cx="20" cy="20" rx="8" ry="18"/><ellipse cx="20" cy="20" rx="14" ry="18"/><path d="M2 20h36M5 11h30M5 29h30M20 2v36"/></g></svg></i> GRPC <i class="ico ico--globe"><svg class="globe" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="20" cy="20" r="18"/><ellipse cx="20" cy="20" rx="8" ry="18"/><ellipse cx="20" cy="20" rx="14" ry="18"/><path d="M2 20h36M5 11h30M5 29h30M20 2v36"/></g></svg></i></span></div><div class="rows__row rows__row--display" data-row="4"><span>ZER<span class="smile" aria-label="o">☺</span> ALLOCATIONS PER FRAME · ZER<span class="smile" aria-label="o">☺</span></span></div><div class="rows__row rows__row--poster" data-row="5"><span>SIMD <i class="ico ico--qr" data-flicker><svg class="qr" viewBox="0 0 9 9" aria-hidden="true" shape-rendering="crispEdges"><g fill="currentColor"><rect x="0" y="0" width="1" height="1"/><rect x="1" y="0" width="1" height="1"/><rect x="2" y="0" width="1" height="1"/><rect x="5" y="0" width="1" height="1"/><rect x="6" y="0" width="1" height="1"/><rect x="7" y="0" width="1" height="1"/><rect x="8" y="0" width="1" height="1"/><rect x="0" y="1" width="1" height="1"/><rect x="1" y="1" width="1" height="1"/><rect x="2" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/><rect x="6" y="1" width="1" height="1"/><rect x="7" y="1" width="1" height="1"/><rect x="8" y="1" width="1" height="1"/><rect x="0" y="2" width="1" height="1"/><rect x="1" y="2" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="4" y="2" width="1" height="1"/><rect x="6" y="2" width="1" height="1"/><rect x="7" y="2" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/><rect x="4" y="3" width="1" height="1"/><rect x="7" y="3" width="1" height="1"/><rect x="8" y="3" width="1" height="1"/><rect x="0" y="4" width="1" height="1"/><rect x="2" y="4" width="1" height="1"/><rect x="4" y="4" width="1" height="1"/><rect x="0" y="5" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="3" y="5" width="1" height="1"/><rect x="5" y="5" width="1" height="1"/><rect x="0" y="6" width="1" height="1"/><rect x="1" y="6" width="1" height="1"/><rect x="2" y="6" width="1" height="1"/><rect x="3" y="6" width="1" height="1"/><rect x="6" y="6" width="1" height="1"/><rect x="0" y="7" width="1" height="1"/><rect x="1" y="7" width="1" height="1"/><rect x="2" y="7" width="1" height="1"/><rect x="3" y="7" width="1" height="1"/><rect x="4" y="7" width="1" height="1"/><rect x="6" y="7" width="1" height="1"/><rect x="7" y="7" width="1" height="1"/><rect x="8" y="7" width="1" height="1"/><rect x="0" y="8" width="1" height="1"/><rect x="1" y="8" width="1" height="1"/><rect x="2" y="8" width="1" height="1"/><rect x="3" y="8" width="1" height="1"/><rect x="5" y="8" width="1" height="1"/><rect x="8" y="8" width="1" height="1"/></g></svg></i> CACHE LINES <i class="ico ico--qr" data-flicker><svg class="qr" viewBox="0 0 9 9" aria-hidden="true" shape-rendering="crispEdges"><g fill="currentColor"><rect x="0" y="0" width="1" height="1"/><rect x="1" y="0" width="1" height="1"/><rect x="2" y="0" width="1" height="1"/><rect x="4" y="0" width="1" height="1"/><rect x="5" y="0" width="1" height="1"/><rect x="6" y="0" width="1" height="1"/><rect x="7" y="0" width="1" height="1"/><rect x="8" y="0" width="1" height="1"/><rect x="0" y="1" width="1" height="1"/><rect x="1" y="1" width="1" height="1"/><rect x="2" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/><rect x="5" y="1" width="1" height="1"/><rect x="6" y="1" width="1" height="1"/><rect x="7" y="1" width="1" height="1"/><rect x="8" y="1" width="1" height="1"/><rect x="0" y="2" width="1" height="1"/><rect x="1" y="2" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="4" y="2" width="1" height="1"/><rect x="5" y="2" width="1" height="1"/><rect x="6" y="2" width="1" height="1"/><rect x="7" y="2" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/><rect x="0" y="3" width="1" height="1"/><rect x="4" y="3" width="1" height="1"/><rect x="5" y="3" width="1" height="1"/><rect x="7" y="3" width="1" height="1"/><rect x="8" y="3" width="1" height="1"/><rect x="0" y="4" width="1" height="1"/><rect x="1" y="4" width="1" height="1"/><rect x="4" y="4" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="3" y="5" width="1" height="1"/><rect x="4" y="5" width="1" height="1"/><rect x="6" y="5" width="1" height="1"/><rect x="0" y="6" width="1" height="1"/><rect x="1" y="6" width="1" height="1"/><rect x="2" y="6" width="1" height="1"/><rect x="3" y="6" width="1" height="1"/><rect x="4" y="6" width="1" height="1"/><rect x="5" y="6" width="1" height="1"/><rect x="6" y="6" width="1" height="1"/><rect x="0" y="7" width="1" height="1"/><rect x="1" y="7" width="1" height="1"/><rect x="2" y="7" width="1" height="1"/><rect x="5" y="7" width="1" height="1"/><rect x="7" y="7" width="1" height="1"/><rect x="0" y="8" width="1" height="1"/><rect x="1" y="8" width="1" height="1"/><rect x="2" y="8" width="1" height="1"/><rect x="3" y="8" width="1" height="1"/><rect x="4" y="8" width="1" height="1"/><rect x="7" y="8" width="1" height="1"/></g></svg></i> GOROUTINES</span></div><div class="rows__row rows__row--display" data-row="6"><span>UNDERSTAND THE LAYERS BENEATH THE ABSTRACTION</span></div>
-            <p class="rows__caption mono-s">Six projects.<br>Two schools.<br>One habit: build it yourself.</p>
+            <p class="rows__caption mono-s">Seven projects.<br>Two schools.<br>One habit: build it yourself.</p>
         </section>
 
         <!-- 6. Values: pinned horizontal scroll ------------------------------------------------ -->
@@ -405,41 +429,48 @@
                 <div class="cube" data-cube-scene>
                     <div class="cube__prism" data-cube>
                 <figure class="face" data-face="0">
-                    <img src="/assets/tetris_late.webp" alt="" width="760" height="540" loading="lazy" decoding="async">
+                    <img src="/assets/raftlab.webp" alt="" width="1600" height="1000" loading="lazy" decoding="async">
                     <figcaption class="face__frame">
-                        <span class="mono-s">[01] tetris_ml</span>
-                        <span class="face__quote">44% better than the heuristic.</span>
+                        <span class="mono-s">[01] raftlab</span>
+                        <span class="face__quote">Kill the leader. Watch it recover.</span>
                     </figcaption>
                 </figure>
                 <figure class="face" data-face="1">
-                    <img src="/assets/ft_casino.webp" alt="" width="1783" height="959" loading="lazy" decoding="async">
+                    <img src="/assets/tetris_late.webp" alt="" width="760" height="540" loading="lazy" decoding="async">
                     <figcaption class="face__frame">
-                        <span class="mono-s">[02] Transcendence_casino</span>
-                        <span class="face__quote">Three games, one protobuf contract.</span>
+                        <span class="mono-s">[02] tetris_ml</span>
+                        <span class="face__quote">44% better than the heuristic.</span>
                     </figcaption>
                 </figure>
                 <figure class="face" data-face="2">
-                    <img src="/assets/go_renderer_thumb.webp" alt="" width="1280" height="720" loading="lazy" decoding="async">
+                    <img src="/assets/ft_casino.webp" alt="" width="1783" height="959" loading="lazy" decoding="async">
                     <figcaption class="face__frame">
-                        <span class="mono-s">[03] 3D_go_renderer</span>
-                        <span class="face__quote">Zero allocations per frame.</span>
+                        <span class="mono-s">[03] Transcendence_casino</span>
+                        <span class="face__quote">Three games, one protobuf contract.</span>
                     </figcaption>
                 </figure>
                 <figure class="face" data-face="3">
-                    <img src="/assets/42_ELO_Leaderboard.webp" alt="" width="1231" height="749" loading="lazy" decoding="async">
+                    <img src="/assets/go_renderer_thumb.webp" alt="" width="1280" height="720" loading="lazy" decoding="async">
                     <figcaption class="face__frame">
-                        <span class="mono-s">[04] 42_elo_leaderboard</span>
-                        <span class="face__quote">Row locks, not race conditions.</span>
+                        <span class="mono-s">[04] 3D_go_renderer</span>
+                        <span class="face__quote">Zero allocations per frame.</span>
                     </figcaption>
                 </figure>
                 <figure class="face" data-face="4">
-                    <img src="/assets/minirt.webp" alt="" width="1912" height="1071" loading="lazy" decoding="async">
+                    <img src="/assets/42_ELO_Leaderboard.webp" alt="" width="1231" height="749" loading="lazy" decoding="async">
                     <figcaption class="face__frame">
-                        <span class="mono-s">[05] mini_rt</span>
-                        <span class="face__quote">From 1–5 to 120+ frames per second.</span>
+                        <span class="mono-s">[05] 42_elo_leaderboard</span>
+                        <span class="face__quote">Row locks, not race conditions.</span>
                     </figcaption>
                 </figure>
                 <figure class="face" data-face="5">
+                    <img src="/assets/minirt.webp" alt="" width="1912" height="1071" loading="lazy" decoding="async">
+                    <figcaption class="face__frame">
+                        <span class="mono-s">[06] mini_rt</span>
+                        <span class="face__quote">From 1–5 to 120+ frames per second.</span>
+                    </figcaption>
+                </figure>
+                <figure class="face" data-face="6">
                     <pre class="face__term" aria-hidden="true">$ echo "hello" | tr a-z A-Z
 HELLO
 $ cat &lt;&lt; EOF &gt; notes
@@ -452,14 +483,14 @@ $ echo $FOCUS
 systems
 $ _</pre>
                     <figcaption class="face__frame">
-                        <span class="mono-s">[06] mini_shell</span>
+                        <span class="mono-s">[07] mini_shell</span>
                         <span class="face__quote">No system(), no shortcuts.</span>
                     </figcaption>
                 </figure>
                     </div>
                 </div>
-                <div class="cube__caps" aria-live="polite"><p class="cube__cap is-active" data-cap="0">Tetris engine in Go, DQN agents in PyTorch, live training viewer. 44% above a hand-tuned heuristic, plus T-spins.<br><a class="link mono-s" href="#project-tetris-ml">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="1">Real-time multiplayer casino. Go backend, C++ engine over gRPC, React front, hand-rolled WebSocket hub.<br><a class="link mono-s" href="#project-transcendence">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="2">From-scratch OpenGL 4.1 renderer in Go. Own .obj parser, ear clipping, 0.06 allocs per frame.<br><a class="link mono-s" href="#project-go-renderer">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="3">Ranking system for 42 Heilbronn in Go and PostgreSQL. 30 ms average response, 99.9% uptime.<br><a class="link mono-s" href="#project-elo">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="4">SIMD raytracer in C. SSE/AVX, structure-of-arrays, tile threads. 80 times the baseline.<br><a class="link mono-s" href="#project-minirt">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="5">POSIX shell in C. Own lexer and parser, fork/execve, dup2 pipelines, here-docs, sigaction.<br><a class="link mono-s" href="#project-minishell">(CASE_STUDY ↓)</a></p></div>
-                <p class="projects__count mono-s"><span data-cube-index>01</span> / 06 <span class="projects__bar" aria-hidden="true"><i data-cube-bar></i></span></p>
+                <div class="cube__caps" aria-live="polite"><p class="cube__cap is-active" data-cap="0">Raft consensus from scratch in Go, with a replicated key-value store and a live cluster you can break. Seeded chaos tests replay any failure.<br><a class="link mono-s" href="#project-raftlab">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="1">Tetris engine in Go, DQN agents in PyTorch, live training viewer. 44% above a hand-tuned heuristic, plus T-spins.<br><a class="link mono-s" href="#project-tetris-ml">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="2">Real-time multiplayer casino. Go backend, C++ engine over gRPC, React front, hand-rolled WebSocket hub.<br><a class="link mono-s" href="#project-transcendence">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="3">From-scratch OpenGL 4.1 renderer in Go. Own .obj parser, ear clipping, 0.06 allocs per frame.<br><a class="link mono-s" href="#project-go-renderer">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="4">Ranking system for 42 Heilbronn in Go and PostgreSQL. 30 ms average response, 99.9% uptime.<br><a class="link mono-s" href="#project-elo">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="5">SIMD raytracer in C. SSE/AVX, structure-of-arrays, tile threads. 80 times the baseline.<br><a class="link mono-s" href="#project-minirt">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="6">POSIX shell in C. Own lexer and parser, fork/execve, dup2 pipelines, here-docs, sigaction.<br><a class="link mono-s" href="#project-minishell">(CASE_STUDY ↓)</a></p></div>
+                <p class="projects__count mono-s"><span data-cube-index>01</span> / 07 <span class="projects__bar" aria-hidden="true"><i data-cube-bar></i></span></p>
             </div>
         </section>
 
@@ -470,9 +501,30 @@ $ _</pre>
                 <h2 id="index-title" class="display sec-head__title">Index</h2>
                 <span class="mono-s">Click a row for the full case study</span>
             </header>
-            <details class="row" id="project-tetris-ml">
+            <details class="row" id="project-raftlab">
                 <summary class="row__head">
                     <span class="mono">[01]</span>
+                    <span class="row__title">raftlab</span>
+                    <span class="row__kind">Raft consensus with a live cluster visualizer</span>
+                    <span class="mono-s row__stack">Go · WebSocket · SVG · GitHub Actions</span>
+                    <span class="mono-s">MMXXVI</span>
+                    <span class="row__toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="row__body">
+                    <figure class="row__figure"><img src="/assets/raftlab.webp" alt="raftlab visualizer during a network partition: five Raft nodes in a pentagon, two of them marked leader, with dashed red links where messages are dropped between the old leader and the rest" width="1600" height="1000" loading="lazy" decoding="async">
+                        <figcaption class="mono-s"><span>Fig. 1.1 — Network partition: two nodes believe they lead</span><span>[term 2 vs 3]</span></figcaption></figure>
+                    <div class="row__text">
+                        <p class="row__summary">Raft consensus implemented from scratch in Go — leader election, log replication, snapshots and crash recovery — with a linearizable key-value store on top and a browser UI where you can kill nodes, cut the network and watch the cluster recover.</p>
+                        <dl class="row__metrics"><div><dt>Go code</dt><dd>5.1k lines</dd></div><div><dt>Of which tests</dt><dd>2.2k lines</dd></div><div><dt>Dependencies</dt><dd>1</dd></div></dl>
+                        <div class="row__prose"><p><strong>Problem:</strong> Raft is the algorithm behind etcd, Consul and CockroachDB, and it is easy to nod along to the paper and hard to trust your own implementation. A consensus bug does not crash. It shows up as two nodes disagreeing after one specific sequence of crashes, partitions and reordered packets. I wanted to implement all of it, including the parts tutorials skip (persistence, log compaction, <code>InstallSnapshot</code>, exactly-once clients), and to see it behave rather than trust it.</p><p><strong>Solution:</strong> A complete Raft implementation in Go: leader election, log replication with conflict repair, the election restriction, commitment of prior-term entries, a checksummed write-ahead log with crash recovery, and log compaction with <code>InstallSnapshot</code> for followers that fell far behind. A replicated key-value store sits on top. Reads go through the log, so they are linearizable, and client sessions make a retried write apply at most once. <code>raftnode</code> runs one member per process over HTTP. <code>raftlab</code> runs five in one process over a fault-injecting network and streams every message to the browser as an animated dot, where you can kill nodes, partition the network and dial in latency, loss and duplication.</p><p><strong>Technical Approach:</strong> The core <code>raft.Node</code> is a pure state machine with no goroutines, sockets or wall-clock time. Everything it touches goes through four interfaces: <code>Transport</code>, <code>Clock</code>, <code>Storage</code> and <code>StateMachine</code>. Because time and I/O are injected, a five-node cluster runs on a fake clock inside a single-threaded test, and a run is a pure function of its random seed. A chaos test crashes and restarts nodes, partitions the network and injects loss, duplication and delay for 40 virtual seconds while four clients write and read, checking election safety and committed-prefix agreement every 10 ms. At the end it checks that replicas converge, that every acknowledged write survived and that every read returned the last acknowledged write. A failure prints its seed, and <code>CHAOS_SEED=17 go test -run Chaos ./internal/kv</code> replays it exactly. The core uses only the standard library; the single dependency is a WebSocket library for the visualizer.</p><p><strong>Results &amp; Learnings:</strong> About 5,100 lines of Go, around 2,200 of them tests, with CI running <code>go test -race</code> and <code>golangci-lint</code>. The bugs found along the way are the real lesson: stale timer callbacks that start a spurious election and depose a healthy leader, a delayed <code>AppendEntries</code> erasing newer entries, reordered replies moving <code>nextIndex</code> backwards, and a Windows-only crash where the WAL could not rename over an open file during its first compaction. The limits are written down too: a read costs a full replication round, snapshots are a single message and the client API is unauthenticated. PreVote, CheckQuorum, joint-consensus membership changes and ReadIndex reads are on the roadmap. The <a href="writing/raft-deterministic-simulation-testing.html">write-up</a> covers how the fake clock works and the one bug it could not reproduce.</p></div>
+                        <dl class="row__details"><div><dt>Stack</dt><dd>Go · WebSocket · SVG · GitHub Actions</dd></div><div><dt>Role</dt><dd>Full implementation</dd></div><div><dt>Write-up</dt><dd><a href="writing/raft-deterministic-simulation-testing.html">Testing Raft with a fake clock: deterministic chaos in Go</a></dd></div><div><dt>Source</dt><dd><a href="https://github.com/nweber23/raftlab" target="_blank" rel="noopener noreferrer">github.com/nweber23/raftlab</a></dd></div></dl>
+                        <ul class="row__related" role="list"><li><a class="link" href="/projects/raftlab.html">Read the full case study</a></li><li><a class="link" href="#project-tetris-ml">Tetris ML — the same deterministic, seedable approach to testing</a></li><li><a class="link" href="#project-transcendence">Transcendence Casino — Go services talking over a typed contract</a></li><li><a class="link" href="writing/raft-deterministic-simulation-testing.html">Writing: testing Raft with a fake clock</a></li></ul>
+                    </div>
+                </div>
+            </details>
+            <details class="row" id="project-tetris-ml">
+                <summary class="row__head">
+                    <span class="mono">[02]</span>
                     <span class="row__title">Tetris ML</span>
                     <span class="row__kind">Tetris engine, DQN agent and training viewer</span>
                     <span class="mono-s row__stack">Go · Python · PyTorch · gRPC · Ebitengine</span>
@@ -481,7 +533,7 @@ $ _</pre>
                 </summary>
                 <div class="row__body">
                     <figure class="row__figure"><video poster="/assets/tetris_moves_late.webp" width="760" height="540" autoplay muted loop playsinline preload="metadata" aria-label="Trained agent playing Tetris with hold and T-spins in the Ebitengine viewer"><source src="/assets/tetris_moves_late.webm" type="video/webm"><source src="/assets/tetris_moves_late.mp4" type="video/mp4"></video>
-                        <figcaption class="mono-s"><span>Fig. 1.1 — Move agent, 100,000 training steps</span><span>[dqn]</span></figcaption></figure>
+                        <figcaption class="mono-s"><span>Fig. 1.2 — Move agent, 100,000 training steps</span><span>[dqn]</span></figcaption></figure>
                     <div class="row__text">
                         <p class="row__summary">A Tetris engine in Go, DQN agents trained with PyTorch, and a viewer that shows them playing and learning. Built to learn reinforcement learning by doing every layer myself, including an agent that uses hold, tucks, spins and T-spins.</p>
                         <dl class="row__metrics"><div><dt>vs. heuristic</dt><dd>+44%</dd></div><div><dt>Avg score</dt><dd>173k</dd></div><div><dt>T-spins / game</dt><dd>233</dd></div></dl>
@@ -493,7 +545,7 @@ $ _</pre>
             </details>
             <details class="row" id="project-transcendence">
                 <summary class="row__head">
-                    <span class="mono">[02]</span>
+                    <span class="mono">[03]</span>
                     <span class="row__title">Transcendence Casino</span>
                     <span class="row__kind">Real-time multiplayer online casino</span>
                     <span class="mono-s row__stack">Go · C++ · TypeScript · React · PostgreSQL</span>
@@ -502,7 +554,7 @@ $ _</pre>
                 </summary>
                 <div class="row__body">
                     <figure class="row__figure"><img src="/assets/ft_casino.webp" alt="Transcendence Casino real-time multiplayer interface showing blackjack table with player hands and chips" width="1231" height="749" loading="lazy" decoding="async">
-                        <figcaption class="mono-s"><span>Fig. 1.2 — Casino table interface</span><span>[live]</span></figcaption></figure>
+                        <figcaption class="mono-s"><span>Fig. 1.3 — Casino table interface</span><span>[live]</span></figcaption></figure>
                     <div class="row__text">
                         <p class="row__summary">A real-time multiplayer casino — Blackjack, Poker, and slots — spanning Go, C++, and React, bridged by gRPC and a hand-rolled WebSocket hub, with a full Prometheus/Grafana monitoring stack.</p>
                         <dl class="row__metrics"><div><dt>Games</dt><dd>3 live</dd></div><div><dt>Architecture</dt><dd>3-tier gRPC</dd></div><div><dt>Monitoring</dt><dd>6 dashboards</dd></div></dl>
@@ -514,7 +566,7 @@ $ _</pre>
             </details>
             <details class="row" id="project-go-renderer">
                 <summary class="row__head">
-                    <span class="mono">[03]</span>
+                    <span class="mono">[04]</span>
                     <span class="row__title">3D Go Renderer</span>
                     <span class="row__kind">From-scratch OpenGL renderer in Go</span>
                     <span class="mono-s row__stack">Go</span>
@@ -525,7 +577,7 @@ $ _</pre>
                     <figure class="row__figure"><video width="1280" height="720" muted loop playsinline disablepictureinpicture preload="none" poster="/assets/go_renderer_thumb.webp" data-lazy-video aria-label="3D Go Renderer orbit camera demo, rendering a textured .obj model in real time">
                             <source data-src="/assets/go_renderer.mp4" type="video/mp4">
                         </video>
-                        <figcaption class="mono-s"><span>Fig. 1.3 — Orbit camera demo</span><span>[opengl 4.1]</span></figcaption></figure>
+                        <figcaption class="mono-s"><span>Fig. 1.4 — Orbit camera demo</span><span>[opengl 4.1]</span></figcaption></figure>
                     <div class="row__text">
                         <p class="row__summary">A from-scratch 3D renderer in Go — custom .obj/.mtl parsing, ear-clipping triangulation, and an OpenGL 4.1 pipeline with zero steady-state heap allocations.</p>
                         <dl class="row__metrics"><div><dt>Allocs/frame</dt><dd>0.06</dd></div><div><dt>Parser</dt><dd>Concurrent</dd></div><div><dt>UV modes</dt><dd>3</dd></div></dl>
@@ -537,7 +589,7 @@ $ _</pre>
             </details>
             <details class="row" id="project-elo">
                 <summary class="row__head">
-                    <span class="mono">[04]</span>
+                    <span class="mono">[05]</span>
                     <span class="row__title">42 ELO Leaderboard</span>
                     <span class="row__kind">Competitive rankings system for 42 Heilbronn</span>
                     <span class="mono-s row__stack">Go · TypeScript · React · PostgreSQL</span>
@@ -546,7 +598,7 @@ $ _</pre>
                 </summary>
                 <div class="row__body">
                     <figure class="row__figure"><img src="/assets/42_ELO_Leaderboard.webp" alt="42 ELO Leaderboard competitive ranking interface with player ratings and match history" width="1231" height="749" loading="lazy" decoding="async">
-                        <figcaption class="mono-s"><span>Fig. 1.4 — Leaderboard interface</span><span>[archived]</span></figcaption></figure>
+                        <figcaption class="mono-s"><span>Fig. 1.5 — Leaderboard interface</span><span>[archived]</span></figcaption></figure>
                     <div class="row__text">
                         <p class="row__summary">High-performance ELO ranking system in Go and PostgreSQL, built for real-time match submissions with live leaderboards and historical data. No longer actively maintained.</p>
                         <dl class="row__metrics"><div><dt>Avg response</dt><dd>30ms</dd></div><div><dt>Status</dt><dd>Archived</dd></div><div><dt>Query target</dt><dd>&lt;100ms</dd></div></dl>
@@ -558,7 +610,7 @@ $ _</pre>
             </details>
             <details class="row" id="project-minirt">
                 <summary class="row__head">
-                    <span class="mono">[05]</span>
+                    <span class="mono">[06]</span>
                     <span class="row__title">miniRT</span>
                     <span class="row__kind">High-performance raytracer in C</span>
                     <span class="mono-s row__stack">C</span>
@@ -567,7 +619,7 @@ $ _</pre>
                 </summary>
                 <div class="row__body">
                     <figure class="row__figure"><img src="/assets/minirt.webp" alt="miniRT raytracer C implementation with sphere rendering, shadows, reflections and Phong lighting" width="1912" height="1071" loading="lazy" decoding="async">
-                        <figcaption class="mono-s"><span>Fig. 1.5 — Rendered output</span><span>[120 fps]</span></figcaption></figure>
+                        <figcaption class="mono-s"><span>Fig. 1.6 — Rendered output</span><span>[120 fps]</span></figcaption></figure>
                     <div class="row__text">
                         <p class="row__summary">120+ FPS raytracer built on SIMD vectorization, cache-efficient data structures, and tile-based multi-threaded rendering.</p>
                         <dl class="row__metrics"><div><dt>Frame rate</dt><dd>120+ fps</dd></div><div><dt>Speed-up</dt><dd>80×</dd></div><div><dt>SIMD</dt><dd>SSE/AVX</dd></div></dl>
@@ -579,7 +631,7 @@ $ _</pre>
             </details>
             <details class="row" id="project-minishell">
                 <summary class="row__head">
-                    <span class="mono">[06]</span>
+                    <span class="mono">[07]</span>
                     <span class="row__title">minishell</span>
                     <span class="row__kind">POSIX-compliant shell in C</span>
                     <span class="mono-s row__stack">C</span>
@@ -605,7 +657,7 @@ $ _</pre>
                 <h2 id="notes-title" class="display sec-head__title">Field notes</h2>
                 <a class="btn" href="writing.html">[All writing]</a>
             </header>
-            <ol class="notes__list" role="list"><li><a href="writing/tetris-reinforcement-learning.html"><span class="mono-s">2026-10-16</span><span class="notes__title">Teaching a neural network to play Tetris, one layer at a time</span><span class="mono-s">Reinforcement_learning</span></a></li><li><a href="writing/for-vs-while-loops.html"><span class="mono-s">2026-10-02</span><span class="notes__title">For vs while loops in C, C++ and Go: identical assembly, and what actually changes performance</span><span class="mono-s">Systems_programming</span></a></li><li><a href="writing/container-from-scratch.html"><span class="mono-s">2026-09-17</span><span class="notes__title">Building a container runtime from scratch: namespaces, pivot_root, cgroups v2, and OverlayFS in pure Go</span><span class="mono-s">Systems_programming</span></a></li><li><a href="writing/build-from-scratch.html"><span class="mono-s">2026-08-26</span><span class="notes__title">Why I keep building from scratch: process handling, WebSocket hubs, and .obj parsers</span><span class="mono-s">General</span></a></li><li><a href="writing/elo-query-performance.html"><span class="mono-s">2026-08-25</span><span class="notes__title">Getting Elo leaderboard queries under 100ms: indexes, caching, and profiling instead of guessing</span><span class="mono-s">42_ELO_leaderboard</span></a></li><li><a href="writing/grpc-vs-rest.html"><span class="mono-s">2026-08-23</span><span class="notes__title">gRPC versus REST: picking protocols at the Transcendence service boundary</span><span class="mono-s">Transcendence</span></a></li><li><a href="writing/ear-clipping.html"><span class="mono-s">2026-08-23</span><span class="notes__title">Triangulating arbitrary polygons with ear clipping over a Newell-normal plane</span><span class="mono-s">Go_renderer</span></a></li></ol>
+            <ol class="notes__list" role="list"><li><a href="writing/raft-deterministic-simulation-testing.html"><span class="mono-s">2026-11-02</span><span class="notes__title">Testing Raft with a fake clock: deterministic chaos in Go</span><span class="mono-s">Distributed_systems</span></a></li><li><a href="writing/tetris-reinforcement-learning.html"><span class="mono-s">2026-10-16</span><span class="notes__title">Teaching a neural network to play Tetris, one layer at a time</span><span class="mono-s">Reinforcement_learning</span></a></li><li><a href="writing/for-vs-while-loops.html"><span class="mono-s">2026-10-02</span><span class="notes__title">For vs while loops in C, C++ and Go: identical assembly, and what actually changes performance</span><span class="mono-s">Systems_programming</span></a></li><li><a href="writing/container-from-scratch.html"><span class="mono-s">2026-09-17</span><span class="notes__title">Building a container runtime from scratch: namespaces, pivot_root, cgroups v2, and OverlayFS in pure Go</span><span class="mono-s">Systems_programming</span></a></li><li><a href="writing/build-from-scratch.html"><span class="mono-s">2026-08-26</span><span class="notes__title">Why I keep building from scratch: process handling, WebSocket hubs, and .obj parsers</span><span class="mono-s">General</span></a></li><li><a href="writing/elo-query-performance.html"><span class="mono-s">2026-08-25</span><span class="notes__title">Getting Elo leaderboard queries under 100ms: indexes, caching, and profiling instead of guessing</span><span class="mono-s">42_ELO_leaderboard</span></a></li><li><a href="writing/grpc-vs-rest.html"><span class="mono-s">2026-08-23</span><span class="notes__title">gRPC versus REST: picking protocols at the Transcendence service boundary</span><span class="mono-s">Transcendence</span></a></li><li><a href="writing/ear-clipping.html"><span class="mono-s">2026-08-23</span><span class="notes__title">Triangulating arbitrary polygons with ear clipping over a Newell-normal plane</span><span class="mono-s">Go_renderer</span></a></li></ol>
         </section>
 
         <!-- 8. Manifesto video --------------------------------------------------------------- -->
