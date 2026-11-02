@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>raftlab: Raft Consensus in Go with a Live Cluster Visualizer | Niklas Weber</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%23010736'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='10.5'%20fill='none'%20stroke='%23fcf1d0'%20stroke-width='1.6'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='6'%20fill='none'%20stroke='%23fcf1d0'%20stroke-opacity='.5'%20stroke-width='1.4'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='2.2'%20fill='%23fcf1d0'/%3E%3C/svg%3E">
+
+    <meta name="description" content="Raft consensus implemented from scratch in Go with a replicated key-value store and a browser UI to kill nodes, cut the network and watch the cluster recover. About 5,100 lines, 2,200 of them tests.">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#fcf1d0">
+    <link rel="canonical" href="https://nweber.me/projects/raftlab.html">
+
+    <meta property="og:title" content="raftlab: Raft Consensus in Go with a Live Cluster Visualizer | Niklas Weber">
+    <meta property="og:description" content="Raft consensus implemented from scratch in Go with a replicated key-value store and a browser UI to kill nodes, cut the network and watch the cluster recover. About 5,100 lines, 2,200 of them tests.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nweber.me/projects/raftlab.html">
+    <meta property="og:image" content="https://nweber.me/assets/raftlab.webp">
+    <meta property="og:site_name" content="Niklas Weber Portfolio">
+    <meta property="og:locale" content="en_US">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="raftlab: Raft Consensus in Go with a Live Cluster Visualizer | Niklas Weber">
+    <meta name="twitter:description" content="Raft consensus implemented from scratch in Go with a replicated key-value store and a browser UI to kill nodes, cut the network and watch the cluster recover. About 5,100 lines, 2,200 of them tests.">
+    <meta name="twitter:image" content="https://nweber.me/assets/raftlab.webp">
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://nweber.me/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "raftlab",
+      "item": "https://nweber.me/projects/raftlab.html"
+    }
+  ]
+}
+    </script>
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "@id": "https://nweber.me/projects/raftlab.html#software",
+  "name": "raftlab",
+  "description": "Raft consensus implemented from scratch in Go with a replicated key-value store and a browser UI to kill nodes, cut the network and watch the cluster recover. About 5,100 lines, 2,200 of them tests.",
+  "url": "https://nweber.me/projects/raftlab.html",
+  "codeRepository": "https://github.com/nweber23/raftlab",
+  "programmingLanguage": [
+    {
+      "@type": "ComputerLanguage",
+      "name": "Go"
+    },
+    {
+      "@type": "ComputerLanguage",
+      "name": "JavaScript"
+    }
+  ],
+  "runtimePlatform": "Linux, Windows, macOS",
+  "keywords": "Raft, consensus algorithm, distributed systems, leader election, log replication, replicated state machine, key-value store, snapshots, write-ahead log, deterministic simulation testing, chaos testing, Go",
+  "image": "https://nweber.me/assets/raftlab.webp",
+  "creator": {
+    "@id": "https://nweber.me/#person"
+  },
+  "datePublished": "2026-11-02",
+  "mainEntityOfPage": "https://nweber.me/projects/raftlab.html"
+}
+    </script>
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <div class="scroll-progress" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <nav class="nav" aria-label="Main navigation">
+        <ul class="nav__list" role="list">
+            <li><a href="/" class="nav__link" data-idx="00">← Back</a></li>
+        </ul>
+
+        <div class="nav__right">
+            <span class="nav__time" aria-label="Current time in CET">—</span>
+            <button class="nav__toggle" aria-label="Open menu" aria-expanded="false">
+                <span class="nav__toggle-bar"></span>
+                <span class="nav__toggle-bar"></span>
+            </button>
+        </div>
+    </nav>
+
+    <main id="main" class="main">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol class="breadcrumb__list">
+                <li class="breadcrumb__item">
+                    <a href="/" class="breadcrumb__link">home</a>
+                </li>
+                <li class="breadcrumb__item breadcrumb__sep">
+                    <span class="breadcrumb__current" aria-current="page">raftlab</span>
+                </li>
+            </ol>
+        </nav>
+
+        <section class="section section--imprint" aria-labelledby="project-title" id="project-raftlab">
+            <div class="section__head">
+                <h1 id="project-title" class="section__title">raftlab</h1>
+                <span class="section__aside">Raft consensus with a live cluster visualizer · MMXXVI</span>
+            </div>
+
+            <div class="project__body">
+                <figure class="project__figure"><img src="/assets/raftlab.webp" alt="raftlab visualizer during a network partition: five Raft nodes in a pentagon, two of them marked leader, with dashed red links where messages are dropped between the old leader and the rest" width="1600" height="1000" decoding="async">
+                        <figcaption class="mono-s"><span>Fig. 1.1 — Network partition: two nodes believe they lead</span><span>[term 2 vs 3]</span></figcaption></figure>
+                <div class="project__text">
+                        <p class="project__summary">Raft consensus implemented from scratch in Go — leader election, log replication, snapshots and crash recovery — with a linearizable key-value store on top and a browser UI where you can kill nodes, cut the network and watch the cluster recover.</p>
+                        <dl class="project__metrics"><div><dt>Go code</dt><dd>5.1k lines</dd></div><div><dt>Of which tests</dt><dd>2.2k lines</dd></div><div><dt>Dependencies</dt><dd>1</dd></div></dl>
+                        <div class="project__prose"><p><strong>Problem:</strong> Raft is the algorithm behind etcd, Consul and CockroachDB, and it is easy to nod along to the paper and hard to trust your own implementation. A consensus bug does not crash. It shows up as two nodes disagreeing after one specific sequence of crashes, partitions and reordered packets. I wanted to implement all of it, including the parts tutorials skip (persistence, log compaction, <code>InstallSnapshot</code>, exactly-once clients), and to see it behave rather than trust it.</p><p><strong>Solution:</strong> A complete Raft implementation in Go: leader election, log replication with conflict repair, the election restriction, commitment of prior-term entries, a checksummed write-ahead log with crash recovery, and log compaction with <code>InstallSnapshot</code> for followers that fell far behind. A replicated key-value store sits on top. Reads go through the log, so they are linearizable, and client sessions make a retried write apply at most once. <code>raftnode</code> runs one member per process over HTTP. <code>raftlab</code> runs five in one process over a fault-injecting network and streams every message to the browser as an animated dot, where you can kill nodes, partition the network and dial in latency, loss and duplication.</p><p><strong>Technical Approach:</strong> The core <code>raft.Node</code> is a pure state machine with no goroutines, sockets or wall-clock time. Everything it touches goes through four interfaces: <code>Transport</code>, <code>Clock</code>, <code>Storage</code> and <code>StateMachine</code>. Because time and I/O are injected, a five-node cluster runs on a fake clock inside a single-threaded test, and a run is a pure function of its random seed. A chaos test crashes and restarts nodes, partitions the network and injects loss, duplication and delay for 40 virtual seconds while four clients write and read, checking election safety and committed-prefix agreement every 10 ms. At the end it checks that replicas converge, that every acknowledged write survived and that every read returned the last acknowledged write. A failure prints its seed, and <code>CHAOS_SEED=17 go test -run Chaos ./internal/kv</code> replays it exactly. The core uses only the standard library; the single dependency is a WebSocket library for the visualizer.</p><p><strong>Results &amp; Learnings:</strong> About 5,100 lines of Go, around 2,200 of them tests, with CI running <code>go test -race</code> and <code>golangci-lint</code>. The bugs found along the way are the real lesson: stale timer callbacks that start a spurious election and depose a healthy leader, a delayed <code>AppendEntries</code> erasing newer entries, reordered replies moving <code>nextIndex</code> backwards, and a Windows-only crash where the WAL could not rename over an open file during its first compaction. The limits are written down too: a read costs a full replication round, snapshots are a single message and the client API is unauthenticated. PreVote, CheckQuorum, joint-consensus membership changes and ReadIndex reads are on the roadmap. The <a href="/writing/raft-deterministic-simulation-testing.html">write-up</a> covers how the fake clock works and the one bug it could not reproduce.</p></div>
+                        <dl class="project__details"><div><dt>Stack</dt><dd>Go · WebSocket · SVG · GitHub Actions</dd></div><div><dt>Role</dt><dd>Full implementation</dd></div><div><dt>Write-up</dt><dd><a href="/writing/raft-deterministic-simulation-testing.html">Testing Raft with a fake clock: deterministic chaos in Go</a></dd></div><div><dt>Source</dt><dd><a href="https://github.com/nweber23/raftlab" target="_blank" rel="noopener noreferrer">github.com/nweber23/raftlab</a></dd></div></dl>
+                        <ul class="project__related" role="list"><li><a class="link" href="/projects/tetris-ml.html">Tetris ML — the same deterministic, seedable approach to testing</a></li><li><a class="link" href="/projects/transcendence-casino.html">Transcendence Casino — Go services talking over a typed contract</a></li><li><a class="link" href="/writing/raft-deterministic-simulation-testing.html">Writing: testing Raft with a fake clock</a></li></ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer__left">
+            <span class="footer__copy">© 2026 · Niklas Weber</span>
+            <span class="footer__note">Hand-built with three.js and plain HTML</span>
+        </div>
+        <div class="footer__right">
+            <a href="/" class="footer__link">← Index</a>
+        </div>
+    </footer>
+
+    <script type="module" src="/src/projects.ts"></script>
+    <script data-goatcounter="https://mattz.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
