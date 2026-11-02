@@ -6,24 +6,24 @@
     <title>Testing Raft with a Fake Clock — Niklas Weber</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%23010736'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='10.5'%20fill='none'%20stroke='%23fcf1d0'%20stroke-width='1.6'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='6'%20fill='none'%20stroke='%23fcf1d0'%20stroke-opacity='.5'%20stroke-width='1.4'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='2.2'%20fill='%23fcf1d0'/%3E%3C/svg%3E">
 
-    <meta name="description" content="How raftlab tests its Raft implementation: a core with no clock or sockets, a seeded chaos test that checks safety every 10 ms and replays any failure from its seed, and the stale-timer bug a fake clock cannot reproduce.">
+    <meta name="description" content="How raftlab tests Raft: a seeded chaos test on a fake clock that replays any failure, plus the bug a fake clock misses.">
     <meta name="robots" content="index, follow">
     <meta name="last-modified" content="2026-11-02">
     <meta name="theme-color" content="#fcf1d0">
     <link rel="canonical" href="https://nweber.me/writing/raft-deterministic-simulation-testing.html">
 
     <meta property="og:title" content="Testing Raft with a Fake Clock">
-    <meta property="og:description" content="How raftlab tests its Raft implementation: a core with no clock or sockets, a seeded chaos test that checks safety every 10 ms and replays any failure from its seed, and the stale-timer bug a fake clock cannot reproduce.">
+    <meta property="og:description" content="How raftlab tests Raft: a seeded chaos test on a fake clock that replays any failure, plus the bug a fake clock misses.">
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://nweber.me/writing/raft-deterministic-simulation-testing.html">
-    <meta property="og:image" content="https://nweber.me/assets/raftlab.webp">
+    <meta property="og:image" content="https://nweber.me/assets/raftlab_post_og.jpg">
     <meta property="og:site_name" content="Niklas Weber Portfolio">
     <meta property="og:locale" content="en_US">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Testing Raft with a Fake Clock">
-    <meta name="twitter:description" content="How raftlab tests its Raft implementation: a core with no clock or sockets, a seeded chaos test that checks safety every 10 ms and replays any failure from its seed, and the stale-timer bug a fake clock cannot reproduce.">
-    <meta name="twitter:image" content="https://nweber.me/assets/raftlab.webp">
+    <meta name="twitter:description" content="How raftlab tests Raft: a seeded chaos test on a fake clock that replays any failure, plus the bug a fake clock misses.">
+    <meta name="twitter:image" content="https://nweber.me/assets/raftlab_post_og.jpg">
 
 
     <script type="application/ld+json">
