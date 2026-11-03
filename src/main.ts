@@ -116,16 +116,13 @@ async function boot() {
   ScrollTrigger.refresh();
 }
 
-/** The loader fades into the hero (same name, same spot); then the build log types out. */
+/** The loader fades into the hero (same name, same spot); then the intro settles in. */
 function intro(loaderEl: HTMLElement) {
-  const log = $$('[data-hero-log] span');
   const status = $('[data-hero-status]');
-  const rest = [header, '[data-hero-intro]', '[data-hero-hint]'];
-  gsap.set(log, { clipPath: 'inset(0 100% 0 0)' });
+  const rest = [header, '[data-hero-intro]', '[data-hero-strip]'];
   gsap.set(rest, { opacity: 0, y: 12 });
   if (reduced) {
     loaderEl.remove();
-    gsap.set(log, { clipPath: 'none' });
     gsap.set(rest, { opacity: 1, y: 0 });
     status.textContent = 'READY';
     return Promise.resolve();
@@ -135,10 +132,9 @@ function intro(loaderEl: HTMLElement) {
       .timeline()
       .to(loaderEl, { opacity: 0, duration: 0.7, ease: 'power1.inOut' })
       .set(loaderEl, { display: 'none' })
-      .call(resolve) // scrolling unlocks while the log is still typing
-      .to(log, { clipPath: 'inset(0 0% 0 0)', duration: 0.4, ease: 'steps(20)', stagger: 0.22 })
+      .call(resolve) // scrolling unlocks while the intro is still settling
       .call(() => { status.textContent = 'READY'; })
-      .to(rest, { opacity: 1, y: 0, duration: 1, stagger: 0.1, ease: EASE }, '-=0.5');
+      .to(rest, { opacity: 1, y: 0, duration: 1, stagger: 0.1, ease: EASE }, '-=0.2');
   });
 }
 
@@ -360,9 +356,17 @@ function setupHero() {
   let on = true;
   new IntersectionObserver(([e]) => (on = e.isIntersecting)).observe(hero);
   const cur = letters.map(() => ({ y: 0, r: 0 }));
-  gsap.ticker.add((t) => {
+  const type = $('[data-hero-type]');
+  const easeIO = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+  const range = (a: number, b: number, x: number) => Math.min(1, Math.max(0, (x - a) / (b - a)));
+  // The scroll position is eased once, here, so the exit glides instead of following every wheel tick.
+  let target = 0; // the hero's scroll progress, 0..1
+  let eased = 0;
+  gsap.ticker.add((t, dtMs) => {
+    eased += (target - eased) * (1 - Math.exp((-dtMs / 1000) * 7));
     if (!on) return;
     const hits = letters.map((el) => el.getBoundingClientRect());
+    const mid = (letters.length - 1) / 2;
     letters.forEach((el, i) => {
       const r = hits[i];
       const dx = pointer.x - (r.left + r.width / 2);
@@ -371,36 +375,31 @@ function setupHero() {
       const wave = Math.sin(t * 1.6 + i * 0.55) * 0.02;
       cur[i].y += (-k * k * 0.08 + wave - cur[i].y) * 0.12;
       cur[i].r += (Math.sign(dx) * k * 2.5 - cur[i].r) * 0.12;
-      el.style.transform = `translateY(${(cur[i].y * 100).toFixed(2)}%) rotate(${cur[i].r.toFixed(2)}deg)`;
+      // The paper edge sweeps through the name between about 38% and 62% of the scroll, inking it.
+      // Only afterwards do the letters leave, up through the mask, centre letters first.
+      const f = Math.abs(i - mid) / mid;
+      const q = easeIO(range(0.64 + f * 0.1, 0.86 + f * 0.1, eased));
+      el.style.transform = `translateY(${(cur[i].y * 100 - q * 118).toFixed(2)}%) rotate(${(cur[i].r + q * -4).toFixed(2)}deg)`;
     });
   });
 
-  // Scroll: the build log and intro clear out, the poster wall rises and pushes the name up.
-  const tl = gsap.timeline({ defaults: { ease: 'none' } });
-  tl.to(['[data-hero-log]', '[data-hero-intro]', '[data-hero-hint]', '[data-hero-status]'], { opacity: 0, y: -30, duration: 0.3 }, 0);
+  // Scroll: the status line clears first. The facts and the intro need no fade at all, since the
+  // poster wall slides up over the pinned hero and covers them.
+  const tl = gsap.timeline({ defaults: { ease: 'power1.inOut' } });
+  tl.to('[data-hero-status]', { opacity: 0, duration: 0.14 }, 0);
+  tl.to({}, { duration: 1 }, 0); // the timeline spans the whole pin
   ScrollTrigger.create({
     trigger: hero,
     start: 'top top',
     end: '+=100%',
     pin: true,
     pinSpacing: false, // the poster wall slides up over the pinned hero: no empty scroll
-    scrub: true,
+    scrub: 0.6,
     animation: tl,
     onUpdate: (st) => {
+      target = st.progress;
       header.classList.toggle('is-dark', st.progress < 0.9);
-      // The wall's top edge sits at innerHeight * (1 - progress). It pushes the name up; the name shrinks
-      // to stay whole between the header and that edge, then fades out at the very end.
-      const edge = innerHeight * (1 - st.progress);
-      const box = title.getBoundingClientRect(); // scaled about the bottom, so the bottom is unaffected by scale
-      const rest = box.bottom - Number(gsap.getProperty(title, 'y'));
-      const h = title.offsetHeight;
-      const room = edge - 24 - header.offsetHeight;
-      const scale = Math.max(0.12, Math.min(1, room / h));
-      gsap.set(title, {
-        y: Math.min(0, edge - 24 - rest),
-        scale,
-        opacity: Math.min(1, Math.max(0, (room / h - 0.04) / 0.1)),
-      });
+      type.classList.toggle('is-gone', st.progress > 0.985);
     },
     onLeaveBack: () => header.classList.add('is-dark'),
   });
@@ -667,26 +666,5 @@ function setupNav() {
   }
 }
 
-// Hero background: ASCII ocean, loaded after first paint.
-function setupOcean() {
-  const canvas = $<HTMLCanvasElement>('.hero__ocean');
-  const io = new IntersectionObserver(async ([e]) => {
-    if (!e.isIntersecting) return;
-    io.disconnect();
-    const { OceanEngine, defaultConfig } = await import('./poster/ocean');
-    const cfg = Object.assign(defaultConfig(), {
-      background: '#010736',
-      gridColor: 'rgba(252,241,208,0.08)',
-      fishRGB: [252, 241, 208],
-      wakeRGB: [60, 90, 170],
-      sharkTint: [1.05, 1.0, 0.85],
-      accents: ['#fcf1d0', '#8fa6e0', '#22396f'],
-    });
-    const sharks = [1, 0.7, 0.84, 0.77].map((size) => ({ kind: 'classic', size }));
-    new OceanEngine(canvas, sharks, innerWidth < 760 ? 70 : undefined, cfg);
-  }, { rootMargin: '400px' });
-  io.observe(canvas);
-}
-setupOcean();
 
 boot();

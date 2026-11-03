@@ -339,23 +339,22 @@
     </header>
 
     <main id="main">
+        <!-- The name lives in its own fixed layer, blended with 'difference': cream on the navy sheet,
+             navy ink on the paper wall as its edge sweeps across it. -->
+        <div class="hero-type" data-hero-type>
+            <div class="hero__center" aria-hidden="true">
+                <p class="hero__title">Niklas Weber</p>
+                <p class="hero__status" data-hero-status>BOOTING <span>100</span>%</p>
+            </div>
+        </div>
+
         <!-- 3. Hero: scroll-driven 3D poster box ----------------------------- -->
         <section class="hero" data-hero aria-labelledby="hero-title">
-            <canvas class="hero__ocean" aria-hidden="true"></canvas>
             <div class="hero__inner">
                 <h1 id="hero-title" class="sr-only">Niklas Weber — Systems Developer</h1>
-                <div class="hero__log mono-s" data-hero-log aria-hidden="true">
-                    <span>$ make</span>
-                    <span>go  raftlab .......... ok</span>
-                    <span>cc  minishell ........ ok</span>
-                    <span>cc  miniRT ........... ok</span>
-                    <span>go  renderer ......... ok</span>
-                    <span>go  casino ........... ok</span>
-                    <span>$ ./niklas <i class="hero__cursor"></i></span>
-                </div>
-                <div class="hero__center" aria-hidden="true">
+                <div class="hero__center hero__ghost" aria-hidden="true">
                     <p class="hero__title">Niklas Weber</p>
-                    <p class="hero__status" data-hero-status>BOOTING <span>100</span>%</p>
+                    <p class="hero__status">&nbsp;</p>
                 </div>
                 <div class="hero__intro" data-hero-intro>
                     <p>I'm Niklas, a systems developer at 42 Heilbronn and a Software Engineering student at Hochschule Heilbronn. I write shells, raytracers, renderers and real-time services from first principles — in C, Go and whatever the problem needs.</p>
@@ -365,7 +364,12 @@
                         <a class="hero__avail mono-s" href="mailto:contact@nweber.me"><i aria-hidden="true"></i>Available for collaboration</a>
                     </p>
                 </div>
-                <p class="hero__hint mono-s" data-hero-hint>(SCROLL)</p>
+                <dl class="hero__strip mono-s" data-hero-strip aria-label="At a glance">
+                    <div><dt>Based in</dt><dd>Heilbronn, DE</dd></div>
+                    <div><dt>Studying</dt><dd>Software Engineering</dd></div>
+                    <div><dt>Building</dt><dd>7 projects, C &amp; Go</dd></div>
+                    <div><dt>Focus</dt><dd>SIMD · gRPC · Raft</dd></div>
+                </dl>
             </div>
         </section>
 

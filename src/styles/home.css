@@ -42,38 +42,57 @@ main,
 }
 
 /* Same grid as the loader, so its name hands over to this one without a jump. */
-.hero__ocean {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  font-family: var(--mono);
-}
-
-@media (max-width: 760px) {
-  .hero__ocean {
-    opacity: 0.5;
-  }
-}
-
 .hero__inner {
   position: relative;
   height: 100%;
   display: grid;
-  grid-template-rows: 1fr auto 1fr;
+  grid-template-columns: minmax(0, 1fr);
+  /* minmax(0, 1fr): a tall intro must not shift the middle row away from the fixed name layer. */
+  grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr);
   justify-items: center;
   padding: 40px var(--margin);
 }
 
-.hero__log {
-  align-self: end;
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 26px;
-  font-size: 13px;
-  line-height: 1.5;
-  white-space: pre;
-  text-transform: none;
+/* White, blended with 'difference': navy backdrop -> cream, paper backdrop -> navy ink. */
+.hero-type {
+  position: fixed;
+  inset: 0 0 auto 0;
+  /* Same height as the hero, so the name keeps its slot when a phone's toolbar changes the viewport. */
+  height: 100vh;
+  height: 100svh;
+  z-index: 7;
+  display: grid;
+  place-items: center;
+  padding: 0 var(--margin);
+  color: rgb(253, 248, 255);
+  mix-blend-mode: difference;
+  pointer-events: none;
+}
+
+.hero-type .hero__center {
+  grid-row: auto;
+}
+
+/* Keeps the name's slot in the hero's own layout, so the intro sits below it. */
+.hero__ghost {
+  visibility: hidden;
+}
+
+.hero-type.is-gone {
+  visibility: hidden;
+}
+
+/* Letters leave through the top edge of this mask. */
+.hero-type .hero__title {
+  clip-path: inset(-12% -4% -30% -4%);
+}
+
+.is-reduced .hero-type {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 100svh;
+  color: var(--loader-fg);
+  mix-blend-mode: normal;
 }
 
 .hero__center {
@@ -88,7 +107,8 @@ main,
 .hero__title {
   margin: 0;
   font-family: var(--condensed);
-  font-size: clamp(64px, 15vw, 250px);
+  /* Fits the viewport: the name cannot wrap, so below ~375px it must shrink with the screen. */
+  font-size: min(clamp(64px, 15vw, 250px), calc((100vw - 36px) / 5.35));
   line-height: 0.9;
   white-space: nowrap;
   text-transform: uppercase;
@@ -96,24 +116,8 @@ main,
 
 .hero__title span {
   display: inline-block;
+  transform-origin: 50% 100%;
   will-change: transform;
-}
-
-.hero__cursor {
-  display: inline-block;
-  width: 0.6em;
-  height: 1em;
-  vertical-align: text-bottom;
-  background: currentColor;
-  animation: blink 1s steps(1) infinite;
-}
-
-@keyframes blink {
-  50% { opacity: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero__cursor { animation: none; }
 }
 
 .hero__status {
@@ -185,16 +189,35 @@ main,
   .hero__avail i { animation: none; }
 }
 
-.hero__hint {
+/* At-a-glance strip: four facts on a hairline, pinned to the bottom of the sheet. */
+.hero__strip {
   position: absolute;
-  bottom: 24px;
-  left: 50%;
+  left: var(--margin);
+  right: var(--margin);
+  bottom: 28px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
   margin: 0;
-  transform: translateX(-50%);
+  padding-top: 14px;
+  border-top: 1px solid rgba(252, 241, 208, 0.3);
 }
 
-@media (max-height: 620px) {
-  .hero__log {
+.hero__strip div {
+  display: grid;
+  gap: 4px;
+}
+
+.hero__strip dt {
+  opacity: 0.55;
+}
+
+.hero__strip dd {
+  margin: 0;
+}
+
+@media (max-width: 760px), (max-height: 760px) {
+  .hero__strip {
     display: none;
   }
 }
@@ -240,7 +263,7 @@ main,
 .wall__word {
   grid-area: 1 / 1;
   margin: 0;
-  font-size: clamp(110px, min(25vw, 42vh), 460px);
+  font-size: min(clamp(110px, min(25vw, 42vh), 460px), calc((100vw - 36px) / 3));
   line-height: 0.9;
   color: var(--ink);
   white-space: nowrap;
@@ -1418,9 +1441,6 @@ main,
   .hero__intro p {
     font-size: 17px;
   }
-  .hero__hint {
-    display: none;
-  }
   .panel {
     padding-left: var(--margin);
     padding-right: var(--margin);
@@ -1461,4 +1481,17 @@ main,
 .is-reduced [data-reveal] {
   opacity: 1;
   transform: none;
+}
+
+@media (max-width: 400px) {
+  .hero__intro {
+    padding-top: 22px;
+  }
+  .hero__intro p {
+    font-size: 15px;
+  }
+  .hero__intro .hero__cta {
+    margin-top: 12px;
+    font-size: 13px;
+  }
 }
