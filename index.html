@@ -369,12 +369,23 @@
             </div>
         </section>
 
-        <!-- 4. Poster wall ------------------------------------------------------ -->
-        <section class="wall" data-wall aria-label="Poster wall">
+        <!-- 4. First principles: build, break, rebuild — one pinned beat, scrubbed by scroll ---- -->
+        <section class="wall" data-wall aria-labelledby="wall-title">
             <div class="wall__paper" data-paper></div>
-            <p class="wall__label mono" data-wall-label>[02 — FIRST_PRINCIPLES]</p>
-            <div class="wall__stars" aria-hidden="true"><svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 0c1.6 11.5 8.5 18.4 20 20-11.5 1.6-18.4 8.5-20 20-1.6-11.5-8.5-18.4-20-20C11.5 18.4 18.4 11.5 20 0z" fill="currentColor"/></svg><svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 0c1.6 11.5 8.5 18.4 20 20-11.5 1.6-18.4 8.5-20 20-1.6-11.5-8.5-18.4-20-20C11.5 18.4 18.4 11.5 20 0z" fill="currentColor"/></svg><svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 0c1.6 11.5 8.5 18.4 20 20-11.5 1.6-18.4 8.5-20 20-1.6-11.5-8.5-18.4-20-20C11.5 18.4 18.4 11.5 20 0z" fill="currentColor"/></svg><svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 0c1.6 11.5 8.5 18.4 20 20-11.5 1.6-18.4 8.5-20 20-1.6-11.5-8.5-18.4-20-20C11.5 18.4 18.4 11.5 20 0z" fill="currentColor"/></svg><svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 0c1.6 11.5 8.5 18.4 20 20-11.5 1.6-18.4 8.5-20 20-1.6-11.5-8.5-18.4-20-20C11.5 18.4 18.4 11.5 20 0z" fill="currentColor"/></svg></div>
-            <p class="wall__poster poster" aria-hidden="true">Build<br>Break<br>Rebuild</p>
+            <div class="wall__pin" data-wall-pin>
+                <p class="wall__label mono">[02 — FIRST_PRINCIPLES]</p>
+                <h2 id="wall-title" class="sr-only">Build, break, rebuild</h2>
+                <div class="wall__stage" aria-hidden="true">
+                    <p class="wall__word poster" data-word="build">Build</p>
+                    <p class="wall__word poster" data-word="break">Break</p>
+                    <p class="wall__word poster" data-word="rebuild">Rebuild</p>
+                </div>
+                <p class="wall__note mono-s" aria-hidden="true">
+                    <span class="is-active">(1/3) Write it yourself.</span>
+                    <span>(2/3) Find out where it fails.</span>
+                    <span>(3/3) Do it again, better.</span>
+                </p>
+            </div>
         </section>
 
         <!-- 5. Giant text rows ----------------------------------------------------- -->
@@ -420,58 +431,24 @@
             </div>
         </section>
 
-        <!-- 7. Projects: rotating prism carousel ----------------------------------------- -->
+        <!-- 7. Projects: sticky preview that follows the list ---------------------------------- -->
         <section class="projects" id="work" data-projects aria-labelledby="work-title">
             <h2 id="work-title" class="sr-only">Selected work</h2>
-            <div class="projects__pin" data-projects-pin>
-                <span class="projects__edge projects__edge--l mono-s">[03] SELECTED_WORK</span>
-                <a class="projects__edge projects__edge--r mono-s link" href="#index">SKIP_TO_INDEX ↓</a>
-                <div class="cube" data-cube-scene>
-                    <div class="cube__prism" data-cube>
-                <figure class="face" data-face="0">
-                    <img src="/assets/raftlab.webp" alt="" width="1600" height="1000" loading="lazy" decoding="async">
-                    <figcaption class="face__frame">
-                        <span class="mono-s">[01] raftlab</span>
-                        <span class="face__quote">Kill the leader. Watch it recover.</span>
-                    </figcaption>
-                </figure>
-                <figure class="face" data-face="1">
-                    <img src="/assets/tetris_late.webp" alt="" width="760" height="540" loading="lazy" decoding="async">
-                    <figcaption class="face__frame">
-                        <span class="mono-s">[02] tetris_ml</span>
-                        <span class="face__quote">44% better than the heuristic.</span>
-                    </figcaption>
-                </figure>
-                <figure class="face" data-face="2">
-                    <img src="/assets/ft_casino.webp" alt="" width="1783" height="959" loading="lazy" decoding="async">
-                    <figcaption class="face__frame">
-                        <span class="mono-s">[03] Transcendence_casino</span>
-                        <span class="face__quote">Three games, one protobuf contract.</span>
-                    </figcaption>
-                </figure>
-                <figure class="face" data-face="3">
-                    <img src="/assets/go_renderer_thumb.webp" alt="" width="1280" height="720" loading="lazy" decoding="async">
-                    <figcaption class="face__frame">
-                        <span class="mono-s">[04] 3D_go_renderer</span>
-                        <span class="face__quote">Zero allocations per frame.</span>
-                    </figcaption>
-                </figure>
-                <figure class="face" data-face="4">
-                    <img src="/assets/42_ELO_Leaderboard.webp" alt="" width="1231" height="749" loading="lazy" decoding="async">
-                    <figcaption class="face__frame">
-                        <span class="mono-s">[05] 42_elo_leaderboard</span>
-                        <span class="face__quote">Row locks, not race conditions.</span>
-                    </figcaption>
-                </figure>
-                <figure class="face" data-face="5">
-                    <img src="/assets/minirt.webp" alt="" width="1912" height="1071" loading="lazy" decoding="async">
-                    <figcaption class="face__frame">
-                        <span class="mono-s">[06] mini_rt</span>
-                        <span class="face__quote">From 1–5 to 120+ frames per second.</span>
-                    </figcaption>
-                </figure>
-                <figure class="face" data-face="6">
-                    <pre class="face__term" aria-hidden="true">$ echo "hello" | tr a-z A-Z
+            <div class="work">
+                <header class="work__head mono-s">
+                    <span>[03] SELECTED_WORK</span>
+                    <a class="link" href="#index">SKIP_TO_INDEX ↓</a>
+                </header>
+                <div class="work__body">
+                    <div class="work__view" aria-hidden="true">
+                        <div class="work__frame">
+                            <figure class="shot is-active" data-shot="0"><img src="/assets/raftlab.webp" alt="" width="1600" height="1000" loading="lazy" decoding="async"></figure>
+                            <figure class="shot" data-shot="1"><img src="/assets/tetris_late.webp" alt="" width="760" height="540" loading="lazy" decoding="async"></figure>
+                            <figure class="shot" data-shot="2"><img src="/assets/ft_casino.webp" alt="" width="1783" height="959" loading="lazy" decoding="async"></figure>
+                            <figure class="shot" data-shot="3"><img src="/assets/go_renderer_thumb.webp" alt="" width="1280" height="720" loading="lazy" decoding="async"></figure>
+                            <figure class="shot" data-shot="4"><img src="/assets/42_ELO_Leaderboard.webp" alt="" width="1231" height="749" loading="lazy" decoding="async"></figure>
+                            <figure class="shot" data-shot="5"><img src="/assets/minirt.webp" alt="" width="1912" height="1071" loading="lazy" decoding="async"></figure>
+                            <figure class="shot" data-shot="6"><pre class="shot__term">$ echo "hello" | tr a-z A-Z
 HELLO
 $ cat &lt;&lt; EOF &gt; notes
 &gt; fork · execve · dup2
@@ -481,16 +458,20 @@ $ ls -l | grep .c | wc -l
 $ export FOCUS=systems
 $ echo $FOCUS
 systems
-$ _</pre>
-                    <figcaption class="face__frame">
-                        <span class="mono-s">[07] mini_shell</span>
-                        <span class="face__quote">No system(), no shortcuts.</span>
-                    </figcaption>
-                </figure>
+$ _</pre></figure>
+                        </div>
+                        <p class="work__count mono-s"><span data-work-index>01</span> / 07 <span class="work__bar"><i data-work-bar></i></span></p>
                     </div>
+                    <ol class="work__list">
+                        <li class="work__item is-active" data-item="0"><a href="#project-raftlab"><span class="work__idx mono-s">[01]</span><span class="work__name">raftlab</span><span class="work__quote mono-s">Kill the leader. Watch it recover.</span><span class="work__desc">Raft consensus from scratch in Go, with a replicated key-value store and a live cluster you can break. Seeded chaos tests replay any failure.</span></a></li>
+                        <li class="work__item" data-item="1"><a href="#project-tetris-ml"><span class="work__idx mono-s">[02]</span><span class="work__name">tetris_ml</span><span class="work__quote mono-s">44% better than the heuristic.</span><span class="work__desc">Tetris engine in Go, DQN agents in PyTorch, live training viewer. Plus T-spins.</span></a></li>
+                        <li class="work__item" data-item="2"><a href="#project-transcendence"><span class="work__idx mono-s">[03]</span><span class="work__name">casino</span><span class="work__quote mono-s">Three games, one protobuf contract.</span><span class="work__desc">Real-time multiplayer casino. Go backend, C++ engine over gRPC, React front, hand-rolled WebSocket hub.</span></a></li>
+                        <li class="work__item" data-item="3"><a href="#project-go-renderer"><span class="work__idx mono-s">[04]</span><span class="work__name">go_renderer</span><span class="work__quote mono-s">Zero allocations per frame.</span><span class="work__desc">From-scratch OpenGL 4.1 renderer in Go. Own .obj parser, ear clipping, 0.06 allocs per frame.</span></a></li>
+                        <li class="work__item" data-item="4"><a href="#project-elo"><span class="work__idx mono-s">[05]</span><span class="work__name">elo_board</span><span class="work__quote mono-s">Row locks, not race conditions.</span><span class="work__desc">Ranking system for 42 Heilbronn in Go and PostgreSQL. 30 ms average response, 99.9% uptime.</span></a></li>
+                        <li class="work__item" data-item="5"><a href="#project-minirt"><span class="work__idx mono-s">[06]</span><span class="work__name">mini_rt</span><span class="work__quote mono-s">From 1–5 to 120+ frames per second.</span><span class="work__desc">SIMD raytracer in C. SSE/AVX, structure-of-arrays, tile threads. 80 times the baseline.</span></a></li>
+                        <li class="work__item" data-item="6"><a href="#project-minishell"><span class="work__idx mono-s">[07]</span><span class="work__name">mini_shell</span><span class="work__quote mono-s">No system(), no shortcuts.</span><span class="work__desc">POSIX shell in C. Own lexer and parser, fork/execve, dup2 pipelines, here-docs, sigaction.</span></a></li>
+                    </ol>
                 </div>
-                <div class="cube__caps" aria-live="polite"><p class="cube__cap is-active" data-cap="0">Raft consensus from scratch in Go, with a replicated key-value store and a live cluster you can break. Seeded chaos tests replay any failure.<br><a class="link mono-s" href="#project-raftlab">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="1">Tetris engine in Go, DQN agents in PyTorch, live training viewer. 44% above a hand-tuned heuristic, plus T-spins.<br><a class="link mono-s" href="#project-tetris-ml">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="2">Real-time multiplayer casino. Go backend, C++ engine over gRPC, React front, hand-rolled WebSocket hub.<br><a class="link mono-s" href="#project-transcendence">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="3">From-scratch OpenGL 4.1 renderer in Go. Own .obj parser, ear clipping, 0.06 allocs per frame.<br><a class="link mono-s" href="#project-go-renderer">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="4">Ranking system for 42 Heilbronn in Go and PostgreSQL. 30 ms average response, 99.9% uptime.<br><a class="link mono-s" href="#project-elo">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="5">SIMD raytracer in C. SSE/AVX, structure-of-arrays, tile threads. 80 times the baseline.<br><a class="link mono-s" href="#project-minirt">(CASE_STUDY ↓)</a></p><p class="cube__cap" data-cap="6">POSIX shell in C. Own lexer and parser, fork/execve, dup2 pipelines, here-docs, sigaction.<br><a class="link mono-s" href="#project-minishell">(CASE_STUDY ↓)</a></p></div>
-                <p class="projects__count mono-s"><span data-cube-index>01</span> / 07 <span class="projects__bar" aria-hidden="true"><i data-cube-bar></i></span></p>
             </div>
         </section>
 

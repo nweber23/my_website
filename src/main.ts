@@ -172,29 +172,8 @@ function setupMotion({ dots, lenis }: Stage) {
   header.classList.add('is-dark'); // light header over the navy sheet
   setupHero();
 
-  // --- 4. Poster wall ---------------------------------------------------------
-  const wall = $('[data-wall]');
-  $$('.wall__stars .star', wall).forEach((star, i) => {
-    gsap.fromTo(
-      star,
-      { scale: 0, rotation: 0 },
-      {
-        scale: 1,
-        rotation: 45,
-        duration: 1.2,
-        delay: i * 0.08,
-        ease: EASE,
-        scrollTrigger: { trigger: wall, start: 'top 55%', toggleActions: 'play none none reverse' },
-        onComplete: () => {
-          if (!reduced) gsap.to(star, { rotation: '+=360', duration: 70 + i * 6, repeat: -1, ease: 'none' });
-        },
-      }
-    );
-  });
-  if (!reduced) {
-    gsap.to('[data-wall-label]', { y: -140, ease: 'none', scrollTrigger: { trigger: wall, start: 'top top', end: 'bottom top', scrub: true } });
-    gsap.fromTo('.wall__poster', { yPercent: 18 }, { yPercent: -12, ease: 'none', scrollTrigger: { trigger: wall, start: 'top bottom', end: 'bottom top', scrub: true } });
-  }
+  // --- 4. First principles: build, break, rebuild ---------------------------------
+  setupWall();
 
   // --- 5. Giant text rows -------------------------------------------------------
   const rowsSection = $('[data-rows]');
@@ -303,8 +282,8 @@ function setupMotion({ dots, lenis }: Stage) {
       gsap.from(panel.children, { opacity: 0, y: 30, duration: 1, stagger: 0.12, ease: EASE, scrollTrigger: { trigger: panel, start: 'top 75%' } })
     );
   }
-  // --- 7. Projects: rotating prism ------------------------------------------------
-  setupPrism();
+  // --- 7. Projects: sticky preview ------------------------------------------------
+  setupWork();
 
   // Reveal for the index, notes and profile blocks.
   $$('.sec-head, .row, .notes__list li, .card, .foot__logo, .foot__row').forEach((el) => el.setAttribute('data-reveal', ''));
@@ -427,95 +406,127 @@ function setupHero() {
   });
 }
 
-// --- 7. Prism carousel ----------------------------------------------------------------------
-function setupPrism() {
-  const scene = $('[data-cube-scene]');
-  const prism = $('[data-cube]');
-  const faces = $$('[data-face]', prism);
-  const caps = $$('[data-cap]');
-  const counter = $('[data-cube-index]');
-  const bar = $('[data-cube-bar]');
-  const n = faces.length;
-  const step = 360 / n;
-  // pos is in project units (0..n-1). Scroll sets target; a ticker eases pos toward
-  // it, so the prism turns continuously with the scroll instead of jumping.
-  const st = { pos: 0, target: 0, tiltX: 0, tiltY: 0, tx: 0, ty: 0, dirty: true };
-  let radius = 0;
-
-  const apply = () => {
-    // Mid-turn the prism eases back and tips a little, like a drum being spun.
-    const turn = Math.abs(st.pos - Math.round(st.pos));
-    const lift = Math.sin(turn * Math.PI);
-    const angle = -st.pos * step - 18;
-    prism.style.transform = `translateZ(${-radius - lift * radius * 0.45}px) rotateX(${st.tiltX - lift * 5}deg) rotateY(${angle + st.tiltY}deg)`;
-    faces.forEach((f, i) => {
-      // Faces turned away from the viewer darken, so the front one reads first.
-      const rel = ((((i * step + angle) % 360) + 540) % 360) - 180;
-      f.style.setProperty('--shade', Math.min(0.62, (Math.abs(rel) / 100) * 0.5).toFixed(3));
+// --- 4. First principles: build, break, rebuild ---------------------------------------------
+// One pinned beat of about 1.6 screens. BUILD rises letter by letter, BREAK drops apart,
+// REBUILD flies back together. Scroll scrubs the whole thing, so it never plays faster than you scroll.
+function setupWall() {
+  const pin = $('[data-wall-pin]');
+  const words = $$('[data-word]', pin);
+  const notes = $$('.wall__note span', pin);
+  words.forEach((w) => {
+    const text = w.textContent ?? '';
+    w.textContent = '';
+    [...text].forEach((c) => {
+      const s = document.createElement('span');
+      s.className = 'ch';
+      s.textContent = c;
+      w.append(s);
     });
-    bar.style.transform = `scaleX(${(st.pos / (n - 1)).toFixed(4)})`;
-  };
-  const layout = () => {
-    radius = prism.offsetWidth / (2 * Math.tan(Math.PI / n));
-    faces.forEach((f, i) => (f.style.transform = `rotateY(${i * step}deg) translateZ(${radius}px)`));
-    apply();
-  };
-  layout();
-  window.addEventListener('resize', layout);
+  });
+  if (reduced) return;
 
+  const [build, brk, rebuild] = words.map((w) => $$('.ch', w));
+  const r = gsap.utils.random;
+  gsap.set(build, { yPercent: 110 });
+  gsap.set([...brk, ...rebuild], { opacity: 0 });
+
+  const T_BREAK = 1.8; // BUILD hands over to BREAK
+  const T_REBUILD = 3.9; // the pieces start finding each other again
+  const tl = gsap.timeline({ defaults: { ease: 'none' } });
+  tl.to(build, { yPercent: 0, duration: 0.8, stagger: 0.1, ease: 'power3.out' }, 0);
+  tl.to(build, { opacity: 0, duration: 0.05 }, T_BREAK);
+  tl.to(brk, { opacity: 1, duration: 0.05 }, T_BREAK);
+  tl.to(
+    brk,
+    {
+      y: () => r(140, 320),
+      x: () => r(-70, 70),
+      rotation: () => r(-55, 55),
+      opacity: 0,
+      duration: 1,
+      stagger: 0.07,
+      ease: 'power2.in',
+    },
+    T_BREAK + 0.9
+  );
+  tl.fromTo(
+    rebuild,
+    { opacity: 0, x: () => r(-260, 260), y: () => r(120, 280), rotation: () => r(-50, 50) },
+    { opacity: 1, x: 0, y: 0, rotation: 0, duration: 1, stagger: 0.07, ease: 'power3.out' },
+    T_REBUILD
+  );
+  tl.to({}, { duration: 0.5 }, '>'); // hold the finished word
+
+  const total = tl.duration();
+  let note = 0;
+  ScrollTrigger.create({
+    trigger: pin,
+    start: 'top top',
+    end: '+=160%',
+    pin: true,
+    scrub: 0.6,
+    animation: tl,
+    invalidateOnRefresh: true,
+    onUpdate: (s) => {
+      const t = s.progress * total;
+      const next = t < T_BREAK ? 0 : t < T_REBUILD ? 1 : 2;
+      if (next === note) return;
+      note = next;
+      notes.forEach((n, i) => n.classList.toggle('is-active', i === next));
+    },
+  });
+}
+
+// --- 7. Selected work ------------------------------------------------------------------------
+// The list scrolls normally; the preview beside it is sticky and wipes to the project that is
+// passing the reading line. No pin, so the section is only as long as the list itself.
+function setupWork() {
+  const shots = $$('[data-shot]');
+  const items = $$('[data-item]');
+  const counter = $('[data-work-index]');
+  const bar = $('[data-work-bar]');
   let index = 0;
-  const setActive = (i: number) => {
+
+  const show = (i: number) => {
     if (i === index) return;
-    index = i;
-    caps.forEach((c, k) => c.classList.toggle('is-active', k === i));
+    shots.forEach((s) => s.classList.remove('is-prev'));
+    shots[index].classList.remove('is-active');
+    shots[index].classList.add('is-prev');
+    shots[i].classList.add('is-active');
+    items.forEach((it, k) => it.classList.toggle('is-active', k === i));
     counter.textContent = String(i + 1).padStart(2, '0');
+    index = i;
   };
 
-  gsap.ticker.add((_t, dtMs) => {
-    const k = (rate: number) => (reduced ? 1 : 1 - Math.exp((-dtMs / 1000) * rate));
-    const before = st.pos + st.tiltX * 7 + st.tiltY * 13;
-    st.pos += (st.target - st.pos) * k(6);
-    st.tiltX += (st.tx - st.tiltX) * k(5);
-    st.tiltY += (st.ty - st.tiltY) * k(5);
-    if (Math.abs(st.target - st.pos) < 1e-4) st.pos = st.target;
-    const after = st.pos + st.tiltX * 7 + st.tiltY * 13;
-    if (!st.dirty && Math.abs(after - before) < 1e-5) return;
-    st.dirty = false;
-    apply();
-    setActive(Math.round(st.pos));
+  // The reading line sits a little below the middle. Whichever item it crosses is current;
+  // above or below the list it clamps to the first or last, so a fast jump never leaves a stale one.
+  ScrollTrigger.create({
+    trigger: '.work__list',
+    start: 'top bottom',
+    end: 'bottom top',
+    onUpdate: () => {
+      const line = innerHeight * 0.58;
+      const next = items.findIndex((it) => it.getBoundingClientRect().bottom > line);
+      show(next < 0 ? items.length - 1 : next);
+    },
+  });
+  ScrollTrigger.create({
+    trigger: '.work__list',
+    start: 'top 58%',
+    end: 'bottom 58%',
+    onUpdate: (s) => (bar.style.transform = `scaleX(${s.progress.toFixed(4)})`),
   });
 
-  if (!reduced) {
-    ScrollTrigger.create({
-      trigger: '[data-projects-pin]',
-      start: 'top top',
-      end: () => `+=${innerHeight * (n - 1) * 1.1}`,
-      pin: true,
-      invalidateOnRefresh: true,
-      onUpdate: (s) => (st.target = dwell(s.progress * (n - 1), n)),
-    });
-    // Subtle tilt toward the cursor, eased by the same ticker.
-    scene.addEventListener('pointermove', (e) => {
-      const r = scene.getBoundingClientRect();
-      st.tx = -((e.clientY - r.top) / r.height - 0.5) * 10;
-      st.ty = ((e.clientX - r.left) / r.width - 0.5) * 10;
-    });
-    scene.addEventListener('pointerleave', () => (st.tx = st.ty = 0));
-  } else {
-    // Without the pin, step through the projects with a click.
-    scene.addEventListener('click', () => (st.target = (Math.round(st.target) + 1) % n));
-  }
-
-  // A face opens its case study in the index.
-  faces.forEach((f, i) =>
-    f.addEventListener('click', () => {
-      const id = caps[i].querySelector('a')?.getAttribute('href')?.slice(1);
-      const row = id ? (document.getElementById(id) as HTMLDetailsElement | null) : null;
-      if (!row) return;
-      row.open = true;
-      row.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
-    })
-  );
+  // A project opens its case study in the index below.
+  const open = (href: string | null, e?: Event) => {
+    const row = href ? (document.getElementById(href.slice(1)) as HTMLDetailsElement | null) : null;
+    if (!row) return;
+    e?.preventDefault();
+    row.open = true;
+    row.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+  };
+  $$<HTMLAnchorElement>('.work__item a').forEach((a) => a.addEventListener('click', (e) => open(a.getAttribute('href'), e)));
+  $('.work__view').addEventListener('click', () => open(items[index].querySelector('a')!.getAttribute('href')));
 }
 
 // --- 8. Manifesto -----------------------------------------------------------------------------
