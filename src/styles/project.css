@@ -33,7 +33,6 @@
 .project__figure video {
   width: 100%;
   height: auto;
-  border: var(--hairline);
 }
 
 .project__figure figcaption {
@@ -45,11 +44,9 @@
 .project__figure blockquote {
   margin: 0;
   padding: 50px 30px;
-  border: var(--hairline);
   font-size: clamp(22px, 2.2vw, 30px);
   line-height: 1.15;
   text-align: center;
-  text-transform: uppercase;
 }
 
 .project__figure blockquote p {
@@ -66,7 +63,6 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   margin: 0 0 26px;
-  border-top: var(--hairline);
 }
 
 .project__metrics div {
@@ -108,7 +104,6 @@
 
 .project__details {
   margin: 14px 0 0;
-  border-top: var(--hairline);
 }
 
 .project__details div {
@@ -116,7 +111,6 @@
   grid-template-columns: 90px minmax(0, 1fr);
   gap: 16px;
   padding: 9px 0;
-  border-bottom: 1px solid rgba(1, 7, 54, 0.18);
   font-size: 15px;
 }
 

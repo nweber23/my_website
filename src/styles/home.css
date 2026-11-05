@@ -24,7 +24,7 @@ main,
   text-align: center;
 }
 
-.sec-head > :last-child {
+.sec-head > :last-child:not(h2) {
   justify-self: end;
   text-align: right;
 }
@@ -500,17 +500,12 @@ main,
   text-align: center;
 }
 
-.panel__idx {
-  margin-bottom: 8px;
-}
 
 .panel__text {
   margin: 0;
   max-width: 620px;
   font-size: clamp(20px, 2vw, 27px);
   line-height: 1.12;
-  text-transform: uppercase;
-  letter-spacing: -0.01em;
 }
 
 .panel--photo {
@@ -716,21 +711,15 @@ main,
 
 .work__item a {
   display: grid;
-  grid-template-columns: auto 1fr;
-  column-gap: 18px;
+  grid-template-columns: minmax(0, 1fr);
   row-gap: 6px;
   padding: 22px 0 26px;
   color: var(--ink);
   text-decoration: none;
 }
 
-.work__idx {
-  grid-row: 1;
-  align-self: center;
-}
 
 .work__name {
-  grid-column: 2;
   font-family: var(--grotesk);
   font-size: clamp(40px, 5.6vw, 84px);
   line-height: 1;
@@ -739,10 +728,6 @@ main,
   transition: translate 0.5s var(--ease);
 }
 
-.work__quote,
-.work__desc {
-  grid-column: 2;
-}
 
 .work__desc {
   max-width: 46ch;
@@ -814,7 +799,7 @@ main,
 
 .row__head {
   display: grid;
-  grid-template-columns: 70px minmax(0, 1.3fr) minmax(0, 1.3fr) minmax(0, 1fr) 80px 24px;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.3fr) minmax(0, 1fr) 80px 24px;
   align-items: baseline;
   gap: 20px;
   padding: 20px 8px;
@@ -855,7 +840,6 @@ main,
 
 .row__kind {
   font-size: 15px;
-  text-transform: uppercase;
 }
 
 .row__toggle {
@@ -899,7 +883,6 @@ main,
 .row__figure video {
   width: 100%;
   height: auto;
-  border: var(--hairline);
 }
 
 .row__figure figcaption {
@@ -911,11 +894,9 @@ main,
 .row__figure blockquote {
   margin: 0;
   padding: 50px 30px;
-  border: var(--hairline);
   font-size: clamp(22px, 2.2vw, 30px);
   line-height: 1.15;
   text-align: center;
-  text-transform: uppercase;
 }
 
 .row__figure blockquote p {
@@ -932,7 +913,6 @@ main,
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   margin: 0 0 26px;
-  border-top: var(--hairline);
 }
 
 .row__metrics div {
@@ -974,7 +954,6 @@ main,
 
 .row__details {
   margin: 14px 0 0;
-  border-top: var(--hairline);
 }
 
 .row__details div {
@@ -982,7 +961,6 @@ main,
   grid-template-columns: 90px minmax(0, 1fr);
   gap: 16px;
   padding: 9px 0;
-  border-bottom: 1px solid rgba(1, 7, 54, 0.18);
   font-size: 15px;
 }
 
@@ -1020,7 +998,7 @@ main,
 
 .notes__list a {
   display: grid;
-  grid-template-columns: 130px minmax(0, 1fr) 190px;
+  grid-template-columns: 130px minmax(0, 1fr);
   align-items: baseline;
   gap: 20px;
   padding: 22px 8px;
@@ -1032,12 +1010,6 @@ main,
 .notes__title {
   font-size: clamp(20px, 2vw, 28px);
   line-height: 1.1;
-  text-transform: uppercase;
-  letter-spacing: -0.01em;
-}
-
-.notes__list a > :last-child {
-  text-align: right;
 }
 
 /* --- 8. Manifesto ---------------------------------------------------------------------------- */
@@ -1125,7 +1097,6 @@ main,
   padding: 0 var(--margin);
   font-size: clamp(22px, 2.4vw, 32px);
   line-height: 1.12;
-  text-transform: uppercase;
 }
 
 .manifesto__quote p {
@@ -1180,33 +1151,27 @@ main,
 .cards {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 28px;
-  margin-top: 48px;
+  gap: 56px 64px;
+  margin-top: 56px;
 }
 
 .card {
-  display: grid;
-  grid-template-columns: 36px minmax(0, 1fr);
-  border: var(--hairline);
-  background: var(--bg-soft);
+  display: block;
+  padding-top: 18px;
+  border-top: var(--hairline);
 }
 
 .card__v {
-  display: grid;
-  place-items: center;
-  border-right: var(--hairline);
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  font-size: 12px;
-  letter-spacing: 0.08em;
+  display: block;
+  margin-bottom: 16px;
+  font-size: 13px;
+  letter-spacing: 0.06em;
 }
 
 .card__t {
   margin: 0;
-  padding: 16px 18px;
-  font-size: 15px;
-  line-height: 1.3;
-  text-transform: uppercase;
+  font-size: 17px;
+  line-height: 1.35;
 }
 
 .card__t p {
@@ -1223,7 +1188,6 @@ main,
   grid-template-columns: 76px minmax(0, 1fr);
   gap: 12px;
   padding: 6px 0;
-  border-bottom: 1px solid rgba(1, 7, 54, 0.18);
 }
 
 .card__dl dt,
@@ -1275,16 +1239,12 @@ main,
 
 .foot {
   z-index: 6;
-  padding: 120px var(--margin) 40px;
+  padding: 100px var(--margin) 40px;
+  border-top: var(--hairline);
   background: var(--bg-gradient);
   text-align: center;
 }
 
-.foot__dots {
-  width: 100%;
-  height: clamp(140px, 22vw, 300px);
-  margin-bottom: 40px;
-}
 
 .foot__logo {
   display: inline-block;
@@ -1334,7 +1294,6 @@ main,
   margin: 0;
   font-size: 13px;
   line-height: 1.3;
-  text-transform: uppercase;
 }
 
 /* --- Motion polish: scroll progress, smooth project rows -------------------------------------- */
@@ -1394,12 +1353,12 @@ main,
 
 @media (max-width: 900px) {
   .row__head {
-    grid-template-columns: 50px minmax(0, 1fr) 24px;
+    grid-template-columns: minmax(0, 1fr) 24px;
     gap: 12px;
   }
   .row__kind,
   .row__stack,
-  .row__head > :nth-child(5) {
+  .row__head > :nth-child(4) {
     display: none;
   }
   .row__body {
@@ -1410,9 +1369,6 @@ main,
     grid-template-columns: minmax(0, 1fr);
     gap: 6px;
   }
-  .notes__list a > :last-child {
-    text-align: left;
-  }
   .cards {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -1421,7 +1377,7 @@ main,
     justify-items: center;
     text-align: center;
   }
-  .sec-head > :last-child {
+  .sec-head > :last-child:not(h2) {
     justify-self: center;
     text-align: center;
   }

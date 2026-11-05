@@ -10,8 +10,8 @@
   --cream: #fcf1d0;
 
   --bg: var(--cream);
-  --bg-soft: #fdf6e1;
-  --bg-gradient: linear-gradient(to bottom, #fcf1d0, #fdf5df 60%, #fef9ec);
+  --bg-soft: var(--bg);
+  --bg-gradient: var(--bg);
   --paper: #f4e6bf;
   --ink: var(--navy-900);
   --ink-soft: var(--navy-600);

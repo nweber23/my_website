@@ -95,26 +95,15 @@
     </nav>
 
     <main id="main" class="main">
-        <nav class="breadcrumb" aria-label="Breadcrumb">
-            <ol class="breadcrumb__list">
-                <li class="breadcrumb__item">
-                    <a href="/" class="breadcrumb__link">home</a>
-                </li>
-                <li class="breadcrumb__item breadcrumb__sep">
-                    <span class="breadcrumb__current" aria-current="page">raftlab</span>
-                </li>
-            </ol>
-        </nav>
-
-        <section class="section section--imprint" aria-labelledby="project-title" id="project-raftlab">
+<section class="section section--imprint" aria-labelledby="project-title" id="project-raftlab">
             <div class="section__head">
                 <h1 id="project-title" class="section__title">raftlab</h1>
-                <span class="section__aside">Raft consensus with a live cluster visualizer · MMXXVI</span>
+                <span class="section__aside">Raft consensus with a live cluster visualizer · 2026</span>
             </div>
 
             <div class="project__body">
                 <figure class="project__figure"><img src="/assets/raftlab.webp" alt="raftlab visualizer during a network partition: five Raft nodes in a pentagon, two of them marked leader, with dashed red links where messages are dropped between the old leader and the rest" width="1600" height="1000" decoding="async">
-                        <figcaption class="mono-s"><span>Fig. 1.1 — Network partition: two nodes believe they lead</span><span>[term 2 vs 3]</span></figcaption></figure>
+                        <figcaption class="mono-s"><span>Network partition: two nodes believe they lead</span><span>[term 2 vs 3]</span></figcaption></figure>
                 <div class="project__text">
                         <p class="project__summary">Raft consensus implemented from scratch in Go — leader election, log replication, snapshots and crash recovery — with a linearizable key-value store on top and a browser UI where you can kill nodes, cut the network and watch the cluster recover.</p>
                         <dl class="project__metrics"><div><dt>Go code</dt><dd>5.1k lines</dd></div><div><dt>Of which tests</dt><dd>2.2k lines</dd></div><div><dt>Dependencies</dt><dd>1</dd></div></dl>

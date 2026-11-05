@@ -2,7 +2,7 @@
    original markup; this sheet restyles it. */
 
 body {
-  background: var(--bg-gradient) fixed;
+  background: var(--bg);
 }
 
 .scroll-progress,
@@ -66,39 +66,6 @@ body {
   padding: calc(var(--header-h) + 50px) var(--margin) 140px;
 }
 
-.breadcrumb__list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 0 0 56px;
-  padding: 0;
-  list-style: none;
-  font-family: var(--mono);
-  font-size: 13px;
-  text-transform: lowercase;
-}
-
-.breadcrumb__sep::before {
-  content: '/';
-  margin-right: 8px;
-}
-
-.breadcrumb__link {
-  text-decoration: none;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .breadcrumb__link:hover {
-    text-decoration: underline;
-  }
-}
-
-.breadcrumb__current {
-  padding: 0 6px;
-  background: var(--ink);
-  color: var(--bg);
-}
-
 /* Page heading (writing index, imprint): condensed poster type. */
 .hero--compact {
   padding-bottom: 40px;
@@ -133,7 +100,6 @@ body {
   margin: 0;
   font-size: 19px;
   line-height: 1.2;
-  text-transform: uppercase;
 }
 
 /* Post and imprint sections. */
@@ -201,8 +167,6 @@ body {
   font-weight: 400;
   font-size: clamp(26px, 3vw, 36px);
   line-height: 1.05;
-  letter-spacing: -0.02em;
-  text-transform: uppercase;
 }
 
 .imprint__block > .imprint__heading:first-child {
@@ -283,7 +247,6 @@ h3.imprint__heading {
 .imprint__block th,
 .imprint__block td {
   padding: 8px 10px;
-  border-bottom: var(--hairline);
   text-align: left;
 }
 
@@ -314,8 +277,6 @@ h3.imprint__heading {
   font-size: clamp(20px, 2.2vw, 28px);
   line-height: 1.1;
   text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: -0.01em;
 }
 
 .writing-index__meta {
@@ -362,7 +323,6 @@ h3.imprint__heading {
   display: block;
   max-width: 100%;
   height: auto;
-  border: var(--hairline);
 }
 
 .article__figure figcaption {
@@ -375,5 +335,4 @@ h3.imprint__heading {
   display: block;
   max-width: 100%;
   height: auto;
-  border: var(--hairline);
 }

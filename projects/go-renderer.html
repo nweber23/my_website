@@ -93,28 +93,17 @@
     </nav>
 
     <main id="main" class="main">
-        <nav class="breadcrumb" aria-label="Breadcrumb">
-            <ol class="breadcrumb__list">
-                <li class="breadcrumb__item">
-                    <a href="/" class="breadcrumb__link">home</a>
-                </li>
-                <li class="breadcrumb__item breadcrumb__sep">
-                    <span class="breadcrumb__current" aria-current="page">3d go renderer</span>
-                </li>
-            </ol>
-        </nav>
-
-        <section class="section section--imprint" aria-labelledby="project-title" id="project-go-renderer">
+<section class="section section--imprint" aria-labelledby="project-title" id="project-go-renderer">
             <div class="section__head">
                 <h1 id="project-title" class="section__title">3D Go Renderer</h1>
-                <span class="section__aside">From-scratch OpenGL renderer in Go · MMXXVI</span>
+                <span class="section__aside">From-scratch OpenGL renderer in Go · 2026</span>
             </div>
 
             <div class="project__body">
                 <figure class="project__figure"><video width="1280" height="720" autoplay muted loop playsinline preload="metadata" poster="/assets/go_renderer_thumb.webp" aria-label="3D Go Renderer orbit camera demo, rendering a textured .obj model in real time">
                             <source data-src="/assets/go_renderer.mp4" type="video/mp4">
                         </video>
-                        <figcaption class="mono-s"><span>Fig. 1.3 — Orbit camera demo</span><span>[opengl 4.1]</span></figcaption></figure>
+                        <figcaption class="mono-s"><span>Orbit camera demo</span><span>[opengl 4.1]</span></figcaption></figure>
                 <div class="project__text">
                         <p class="project__summary">A from-scratch 3D renderer in Go — custom .obj/.mtl parsing, ear-clipping triangulation, and an OpenGL 4.1 pipeline with zero steady-state heap allocations.</p>
                         <dl class="project__metrics"><div><dt>Allocs/frame</dt><dd>0.06</dd></div><div><dt>Parser</dt><dd>Concurrent</dd></div><div><dt>UV modes</dt><dd>3</dd></div></dl>

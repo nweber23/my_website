@@ -8,7 +8,6 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { paperCanvas } from './poster/textures';
-import { DotMatrix } from './poster/dots';
 import { Halftone } from './poster/halftone';
 import { githubStats } from './shared/github';
 
@@ -97,7 +96,6 @@ async function boot() {
   $('[data-values]').style.backgroundSize = 'cover';
   loader.step();
 
-  const dots = new DotMatrix($<HTMLCanvasElement>('[data-dots]'), 'NWEBER', reduced);
   loader.step();
 
   const lenis = reduced ? null : new Lenis({ lerp: 0.09, wheelMultiplier: 1 });
@@ -108,7 +106,7 @@ async function boot() {
     gsap.ticker.lagSmoothing(0);
   }
 
-  setupMotion({ dots, lenis });
+  setupMotion({ lenis });
 
   await loader.finished();
   await intro(loaderEl);
@@ -143,11 +141,10 @@ function intro(loaderEl: HTMLElement) {
 // =========================================================================
 
 interface Stage {
-  dots: DotMatrix;
   lenis: Lenis | null;
 }
 
-function setupMotion({ dots, lenis }: Stage) {
+function setupMotion({ lenis }: Stage) {
   // --- 2. Global: header nudge, nav pill, anchor links --------------------
   lenis?.on('scroll', ({ scroll }: { scroll: number }) => header.classList.toggle('is-scrolled', scroll > 8));
   if (!lenis) window.addEventListener('scroll', () => header.classList.toggle('is-scrolled', scrollY > 8), { passive: true });
@@ -204,24 +201,6 @@ function setupMotion({ dots, lenis }: Stage) {
   if (circle) {
     gsap.to(circle, { strokeDashoffset: 0, ease: 'none', scrollTrigger: { trigger: circle.closest('.circled')!, start: 'top 80%', end: 'top 40%', scrub: reduced ? false : true } });
   }
-  // QR blocks step pixel by pixel while on screen.
-  let qrTimer = 0;
-  ScrollTrigger.create({
-    trigger: rowsSection,
-    start: 'top bottom',
-    end: 'bottom top',
-    onToggle: (s) => {
-      clearInterval(qrTimer);
-      if (!s.isActive || reduced) return;
-      const cells = $$<SVGRectElement>('[data-flicker] rect', rowsSection);
-      qrTimer = window.setInterval(() => {
-        for (let k = 0; k < 4; k++) {
-          const c = cells[Math.floor(Math.random() * cells.length)];
-          c.style.opacity = c.style.opacity === '0' ? '1' : '0';
-        }
-      }, 140);
-    },
-  });
 
   // --- 6. Values: pinned horizontal track ---------------------------------------
   const halftone = new Halftone($<HTMLCanvasElement>('[data-halftone]'), '/assets/minirt.webp', reduced);
@@ -300,15 +279,6 @@ function setupMotion({ dots, lenis }: Stage) {
   // --- 8. Manifesto video -------------------------------------------------------------
   setupManifesto();
 
-  // --- 9. Footer dot matrix -----------------------------------------------------------
-  ScrollTrigger.create({
-    trigger: '[data-foot]',
-    start: 'top bottom',
-    end: 'bottom bottom',
-    onUpdate: (s) => (dots.progress = s.progress),
-  });
-  new IntersectionObserver(([e]) => (dots.visible = e.isIntersecting)).observe($('[data-dots]'));
-
   // Opening a project changes the page height; re-measure so the pinned manifesto scrubs from true positions.
   const remeasure = () => {
     ScrollTrigger.refresh();
@@ -323,10 +293,6 @@ function setupMotion({ dots, lenis }: Stage) {
   const gh = $('[data-github-stats]');
   if (gh) githubStats(gh).finally(() => ScrollTrigger.refresh()); // graph changes page height
 
-  // --- Render loop: draw only what is on screen ----------------------------------------
-  gsap.ticker.add(() => {
-    if (dots.visible || reduced) dots.draw(performance.now());
-  });
 }
 
 // --- 3. Hero ----------------------------------------------------------------------------------
