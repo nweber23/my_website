@@ -1018,7 +1018,7 @@ main,
   position: relative;
   z-index: 6;
   /* Longer runway so ten words can each settle before the next arrives. */
-  height: 440vh;
+  height: 420vh;
   background: var(--bg-soft);
 }
 
@@ -1143,7 +1143,9 @@ main,
 /* --- Profile cards -------------------------------------------------------------------------- */
 
 .profile {
-  padding-top: 140px;
+  /* Rises over the pinned video while it shrinks away, so there is no empty stretch between them. */
+  margin-top: -70vh;
+  padding-top: 120px;
   padding-bottom: 160px;
   background: var(--bg-gradient);
 }
@@ -1431,6 +1433,10 @@ main,
 
 .is-reduced .manifesto {
   height: auto;
+}
+
+.is-reduced .profile {
+  margin-top: 0;
 }
 
 .is-reduced .js [data-reveal],
