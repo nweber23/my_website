@@ -80,7 +80,7 @@ if (import.meta.env.DEV && location.search.includes('i18n=dump')) {
   visit((k, _en, set) => { const v = dict.get(k); if (v) set(v); });
 }
 
-// --- the switch: one small fixed pill, same on every page and viewport ------------------------
+// --- the switch: a small EN/DE toggle mounted in each page's header ------------------------
 function mountSwitch() {
   const box = document.createElement('div');
   box.className = 'lang';
@@ -99,6 +99,8 @@ function mountSwitch() {
     };
     box.append(b);
   }
-  document.body.append(box);
+  const host = document.querySelector('[data-header]') ?? document.querySelector('.nav__right') ?? document.querySelector('.sbar__tools');
+  if (host?.matches('.nav__right')) host.prepend(box);
+  else (host ?? document.body).append(box);
 }
 mountSwitch();

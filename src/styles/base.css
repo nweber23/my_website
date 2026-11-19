@@ -477,24 +477,21 @@ button {
   }
 }
 
-/* --- Language switch ------------------------------------------------------------ */
+/* --- Language switch: lives in each page's header ------------------------------- */
 
 .lang {
-  position: fixed;
-  right: max(var(--margin), 12px);
-  bottom: max(14px, env(safe-area-inset-bottom));
-  z-index: 90;
-  display: flex;
+  display: inline-flex;
+  align-items: center;
+  margin: 0 -8px;
   font-family: var(--mono);
   font-size: 12px;
   line-height: 1;
-  color: #fff;
-  mix-blend-mode: difference;
+  color: inherit;
 }
 
 .lang button {
-  min-width: 44px;
-  min-height: 44px;
+  min-width: 36px;
+  min-height: 40px;
   padding: 0;
   border: 0;
   background: none;
@@ -508,4 +505,24 @@ button {
   opacity: 1;
   text-decoration: underline;
   text-underline-offset: 4px;
+}
+
+.nav__right .lang {
+  margin-right: 8px;
+}
+
+/* Home header: tucked under the geo mark on desktop, under the name on phones. */
+.hdr > .lang {
+  position: absolute;
+  top: 50%;
+  right: calc(var(--margin) - 8px);
+  margin: 18px 0 0;
+}
+
+@media (max-width: 760px) {
+  .hdr > .lang {
+    right: auto;
+    left: calc(var(--margin) - 8px);
+    margin-top: -4px;
+  }
 }
