@@ -1022,3 +1022,103 @@ Was ich daraus mitnehme
 <strong>Den Assembler-Code vergleichen, bevor man einem Mikrobenchmark traut.</strong> Wenn der Code derselbe ist und die Zeit abweicht, zuerst die Platzierung verdächtigen, dann den Compiler. <code>-falign-loops=32</code>, verschachtelte Samples und ein zweiter Build mit anders sortierten Funktionen sind billige Wege, es herauszufinden.
 @@ 1drry3l
 All das gilt für einen bestimmten Zen-2-Laptop und diese Toolchain-Versionen. Das Ergebnis des identischen Assemblers sollte übertragbar sein; die Ausrichtungszahlen nicht.
+@@ nlk4yr
+gRPC gegen REST an einer Dienstgrenze – Niklas Weber
+@@ 1rzi2yf
+Warum das Casino von Transcendence am browserseitigen Rand REST/WebSocket nutzt, zwischen dem Go-Backend und der C++-Spiel-Engine aber einen gRPC-/Protobuf-Vertrag, und was diese Aufteilung tatsächlich bringt.
+@@ tmi1qw
+gRPC gegen REST an einer Dienstgrenze
+@@ 111grf1
+gRPC gegen REST: Protokollwahl an einer <em>Dienstgrenze</em>
+@@ z5oxge
+Das <a>Transcendence Casino</a> ist mit Absicht ein dreischichtiges System: ein Go-/Gin-Backend zum Browser hin, eine eigenständige C++-Engine, der die eigentlichen Spielregeln gehören (Kartenmischen, Handbewertung, Pokerwettrunden, Slot-RNG), und darauf ein React-Frontend. Zwei Dienstgrenzen, zwei sehr unterschiedliche Anforderungen – und dasselbe Protokoll für beide wäre in jede Richtung die falsche Wahl gewesen.
+@@ 96cxh
+Der browserseitige Rand: REST und WebSockets
+@@ 1iq70kk
+Zwischen Frontend und Go-Backend gilt: Browser müssen es nativ sprechen können, es muss um 2 Uhr nachts mit <code>curl</code> oder dem Netzwerk-Tab debugbar sein, und es muss eine langlebige Verbindung für den Echtzeit-Tischzustand unterstützen. Das ergibt REST über HTTP für die zustandslosen Aufrufe – Authentifizierung, Guthaben, Match-Historie – und einen selbstgebauten <strong>WebSocket</strong>-Hub für alles, was sich mitten in einer Hand ändert: Kartenausgabe, Einsätze, Chat, Zuschauer-Updates. Die Lesbarkeit von JSON ist hier ein echtes Feature und nicht nur eine Steuer, denn die Leute, die diese Grenze debuggen, sind Frontend-Entwickler und ich zu ungünstigen Zeiten, und jedes Browser-Devtool versteht es schon kostenlos.
+@@ bhge2a
+Die interne Grenze: warum gRPC für Go ↔ C++
+@@ 1h2inet
+An der Grenze zwischen Go-Backend und C++-Engine gelten die umgekehrten Anforderungen. Kein Browser spricht sie direkt an, Lesbarkeit bringt also nichts, aber zwei Sprachen müssen sich jetzt Byte für Byte einig sein, wie eine Anfrage „diese Pokerhand auswerten“ aussieht – und genau diese Art Vertrag verrottet über ein von Hand gepflegtes, zwischen zwei Codebasen geteiltes JSON-Schema unbemerkt. Ein auf einer Seite umbenanntes Feld, ein int gegen ein float auf der anderen, ein optionales Feld, dessen Prüfung eine Seite vergisst: alles unsichtbar, bis eine Hand in Produktion falsch ausgewertet wird. <strong>gRPC</strong> und <code>.proto</code>-Dateien beheben das, indem das Schema zur einzigen Quelle der Wahrheit wird – <code>protoc</code> erzeugt zueinander passende Go- und C++-Stubs aus derselben Definition, sodass eine inkompatible Änderung an einer Nachrichtenform auf beiden Seiten der Grenze ein Kompilierfehler ist und keine Laufzeitüberraschung.
+@@ 1yuvm14
+Was gRPC über Typsicherheit hinaus bringt
+@@ 1ljjv60
+Drei konkrete Dinge für genau diese Grenze. Erstens ist die binäre Protobuf-Kodierung über HTTP/2 pro Aufruf spürbar billiger als JSON über HTTP/1.1, wenn das Backend für jede Aktion an jedem Tisch eine Handbewertung oder Einsatzabrechnung anfordert – ein Overhead, der bei ein paar Seitenaufrufen irrelevant ist, sich über gleichzeitige Tische aber summiert. Zweitens bedeutet HTTP/2-Multiplexing, dass viele gleichzeitige Aufrufe vom Go-Backend zur C++-Engine sich eine Verbindung ohne Head-of-Line-Blocking teilen, was zählt, sobald mehrere Tische im selben Tick Hände auswerten. Drittens dokumentiert sich eine <code>.proto</code>-Service-Definition selbst – der Vertrag steht in einer Datei, die zugleich der Code ist, statt auf einer Wiki-Seite, die vom tatsächlichen Verhalten der Endpunkte abdriftet.
+@@ 1rlrjlm
+Keines der Protokolle ist abstrakt „besser“ – REST hat am Browser-Rand aus denselben Gründen gewonnen, aus denen gRPC an der internen Grenze gewonnen hat: das Protokoll danach wählen, wer es lesen muss und wie oft es läuft. Eine öffentliche API, die externe Entwickler oder ein Browser nutzen, sollte auf Debugbarkeit und Verbreitung optimiert sein; eine private, hochfrequente, sprachübergreifende Grenze auf einen Vertrag, den der Compiler durchsetzt. Es ist dasselbe Denken in Protokollgrenzen wie hinter dem Topic-Fan-out des WebSocket-Hubs und dahinter, <a>Prozessgrenzen</a> bewusst zu gestalten, statt sie zu überspielen.
+@@ ix3atj
+← Zurück zum Projekt Transcendence Casino
+@@ 4ettof
+Raft mit einer Fake-Uhr testen – Niklas Weber
+@@ y129iz
+Wie raftlab Raft testet: ein Chaos-Test mit festem Seed auf einer Fake-Uhr, der jeden Fehler erneut abspielt, plus der Bug, den eine Fake-Uhr verpasst.
+@@ 10lssek
+Raft mit einer Fake-Uhr testen
+@@ 12tcwbu
+Raft mit einer <em>Fake-Uhr</em> testen: deterministisches Chaos in Go
+@@ 8qi6e0
+Raft ist leicht zu lesen und schwer zu vertrauen. Das Paper ist wenige Seiten lang, und die Bugs stecken in den Verschränkungen: eine Nachricht, die nach einem Leader-Wechsel eintrifft, ein Timer, der kurz vor seinem Stopp feuert, ein Absturz mitten in einem Schreibvorgang. Ich habe <a>raftlab</a> geschrieben, eine Raft-Implementierung in Go mit replizierter Key-Value-Datenbank und Browser-Visualisierung, und der Teil, den ich behalten würde, wenn ich den Rest wegwerfen müsste, ist die Art, wie sie getestet wird.
+@@ b26lhs
+Die Visualisierung während einer Partition. Der alte Leader (N2, Term 2) hält sich noch für den Leader, erreicht aber keine Mehrheit. Die andere Seite hat N5 in Term 3 gewählt. Rote gestrichelte Verbindungen sind verworfene Nachrichten.
+@@ 3cdvlw
+Vier Nahtstellen und keine Uhr
+@@ 1ccqv3j
+Der Kern <code>raft.Node</code> setzt Figure 2 des Raft-Papers um und sonst nichts. Er hat keine Goroutinen und kein Wissen über Sockets oder Systemzeit. Alles, womit er in Berührung kommt, läuft über eines von vier Interfaces:
+@@ tfrcxy
+Jedes hat eine echte und eine Test-Implementierung. <code>Transport</code> ist HTTP in einem echten Cluster, ein In-Process-Netzwerk mit Fehlerinjektion in der Visualisierung und ein manuelles In-Memory-Netzwerk in Unit-Tests. <code>Clock</code> ist die Systemuhr oder eine Fake-Uhr. <code>Storage</code> ist ein Write-Ahead-Log mit Prüfsummen. <code>StateMachine</code> ist die Key-Value-Datenbank oder in Tests ein Recorder.
+@@ 14vpgak
+Weil Zeit und I/O injiziert werden, kann ein ganzer Fünf-Knoten-Cluster auf der Fake-Uhr in einem Single-Thread-Test laufen. Nichts schläft. Der Test schiebt die virtuelle Zeit in 10-ms-Schritten vor, und das Fake-Netzwerk liefert Nachrichten aus, sobald ihre virtuelle Verzögerung verstrichen ist. Ein Lauf ist dann eine reine Funktion seines Zufalls-Seeds: gleicher Seed, gleiche Wahlen, gleiche Fehler.
+@@ 9nuf3k
+Der Chaos-Test
+@@ 8ykkia
+Der Chaos-Test lässt fünf Knoten 40 virtuelle Sekunden laufen. Er lässt zufällig Knoten abstürzen und neu starten, partitioniert das Netzwerk und injiziert Verlust, Duplikation und Verzögerung, während vier Clients zwei gemeinsame Schlüssel setzen, löschen und lesen, die Hälfte der Lesezugriffe über das Log und die Hälfte über ReadIndex. Nach jedem 10-ms-Schritt prüft er zwei Sicherheitseigenschaften: Wahlsicherheit (nie zwei Leader im selben Term) und Übereinstimmung des committeten Präfixes (keine zwei Knoten sind sich uneins über einen Eintrag, den beide committet haben).
+@@ 117lzs5
+Am Ende heilt er den Cluster, prüft, ob die Replikate konvergieren, und übergibt die vollständig aufgezeichnete Historie an einen Linearisierbarkeits-Checker (dazu unten mehr). Ein Fehlschlag gibt seinen Seed aus, und das erneute Abspielen ist ein einziger Befehl:
+@@ gxzqo8
+Dieses Replay macht den Test nützlich. Ein verteilter Test, der in einem von hundert Läufen fehlschlägt und nie wieder, lehrt einen nichts. Ein fehlschlagender Seed lässt sich erneut ausführen, Schritt für Schritt durchgehen und als Regressionstest behalten.
+@@ 11pqmc1
+Ein Checker, der dem Test Zähne gibt
+@@ gz44qy
+Die erste Version prüfte nur, ob ein Lesezugriff den zuletzt bestätigten Schreibzugriff lieferte, was schwächer ist als Linearisierbarkeit. Ich habe sie durch einen echten Checker ersetzt, <code>internal/linz</code>, eine für dieses Repo geschriebene Implementierung der Wing-Gong/Lowe-Suche mit Memoisierung. Jede Operation wird mit Aufruf- und Rückgabezeit aufgezeichnet, Schlüssel sind unabhängig, daher wird die Historie pro Schlüssel aufgeteilt, und jeder Teil muss sich als eine sequenzielle Reihenfolge erklären lassen, die die Echtzeit respektiert. Ein Seed erzeugt 1.000 bis 1.700 Operationen, und alle müssen passen.
+@@ 1vuji5e
+Ein Checker ist nur etwas wert, wenn er fehlschlägt, wenn er soll, also habe ich zwei Bugs injiziert und den Code danach wiederhergestellt:
+@@ 3qrxz8
+ReadIndex liefert einen Lesezugriff, ohne die Leaderschaft zu bestätigen: gefangen von den Seeds 25 und 39 der ersten 40, mit der Meldung, dass ein Lesezugriff auf einen alten Wert nicht platziert werden kann.
+@@ u5s2o8
+Request-Deduplizierung entfernt, sodass ein wiederholtes Löschen zweimal läuft: gefangen von Seed 35, mit Nennung des Löschens, das nicht platziert werden kann.
+@@ qppc7t
+Der erste Bug rutschte zunächst durch alle 40 Seeds. Mit aktivierten PreVote und CheckQuorum tritt ein abgesetzter Leader zurück, bevor ein neuer etwas committen kann, sodass das Fenster für einen veralteten Lesezugriff kaum existiert. Der Chaos-Test fährt nun ungerade Seeds im klassischen Protokoll, in dem ein abgesetzter Leader verweilt. Ein Checker kann nur markieren, was das System tut.
+@@ 1yh0q38
+Zwei Tests, die nichts bewiesen
+@@ 1t6ifsd
+Mutation Testing hat meine eigenen Tests zweimal erwischt. Mein erster Joint-Consensus-Test bestand weiterhin, nachdem ich die Anforderung der alten Mehrheit aus der Quorum-Funktion gelöscht hatte, weil in diesem Aufbau die alte Seite ohnehin nicht hätte committen können. Ich habe das Szenario so umgebaut, dass nur diese Regel den Commit verhindert. Mein erster Paketverlust-Test für das Pipelining bestand mit deaktivierter Stall-Wiederherstellung, weil zufälliger Verlust Leader-Wechsel auslöst, die den Replikationszustand zurücksetzen und den Bug verbergen. Der Ersatz verliert 60 ms lang einen ganzen Schwall, ohne dass etwas Neues vorgeschlagen wird, sodass nur die Stall-Prüfung ihn beheben kann.
+@@ fzi8lh
+Was eine Fake-Uhr nicht finden kann
+@@ 4kw4qt
+Der Bug, der am längsten verborgen blieb, steckte in der Uhr selbst. Eine echte Uhr kann einen Callback ausführen, der kurz vor dem Aufruf von <code>Stop</code> feuerte. In raftlab heißt das, dass ein veralteter Wahl-Timer noch laufen, eine unnötige Wahl starten und einen gesunden Leader absetzen kann. Die Fake-Uhr kann das nicht reproduzieren, weil sie nie einen Callback nebenläufig zu einem Stopp ausführt.
+@@ bqtbgn
+Die Lösung ist, Timer zu ersetzen statt zurückzusetzen und jedem einen Generationszähler zu geben, sodass ein Callback aus einer alten Generation nichts bewirkt. Eine von Hand gesteuerte Uhr deckt das in Tests ab. Die Lehre ist die Grenze des gesamten Ansatzes: Deterministische Simulation findet die Verschränkungen, die man modelliert hat, und die Nebenläufigkeit der Uhr gehörte nicht dazu.
+@@ 1pxrfd4
+Zwei Bugs über späte und wiederholte Nachrichten
+@@ q2eej5
+Beide entstehen dadurch, dass das Netzwerk Nachrichten verzögert, umsortiert oder dupliziert – genau das, was der Fehlerinjektor tut.
+@@ fqqbtd
+<strong>Ein verspätetes <code>AppendEntries</code> löschte neuere Einträge.</strong> Eine alte, spät eintreffende Anfrage kürzte das Log des Followers, obwohl nichts darin im Konflikt stand. Das Log wird nun nur bei einem echten Konflikt gekürzt.
+@@ 9yjpw2
+<strong>Vertauschte und duplizierte Antworten bewegten <code>nextIndex</code> rückwärts.</strong> Eine veraltete Antwort ließ den Leader vergessen, wie viel vom Log eines Followers er bereits abgeglichen hatte. Antworten tragen nun <code>MatchIndex</code>, sodass eine veraltete die Sicht des Leaders auf einen Follower nicht zurücksetzen kann.
+@@ 1fh2qu3
+Ein Bug, den nur Windows finden konnte
+@@ ssae2w
+Ich habe diesen beim Aufnehmen der Demo gefunden, nicht in einem Test. Windows kann nicht über eine geöffnete Datei umbenennen, daher geriet ein Knoten beim ersten Kompaktieren seines Logs in Panik. Die Kompaktierung schreibt eine neue Datei, führt fsync aus und benennt sie über die alte um, sodass ein Absturz entweder die alte oder die neue Datei hinterlässt und nie eine Mischung. Das Write-Ahead-Log schließt nun seine Handles vor dem Umbenennen und öffnet sie danach neu und überspringt unter Windows das fsync des Verzeichnisses, da Verzeichnisse dort nicht zum Sync geöffnet werden können. Es ist eine Erinnerung daran, dass die Simulation den Algorithmus prüft und nicht das Betriebssystem.
+@@ 1ss07c8
+Was aus der Roadmap wurde
+@@ 167c5j2
+Alles, was dieser Artikel einst als Zukunftsarbeit aufführte, ist gebaut und auf derselben Fake-Uhr getestet: PreVote und CheckQuorum, Membership-Änderungen per Joint Consensus, ReadIndex-Lesezugriffe, die das Log überspringen, gestückelte Snapshots und pipelinierte Replikation. Das Pipelining hat eine Zahl: Ein Schwall von 1.000 Vorschlägen sendete vorher 2.012.480 Einträge über die Leitung und danach 2.000, genau eine Kopie pro Follower, und war überall in 120 ms statt 670 ms angewendet. Vom Server vergebene Client-IDs mit deterministischem Ablauf der Sessions und gegenseitiges TLS zwischen den Knoten kamen ebenfalls dazu.
+@@ ledf6h
+Die jüngste Runde hat Membership-Änderungen auch im eigenständigen <code>raftnode</code>-Binary zum Laufen gebracht, nicht nur in der Visualisierung. Konfigurationseinträge tragen Serveradressen, und der HTTP-Transport kann zur Laufzeit Peers hinzufügen. Ein neuer Server tritt mit <code>-join</code> bei und holt zunächst als nicht stimmberechtigter Learner auf, damit ein weit zurückliegender Neuling Commits nicht ausbremst. Der Leader teilt außerdem entfernten Servern mit, dass sie nicht mehr dabei sind. Das Write-Ahead-Log bekam einen versionierten Datei-Header, und ältere Dateien lassen sich weiterhin öffnen.
+@@ j0o5qd
+Was bleibt, ist Absicht: Leader Leases als günstigere Alternative zu ReadIndex. Sie tauschen Korrektheit gegen eine Annahme über Uhrendrift, und die Überlegung ist zusammen mit den anderen Abwägungen im Repository dokumentiert.
+@@ k1kk4r
+Der Quellcode liegt unter <a>github.com/nweber23/raftlab</a>.
+@@ 1d9coq3
+← Zurück zum Projekt raftlab
