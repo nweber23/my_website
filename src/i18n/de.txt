@@ -1,0 +1,828 @@
+@@ Language
+Sprache
+@@ 1n70nrm
+Niklas Weber | Go- &amp; C-Systementwickler, Heilbronn
+@@ 1nkkpvj
+Niklas Weber, Systementwickler an der 42 Heilbronn. Go- und C-Projekte: Raft-Konsens, ein Echtzeit-Casino, ein SIMD-Raytracer und ein Tetris-RL-Agent.
+@@ 48rzr3
+Systementwickler an der 42 Heilbronn. Raft-Konsens, ein Echtzeit-Casino, ein SIMD-Raytracer und ein Tetris-RL-Agent in Go und C.
+@@ 1jele5i
+Zum Inhalt springen
+@@ 1d84gzs
+Systementwickler
+@@ 1oz7yps
+Projekte
+@@ onrqou
+Über mich
+@@ w3fq2r
+Kontakt
+@@ gqdw4v
+Artikel
+@@ 1r0dera
+Niklas Weber – Systementwickler
+@@ 133x6pj
+Ich bin Niklas, Systementwickler an der 42 Heilbronn und Student der Softwaretechnik an der Hochschule Heilbronn. Ich schreibe Shells, Raytracer, Renderer und Echtzeitdienste von Grund auf – in C, Go und allem, was das Problem verlangt.
+@@ fypa19
+Projekte ansehen
+@@ 59592c
+<i aria-hidden="true"></i>Offen für Zusammenarbeit
+@@ 9kl40j
+Standort
+@@ 4vrbcy
+Studium
+@@ 1hxhouj
+Softwaretechnik
+@@ 12fqnbp
+Projekte
+@@ 12s6fyu
+7 Projekte, C &amp; Go
+@@ 1g9augj
+Fokus
+@@ 1t1akg5
+[02 — VON_GRUND_AUF]
+@@ 1mccykx
+Bauen, brechen, neu bauen
+@@ 15i6udf
+Bauen
+@@ 17spnvc
+Brechen
+@@ 15kxlww
+Neu bauen
+@@ ona3pw
+Selbst schreiben.
+@@ 1dzbj8b
+Herausfinden, wo es scheitert.
+@@ desngb
+Nochmal, besser.
+@@ 11vvajk
+VON <span class="circled">GRUND<svg viewBox="0 0 300 120" preserveAspectRatio="none" aria-hidden="true"><path d="M150 8C70 6 10 30 12 62s70 52 146 50 136-24 134-56S226 6 140 12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg></span> AUF IN C &amp; GO
+@@ iof4yi
+<i class="ico ico--globe"><svg class="globe" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="20" cy="20" r="18"></circle><ellipse cx="20" cy="20" rx="8" ry="18"></ellipse><ellipse cx="20" cy="20" rx="14" ry="18"></ellipse><path d="M2 20h36M5 11h30M5 29h30M20 2v36"></path></g></svg></i> ECHTZEITSYSTEME <i class="ico ico--globe"><svg class="globe" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="20" cy="20" r="18"></circle><ellipse cx="20" cy="20" rx="8" ry="18"></ellipse><ellipse cx="20" cy="20" rx="14" ry="18"></ellipse><path d="M2 20h36M5 11h30M5 29h30M20 2v36"></path></g></svg></i> GRPC <i class="ico ico--globe"><svg class="globe" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="20" cy="20" r="18"></circle><ellipse cx="20" cy="20" rx="8" ry="18"></ellipse><ellipse cx="20" cy="20" rx="14" ry="18"></ellipse><path d="M2 20h36M5 11h30M5 29h30M20 2v36"></path></g></svg></i>
+@@ l0kpot
+NULL ALL<span class="smile" aria-label="o">☺</span>KATI<span class="smile" aria-label="o">☺</span>NEN PRO FRAME · NULL
+@@ 7v3oty
+DIE SCHICHTEN UNTER DER ABSTRAKTION VERSTEHEN
+@@ 1a1b07
+Sieben Projekte.<br>Zwei Schulen.<br>Eine Gewohnheit: selbst bauen.
+@@ 1fqw8ng
+Über mich – wie ich arbeite
+@@ 1wofsfp
+Von Null
+@@ 1603ssf
+Messen
+@@ 1bz2zs6
+Die Teile, auf die es ankommt, baue ich von Hand – die Prozessverwaltung einer Shell, einen WebSocket-Hub, einen .obj-Parser – und greife überall sonst zu einer Bibliothek.
+@@ vq94z7
+[Lesen: warum von Grund auf]
+@@ 63re32
+ABB. 02 — miniRT, 1920×1080
+@@ b8961r
+Hover: Farbe
+@@ 1ydg9r6
+Ausgangswert
+@@ 1ylqjp1
+Optimiert
+@@ g949ya
+Beschleunigung
+@@ b6jvoh
+Performance wird gemessen, nicht geraten. EXPLAIN ANALYZE, perf, ein Profiler – so kam miniRT von 1–5 auf über 120 Bilder pro Sekunde.
+@@ hq99s7
+Zwei Schulen gleichzeitig: Peer-to-Peer-Projekte an der 42 Heilbronn, Softwaretechnik an der Hochschule Heilbronn. Bauen, um zu verstehen – verstehen, um besser zu bauen.
+@@ m4ulu5
+bauen, brechen, neu bauen.
+@@ p1r8nd
+Ausgewählte Projekte
+@@ 1jg6tox
+[03] AUSGEWÄHLTE_PROJEKTE
+@@ 1mow5gc
+ZUM_INDEX ↓
+@@ 1kyyjel
+Töte den Leader. Sieh zu, wie er sich erholt.
+@@ 1ss78hg
+Raft-Konsens von Grund auf in Go, mit replizierter Key-Value-Datenbank und einem Live-Cluster, den man kaputt machen kann. Chaos-Tests mit festem Seed spielen jeden Fehler erneut ab.
+@@ nm8z08
+44 % besser als die Heuristik.
+@@ ewazxo
+Tetris-Engine in Go, DQN-Agenten in PyTorch, Live-Trainingsviewer. Dazu T-Spins.
+@@ 1n5is9z
+Drei Spiele, ein Protobuf-Vertrag.
+@@ 1mf9ktz
+Echtzeit-Multiplayer-Casino. Go-Backend, C++-Engine über gRPC, React-Frontend, selbstgebauter WebSocket-Hub.
+@@ zczivk
+Null Allokationen pro Frame.
+@@ 17sqlqg
+OpenGL-4.1-Renderer in Go von Grund auf. Eigener .obj-Parser, Ear Clipping, 0,06 Allokationen pro Frame.
+@@ 1wobokp
+Zeilensperren statt Race Conditions.
+@@ 1hxnok7
+Ranking-System für die 42 Heilbronn in Go und PostgreSQL. 30 ms mittlere Antwortzeit, 99,9 % Verfügbarkeit.
+@@ 15k2ovq
+Von 1–5 auf über 120 Bilder pro Sekunde.
+@@ tsq7px
+SIMD-Raytracer in C. SSE/AVX, Structure-of-Arrays, Tile-Threads. 80-fache Beschleunigung.
+@@ 1egh8ga
+Kein system(), keine Abkürzungen.
+@@ g8auno
+POSIX-Shell in C. Eigener Lexer und Parser, fork/execve, dup2-Pipelines, Here-Docs, sigaction.
+@@ gnpjt4
+Raft-Konsens mit Live-Cluster-Visualisierung
+@@ 14kab6g
+Netzwerkpartition: zwei Knoten halten sich für den Leader
+@@ wo1w6y
+Raft-Konsens von Grund auf in Go – Leader-Wahl, Log-Replikation, Snapshots und Absturzwiederherstellung – mit einer linearisierbaren Key-Value-Datenbank darauf und einer Browser-Oberfläche, in der man Knoten töten, das Netzwerk trennen und die Erholung des Clusters beobachten kann.
+@@ 1f5gl08
+Go-Code
+@@ 1rx13b5
+5,1k Zeilen
+@@ jt8624
+Davon Tests
+@@ 2z8mh
+2,2k Zeilen
+@@ 1m8sfb4
+Abhängigkeiten
+@@ 1gepi6c
+<strong>Problem:</strong> Raft ist der Algorithmus hinter etcd, Consul und CockroachDB. Man nickt beim Lesen des Papers schnell zustimmend, aber der eigenen Implementierung zu vertrauen ist schwer. Ein Konsensfehler stürzt nicht ab. Er zeigt sich darin, dass zwei Knoten nach einer ganz bestimmten Folge aus Abstürzen, Partitionen und vertauschten Paketen uneins sind. Ich wollte alles implementieren, auch die Teile, die Tutorials überspringen (Persistenz, Log-Kompaktierung, <code>InstallSnapshot</code>, Exactly-once-Clients), und das Verhalten sehen, statt ihm zu vertrauen.
+@@ 1jwv7wn
+<strong>Lösung:</strong> Eine vollständige Raft-Implementierung in Go: Leader-Wahl, Log-Replikation mit Konfliktreparatur, die Wahlbeschränkung, das Committen von Einträgen früherer Terms, ein Write-Ahead-Log mit Prüfsummen und Absturzwiederherstellung sowie Log-Kompaktierung mit <code>InstallSnapshot</code> für Follower, die weit zurückgefallen sind. Darauf sitzt eine replizierte Key-Value-Datenbank. Lesezugriffe laufen durch das Log und sind daher linearisierbar, und Client-Sessions sorgen dafür, dass ein wiederholter Schreibzugriff höchstens einmal angewendet wird. <code>raftnode</code> betreibt ein Mitglied pro Prozess über HTTP. <code>raftlab</code> betreibt fünf in einem Prozess über ein Netzwerk mit Fehlerinjektion und streamt jede Nachricht als animierten Punkt in den Browser, wo man Knoten töten, das Netzwerk partitionieren und Latenz, Verlust und Duplikation einstellen kann.
+@@ 1n1q8k9
+<strong>Technischer Ansatz:</strong> Der Kern <code>raft.Node</code> ist eine reine Zustandsmaschine ohne Goroutinen, Sockets oder Systemzeit. Alles, womit er in Berührung kommt, läuft über vier Interfaces: <code>Transport</code>, <code>Clock</code>, <code>Storage</code> und <code>StateMachine</code>. Weil Zeit und I/O injiziert werden, läuft ein Fünf-Knoten-Cluster in einem Single-Thread-Test auf einer Fake-Uhr, und ein Lauf ist eine reine Funktion seines Zufalls-Seeds. Ein Chaos-Test lässt Knoten abstürzen und neu starten, partitioniert das Netzwerk und injiziert Verlust, Duplikation und Verzögerung für 40 virtuelle Sekunden, während vier Clients schreiben und lesen. Dabei prüft er alle 10 ms Wahlsicherheit und Übereinstimmung des committeten Präfixes. Am Ende prüft er, ob die Replikate konvergieren, ob jeder bestätigte Schreibzugriff überlebt hat und ob jeder Lesezugriff den zuletzt bestätigten Schreibzugriff geliefert hat. Ein Fehlschlag gibt seinen Seed aus, und <code>CHAOS_SEED=17 go test -run Chaos ./internal/kv</code> spielt ihn exakt erneut ab. Der Kern nutzt nur die Standardbibliothek; die einzige Abhängigkeit ist eine WebSocket-Bibliothek für die Visualisierung.
+@@ ojmjsk
+<strong>Ergebnisse &amp; Erkenntnisse:</strong> Rund 5.100 Zeilen Go, davon etwa 2.200 Tests, mit CI, die <code>go test -race</code> und <code>golangci-lint</code> ausführt. Die unterwegs gefundenen Bugs sind die eigentliche Lektion: veraltete Timer-Callbacks, die eine unnötige Wahl auslösen und einen gesunden Leader absetzen, ein verspätetes <code>AppendEntries</code>, das neuere Einträge löscht, vertauschte Antworten, die <code>nextIndex</code> rückwärts bewegen, und ein Absturz nur unter Windows, weil das WAL bei der ersten Kompaktierung nicht über eine geöffnete Datei umbenannt werden konnte. Auch die Grenzen sind dokumentiert: Ein Lesezugriff kostet eine volle Replikationsrunde, Snapshots bestehen aus einer einzigen Nachricht, und die Client-API ist nicht authentifiziert. PreVote, CheckQuorum, Membership-Änderungen per Joint Consensus und ReadIndex-Lesezugriffe stehen auf der Roadmap. Der <a href="writing/raft-deterministic-simulation-testing.html">Artikel</a> erklärt, wie die Fake-Uhr funktioniert und welchen einen Bug sie nicht reproduzieren konnte.
+@@ 1402mgp
+Rolle
+@@ 1vlu0hy
+Komplette Umsetzung
+@@ 1fdgo52
+Artikel
+@@ l1wqmf
+Raft mit einer Fake-Uhr testen: deterministisches Chaos in Go
+@@ r5qyuw
+Quellcode
+@@ 1twsip8
+Vollständige Fallstudie lesen
+@@ 1ddv00a
+Tetris ML – derselbe deterministische, seedbare Testansatz
+@@ 1ne45om
+Transcendence Casino – Go-Dienste, die über einen typisierten Vertrag kommunizieren
+@@ 1u8rtno
+Artikel: Raft mit einer Fake-Uhr testen
+@@ 8sefid
+Tetris-Engine, DQN-Agent und Trainingsviewer
+@@ 8si311
+Move-Agent, 100.000 Trainingsschritte
+@@ r36h0q
+Eine Tetris-Engine in Go, mit PyTorch trainierte DQN-Agenten und ein Viewer, der sie beim Spielen und Lernen zeigt. Gebaut, um Reinforcement Learning zu lernen, indem ich jede Schicht selbst umsetze – bis hin zu einem Agenten, der Hold, Tucks, Spins und T-Spins nutzt.
+@@ og06iw
+ggü. Heuristik
+@@ 1322xp5
+Ø Punkte
+@@ 1pp9uk
+T-Spins / Spiel
+@@ uidivl
+<strong>Problem:</strong> Reinforcement Learning lässt sich im Tutorial leicht nachvollziehen und in der Praxis schwer vertrauen. Ich wollte es lernen, indem ich die ganze Pipeline baue: ein Spiel mit so exakten Regeln, dass Agenten auf identischen Partien verglichen werden können, eine Baseline, die zu schlagen sich lohnt, und eine Möglichkeit zu sehen, was der Agent tatsächlich gelernt hat.
+@@ 1bwzsbt
+<strong>Lösung:</strong> Eine deterministische, seedbare Tetris-Engine in Go (7-Bag, SRS-Rotation und Kicks, kein Rendering-Code), die über einen gRPC-Stream bereitgestellt wird, ein Spiel pro Stream. Darauf sitzt eine Python-Gymnasium-Umgebung, die ein DQN in PyTorch trainiert. Ein separater Ebitengine-Viewer spielt menschliche Partien, Agenten-Replays und Trainingsläufe ab und führt die exportierten Netze selbst ohne Python aus.
+@@ 74nivy
+<strong>Technischer Ansatz:</strong> Aktionen sind Platzierungen (eine Rotation und eine Spalte pro Stein), und das Netz bewertet das Spielfeld nach einer Platzierung, den Afterstate, anhand von vier Merkmalen: aggregierte Höhe, Löcher, Unebenheit und gelöschte Zeilen. Das verkleinert das Problem so weit, dass es sich auf einem Laptop trainieren lässt. Die Go- und die Python-Seite wurden mit einem deterministischen Agenten über 200 Seeds gegeneinander verifiziert, da ein Zufallsagent nie eine Zeile löscht und damit nichts beweist. Der Viewer liest alle 5.000 Schritte geschriebene Snapshots neu ein und kann so einem Lauf live folgen.
+@@ 10lvl1
+<strong>Ergebnisse &amp; Erkenntnisse:</strong> Auf zurückgehaltenen Seeds mit einem Limit von 3.000 Steinen erreicht der Agent im Mittel etwa 173.000 Punkte gegenüber 119.880 für die von Hand gewichtete Heuristik. Zwei Dinge halfen nicht: Eine potenzialbasierte Reward-Shaping-Funktion brach mitten im Training ein, bevor sie sich erholte, und Double DQN lag im Rauschen der Seeds. Die eigentliche Grenze war die Messung: Ein Limit verdeckt Unterschiede zwischen starken Agenten, also habe ich Punkte pro Stein und einen Überlebenstest mit 10.000 Steinen ergänzt. Ein zweiter Agent durchsucht jede erreichbare Lock-Position und lernt T-Spins, mit etwa 240.000 Punkten und 233 T-Spins pro Partie, aber nur, wenn sein Netz das Spielfeld nicht sehen kann, und seine Checkpoints schwanken innerhalb eines Laufs stärker als der Abstand zu einer geskripteten Baseline. Der <a href="writing/tetris-reinforcement-learning.html">vollständige Artikel</a> behandelt, was gescheitert ist, ebenso wie das, was funktioniert hat.
+@@ 1l91taw
+Einem neuronalen Netz Tetris beibringen
+@@ x2wq2f
+Transcendence Casino – gRPC zwischen Go und einer Spiel-Engine
+@@ 3nqiow
+3D Go Renderer – Go-Engine-Arbeit ohne Rendering-Abhängigkeit
+@@ trb7zk
+Artikel: einem neuronalen Netz Tetris beibringen
+@@ evg6oz
+Online-Casino mit Echtzeit-Multiplayer
+@@ iynnhp
+Casino-Tischoberfläche
+@@ 1t3se3o
+Ein Echtzeit-Multiplayer-Casino – Blackjack, Poker und Slots – über Go, C++ und React, verbunden durch gRPC und einen selbstgebauten WebSocket-Hub, mit einem vollständigen Prometheus-/Grafana-Monitoring-Stack.
+@@ w6fxh8
+Spiele
+@@ 1d15q9g
+3 live
+@@ ophdcy
+Architektur
+@@ 1isvbmv
+3-Schicht-gRPC
+@@ b0xghe
+6 Dashboards
+@@ hymvcu
+<strong>Problem:</strong> Transcendence ist das Abschlussprojekt-Format der 42 – eine große, nach Modulen bewertete Webanwendung mit strengen Architekturvorgaben: ein typisiertes Backend, eine echte Datenbank, containerisierte Dienste, Echtzeit-Multiplayer, Sicherheit und Monitoring auf Produktionsniveau. Die Aufgabe hier war ein vollständiges Online-Casino – Blackjack, Texas-Hold’em-Poker und ein Spielautomat –, live über WebSockets spielbar und keine statische Demo.
+@@ 131alv5
+<strong>Lösung:</strong> Das Ergebnis ist ein dreischichtiges System: ein Backend in Go und Gin für Authentifizierung, Wallets und REST-/WebSocket-Verkehr; eine eigenständige C++-Engine für die eigentlichen Spielregeln – Kartenmischen, Handbewertung, Pokerwettrunden, Slot-RNG – über einen <strong>gRPC</strong>-Vertrag; und darauf ein React-/TypeScript-Frontend im Stil eines von Grund auf gebauten „Luxus-Casino“-Designsystems statt eines umgestylten Komponenten-Kits, mit Cross-Browser-Unterstützung und einem Zuschauermodus, damit andere Nutzer eine laufende Hand in Echtzeit verfolgen können.
+@@ 1ery0m3
+<strong>Technischer Ansatz:</strong> Zwei Details heben das Projekt über eine CRUD-App im Casino-Gewand hinaus. Jede Operation, die ein Guthaben verändert – ein Einsatz, eine Einzahlung, eine Auszahlung –, läuft in einer gesperrten Datenbanktransaktion mit exakter Dezimalarithmetik, da Gleitkommazahlen bei Geld inakzeptabel sind; die Transaktionstabelle ist ein reines Append-only-Ledger, das sich unabhängig prüfen lässt. Und die Echtzeitschicht ist ein selbstgebauter <strong>WebSocket</strong>-Hub statt einer Pub/Sub-Bibliothek – er verwaltet Subscriptions pro Nutzer, pro Tab und pro Topic und entprellt die Präsenz, damit ein Seiten-Reload den Status eines Spielers nicht kurz auf offline flackern lässt. Ähnliches sprachübergreifendes Denken auf Protokollebene findet sich in der nebenläufigen Match-Verarbeitung des <a href="#project-elo">ELO Leaderboards</a>.
+@@ hxdhr3
+<strong>Ergebnisse &amp; Erkenntnisse:</strong> Der Stack umfasst außerdem eine vollständige Observability-Schicht – Prometheus fragt sechs Targets ab, dazu sechs automatisch provisionierte Grafana-Dashboards, mit Alerting per Discord. OAuth2, 2FA und ein eigenes Musikmodul sind noch in Arbeit. Die Arbeit über drei Sprachen hinweg, verbunden durch einen einzigen Protobuf-Vertrag, hat die Abwägungen beim IPC-Design so greifbar gemacht, wie es ein Stack in einer einzigen Sprache nie tut.
+@@ h1emmi
+Echtzeit-Multiplayer · finanzielle Korrektheit
+@@ x2wq2f
+Transcendence Casino – gRPC zwischen Go und einer Spiel-Engine
+@@ 1vbaitu
+42 ELO Leaderboard – Go-Nebenläufigkeit und Echtzeitsysteme
+@@ 36o1kj
+miniRT – leistungsorientierte Entwicklung in der C-Familie
+@@ 42bg20
+Artikel: gRPC gegen REST an der Dienstgrenze
+@@ deevij
+OpenGL-Renderer in Go von Grund auf
+@@ 1j57g5h
+Demo der Orbit-Kamera
+@@ bnwu1v
+Ein 3D-Renderer in Go von Grund auf – eigenes .obj-/.mtl-Parsing, Ear-Clipping-Triangulierung und eine OpenGL-4.1-Pipeline ganz ohne Heap-Allokationen im eingeschwungenen Zustand.
+@@ 124acot
+Allokationen/Frame
+@@ 8d7lxw
+Nebenläufig
+@@ 14wpnm2
+UV-Modi
+@@ 1ltcsdo
+<strong>Problem:</strong> scop ist das OpenGL-Projekt der 42 – ein 3D-<code>.obj</code>-Modell rendern, mit nur einer Mathematikbibliothek und rohen OpenGL-Bindings als externen Abhängigkeiten. Es gibt keinen Szenengraphen, keine Asset-Pipeline, keinen glTF-Loader, auf den man sich stützen könnte: Der Datei-Parser, die Vektor- und Matrixmathematik, die Triangulierung und die Kamera müssen alle aus ersten Prinzipien gebaut werden.
+@@ 9hv7l1
+<strong>Lösung:</strong> Das Ergebnis ist ein Go-Renderer auf <strong>OpenGL 4.1 Core</strong> mit GLFW für die Fensterverwaltung. Eigene <code>.obj</code>- und <code>.mtl</code>-Parser verarbeiten Geometrie und Materialeigenschaften (Ka/Kd/Ks/Ns/map_Kd) und fallen elegant zurück, wenn Texturdateien fehlen, und drei automatische UV-Generierungsmodi – planar, zylindrisch, sphärisch – decken Modelle ab, die ohne Texturkoordinaten kommen. Eine Orbit- und eine Free-Fly-Kamera sitzen auf handgeschriebenen vec2/3/4-Typen und spaltenweiser mat4-Mathematik, einschließlich Perspektiv- und lookAt-Transformationen, ganz ohne externe Mathematikabhängigkeit.
+@@ 2k486n
+<strong>Technischer Ansatz:</strong> Zwei Probleme brauchten echte Lösungen. Beliebige Polygone – auch konkave, nicht ebene und degenerierte – werden per <strong>Ear Clipping über der Newell-Normalenebene jeder Fläche</strong> trianguliert, sodass die Geometrie unabhängig davon korrekt bleibt, wie die Quell-.obj erstellt wurde. Und die Render-Schleife ist im eingeschwungenen Zustand allokationsfrei: ein einziges VAO/VBO/EBO pro Modell mit Vertex-Deduplizierung, Gribb-Hartmann-Frustum-Culling und Batching des Texturzustands bringen sie unter <code>-debug</code> auf 0,06 Allokationen/Frame. Auch das Parsen ist parallelisiert – Worker-Goroutinen parsen Vertex- und Flächendaten vorab pro zeilenbündigem Chunk, dieselbe Nebenläufigkeitsdisziplin wie hinter der Match-Verarbeitung des <a href="#project-elo">ELO Leaderboards</a>.
+@@ 1k85750
+<strong>Ergebnisse &amp; Erkenntnisse:</strong> Beim Utah-Teapot senkte das nebenläufige Parsen die Ladezeit von 9,9 ms auf 7,0 ms, und Unit-Tests decken Parser, Triangulierung, UV-Generierung, Mathematik, Kamera und Frustum-Culling ab. Eine Rasterisierungs-Pipeline von Hand zu bauen – nach einem SIMD-<a href="#project-minirt">Raytracer</a> im Semester davor – hat die Abwägungen zwischen Rasterisierung und Raytracing so greifbar gemacht, wie es Tutorials nie tun.
+@@ 16us7mj
+Sprache
+@@ 1ejndm0
+Grafik
+@@ 1i0vvno
+miniRT – Rasterisierung vs. Raytracing, Grafikarbeit in der C-Familie
+@@ lf3hxv
+42 ELO Leaderboard – Goroutinen-basiertes nebenläufiges Parsen
+@@ 9yqhtz
+Artikel: Polygone mit Ear Clipping triangulieren
+@@ akii9k
+Wettkampf-Ranglistensystem für die 42 Heilbronn
+@@ lgqvrr
+Leaderboard-Oberfläche
+@@ 1srl22r
+[archiviert]
+@@ shyob8
+Hochperformantes ELO-Ranglistensystem in Go und PostgreSQL, gebaut für Match-Meldungen in Echtzeit mit Live-Ranglisten und historischen Daten. Wird nicht mehr aktiv gepflegt.
+@@ couure
+Ø Antwortzeit
+@@ 1cnmmj7
+Archiviert
+@@ 12ml4a4
+Query-Ziel
+@@ 192p3dh
+<strong>Problem:</strong> In der Community der 42 Heilbronn gab es Kicker- und Tischtennisturniere, aber keine gemeinsame Möglichkeit festzuhalten, wer wirklich gut war. Neben dem reinen Speichern der Ergebnisse konnten zwei Studierende denselben Match-Slot innerhalb weniger Sekunden melden – eine naive Neuberechnung der Wertung ist ein klassischer Race Condition, denn ein Elo-Update ist ein Read-Modify-Write auf einem gemeinsamen Wert, und zwei gleichzeitige Meldungen dürfen nicht dieselbe veraltete Wertung lesen und beide zurückschreiben.
+@@ 18hl7fd
+<strong>Lösung:</strong> Ich habe ein vollständiges Elo-Ranglistensystem in Go mit PostgreSQL gebaut, von Grund auf auf Performance optimiert. Match-Meldungen laufen in einer Transaktion, die die Zeilen beider Spieler sperrt, bevor die Wertung aktualisiert wird, sodass gleichzeitige Meldungen nacheinander abgearbeitet werden, statt sich zu überschreiben, während Lesezugriffe – die öffentliche Rangliste, Spielerprofile, Match-Historie – auf einem separaten schnellen Pfad bleiben. Das Backend bediente ein React-Frontend mit Live-Ranglisten, detaillierten Spielerprofilen und historischen Match-Daten.
+@@ 14x98r1
+<strong>Technischer Ansatz:</strong> Zusammengesetzte Indizes auf den Spalten, nach denen die Ranglisten- und Historienansichten tatsächlich filtern und sortieren, dazu Redis für die aggregierten Statistiken (Sieg-/Niederlagen-Serien, Wertungsänderungen), die nicht bei jeder Anfrage neu berechnet werden müssen und stattdessen beim Schreiben invalidiert werden. Go-Goroutinen bewältigten den nebenläufigen API-Verkehr sauber, da jedes Match-Update in einer eigenen Transaktion isoliert war. Ich habe während der gesamten Entwicklung profiliert, um die langsamen Pfade zu finden und zu entfernen, statt sie zu erraten. Ähnliche Optimierungsmuster finden sich in anderen <a href="#work">Systemprojekten</a> wie dem <a href="https://github.com/nweber23/miniRT" target="_blank" rel="noopener noreferrer">Raytracer</a>, bei dem jede algorithmische Entscheidung direkte Auswirkungen auf die Performance hat.
+@@ 1y374uq
+<strong>Ergebnisse &amp; Erkenntnisse:</strong> Das System erreichte im Mittel 30 ms Antwortzeit und hielt über die Turniersaisons hinweg 99,9 % Verfügbarkeit, und der Ansatz mit Zeilensperren hat unter paralleler Last in der Praxis nie ein doppelt gezähltes Match erzeugt. <strong>Query-Optimierung</strong> und profilinggetriebene Entwicklung sind für Systeme, die auf Performance setzen, unverzichtbar. Das Projekt ist inzwischen archiviert und wird nicht mehr aktiv weiterentwickelt.
+@@ gh22d
+<a href="https://eloleaderboard.de" target="_blank" rel="noopener noreferrer">eloleaderboard.de</a> – archiviert, nicht gepflegt
+@@ w3r1pg
+3D Go Renderer – Goroutinen-basiertes nebenläufiges Parsen
+@@ lpkg2n
+Transcendence Casino – Echtzeit-Multiplayer-Systeme
+@@ aqxok9
+Artikel: Leaderboard-Queries unter 100 ms bringen
+@@ y1uepz
+Hochperformanter Raytracer in C
+@@ 112l981
+Gerenderte Ausgabe
+@@ 1wlkeew
+Raytracer mit über 120 FPS, gebaut auf SIMD-Vektorisierung, cache-effizienten Datenstrukturen und kachelbasiertem Multithread-Rendering.
+@@ 1busi9s
+Bildrate
+@@ cll01i
+<strong>Problem:</strong> Ich habe angefangen, in C einen einfachen Raytracer zu bauen, um die Grundlagen der Computergrafik zu verstehen. Die erste naive Implementierung schaffte bei komplexen Szenen mit mehreren Lichtquellen nur 1–5 FPS.
+@@ z486l2
+<strong>Lösung:</strong> Ich habe die zentrale Render-Schleife auf der Grundlage von <strong>C-Systemprogrammierung</strong> neu gebaut. Der Ansatz kombinierte SIMD-Vektorisierung mit SSE/AVX-Intrinsics für Vektoroperationen im Batch, cache-effiziente Datenstrukturen mit Structure-of-Arrays- statt Array-of-Structures-Layouts und kachelbasiertes Multithread-Rendering, um mehrere CPU-Kerne zu nutzen.
+@@ 1bputno
+<strong>Technischer Ansatz:</strong> Drei Säulen: Vektorisierung, Speicherhierarchie, Parallelität. SSE-Intrinsics verarbeiten 4 Floats parallel, AVX 8. Ich habe die Daten so umstrukturiert, dass sie die Cache-Lokalität der CPU nutzen, indem alle X-Koordinaten zusammenhängend gespeichert werden, dann Y, dann Z. Der Renderer teilt den Framebuffer in Kacheln auf, und jeder Thread bearbeitet eine Kachel unabhängig. Profiling mit <code>perf</code> und taktgenaue Analyse zeigten, dass der Strahl-Primitiv-Schnitttest der heißeste Codepfad war.
+@@ 1gekjue
+<strong>Ergebnisse &amp; Erkenntnisse:</strong> Der optimierte Raytracer rendert mit über 120 FPS – eine 80-fache Verbesserung gegenüber der Ausgangsversion. Systemprogrammierung auf der Grafikschicht dreht sich nicht nur um Algorithmen, sondern darum, das Cache-Verhalten der CPU, Befehlspipelines und Speicherbandbreite zu respektieren.
+@@ xvdrnk
+Konzepte
+@@ 1fiqh70
+Lineare Algebra · Optiksimulation
+@@ 9jlep
+miniRT Studio – Szenen im Browser bauen
+@@ 1m3qbtn
+miniRT Studio – Live-Szenenbauer mit .rt-Import und -Export
+@@ iuj3gg
+minishell – C-Grundlagen und Unix-Systemaufrufe
+@@ iyr0fd
+3D Go Renderer – Rasterisierung vs. Raytracing
+@@ 4oczak
+POSIX-konforme Shell in C
+@@ 11toumi
+„Die Shell ist ein Fenster in die Seele des Betriebssystems.“
+@@ 1pdhhjk
+Unix-Shell von Grund auf – Prozessverwaltung, Dateideskriptoren, Pipes, I/O-Umleitung, Umgebungsvariablen-Expansion, Signalbehandlung.
+@@ x36xdr
+Primitive
+@@ 177ed2m
+Signale
+@@ 1lhkjpu
+<strong>Problem:</strong> Zu verstehen, wie eine Unix-Shell funktioniert, erfordert tiefes Wissen über die Grundlagen von Betriebssystemen, und das Projekt minishell der 42 verbietet es, sich dafür auf eine Bibliothek zu stützen – keine Shell-Bibliotheken, nur rohe libc und Systemaufrufe. Das heißt: Quoting, Expansion, Umleitung und Pipelines müssen alle aus ersten Prinzipien gebaut werden, und wenn eines davon unterschwellig falsch ist (ein Heredoc, der Begrenzer in Anführungszeichen nicht beachtet, ein <code>unset</code>, das eine veraltete Umgebungsvariable für ein Kind sichtbar lässt), fällt das erst auf, wenn ein bestimmter Befehl scheitert.
+@@ 1b7pl5j
+<strong>Lösung:</strong> Eine POSIX-konforme Shell in C, die das Kernverhalten der Bash nachbildet. Ein handgeschriebener Lexer und ein Recursive-Descent-Parser wandeln die rohe Eingabe in einen Token-Strom um, der die Semantik einfacher und doppelter Anführungszeichen und Here-Doc-Grenzen respektiert; anschließend durchläuft eine Ausführungs-Engine diese Struktur mit echten Unix-<strong>Systemaufrufen</strong> – kein <code>system()</code>, keine Abkürzungen.
+@@ 19k4dnl
+<strong>Technischer Ansatz:</strong> Drei Konzepte der Systemprogrammierung tragen die Implementierung. Prozessverwaltung über <code>fork</code>/<code>execve</code> mit korrekter PATH-Auflösung und Weitergabe des Exit-Status durch Pipelines. Manipulation von Dateideskriptoren über <code>dup2()</code> für mehrstufige Pipes und I/O-Umleitung (<code>&lt;</code>, <code>&gt;</code>, <code>&gt;&gt;</code>, Here-Docs), einschließlich dessen, dass Deskriptoren nicht in Kindprozesse gelangen, die sie nicht erben sollen. Und Signalbehandlung mit <code>sigaction()</code>, damit sich <code>SIGINT</code>/<code>SIGQUIT</code> am Prompt anders verhalten als in einem laufenden Kindprozess, ohne je einen Zombie-Prozess zu hinterlassen.
+@@ ca9xnv
+<strong>Ergebnisse &amp; Erkenntnisse:</strong> Der Bau von minishell hat mein Verständnis der Unix-Architektur verändert – Shells sind Orchestratoren des Betriebssystems, keine eigenständigen Akteure, und dieselbe Prozess-/IPC-Disziplin zeigt sich später genau bei <a href="#project-transcendence">gRPC-verbundenen Diensten</a> oder einer <a href="#project-minirt">Multithread-Render-Schleife</a>. Die praktische Beschäftigung mit Prozessverwaltung, Dateideskriptoren und IPC hat mein Verständnis dafür vertieft, warum die Disziplin der <strong>Low-Level-Programmierung</strong> wichtig ist.
+@@ 1ians8q
+Unix-Interna · Syscalls
+@@ 1i24rgb
+miniRT – C-Optimierung auf Systemebene
+@@ k83205
+42 ELO Leaderboard – nebenläufige Systeme mit Performance-Disziplin
+@@ 1sej562
+Notizen
+@@ 1beq6dg
+[Alle Artikel]
+@@ 19do80e
+Einem neuronalen Netz Tetris beibringen, Schicht für Schicht
+@@ 12go32v
+For- vs. While-Schleifen in C, C++ und Go: identischer Assembler-Code, und was die Performance wirklich verändert
+@@ ho31pg
+Eine Container-Runtime von Grund auf bauen: Namespaces, pivot_root, cgroups v2 und OverlayFS in purem Go
+@@ 1o7cyn4
+Warum ich immer wieder von Grund auf baue: Prozessverwaltung, WebSocket-Hubs und .obj-Parser
+@@ fzyhc9
+Elo-Leaderboard-Queries unter 100 ms: Indizes, Caching und Profiling statt Raten
+@@ 1q9kzlj
+gRPC gegen REST: Protokollwahl an der Dienstgrenze von Transcendence
+@@ d76tv3
+Beliebige Polygone triangulieren: Ear Clipping über der Newell-Normalenebene
+@@ 1ybnw40
+Am besten lernt man, indem man baut, kaputt macht und neu baut.
+@@ 1kwlci6
+Profil
+@@ 1g7kyaj
+AUSBILDUNG
+@@ 1ccln8y
+42 Heilbronn<br>Peer-to-Peer, projektbasiert
+@@ pyd126
+Kern
+@@ vi3shw
+OpenGL 4.1 · Raytracing
+@@ 26z2di
+Sterne
+@@ 1uzvgu4
+Follower
+@@ 6ojpbe
+Commits (1 J.)
+@@ 1bfdo2f
+JETZT
+@@ hak8dd
+Nebenläufigkeitsmuster in Go. Verteilte Systeme. Cloud. K3s. Ich schreibe gerade eine Container-Runtime in purem Go auf.
+@@ 1azcacm
+Offen für Zusammenarbeit
+@@ 1yf78m2
+Impressum
+@@ 1y7huos
+Von Hand gebaut mit three.js, GSAP und Lenis.<br>Jedes Poster, jedes Glyph und jeder Punkt wird im Code erzeugt.
+@@ 1enbwax
+Niklas Weber – Startseite
+@@ 1iucaq2
+Hauptnavigation
+@@ c24d0t
+Auf einen Blick
+@@ apxw10
+Was ich baue
+@@ 149ubcc
+raftlab-Visualisierung während einer Netzwerkpartition: fünf Raft-Knoten im Fünfeck, zwei davon als Leader markiert, mit gestrichelten roten Verbindungen, wo Nachrichten zwischen dem alten Leader und dem Rest verworfen werden
+@@ w35xea
+Trainierter Agent, der Tetris mit Hold und T-Spins im Ebitengine-Viewer spielt
+@@ 1ad36ss
+Echtzeit-Multiplayer-Oberfläche von Transcendence Casino mit Blackjack-Tisch, Spielerhänden und Chips
+@@ 42wdt5
+Orbit-Kamera-Demo des 3D Go Renderers, der ein texturiertes .obj-Modell in Echtzeit rendert
+@@ 3ugahr
+Wettkampf-Ranglistenoberfläche des 42 ELO Leaderboards mit Spielerwertungen und Match-Historie
+@@ 11smmbf
+miniRT-Raytracer-Implementierung in C mit Kugelrendering, Schatten, Reflexionen und Phong-Beleuchtung
+@@ 1u0tq0h
+Manifest
+@@ 11dcdc3
+GitHub-Beitragsgraph der letzten zwölf Monate
+@@ 17wefwa
+Artikel – Niklas Weber
+@@ 1bytbsd
+Technische Artikel von Niklas Weber über Systemprogrammierung, Grafik, Reinforcement Learning und Low-Level-Entwicklung.
+@@ 54677c
+Technische Artikel von Niklas Weber über Systemprogrammierung, Grafik und Low-Level-Entwicklung.
+@@ 1jgmzoq
+← Zurück
+@@ 1t0csy2
+Notizen zu Systemprogrammierung, Grafik und Dingen, die ich wirklich verstehen musste, bevor ich sie ausliefern konnte.
+@@ 11wvtmy
+For vs. While in C, C++ und Go: der Assembler-Code ist identisch
+@@ sj58s5
+Eine Container-Runtime von Grund auf bauen
+@@ 17hdidg
+Warum ich Dinge immer wieder von Grund auf baue
+@@ 1pv1r3z
+Elo-Leaderboard-Queries unter 100 ms
+@@ ffxm6d
+Beliebige Polygone mit Ear Clipping triangulieren
+@@ 1m0no7i
+© 2026 · Niklas Weber
+@@ 120dz8u
+Von Hand gebaut mit three.js und reinem HTML
+@@ 1048uqr
+← Startseite
+@@ ucow8a
+Aktuelle Uhrzeit in MEZ
+@@ 1ey0tzw
+Menü öffnen
+@@ xp6dcf
+Alle Artikel
+@@ 1appfwx
+Impressum – Niklas Weber
+@@ g9n0lb
+Impressum und rechtliche Hinweise für die Portfolio-Website von Niklas Weber. Angaben gemäß Telemediengesetz (TMG).
+@@ 1o3cg67
+Impressum und rechtliche Hinweise für die Portfolio-Website von Niklas Weber.
+@@ 1pq2h0q
+Rechtliche
+@@ 2yvn4h
+Hinweise
+@@ 1snv4mi
+Impressum gemäß § 5 TMG (Telemediengesetz)
+@@ qglsfj
+Angaben gemäß <em>§ 5 TMG</em>
+@@ 1w39mfo
+anbieter
+@@ 171lv90
+Anbieter
+@@ alybni
+Deutschland
+@@ inbfc7
+E-Mail
+@@ ejc044
+Verantwortlich für den <em>Inhalt</em>
+@@ 1k11asr
+Verantwortlicher
+@@ xl4dw2
+Haftungsausschluss
+@@ 1nh8nr8
+haftung
+@@ 13oxdi6
+Haftung für Inhalte
+@@ okhbrc
+Die Inhalte dieser Website wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte kann ich jedoch keine Gewähr übernehmen. Als Diensteanbieter bin ich gemäß § 7 Abs. 1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG bin ich als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.
+@@ n6d9ge
+Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden entsprechender Rechtsverletzungen werde ich diese Inhalte umgehend entfernen.
+@@ 71h95m
+Haftung für Links
+@@ pins3h
+Diese Website enthält Links zu externen Websites Dritter, auf deren Inhalte ich keinen Einfluss habe. Deshalb kann ich für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar.
+@@ 1b16dzl
+Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von Rechtsverletzungen werde ich derartige Links umgehend entfernen.
+@@ 1igwyxq
+Urheberrecht
+@@ 1qv5ver
+Die durch den Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers. Downloads und Kopien dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet.
+@@ 1af62w7
+Soweit die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die Urheberrechte Dritter beachtet. Insbesondere werden Inhalte Dritter als solche gekennzeichnet. Sollten Sie trotzdem auf eine Urheberrechtsverletzung aufmerksam werden, bitte ich um einen entsprechenden Hinweis. Bei Bekanntwerden von Rechtsverletzungen werde ich derartige Inhalte umgehend entfernen.
+@@ 158r9kc
+miniRT Studio – Raytracer-Szenen im Browser bauen und rendern | Niklas Weber
+@@ 1kblz43
+Kostenloses Studio im Browser für den 42-miniRT-Raytracer. Kugeln, Ebenen, Zylinder, Kegel und Lichter per Maus platzieren, Live-Renderings mit Phong-Beleuchtung und Schatten sehen und echte .rt-Szenendateien importieren oder exportieren.
+@@ 1ef7pfr
+miniRT Studio – ein Raytracer-Szenenbauer im Browser
+@@ 10cy1xz
+miniRT-Szenen per Mausklick bauen. WebGL2-Raytracing in Echtzeit mit Schatten und Phong-Beleuchtung, plus .rt-Import und -Export für das 42-Projekt.
+@@ 13siqpf
+miniRT-Szenen per Mausklick bauen. Live-Raytracing, .rt-Import und -Export.
+@@ 1pc4hd2
+Zum Studio springen
+@@ 1htyyjg
+← miniRT
+@@ vmlwpb
+Rückgängig
+@@ w7fg15
+Wiederholen
+@@ 16p5wug
+.rt importieren
+@@ oxd5ub
+.rt exportieren
+@@ kzs3eg
+Link teilen
+@@ 29hl3f
+Objekte
+@@ lmgt1q
+Inspektor
+@@ 17rv3f8
+Hinzufügen
+@@ 1jqcgq3
++ Kugel
+@@ 12xnotc
++ Ebene
+@@ 992jwo
++ Zylinder
+@@ 1jv10ed
++ Kegel
+@@ 19blg5e
++ Licht
+@@ 1bb3z87
+Objekte <span class="panel__count" id="count"></span>
+@@ a6qdnh
+Vorlage
+@@ d8qzb9
+Qualität <select id="quality"> <option value="0.5">0.5×</option> <option value="1" selected="">1×</option> <option value="native">Nativ</option> </select>
+@@ 1logtpz
+<input type="checkbox" id="snap"> Einrasten
+@@ ynd4hu
+Ziehen: Orbit · Rechtsklick-Ziehen oder Shift: verschieben · Mausrad: Zoom · Klick: auswählen · Entf: löschen
+@@ 1u5oiqb
+Ziehen: Orbit · Zwei Finger: verschieben und zoomen · Tippen: auswählen
+@@ 9n2juy
+WebGL2 ist nicht verfügbar
+@@ yvhzmu
+Das Live-Rendering braucht WebGL2. Der Editor funktioniert trotzdem: Werte rechts ändern, die .rt-Datei exportieren und im eigenen miniRT ausführen.
+@@ mei5fe
+Eine <em>.rt</em>-Szene importieren
+@@ 1dkrs70
+Szenendatei einfügen oder auswählen. Zeilen, die miniRT ablehnen würde, werden übersprungen und unten aufgelistet.
+@@ 10051ar
+Datei wählen<input type="file" id="import-file" accept=".rt,text/plain" hidden="">
+@@ 1l0xxoj
+Schließen
+@@ dql489
+Szene laden
+@@ 1xpi0ne
+<em>.rt</em> exportieren
+@@ s7z3m2
+Eine Szenendatei für den 42-miniRT-Parser.
+@@ s6g5lw
+Kopieren
+@@ yhuojn
+scene.rt herunterladen
+@@ 17hngjz
+Diese <em>Szene</em> teilen
+@@ n1hs73
+Die ganze Szene steckt im Link, daher sind weder Konto noch Upload nötig. Wer ihn öffnet, erhält eine eigene bearbeitbare Kopie.
+@@ 9zccf0
+Link kopieren
+@@ ld92g
+Ein Szenenbauer für <em>miniRT</em>
+@@ 1gjih11
+miniRT ist das 42-Schulprojekt, in dem man einen Raytracer in C schreibt. Dieses Studio ist dieselbe Idee im Browser: ein kleiner Renderer, der jeden Pixel gegen Kugeln, Ebenen, begrenzte Zylinder und Kegel verfolgt, mit Umgebungslicht, Punktlichtern, harten Schatten und Phong-Beleuchtung.
+@@ ato2v2
+So funktioniert es
+@@ xm18e6
+Eine Form anklicken, um sie auszuwählen, dann an ihren Griffen ziehen. Pfeile verschieben sie entlang einer Achse, das Quadrat über den Boden, die Quadrate an der Form ändern Radius und Höhe, und die gelbe Raute richtet Achse oder Normale beliebig aus. In leeren Raum ziehen, um die Kamera zu drehen. Jede Änderung lässt sich rückgängig machen.
+@@ 3d8uam
+Echte .rt-Dateien
+@@ x5tmo2
+Eine Szene aus dem eigenen Projekt importieren und mit der Maus bearbeiten, oder hier eine bauen und exportieren. Die Datei nutzt die Standardbezeichner A, C, L, sp, pl und cy, dazu co für Kegel, sodass sie in jedem miniRT lädt, das der Aufgabenstellung folgt. Extras, die es nur im Studio gibt, wie Spiegel und Schachbrettmuster, bleiben aus dem Export heraus.
+@@ 15ns27n
+So wird gerendert
+@@ mambak
+Ein WebGL2-Fragment-Shader führt dieselbe Strahl-Kugel-, Strahl-Ebene-, Strahl-Zylinder- und Strahl-Kegel-Schnittmathematik aus wie die C-Version, ein Strahl pro Pixel auf der GPU. Beim Ziehen zeichnet er einen schnellen Entwurf und verfeinert ihn danach mit gejitterten Samples. Farben sind geklemmte lineare Werte, wie im Original.
+@@ x0oz72
+Teilen und speichern
+@@ 1ekxpra
+Der Teilen-Link packt die Szene in die URL. Die letzte Szene wird zudem in diesem Browser gespeichert, und PNG speichert ein Rendering mit 1920 Pixeln Breite. Der Quellcode des C-Projekts liegt auf <a>GitHub</a>, und die Fallstudie steht im <a>Portfolio</a>.
+@@ 3ulir6
+<p class="noscript">miniRT Studio benötigt JavaScript und WebGL2.</p>
+@@ 1qknhns
+Szenenaktionen
+@@ 18a25w2
+Rückgängig (Strg+Z)
+@@ 1ck73l9
+Wiederholen (Strg+Umschalt+Z)
+@@ 1gtmeqq
+Bereiche
+@@ xb5ywa
+Objekte und Vorlagen
+@@ zw3zea
+Render-Ansicht
+@@ nc78dn
+Inhalt der Szenendatei
+@@ xmhxr8
+Exportierte Szenendatei
+@@ s3efgg
+Teilbarer Link
+@@ 1yro00h
+42 ELO Leaderboard: Wettkampf-Ranglisten in Go und PostgreSQL | Niklas Weber
+@@ hwqqj5
+Hochperformantes ELO-Ranglistensystem in Go und PostgreSQL mit Match-Meldungen in Echtzeit, Live-Ranglisten und 30 ms mittlerer Antwortzeit.
+@@ 10m49v5
+Wettkampf-Ranglistensystem für die 42 Heilbronn · 2026
+@@ 1wb5fhu
+3D Go Renderer: OpenGL-Renderer in Go von Grund auf | Niklas Weber
+@@ 1a18ktr
+Ein 3D-Renderer in Go von Grund auf mit eigenem .obj- und .mtl-Parsing, Ear-Clipping-Triangulierung und einer OpenGL-4.1-Pipeline ohne Allokationen im eingeschwungenen Zustand.
+@@ 165d2lo
+OpenGL-Renderer in Go von Grund auf · 2026
+@@ 1wvim3s
+miniRT: SIMD-Raytracer in C mit über 120 FPS | Niklas Weber
+@@ 1naiewv
+Ein Raytracer in C mit über 120 FPS, gebaut auf SIMD-Vektorisierung, cache-effizienten Datenstrukturen und kachelbasiertem Multithread-Rendering.
+@@ pytfdl
+Hochperformanter Raytracer in C · 2025
+@@ 1fej5ta
+minishell: POSIX-konforme Shell in C | Niklas Weber
+@@ 17i4qaf
+Eine Unix-Shell von Grund auf in C: Prozessverwaltung, Pipes, I/O-Umleitung, Variablen-Expansion und Signalbehandlung.
+@@ 1eq72xw
+POSIX-konforme Shell in C · 2025
+@@ gwvl46
+raftlab: Raft-Konsens in Go mit Live-Cluster-Visualisierung | Niklas Weber
+@@ 1p002t
+raftlab: Raft-Konsens von Grund auf in Go, mit replizierter Key-Value-Datenbank und einer Oberfläche, um Knoten zu töten und die Erholung zu beobachten.
+@@ 1qob1hd
+Raft-Konsens mit Live-Cluster-Visualisierung · 2026
+@@ xmj1zt
+Tetris ML: Tetris-Engine und DQN-Agent in Go und PyTorch | Niklas Weber
+@@ 1e8r6c9
+Eine Tetris-Engine in Go, mit PyTorch trainierte DQN-Agenten und ein Viewer, der ihnen beim Lernen zusieht. Der Agent erreicht im Mittel 173k Punkte, 44 % über einer handoptimierten Heuristik.
+@@ 1645xyi
+Tetris-Engine, DQN-Agent und Trainingsviewer · 2026
+@@ 1e0j52k
+Transcendence Casino: Echtzeit-Multiplayer-Casino in Go und C++ | Niklas Weber
+@@ nynyuo
+Echtzeit-Multiplayer-Casino mit Blackjack, Poker und Slots. Go-Backend, C++-Spiel-Engine über gRPC, React-Frontend und ein Prometheus-/Grafana-Stack.
+@@ 1pka2dw
+Online-Casino mit Echtzeit-Multiplayer · 2026
+@@ fkvr0w
+Warum ich immer wieder von Grund auf baue – Niklas Weber
+@@ 1uhu9dx
+Ein Plädoyer dafür, die entscheidenden Teile eines Systems selbst zu bauen – die Prozessverwaltung von minishell, einen WebSocket-Hub, einen .obj-Parser – und überall sonst zu einer Bibliothek zu greifen.
+@@ odqh21
+Warum ich immer wieder von Grund auf baue
+@@ 180905v
+Warum ich Dinge immer wieder <em>von Grund auf</em> baue
+@@ z2njrg
+2026-08-26 · Allgemein
+@@ 1pg6fy4
+In allen Projekten auf dieser Seite zeigt sich ein Muster, das weniger eine Entscheidung als eine Gewohnheit ist: eine Shell, die ihre eigene Prozessverwaltung implementiert, statt <code>system()</code> zu umhüllen, eine WebSocket-Schicht als selbstgebauter Hub statt einer Pub/Sub-Bibliothek, ein 3D-Renderer mit eigenem <code>.obj</code>-Parser und eigener Triangulierung statt einer Scene-Graph-Abhängigkeit. Nichts davon ist eine Abneigung gegen Bibliotheken – es ist eine Wette darauf, welche Teile eines Systems es wert sind, so weit verstanden zu werden, dass man sie nachbauen könnte, und welche nicht.
+@@ 1ks6el6
+„Von Grund auf“ hat eine Grenze
+@@ ouoq9w
+Keines dieser Projekte verzichtet komplett auf Abhängigkeiten. Postgres, OpenGL, React, nginx, die Codegenerierung von gRPC – alles von der Stange, alles tut genau das, was es soll, und nichts davon habe ich neu geschrieben. Die Linie lautet nicht „Bibliotheken meiden“, sondern „den Teil des Problems, für den das Projekt eigentlich existiert, nicht auslagern“. Eine Casino-App, die die WebSocket-Abstraktion eines anderen umhüllt, hat kein echtes Echtzeitsystem gebaut – sie hat eine Oberfläche auf eines gesetzt. Der interessante, tragende Teil ist der, den man selbst behält.
+@@ 1effkad
+minishell: Prozessverwaltung als eigentlicher Gegenstand
+@@ qwjj7e
+Die gesamte Aufgabe einer Shell ist Prozessorchestrierung – fork/exec, Pipe-Verkettung, Signalzustellung, Umleitungen. Dafür eine Bibliothek zu nehmen, hieße, eine Shell um eine Shell herum zu bauen. Deshalb implementiert <a>minishell</a> seinen eigenen Recursive-Descent-Parser und steuert <code>fork()</code>, <code>execve()</code>, <code>pipe()</code> und <code>sigaction()</code> direkt an, denn SIGCHLD-Reaping und Job Control unter POSIX-Semantik richtig hinzubekommen <em>ist</em> die Aufgabe – kein Yak-Shaving, das ihr im Weg steht.
+@@ 199sfh7
+Der WebSocket-Hub von Transcendence: Kontrolle statt fertiger Socket-Schicht
+@@ bbxgpu
+Die Echtzeitschicht des <a>Transcendence Casino</a> hätte sich für das Topic-Fan-out auf eine Pub/Sub-Bibliothek stützen können. Stattdessen ist sie ein selbstgebauter Hub, der Subscriptions pro Nutzer, pro Tab und pro Topic verwaltet und die Präsenz explizit entprellt, denn die eigentliche Anforderung – ein Seiten-Reload in einem Tab soll den Status eines Spielers nicht in jedem anderen Tab, der diesen Tisch beobachtet, auf offline flackern lassen – ist spezifisch genug, dass eine generische Pub/Sub-Abstraktion ohnehin mit Workarounds nachgerüstet werden müsste. Den Hub direkt zu schreiben bedeutete, dass die Debounce-Logik genau dort lag, wo das Fachproblem war, und nicht erst durch das Ereignismodell eines anderen übersetzt wurde.
+@@ lxk1i1
+Der Parser des Go-Renderers: kein Scene Graph, auf den man sich stützen kann
+@@ 1o1a3zr
+Der <a>3D Go Renderer</a> liest rohe <code>.obj</code>-/<code>.mtl</code>-Dateien und erledigt Vertex-Deduplizierung, UV-Generierung und die <a>Ear-Clipping-Triangulierung über einer Newell-Normalenebene</a> selbst. Eine Scene-Graph-Bibliothek hätte all das übernommen – und genau die Geometrieprobleme versteckt, die das Projekt lohnenswert gemacht haben. Die allokationsfreie Render-Schleife funktioniert nur, weil der Parsing- und Triangulierungscode in dem Wissen geschrieben wurde, was er wann genau allokiert – das bekommt man von der Abstraktion eines anderen nicht geschenkt.
+@@ 1yy89h6
+Die eigentliche Lehre
+@@ 4yzoqp
+Der Test lautet nicht „könnte ich das selbst schreiben“ – mit genug Zeit kann man fast alles selbst schreiben. Entscheidend ist, ob man durch das Selbstschreiben etwas herausfindet, das man wissen musste: wie sich SIGCHLD bei nebenläufigen Kindprozessen tatsächlich verhält, was ein Debounce garantieren muss, wenn ein Tisch vierzig Zuschauer hat, warum die Projektionsebene einer Fläche wichtiger ist als die Reihenfolge ihrer Triangulierung. Greif zu einer Bibliothek, wenn das Problem gelöst ist und das Lösen nicht der Sinn der Sache. Bau es selbst, wenn das Bauen der einzige Weg ist, wirklich zu verstehen, was man ausgeliefert hat.
+@@ 12ccrgf
+2026-11-02 · Verteilte Systeme
+@@ 1qn46rm
+2026-10-02 · Systemprogrammierung
+@@ 13bf2bd
+2026-10-16 · Reinforcement Learning
+@@ 13ed842
+2026-09-17 · Systemprogrammierung
+@@ 16hrz9a
+2026-08-23 · Go-Renderer
+@@ cp7ljv
+Weitere Artikel
+@@ 6g0esk
+Eine Container-Runtime von Grund auf bauen – Niklas Weber
+@@ 16smord
+Eine minimale Container-Runtime in purem Go von Hand schreiben – PID-/Mount-/UTS-/Netzwerk-Namespaces, pivot_root, cgroups v2 und OverlayFS – samt der echten Debugging-Vorfälle unterwegs.
+@@ 87enat
+Eine Container-Runtime von Grund auf bauen
+@@ cceaxg
+Eine Container-Runtime <em>von Grund auf</em> bauen
+@@ 16j3mvv
+<code>container-from-scratch</code> ist eine minimale Container-Runtime, eine einzige Go-Datei, Standardbibliothek plus <code>golang.org/x/sys/unix</code> und sonst nichts – keine Container-Bibliotheken. Das Ziel war nicht, mit Docker zu konkurrieren, sondern es nicht mehr als Black Box zu behandeln: die Kernel-Primitive, auf denen es aufbaut, von Hand zu implementieren. PID-Namespaces, Mount-Namespaces mit privatem <code>/proc</code>, UTS-Namespaces, <code>pivot_root</code>, cgroups v2, Netzwerk-Namespaces, OverlayFS und ein echtes PID 1, das seine Zombies einsammelt. Jede Stufe fügt genau einen Mechanismus zur vorigen hinzu, und jede hat eine „Fertig“-Bedingung, die nicht „es kompiliert“ lautet, sondern „hier ist die Terminal-Ausgabe, die beweist, dass diese Isolation echt ist“. Der Quellcode liegt auf <a>GitHub</a>.
+@@ v2jglw
+Bewusst ausgeklammert: Image-Registries, ein dauerhaft laufender Daemon, echtes Bridge-Networking mit iptables-NAT (als manuelle Übung dokumentiert, nicht automatisiert) und User-Namespaces – unten als natürliches nächstes Projekt markiert, statt sie am Ende einer ohnehin langen Sitzung anzuflanschen.
+@@ 1ebbkes
+Der Trick, von dem jede Stufe abhängt: sich selbst über /proc/self/exe neu starten
+@@ okhc2p
+Vor allen Stufen muss ein Problem gelöst werden, sonst funktioniert nichts. In PID-Namespaces kann ein Prozess nur bei der <em>Erzeugung</em> über <code>clone(2)</code> eintreten – anders als bei den meisten anderen Namespace-Typen verschiebt <code>unshare(CLONE_NEWPID)</code> den aufrufenden Prozess nicht in einen neuen Namespace, sondern wirkt sich nur auf danach geforkte Kinder aus. Und Go kann für dieses Kind nicht einfach ein rohes <code>fork()</code> aufrufen: Die Runtime ist stark multithreaded (Goroutine-Scheduler, GC-Worker, der sysmon-Thread), und ein nacktes <code>fork()</code> dupliziert nur den aufrufenden OS-Thread – jeder andere Thread und jeder von ihm gehaltene Lock-Zustand verschwindet im Kind und hinterlässt eine strukturell kaputte Runtime, bis ein <code>exec()</code> das gesamte Prozessabbild ersetzt. Go stellt bewusst kein sicheres rohes Fork bereit.
+@@ 17dnj3s
+Die Lösung, hier und in echten Runtimes wie runc: dieselbe Binärdatei über <code>/proc/self/exe</code> neu starten – ein magischer Symlink, der im Kernel immer auf die eigene ausführbare Datei des aktuellen Prozesses zeigt – und die gewünschten Clone-Flags über <code>SysProcAttr.Cloneflags</code> von <code>exec.Cmd</code> mitgeben. Der neue Prozess wird <em>direkt im</em> neuen Namespace als dessen PID 1 geboren, über ein vollständiges <code>execve()</code>, ohne Fork und ohne kaputte Runtime. Da dieselbe kompilierte Binärdatei zweimal läuft, unterscheidet ein Sentinel-Wert in argv die beiden Zweige:
+@@ 82fluc
+Stufe 1 – PID-Namespace
+@@ 1yu9p18
+Die private Sicht eines Prozesses auf den PID-Raum: Der erste Prozess, der in einem neuen PID-Namespace geboren wird, ist aus Sicht dieses Namespace PID 1, hat auf dem Host aber weiterhin eine echte, andere PID – doppelte Identität, dieselbe Task. Namespaces verschachteln sich absichtlich asymmetrisch: Ein Kind kann den Namespace seines Elternprozesses nicht sehen, der Elternprozess aber immer in ihn hineinblicken, sodass der Host weiterhin jeden Container beaufsichtigen kann. Ein Flag genügt:
+@@ 17h4zdm
+Fertig: <code>echo $$</code> meldet im Inneren <code>1</code>. <code>ps aux</code> auf dem Host zeigt in einem zweiten Terminal den Prozess weiterhin unter seiner echten, großen PID. Aber <code>ls /proc</code> <em>im</em> Namespace listet an dieser Stelle noch irreführend den gesamten Prozessbaum des Hosts auf – kein Bug. Procfs bindet sich beim <em>Mounten</em> an einen bestimmten PID-Namespace, gespeichert im Superblock, und wertet das nicht pro Leser neu aus. Der <code>/proc</code>-Mount ist hier der vom Host geerbte, der noch an den Namespace des Hosts gebunden ist. Das zu beheben ist die nächste Stufe.
+@@ f1i07x
+Stufe 2 – Mount-Namespace und ein privates /proc
+@@ fl1vf9
+<code>CLONE_NEWNS</code> liefert eine private Mount-Tabelle, aber es gibt eine Feinheit, über die fast jeder beim ersten Versuch stolpert: Mountpunkte haben einen <em>Propagationstyp</em>, nicht nur die Zugehörigkeit zu einem Namespace. Die Standard-Propagation ist auf den meisten Distributionen, auch Ubuntu, <code>MS_SHARED</code> für das Root und alles darunter – ein geteilter Mount gehört zu einer Peer-Gruppe, und das Abspalten von einem geteilten Mount behält diese Mitgliedschaft, sodass Mount- und Unmount-Ereignisse zwischen dem „privaten“ Namespace und dem Host weiterhin in beide Richtungen propagieren, obwohl die Tabelle technisch getrennt ist. <code>CLONE_NEWNS</code> allein verhindert das nicht; man muss das Root explizit und rekursiv als <code>MS_PRIVATE</code> neu mounten, um die Peer-Gruppen-Mitgliedschaft zu trennen. Das ist das Erste, was jede echte Container-Runtime nach dem Erzeugen des Mount-Namespace tut.
+@@ 1na2ixm
+Dann ein <em>frisches</em> procfs auf <code>/proc</code> mounten – ein neuer procfs-Mount erfasst immer den PID-Namespace dessen, der ihn gerade mountet, und löst damit den Cliffhanger aus Stufe 1:
+@@ 86top6
+Fertig, mit echter Ausgabe: <code>ps aux</code> zeigt im Inneren nur die Shell und <code>ps</code> selbst – PIDs 1 und 7. Auf dem Host zeigt <code>mount | grep /proc</code> genau einen Eintrag, nichts ist aus dem Container herausgesickert. Beide Richtungen der Isolation sind bewiesen. Eine kleine Verwirrung verdient eine Erwähnung: <code>cat /proc/mounts | head -3</code> zeigt im Inneren zuerst die <em>alten</em> Host-Mounts (ext4-Root, udev, devpts), was aussieht, als sei das private <code>/proc</code> nicht angekommen. Es ist angekommen – ein neuer Mount-Namespace beginnt als <em>Kopie</em> der Tabelle des Elternprozesses, nicht leer, daher gehören diese Einträge zu Recht ebenfalls zur privaten Tabelle, nur eben vor dem frischen proc-Mount aufgelistet, der zuletzt hinzugefügt wurde. <code>head -3</code> schneidet einfach vor ihm ab.
+@@ 1u2q095
+Stufe 3 – UTS-Namespace
+@@ x0kwut
+Der einfachste Namespace im Satz, mit Absicht. „UTS“ steht für Unix Timesharing System, benannt nach dem <code>struct utsname</code> aus <code>uname(2)</code>, in dem der Hostname zufällig liegt. Er isoliert zwei Strings – Hostname und NIS-Domainname –, aber das zählt, weil so viel Tooling am Hostname hängt (Shell-Prompts, Logs, Service Discovery, TLS-SANs, Split-Brain-Erkennung), dass gleiche Hostnamen über Container hinweg stille Kollisionen verursachen würden. Keine Propagationssemantik, keine Dateisystem-Interaktion, keine Reihenfolgebedingungen mit irgendetwas anderem: ein Clone-Flag, ein Syscall.
+@@ tf1fjh
+Fertig: <code>hostname</code> gibt im Inneren <code>container</code> aus; der Hostname des Hosts bleibt unberührt.
+@@ squlfw
+Stufe 4 – chroot vs. pivot_root
+@@ 1n4mn8s
+Diese Stufe liefert den besten „Hier machen Leute etwas falsch“-Stoff des ganzen Projekts. <code>chroot(2)</code>, von 1979, ändert nur, worauf das <code>/</code> eines Prozesses bei der Pfadauflösung <em>zu zeigen scheint</em> – die Mount-Tabelle fasst es nie an. Das alte Root bleibt genau dort gemountet, wo es war, nur über chroot-relative Pfade unerreichbar. Bekanntlich ist es keine Sicherheitsgrenze: Root kann daraus ausbrechen – durch einen vor dem chroot geöffneten Dateideskriptor außerhalb des Gefängnisses, durch den klassischen Trick aus doppeltem <code>chroot()</code> plus <code>fchdir()</code> oder durch <code>mknod</code> eines Geräteknotens, um an die rohe Platte zu kommen.
+@@ xk47x3
+<code>pivot_root(2)</code> nutzen runc und Docker tatsächlich. Es ist im Kern eine <em>Mount</em>-Operation: Sie tauscht aus, welcher Mount die Wurzel des Mount-Baums für den aktuellen Mount-Namespace ist, und verlegt das alte Root an einen angegebenen Pfad, damit man es anschließend wirklich unmounten kann. Das ergibt nur auf dem privaten Mount-Namespace aus Stufe 2 Sinn – das echte Root des Hosts zu pivotieren wäre katastrophal, und der Kernel verbietet es in den meisten Fällen ohnehin. Der Mechanismus ist ein Fünf-Schritte-Tanz, bei dem jeder Schritt eine echte Kernel-Bedingung erfüllt:
+@@ 1c47qqz
+Diese Stufe braucht ein echtes Root-Dateisystem, in das gepivotet wird – ein einmaliger Shell-Einrichtungsschritt, der bewusst außerhalb des Go-Programms bleibt, um die Grenze „kein Image-Pulling“ einzuhalten: <code>busybox-static</code> installieren, die Binärdatei hineinkopieren, <code>sh</code>/<code>ls</code>/<code>ps</code>/usw. darauf verlinken. Lässt man diesen Schritt aus, ist der Fehler genau so aufschlussreich, wie er sein sollte – <code>pivot root failed: bind-mounting new root: no such file or directory</code>, weil das Rootfs-Verzeichnis tatsächlich noch nicht existiert. Fertig: <code>ls /</code> zeigt im Inneren nur <code>bin</code> und <code>proc</code>; alles, was nur auf dem Host existiert, schlägt mit „no such file or directory“ fehl, nicht mit einem Berechtigungsfehler – es ist schlicht nicht mehr in diesem Mount-Baum.
+@@ 1fcu9ib
+Stufe 5 – cgroups v2: Speicher, CPU und die OOM-Debugging-Saga
+@@ 17klv4m
+Alles bisher steuert, was ein Container <em>sehen</em> kann. Nichts davon steuert, was er <em>verbrauchen</em> kann – eine Endlosschleife oder ein Leck im Namespace ist für den Host genauso gefährlich, als liefe es direkt. Namespaces sind ein Sichtbarkeitsmechanismus; cgroups sind der Mechanismus zur Ressourcenbuchführung, und zusammen machen sie das Ganze erst zu einem Container statt zu einem Prozess mit einem seltsamen <code>/proc</code>. cgroups v2 ist überhaupt keine Syscall-API – es ist ein virtuelles Dateisystem unter <code>/sys/fs/cgroup</code>. Ein Verzeichnis dort anzulegen erzeugt eine cgroup, die automatisch mit Kontrolldateien befüllt wird (<code>cgroup.procs</code>, <code>memory.max</code>, <code>cpu.max</code>); eine PID in <code>cgroup.procs</code> zu schreiben tritt ihr bei, Zahlen in die Limit-Dateien zu schreiben setzt echte, vom Kernel durchgesetzte Obergrenzen. Kein neues Clone-Flag – reine Datei-I/O, vom <em>Launcher</em>-Prozess aus mit der echten Host-PID des Kindes erledigt (die Eigensicht des Namespace, PID 1, wäre als cgroup-Schlüssel nutzlos – dieselbe Dualität aus Host-PID und Namespace-PID wie bei der <code>ps aux</code>-Verwirrung in Stufe 1, schon wieder):
+@@ 1wqrenw
+Das zu verifizieren wurde die ergiebigste Debugging-Kette des ganzen Projekts. Der erste Speicher-Stresstest, <code>head -c 50000000 /dev/zero | tr '\0' x</code>, scheiterte sofort – im minimalen Busybox-Rootfs war nie ein <code>/dev</code> eingerichtet, kein devtmpfs, keine Geräteknoten. Stattdessen habe ich Busyboxs eigenes <code>yes</code>-Builtin genommen. Der zweite Versuch führte den Stresstest ohne Erfassung der Ausgabe aus, sodass die <code>x</code>-Zeichen nur das Terminal fluteten, statt sich im Speicher aufzubauen – <code>memory.current</code> blieb bei etwa 5 MB und <code>memory.events</code> zeigte <code>oom 0</code>, der Beweis, dass sich nichts ansammelte. Ich wechselte zu einer pipe- und substitutionsfreien Shell-Verdopplungsschleife, die an Quoting nicht scheitern kann:
+@@ 7w5jat
+Auch <em>dieser</em> erste Lauf starb nicht. <code>memory.current</code> blieb dauerhaft genau am Limit – kein OOM-Kill. Die eigentliche Ursache ist eine wohlbekannte und schlecht dokumentierte Falle von cgroups v2: <code>memory.max</code> begrenzt nur den Speicher, nicht den Swap, der separat ist. Ist auf dem Host Swap aktiviert, schiebt der Kernel Seiten in den Swap, sobald die cgroup ihre Speichergrenze erreicht, statt den OOM-Killer aufzurufen – der Prozess stirbt nicht, er trasht. Die Lösung ist das <code>memory.swap.max = 0</code> oben, das den Kernel zum OOM-Kill zwingt, statt im Swap zu stocken, weil es keinen Überlauf mehr gibt. Nach dieser Korrektur löste derselbe Test einen echten Kill aus – verifiziert mit dem richtigen Diagnosewerkzeug, <em>nicht</em> mit <code>dmesg | tail</code> (voller unzusammenhängendem AppArmor-Rauschen anderer laufender Apps, das das eigentliche Signal übertönt), sondern mit der Buchführung der cgroup selbst:
+@@ 14jh29a
+Das CPU-Throttling brauchte kein Debugging: Eine <code>while true; do :; done</code>-Busy-Loop im Inneren, vom Host mit <code>ps aux | grep sh</code> geprüft, zeigte <strong>8,2 %</strong> CPU – nahe der konfigurierten 10-%-Quote gedeckelt, statt einen ganzen Kern auszulasten.
+@@ 1vju6rm
+Stufe 6 – Netzwerk-Namespace
+@@ jw995k
+<code>CLONE_NEWNET</code> gibt einem Prozess einen eigenen, vollständigen Netzwerk-Stack – Interfaces, Routing-Tabelle, ARP-Tabelle, Portraum –, sodass Container nicht über Ports kollidieren können, so wie es zwei unabhängige Host-Programme auch nie täten. Das ist die gesamte Codeänderung:
+@@ 2hgohm
+Mehr ist nicht nötig – alles Beobachtbare ist eine direkte Folge des Flags. Einen Absatz wert: Ein frisches Netns ist nicht leer, der Kernel legt automatisch ein Loopback-Interface an, lässt es aber administrativ deaktiviert. Selbst <code>curl localhost</code> schlägt in einem brandneuen Netns fehl, bis jemand <code>lo</code> explizit hochfährt; der Entrypoint von Docker erledigt das stillschweigend, hier geschieht es von Hand und ist direkt beobachtbar. Den Namespace mit der Außenwelt zu verbinden – ein veth-Paar, eine Bridge, iptables-NAT für ausgehendes Masquerading – ist sehr viel Verkabelung, die <code>dockerd</code>/CNI automatisieren, und wurde bewusst als dokumentierte, manuelle Shell-Übung gelassen, statt sie ins Go-Programm einzubauen:
+@@ nyx4g2
+Fertig: <code>ip addr</code> zeigt im Inneren nur <code>lo</code>, deaktiviert; die echten Interfaces des Hosts bleiben unberührt; <code>ping -c1 127.0.0.1</code> schlägt im Inneren fehl, bis <code>lo</code> von Hand hochgefahren wird, und gelingt dann.
+@@ 10wvu6q
+Stufe 7 – OverlayFS und drei unabhängige Bugs im selben Gewand
+@@ 1ee5f2m
+Das ist die Belohnungsstufe für „wie funktionieren Image-Layer eigentlich“. Jede bisherige Stufe pivotierte in ein einziges flaches Rootfs-Verzeichnis. Echte Images bestehen aus gestapelten Schichten – einer Basis, einer Installationsschicht, einer App-Schicht –, und zwei Container desselben Images teilen sich die Blöcke der Basisschicht auf der Platte, statt je eine volle Kopie zu bekommen; die Schreibzugriffe eines Containers berühren die geteilte Basis nie. Deshalb ist <code>docker run</code> aus einem vorhandenen Image fast sofort da statt eine Dateisystemkopie, und deshalb funktioniert Layer-Caching. OverlayFS kombiniert Verzeichnisse über vier Rollen zu einer Sicht: <code>lowerdir</code> (schreibgeschützte Schichten, nie beschrieben), <code>upperdir</code> (die einzige beschreibbare Schicht, in der jeder Schreibzugriff landet), <code>workdir</code> (interner Arbeitsbereich für atomare Umbenennungen, muss leer sein und auf demselben Dateisystem wie <code>upperdir</code> liegen) und <code>merged</code> (der eigentliche Mountpunkt – in diesen wird per <code>pivot_root</code> gewechselt, von innen nicht von einem gewöhnlichen Dateisystem zu unterscheiden). Eine im Container gelöschte Datei, die in der unteren Schicht existiert, wird nicht wirklich gelöscht – sie wird in <code>upperdir</code> als Whiteout festgehalten, ein Zeichengerät mit Major/Minor 0/0.
+@@ qo73lx
+Diese Debugging-Kette lohnt sich in voller Länge, weil es selten eine saubere Grundursache gibt und es auch hier keine gab – drei verschiedene, größtenteils unabhängige Bugs, die alle als dasselbe Symptom auftraten, Mount-Fehler, und jeweils eine andere Diagnose zur Eingrenzung brauchten:
+@@ grjzf6
+<strong>Bug eins.</strong> Erster Lauf: <code>mounting overlay: invalid argument</code>, allein aus dem Go-Fehler kein Hinweis auf den Grund. Das Nachstellen desselben Mounts von Hand in einer Host-Shell (mit ausführlicheren Fehlern) führte zu einem <em>anderen</em> Fehler, <code>mount: bad usage</code> – ein Shell-Problem, nicht OverlayFS: Der Pfad des Projektverzeichnisses enthält ein Leerzeichen, und die manuelle Reproduktion nutzte ein unquotiertes <code>$(pwd)</code> im <code>-o</code>-Wert, sodass das Word-Splitting das Argument in Müll-Tokens zerlegte. Das Quoten (<code>-o "lowerdir=$(pwd)/...,upperdir=...,workdir=..."</code>) reparierte den manuellen Befehl und bewies, dass der Overlay-Mechanismus selbst in Ordnung war – Syscalls stören sich nicht an Leerzeichen wie Shells, daher war das nicht das eigentliche Hindernis für das Go-Programm.
+@@ 1bx99xw
+<strong>Bug zwei, der wahre Grund hinter dem ursprünglichen Fehler.</strong> Ein erneuter Blick in <code>dmesg</code> eines früheren fehlgeschlagenen Versuchs brachte den eigentlichen Beweis: <code>overlay: Unknown parameter ' upperdir'</code> – man beachte das führende Leerzeichen. Durch direktes Lesen des Go-Quellcodes zurückverfolgt auf einen Ein-Zeichen-Tippfehler beim Abtippen: <code>fmt.Sprintf("lowerdir=%s, upperdir=%s,workdir=%s", ...)</code>, ein verirrtes Leerzeichen nach dem ersten Komma. Der Optionsparser von OverlayFS trennt strikt an Kommas und toleriert keinerlei umgebende Leerzeichen, sodass <code>", upperdir=..."</code> zu einem buchstäblich nicht parsbaren Token <code>" upperdir"</code> wurde – der Kernel-Fehler hatte die ganze Zeit exakt die Wahrheit gesagt. Das Leerzeichen zu entfernen behob es.
+@@ 1wngpf7
+<strong>Bug drei, völlig unabhängig, direkt danach auftretend.</strong> <code>mount failed: no such file or directory</code> – diesmal vom <code>/proc</code>-Mount, nicht von Overlay, das nun gelang. Das Setup-Skript für <code>layers/lower</code> war nie ausgeführt worden: Das Verzeichnis war leer, von <code>os.MkdirAll</code> im per sudo gestarteten Go-Programm automatisch angelegt und daher im Besitz von root. In der Basisschicht gab es weder <code>/bin</code> noch einen <code>/proc</code>-Mountpunkt, sodass nach dem Pivot in eine leere zusammengeführte Sicht nichts da war, worauf <code>/proc</code> hätte gemountet werden können. Das direkt zu beheben war ohne sudo-Passwort zum Schreiben in ein root-eigenes Verzeichnis nicht möglich – die Lösung musste stattdessen als Shell-Befehl zurückgereicht werden.
+@@ 16ba7pp
+Fertig, sobald alle drei behoben waren: Eine im Container geschriebene Datei erscheint auf dem Host in <code>layers/upper</code>, <code>layers/lower</code> bleibt unberührt; wird eine Datei gelöscht, die in der unteren Schicht existiert, verschwindet sie aus Sicht des Containers, während das Original auf dem Host bleibt und nun in <code>layers/upper</code> als Whiteout sichtbar ist.
+@@ 9hihap
+Zwei weitere Ergänzungen, ausgewählt nach dem, was sie auffangen
+@@ u2gthi
+<strong>pids.max</strong> – Schutz vor Fork-Bomben, dasselbe Muster aus Dateischreibzugriffen wie bei den anderen cgroup-Limits, mit einer Obergrenze von 64 Prozessen insgesamt. Eine Shell-Schleife, die dauernd Hintergrundprozesse startet, stößt an die Grenze und hält an, statt den Host zu erschöpfen.
+@@ 14gemrq
+<strong>PID 1 als echtes Init, das Zombies einsammelt</strong> – die strukturell interessantere und eine echte Falle, die buchstäblich der Grund ist, warum es <code>docker run --init</code> und tini gibt. Bis hierhin übergab PID 1 per <code>unix.Exec</code> an den Zielbefehl – ein <code>execve()</code>, das das Prozessabbild vollständig <em>ersetzt</em>, sodass PID 1 direkt zur Shell <em>wurde</em> und nichts mehr lief, das je <code>wait()</code> auf verwaiste Nachfahren aufrufen könnte. Jeder auf PID 1 umgehängte Prozess (ein Hintergrundjob, dessen direkter Elternprozess beendet wurde) würde enden und zu einem dauerhaften Zombie werden, weil niemand auf ihn wartete. Die Lösung hält PID 1 als kleinen Go-Supervisor: das Ziel als Kind starten, statt per Exec in es zu wechseln, und dann <code>wait4(-1, ...)</code> endlos schleifen, um jedes Kind – das Haupt- wie jedes umgehängte Waisenkind – einzusammeln, bis keines mehr übrig ist:
+@@ 11b7q3z
+Dies wartet, bis jeder Nachfahre beendet ist, bevor es zurückkehrt, statt sich sofort zu beenden, wenn der Hauptprozess endet, und den Rest beim Namespace-Abbau per <code>SIGKILL</code> beenden zu lassen, was tini tatsächlich tut. Bewusst die einfachere, etwas weniger produktionsgetreue Wahl – gut genug für das Konzept.
+@@ 15vjcbl
+Was bewusst fehlt
+@@ 114imwf
+Image-Registries und das Pullen von Images, ein dauerhaft laufender Daemon oder eine REST-API und echtes Bridge-Networking mit iptables-NAT sind hier alle konzeptionell erklärt, aber nie implementiert – jedes davon ist sehr viel Verkabelung, deren Wert für dieses Projekt darin lag, zu verstehen, <em>dass</em> es sie gibt und grob wie, statt dockerd neu herzuleiten. User-Namespaces (Rootless-Container) sind der eine aus anderem Grund bewusst Aufgeschobene: Sie sind das sicherheitsrelevanteste nicht abgedeckte Stück und wirken auf alles oben – Mounts, cgroup-Berechtigungen – auf eine Weise ein, die einen langsameren, eigenen Durchgang verdient, statt ans Ende einer ohnehin langen Sitzung geklebt zu werden. Ein natürlicher zweiter Teil.
+@@ 6vnsa4
+Was wirklich zählte
+@@ em7yur
+Keiner der einzelnen Mechanismen hier ist geheim – sie stehen in Man-Pages und im Quellcode von runc. Was eine Implementierung von Grund auf einbringt, ist das Debugging: zu sehen, wie <code>ls /proc</code> in Stufe 1 halb funktioniert, und genau zu verstehen, warum, über die Superblock-Bindung; ein Speicherlimit zu treffen, das stillschweigend nichts tut, bis man lernt, dass cgroups v2 Speicher und Swap getrennt begrenzt; einem Overlay-Mount-Fehler durch ein Shell-Quoting-Artefakt, einen Ein-Zeichen-Tippfehler und einen übersprungenen Einrichtungsschritt nachzujagen, bevor man jedes Mal die wahre Ursache findet. Das ist die eigentliche Gestalt von Systems-Debugging – selten eine saubere Grundursache, immer gelöst, indem man die Fehlermeldung wörtlich liest und zur spezifischeren Diagnose greift (<code>memory.events</code> statt <code>dmesg</code>, ein manueller Mount-Nachbau statt dem Go-Fehler zu trauen) statt zur generischen.
+@@ 1mb9wg0
+← Quellcode auf GitHub
+@@ 1ts4kze
+Polygone mit Ear Clipping triangulieren – Niklas Weber
+@@ mmaexk
+Wie der 3D Go Renderer beliebige .obj-Flächen – auch konkave, nicht ebene und degenerierte Polygone – mit Ear Clipping triangulieren kann, projiziert auf die Newell-Normale jeder Fläche.
+@@ 1834wtr
+Polygone mit Ear Clipping triangulieren
+@@ 1uxiyfo
+Beliebige Polygone mit <em>Ear Clipping</em> triangulieren
+@@ 2pdcx8
+Der <a>3D Go Renderer</a> bedeutete, einen <code>.obj</code>-Parser ohne Scene-Graph-Bibliothek zu schreiben – und <code>.obj</code>-Dateien versprechen keine Dreiecke. Eine Flächenzeile kann beliebig viele Vertices auflisten, und es gibt keine Garantie, dass sie konvex, planar oder auch nur nicht degeneriert sind. OpenGL wiederum zeichnet nur Dreiecke. Irgendetwas muss ein beliebiges N-Eck in einen Dreiecksfächer verwandeln, der identisch zur ursprünglichen Fläche rendert, für jedes N-Eck, das ein Modellierungswerkzeug exportieren könnte.
+@@ 13k8j0f
+Der naive Ansatz scheitert sofort
+@@ 15e7gvx
+Der naheliegende erste Zug – ein Dreiecksfächer von Vertex 0 zu jedem folgenden Paar, <code>(v0, v1, v2), (v0, v2, v3), (v0, v3, v4)…</code> – funktioniert nur für konvexe Polygone. Bei einer konkaven Fläche zeichnet ein Fächer von einem „eingedellten“ Vertex aus Dreiecke, die über den Rand des Polygons hinausragen. Bei einem Würfel sieht das richtig aus und bei allem Handmodellierten unauffällig falsch, was die meisten echten Assets sind.
+@@ p1c7le
+Ear Clipping im Überblick
+@@ 1u5je65
+Ear Clipping behebt das, indem es lokal arbeitet, statt von einem festen Punkt aus zu fächern. Ein „Ohr“ sind drei aufeinanderfolgende Vertices <code>(prev, curr, next)</code>, deren Dreieck konvex ist <em>und</em> keinen anderen Vertex des Polygons enthält. Jedes einfache Polygon mit mehr als drei Vertices hat mindestens ein Ohr (das Zwei-Ohren-Theorem) – der Algorithmus findet also eines, schneidet es als Ausgabedreieck ab, entfernt den mittleren Vertex aus dem Polygon und wiederholt das auf dem schrumpfenden (N−1)-Eck, bis nur noch ein Dreieck übrig ist:
+@@ 1bkmu73
+Diese innere Schleife kostet O(n) pro Ohr, und es sind n−2 Ohren zu finden, sodass naives Ear Clipping O(n²) ist – in Ordnung für die niedrigen Vertex-Zahlen, die eine <code>.obj</code>-Fläche tatsächlich hat, und einfach genug, um es richtig hinzubekommen, was bei einem Parser, der alles verarbeiten muss, was ein Modellierungswerkzeug erzeugt, wichtiger ist als asymptotische Eleganz.
+@@ apwcdn
+Was wirklich Iteration brauchte: welche Ebene?
+@@ 1m4f4jb
+„Konvex“ und „enthält keinen anderen Vertex“ sind beides 2D-Tests – Kreuzprodukte und Punkt-im-Dreieck-Prüfungen, die voraussetzen, dass alles in einer flachen Ebene liegt. Vertices in einer <code>.obj</code>-Datei sind 3D, und eine Fläche ist nicht garantiert planar: Normalen können geglättet sein, oder das Quellnetz ist einfach leicht verzogen. Auf die falsche Ebene zu projizieren – etwa immer die Z-Koordinate wegzulassen – verfälscht stillschweigend jede Fläche, die zufällig kantenparallel zu dieser Achse liegt, und stampft sie in 2D zu einem degenerierten Splitter ohne Fläche zusammen.
+@@ 117ard
+Die Lösung ist, vor dem Triangulieren eine Flächennormale mit der <strong>Methode von Newell</strong> zu berechnen, statt eine achsenparallele Projektion anzunehmen:
+@@ ey3tpj
+Die Methode von Newell liefert selbst für fast planare oder leicht verrauschte Polygone eine stabile Normale, weil sie den Beitrag jeder Kante mittelt, statt einem einzelnen Kreuzprodukt zu trauen. Ear Clipping läuft dann in dem durch diese Normale definierten 2D-Koordinatensystem – man wählt die beiden Achsen mit der größten Projektion oder baut eine explizite Tangentenbasis –, sodass die Konvexitäts- und Enthaltenseinstests unabhängig davon korrekt bleiben, wie die Quellfläche im Weltraum ausgerichtet ist.
+@@ 17r92cw
+Warum das über „es rendert“ hinaus zählte
+@@ 1iixj2o
+Das ist die Art Bug, die weder bei einem Würfel noch bei den glatteren Flächen des Utah-Teapots auftaucht – sie zeigt sich an einer einzigen konkaven, leicht nicht planaren Fläche in einem bestimmten Modell und sieht aus wie ein Render-Glitch statt wie ein Geometriefehler. Es ordentlich zu testen bedeutete, bewusst degenerierte und konkave Testfälle zu schreiben, statt den Testmodellen zu vertrauen, die zufällig herumlagen – dieselbe Lehre, die sich durch den Parser, die UV-Generierung und das Frustum Culling im restlichen <a>Renderer</a> zieht: Die Fehlerfälle, die man nicht gezielt konstruiert, sind die, die ausgeliefert werden.
+@@ qnjs9b
+← Zurück zum Projekt 3D Go Renderer
