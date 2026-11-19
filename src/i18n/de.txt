@@ -1318,3 +1318,17 @@ Die Platzierungsvarianten haben höchstens drei Trainings-Seeds, die geformte Be
 Die Auswertung ist auf 3.000 Steine begrenzt (10.000 für den Überlebenstest), was Unterschiede zwischen den stärksten Agenten weiterhin verdeckt.
 @@ 1salox5
 Getestet unter Windows 11 und Linux.
+@@ 3xs64r
+Was ich als Nächstes tun würde
+@@ 1e4diqg
+Zuerst die Instabilität der Checkpoints beheben (mehr Validierungspartien, eine abfallende Lernrate, Mittelung der letzten Checkpoints), dann dem Move-Agenten sein Spielfeld zurückgeben, ohne es kaputtzumachen, etwa mit kompakten Slot-Merkmalen wie Spaltenhöhen und Schächten statt 200 roher Zellen. Danach: PPO als wirklich anderen Algorithmus statt einer weiteren DQN-Variation, ein auf Überleben ausgerichtetes Maß und die anderen Trainings-Seeds für die Platzierungsmessungen oben.
+@@ 1karook
+Der Code, der ursprüngliche Plan, die Notizen zum Move-Agenten (<code>docs/MOVES.md</code>) und alle Lauf-Notizen liegen im <a>Repository</a>.
+@@ 1db73yj
+← Zurück zum Projekt Tetris ML
+@@ 2nqb7k
+Der trainierte Platzierungsagent spielt Tetris
+@@ 54x3uk
+Der untrainierte Agent stapelt Steine schlecht
+@@ 19s2rz4
+Der Agent nach 20.000 Trainingsschritten
