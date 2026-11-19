@@ -1122,3 +1122,199 @@ Was bleibt, ist Absicht: Leader Leases als günstigere Alternative zu ReadIndex.
 Der Quellcode liegt unter <a>github.com/nweber23/raftlab</a>.
 @@ 1d9coq3
 ← Zurück zum Projekt raftlab
+@@ t8mgl9
+Einem neuronalen Netz Tetris beibringen, Schicht für Schicht – Niklas Weber
+@@ io6h5z
+Eine Tetris-Engine in Go, ein DQN-Agent in PyTorch und ein Viewer, der ihm beim Lernen zusieht: die Baseline, die Go-Python-Brücke, was funktionierte (+44 % gegenüber einer Heuristik), was nicht, und ein zweiter Agent, der Hold, Tucks und T-Spins nutzt.
+@@ qa3val
+Einem neuronalen Netz Tetris beibringen, <em>Schicht für Schicht</em>
+@@ 14qmsjy
+Ich wollte Reinforcement Learning lernen, indem ich jede Schicht selbst baue: das Spiel, die zu schlagende Baseline, die Brücke zu Python, den Agenten und eine Möglichkeit, ihm zuzusehen. Das Ergebnis ist <a>Tetris ML</a> (<a>Quellcode</a>), eine Tetris-Engine in Go, ein mit PyTorch trainierter DQN-Agent und ein Viewer, der den Agenten beim Spielen und Lernen zeigt. Dieser Artikel geht es der Reihe nach durch und widmet dem, was nicht funktionierte, ebenso viel Raum wie dem, was funktionierte.
+@@ txwyuf
+Der finale Platzierungsagent spielt einen Baseline-Seed.
+@@ 8wz2f0
+Aktualisiert am 19.10.2026: Zwei Vermutungen aus der ersten Fassung sind nun getestet, und es gibt drei neue Abschnitte über einen zweiten Agenten, der Hold, Tucks, Spins und T-Spins nutzt, sowie einen kurzen über das Patchen der Abhängigkeiten.
+@@ xp6yqd
+Warum Tetris, und warum Go
+@@ 1a5y6tu
+Tetris ist klein genug, um auf einem Laptop zu trainieren, und hat trotzdem die Teile, die RL interessant machen: einen langen Horizont (eine schlechte Platzierung schmerzt zehn Steine später), eine zu Beginn seltene Belohnung (man löscht nicht zufällig eine Zeile) und einen Zustandsraum, der zu groß zum Aufzählen ist.
+@@ 1et8rma
+Ich habe das Spiel in Go geschrieben, weil ich eine schnelle, deterministische Engine ohne Rendering wollte, und das Lernen in Python gemacht, weil PyTorch dort zu Hause ist. Die eine Regel, an die ich mich hielt: <strong>Training hängt nie vom Rendering ab.</strong>
+@@ 162994u
+Die Engine
+@@ 1cqzox2
+Die Engine hat das Spielfeld, die sieben Tetrominos, einen 7-Bag-Zufallsgenerator, SRS-Rotation mit Wall Kicks, Schwerkraft, Einrasten, Zeilenlöschung und Game Over. Zwei Entscheidungen waren später wichtig:
+@@ 1uoryn6
+<strong>Alles ist geseedet.</strong> Ein Seed legt die gesamte Steinfolge fest, sodass sich jedes Spiel exakt wiederholen und zwei Agenten auf identischen Partien vergleichen lassen. Das zahlte sich dreimal aus: bei der Baseline, bei der Prüfung der Go-Python-Brücke und bei den Replays des Viewers.
+@@ sdf7kg
+<strong>Zeilen wachsen nach oben, und vier versteckte Zeilen liegen über den sichtbaren 20.</strong> Steine erscheinen in den versteckten Zeilen; ein Spiel endet, wenn ein neuer Stein den Stapel überlappt oder ein Stein vollständig oberhalb des Feldes einrastet.
+@@ 1sqsoxt
+Die Schwerkraft ist absichtlich simpel: Jeder <code>Step</code> wendet eine Aktion und dann einen Schwerkraft-Tick an, und ein Stein, der nicht fallen kann, rastet sofort ein. Es gibt keine Lock Delay. Das hält die Umgebung klein, auf Kosten des Realismus. (Der Viewer brauchte Schwerkraft auf einem Timer, daher habe ich <code>Step</code> später in <code>Apply</code> und <code>Gravity</code> aufgeteilt, ohne <code>Step</code> zu ändern. Hold, eine Lock Delay und T-Spins kamen noch später, siehe „Spielbar machen“.)
+@@ pxcfkq
+Eine Baseline vor jedem Lernen
+@@ j9hded
+Bevor ich irgendetwas trainierte, wollte ich eine Zahl zum Übertreffen. Der übliche billige Trick ist, nicht mehr in Zügen, sondern in <strong>Platzierungen</strong> zu denken: Für jeden Stein alle (Rotation, Spalte)-Paare auflisten, an denen er fallen gelassen werden kann, das daraus entstehende Spielfeld ansehen und bewerten. Die Bewertung ist eine gewichtete Summe aus vier Merkmalen: aggregierte Höhe, Löcher, Unebenheit und gelöschte Zeilen. Ich habe einen weit verbreiteten Gewichtssatz verwendet (aus Yiyuan Lees Tetris-AI-Artikel) und ihn nicht abgestimmt.
+@@ n39fjw
+Auf 100 geseedeten Partien mit einem Limit von 1000 Steinen pro Partie erreichte diese Heuristik im Mittel 42.591 Punkte und überlebte das Limit in 96 von 100 Partien.
+@@ pwre8t
+Die letzte Zahl war die erste Lektion. <strong>Eine Baseline, die nie verliert, kann nichts nach Überlebensdauer ordnen.</strong> Auch mit einem Limit von 10.000 Steinen erreichte noch die Hälfte der Partien das Limit (51 von 100). Von da an habe ich Agenten nach Punkten bei festem Limit verglichen und mir gemerkt, dass das Limit Unterschiede verdeckt.
+@@ 1wwm39v
+Limit (Steine)
+@@ 1759xqg
+Ø Zeilen
+@@ 1gz8z66
+Ø Steine
+@@ 1vj4pxi
+Limit erreicht
+@@ f9duhw
+Go und Python verbinden
+@@ z9p3x1
+Die Engine läuft als gRPC-Server: Ein bidirektionaler <code>Play</code>-Stream ist ein Spiel. Der Client sendet <code>Reset(seed)</code> und dann Platzierungen, und jede Anfrage liefert den Zustand, die Belohnung und die Liste der gültigen Platzierungen zurück. Eine Python-Gymnasium-Umgebung spricht mit ihr, und vektorisierte Umgebungen lassen mehrere Spiele parallel laufen. Die Aktion ist eine einzelne Ganzzahl, <code>rot * 12 + (x + 2)</code>, mit einer Aktionsmaske für die gültigen. Auf meinem Rechner erreichten 4 Umgebungen etwa 5.200 Schritte pro Sekunde und 8 etwa 7.100, wobei ein Schritt eine Steinplatzierung ist.
+@@ mmrc5k
+Zu prüfen, ob die Brücke stimmte, war schwerer als sie zu bauen. Der naheliegende Test „ein Zufallsagent erzielt auf beiden Seiten dieselben Zahlen“ funktioniert nicht: Ein Zufallsagent löscht in seinen ersten 20 Steinen fast nie eine Zeile, die Punktzahlen liegen nahe null und sagen nichts, und Go und Python nutzen ohnehin verschiedene Zufallszahlengeneratoren. Also habe ich einen deterministischen Agenten geschrieben, dessen Wahl nur von der Steinanzahl abhängt, ihn auf beiden Seiten über 200 Seeds laufen lassen und Punkte, Zeilen und Steine pro Partie verglichen.
+@@ 1ezjijn
+Alle 200 Partien stimmten überein. Das testet keine Belohnungen (das tun die Go-Unit-Tests), beweist aber, dass beide Seiten dasselbe Spiel sehen.
+@@ p1c7n1
+Der Agent
+@@ 1jags2k
+Das Netz gibt keinen Wert pro Aktion aus. Es bewertet das <strong>Spielfeld nach einer Platzierung</strong> (den Afterstate) anhand derselben vier Merkmale wie die Heuristik, und der Agent spielt die Platzierung mit der höchsten Bewertung. Das Trainingsziel ist das übliche DQN-Ziel: die Belohnung plus der abgezinste beste Wert unter den Platzierungen des nächsten Steins, aus einem langsam aktualisierten Zielnetz.
+@@ 1c7kz31
+Das Netz ist ein kleines MLP (4-64-64-1). Der Rest ist Standard: ein Replay-Puffer mit 50k, ein hartes Ziel-Update alle 1.000 Schritte, Adam mit 1e-3, Batch 128, Gamma 0,99 und Epsilon, das über 50.000 von 100.000 Schritten von 1 auf 0,01 fällt. Belohnungen sind der Zeilenlösch-Score geteilt durch 100. Trainingspartien nutzen Seeds ab 1.000.000, die Validierung (10 greedy Partien alle 10.000 Schritte) nutzt 5001–5010, um den besten Checkpoint zu wählen, und die finalen Zahlen nutzen die Baseline-Seeds 1–100, auf denen der Agent nie trainiert hat.
+@@ 7vqvww
+Ich habe zwei Belohnungsaufbauten gegeneinander laufen lassen. Der rohe vergibt den Zeilenlösch-Score. Der geformte (Shaped) fügt einen potenzialbasierten Term hinzu, der das Lernsignal verändert, ohne zu ändern, welche Policy die beste ist:
+@@ xv93n6
+Schritt 0: das untrainierte Netz.
+@@ 1a2zqmw
+Schritt 20.000, derselbe Seed.
+@@ lxqxai
+Das finale Netz ist die Animation ganz oben.
+@@ 2u6wgp
+Was funktionierte
+@@ 1al89w9
+Auf den Baseline-Seeds, mit einem Limit von 3000 Steinen:
+@@ 1rg2zwu
+Zufällige Platzierung (Limit 1000 Steine)
+@@ 32d2ar
+Heuristik
+@@ 196dfnt
+DQN, 3 Trainings-Seeds (Mittel)
+@@ x16kes
+Double DQN, 3 Trainings-Seeds (Mittel)
+@@ 7lufe4
+Der Agent schlägt die Heuristik, von der er ausging, um etwa 44 % bei den Punkten, spielt dabei aber etwa gleich viele Zeilen, weil er sie in größeren Gruppen löscht. Das hatte ich zuerst als Vermutung geschrieben und danach geprüft: 83 % der gelöschten Zeilen der Heuristik stammen aus Einzelzeilen-Clears, gegenüber 16 % beim DQN, das 61 % seiner Zeilen aus Doubles und 7 % aus Tetrises holt. Ein Single bringt 100 Punkte pro Zeile und ein Tetris 200, daher ist dieselbe Zeilenzahl deutlich mehr wert. Die Steinzahlen der Heuristik sind vor allem deshalb niedriger, weil 17 ihrer 100 Partien vor dem Limit endeten; die gelernten Agenten taten das selten.
+@@ 3rab3g
+Die Formulierung leistete den Großteil der Arbeit. Afterstates zu bewerten und auf Platzierungen zu agieren verkleinert das Problem so stark, dass der Agent mit roher Belohnung bereits nach 10.000 Schritten das Validierungslimit von 500 Steinen erreichte.
+@@ 1w2ir3g
+Hier derselbe Vergleich mit den Clear-Größen und mit einem Limit von 3.000 und von 10.000 Steinen (Seeds 1–100, je ein Trainings-Seed, da pro Variante nur ein Netz exportiert wird):
+@@ s0thej
+Limit
+@@ 18fiogq
+Punkte / Stein
+@@ pifgmk
+DQN (Seed 0)
+@@ 16w2scl
+Double DQN (Seed 0)
+@@ s9x71f
+Die Spalten der Clear-Größen sind der Anteil aller gelöschten Zeilen, der aus Clears dieser Größe stammt. Ich habe diese mit dem Go-Baseline-Werkzeug laufen lassen, das jetzt jedes exportierte Netz mit demselben Code wie der Viewer ausführen kann (<code>go run ./cmd/baseline -agent agents/raw.json</code>). Beim Limit von 3.000 reproduziert es die PyTorch-Auswertung exakt (173.983 für den DQN-Seed 0, 119.880 für die Heuristik), was zugleich prüft, dass das Go- und das PyTorch-Netz übereinstimmen.
+@@ 1c9n7du
+Was nicht funktionierte oder nicht zählte
+@@ 1llxs3x
+<strong>Die geformte Belohnung half nicht, und es wurde erst schlechter, bevor es besser wurde.</strong> In ihrem einzelnen Lauf fiel der Validierungsscore zwischen 20.000 und 60.000 Schritten auf etwa null (rund 20 Steine pro Partie) und erholte sich erst, nachdem Epsilon bei 50.000 seinen Boden erreicht hatte. Beim Limit von 1000 Steinen lagen die Endwerte bei 58.539 (roh) und 57.692 (geformt), also im Rauschen. Ich habe eine Vermutung, warum (die Lochstrafe belohnt sicher aussehende Platzierungen, solange die Wertschätzungen noch falsch sind), habe sie aber nicht getestet.
+@@ 9diihj
+<strong>Double DQN machte keinen messbaren Unterschied.</strong> Über je drei Seeds lag es 0,4 % vorn bei den Punkten (+632), bei einer Streuung von etwa 2.400 Punkten zwischen Seeds derselben Variante. Ein wahrscheinlicher, ebenfalls ungetesteter Grund: Der Wert hängt nur von vier Merkmalen ab, es gibt also wenig Überschätzung zu korrigieren. Dueling-Heads habe ich bewusst ausgelassen, weil das Netz keine Ausgaben pro Aktion hat, die man aufteilen könnte.
+@@ l8se1j
+<strong>Die Messung war das eigentliche Problem.</strong> Bei einem Limit von 1000 Steinen sahen alle Agenten gleich aus, also wechselte ich auf 3000, und die stärksten Agenten lagen immer noch innerhalb weniger Prozent. Zwei Maßnahmen halfen. <strong>Punkte pro Stein</strong> verändern sich kaum mit dem Limit (Heuristik 43,4 bei 3.000 Steinen und 43,5 bei 10.000; DQN 59,0 und 59,2), sodass sich Agenten vergleichen lassen, ohne davon abzuhängen, wo ich das Spiel abbreche. Und <strong>das Limit auf 10.000 Steine zu erhöhen</strong> zeigte schließlich einen Überlebensunterschied, den 3.000 verdeckte: Die Heuristik erreichte das Limit in 51 von 100 Partien, das DQN in 90 und das Double DQN in 85. Die gelernten Agenten sind robuster, nicht nur punktstärker. Die 90 gegenüber 85 sind je ein Trainings-Seed, und ich lese nichts hinein. Eine der Partien des Double DQN endete nach nur 268 Steinen, was allein ausreicht, um seinen Durchschnitt zu drücken.
+@@ d9xr1s
+<strong>Dinge, die ich nicht ausprobiert habe:</strong> PPO, ein CNN auf dem rohen Spielfeld und einen Mensch-gegen-Agent-Modus. Ich habe außerdem die Messungen der Clear-Größen und des 10.000er-Limits nicht auf den anderen Trainings-Seeds wiederholt, weil pro Variante nur ein Netz exportiert wird. Das ist das Erste, was zu tun ist, bevor man etwas über die Streuung zwischen Seeds behauptet.
+@@ hyvh0c
+Trainings-Seed
+@@ 20m2f7
+Dem Lernen zusehen
+@@ 1oi8q9n
+Eine einfache Lernkurve sagt wenig, also habe ich einen Viewer mit <a>Ebitengine</a> und einem Trainingsmodus gebaut. Der Trainingsprozess schreibt alle 5.000 Schritte ein Metrik-Log und einen Snapshot des Netzes (auch das untrainierte bei Schritt 0), und der Viewer spielt denselben Seed mit jedem Snapshot ab, neben Diagrammen für Punkte, Validierung, Loss und Epsilon. Weil er nur Dateien liest, funktioniert dieselbe Ansicht auch bei einem noch laufenden Lauf. Außerdem gibt es eine Heatmap des Agentenwerts für jede mögliche Platzierung des aktuellen Steins, an der man leicht sieht, wann der Agent sicher ist und wann er zwischen fast gleichwertigen Zügen wählt.
+@@ 9n0zk8
+Der Viewer führt das exportierte Netz selbst aus JSON aus, ganz ohne Python. Jede exportierte Datei enthält von PyTorch berechnete Testvektoren, und ein Go-Test prüft, dass das Go-Netz sie reproduziert. Die GIFs in diesem Artikel wurden vom Viewer aufgenommen.
+@@ l3clp
+Spielbar machen
+@@ 1vedqt0
+Der Platzierungsagent wählt nur eine endgültige Spalte und Rotation, er brauchte also nie die Teile, die Tetris nach Tetris anfühlen lassen. Ich habe sie zur Engine und zum Menschenmodus des Viewers hinzugefügt, um gegen das Gebaute spielen zu können:
+@@ 1cozh1q
+<strong>Hold.</strong> Den aktuellen Stein gegen einen gespeicherten tauschen, einmal pro Stein.
+@@ aoux8f
+<strong>Lock Delay.</strong> Ein Stein, der auf dem Stapel ruht, wartet eine halbe Sekunde, bevor er einrastet, und jede Bewegung oder Rotation startet das Warten neu, höchstens 15-mal pro Stein, sodass man nicht ewig verzögern kann. Das ist die Mechanik, die es möglich macht, einen Stein im letzten Moment zu schieben und einzuschieben.
+@@ agq9e0
+<strong>T-Spins.</strong> Ein T-Stein, der nach einer Rotation mit drei von vier blockierten Ecken endet, bringt 400, 800, 1200 oder 1600 Punkte für 0 bis 3 Zeilen. Das ist die einfache Drei-Ecken-Regel, ohne Mini-T-Spins.
+@@ ceacqo
+<strong>Ghost-Stein</strong>, der zeigt, wo ein Stein landen würde.
+@@ 1x7qi41
+<strong>Vorschau auf fünf Steine.</strong> Die Engine hält nun die nächsten fünf Steine bereit, und der Viewer zeigt sie in einer Spalte. Die Reihenfolge der Steine ist unverändert (derselbe 7-Bag, eine Ziehung pro Stein), sodass jedes oben genannte geseedete Ergebnis weiterhin gilt; die Agenten sehen weiterhin nur den nächsten Stein.
+@@ quvbyf
+Das spielbare Spiel berührt das Platzierungstraining nicht: Dieser Agent spielt weiterhin über die Platzierungs-API, die nie an Ort und Stelle rotiert, sodass sich keine der obigen Zahlen ändert. Der <code>Step</code> der Engine rastet weiterhin sofort ein; die Lock Delay lebt im Viewer.
+@@ 1chbbh
+Dem Agenten das ganze Spiel geben
+@@ 1balla9
+Ein Platzierungsagent kann weder einschieben noch gleiten noch spinnen, also habe ich versucht, ihm alles zu geben. Ihm Tastendrücke direkt beizubringen würde einen T-Spin zu einer Fünf-Schritte-Folge ohne Belohnung bis zum Ende machen, wieder das Problem der spärlichen Belohnung, nur schlimmer. Stattdessen habe ich eine Suche geschrieben: Von der Spawn-Position aus findet eine Breitensuche über links, rechts, rotieren und Soft Drop jede Stelle, an der ein Stein einrasten kann, und mit Hold jede Stelle für den Stein, den ein Hold hereinbringen würde. Das sind etwa 43 mögliche Züge pro Position, und der Agent wählt einen. Ein Zug merkt sich die Tasten, die dorthin führen, sodass der Viewer ihn abspielen kann und man das Gleiten oder Spinnen sieht. Der Server stellt das als zweiten gRPC-Stream bereit, <code>PlayMoves</code>, und die Python-Seite als zweite Umgebung, in der die Aktion ein Index in die aufgelisteten Züge ist.
+@@ jymbh5
+<strong>Eine geskriptete Baseline profitiert bereits.</strong> Dieselben vier handgesetzten Heuristikgewichte, die nun unter allen Zügen wählen, erreichten das Limit von 1.000 Steinen in allen 20 Partien (die Platzierungsversion in 96 von 100) und machten etwa 24 T-Spins und 292 Holds pro Partie, ohne zu wissen, was ein T-Spin ist. Die Gewichte sagen nichts darüber; die Suche findet sie einfach.
+@@ rn5f1k
+Schritt 0: der Move-Agent vor dem Training (der Heuristik-Warmstart).
+@@ 1jd2lab
+Schritt 100.000, derselbe Seed.
+@@ 1xryujn
+<strong>Der gelernte Agent scheiterte viermal und funktionierte dann, als ich das Spielfeld versteckte.</strong> Ich gab dem Netz das Spielfeld, den gehaltenen Stein und den nächsten Stein als Eingabe, weil vier zusammenfassende Merkmale einen T-Slot nicht beschreiben können. In vier Läufen (zufällige Initialisierung, Heuristik-Warmstart, mit und ohne Game-Over-Strafe) blieb er bei etwa 22 Steinen pro Partie, was Zufallsspiel entspricht, während der Platzierungsagent das Limit innerhalb von 10.000 Schritten erreicht. Die Pipeline war nicht die Ursache: Ein von Hand gebautes Netz mit den Heuristikgewichten übersteht über denselben Code alle 500 Steine, ebenso das untrainierte, warmgestartete Netz. Das Training selbst hat es verschlechtert.
+@@ f8ppdh
+Ich hatte zwei Verdächtige. Erstens: Die 200 rohen Spielfeld-Eingaben fügen Rauschen hinzu, das kleine Unterschiede zwischen Kandidatenzügen überdeckt. Zweitens: Ein T-Spin ohne Zeile bringt 400 Punkte, mehr als ein Double, was eine gierige Policy ködern könnte. Ich habe sie einzeln getestet. Nichts für T-Spins ohne Zeile zu zahlen half nicht (der Lauf war schlechter, 14 Steine pro Partie bei 20.000 Schritten). <strong>Das Spielfeld vor dem Netz zu verstecken half</strong>: Bei 30.000 Schritten überlebte es in der Validierung 496 von 500 Steinen, mit 189 Zeilen, 54 T-Spins und 217 Holds pro Partie, und zwei weitere Trainings-Seeds lernten ebenfalls, beide etwas später als der erste. Die rohe Spielfeld-Eingabe ist also das, was das Lernen kaputt macht. Warum, kann ich nur raten: Rauschen, zu viel Kapazität oder das Zusammenspiel der Eingabe mit dem Warmstart sähen von meinem Standpunkt aus gleich aus.
+@@ 7lmykx
+Dann habe ich versucht, das Spielfeld zurückzugeben, ohne es kaputtzumachen, indem ich die Spielfeld-Eingaben mit einer kleinen Zahl multipliziere. Mit Adam ändern sich die Spielfeldgewichte dadurch pro Schritt entsprechend weniger. Bei 0,1 blieb der Lauf flach (etwa 30 Steine pro Partie, ich habe ihn bei 40.000 Schritten abgebrochen). Bei 0,01 lernte er, aber langsam: Bei 70.000 Schritten war er noch unter 140 Steinen und erreichte erst bei 90.000 die 486. Der entstandene Agent ist deutlich schlechter als die mit verstecktem Spielfeld, und seine Partien zeigen, warum: Er baut hohe Ein-Spalten-Türme mit Löchern darunter. Ich habe mir angesehen, worauf sein Netz reagiert. Ein hinzugefügtes Loch ändert seinen Wert im Mittel um 0,02, gegenüber 1,14 beim Agenten mit verstecktem Spielfeld, während eine einzelne gefüllte Spielfeldzelle ihn um etwa 0,4 ändert, zwanzigmal mehr als ein Loch. Löcher sind ihm fast egal geworden, und er hat seinen Wert an einzelne Zellen geheftet, die sich nicht auf neue Spielfelder übertragen. Das ist meine Lesart der Zahlen; getestet habe ich sie nicht. Ein Netz kann das Spielfeld also nutzen, aber nur, wenn es 100-mal leiser gemacht wird, und was es daraus gewinnt, ist kein besseres Spiel.
+@@ a4kob
+Das Ergebnis auf den 100 Seeds, auf denen der Agent nie trainiert hat, mit einem Limit von 3.000 Steinen:
+@@ x9tsfp
+Punkte
+@@ 12bghr0
+Zeilen
+@@ s7taaq
+Steine
+@@ x74iqi
+Limit erreicht
+@@ 1o5hnkb
+Platzierungs-DQN
+@@ 8rwmr1
+Geskripteter Agent mit Auswahl unter allen Zügen
+@@ xjkoph
+Gelernter Move-Agent, Seed 0, finales Netz
+@@ pbtlvi
+Gelernter Move-Agent, Seed 1
+@@ urn77p
+Gelernter Move-Agent, Seed 2, Netz mit bester Validierung
+@@ qxd593
+Gelernter Move-Agent, Seed 2, finales Netz
+@@ 8az0l
+Spielfeld sichtbar mit Skalierung 0,01, finales Netz
+@@ 1if144g
+Die Agenten mit verstecktem Spielfeld erzielen etwa 44 % bis 74 % mehr Punkte als der geskriptete, wenn sie durchhalten, und sie kommen durch T-Spins dorthin, die 400 bis 1.600 Punkte bringen: 233 bis 313 pro Partie gegenüber 70, also mindestens 93.000 der 241.000 Punkte von Seed 0. Sie löschen nicht mehr Zeilen (0,40 pro Stein, wie jeder andere Agent); ihre Clears verschieben sich nur Richtung Doubles (48 % der Zeilen von Seed 0, gegenüber 90 % Singles beim geskripteten Agenten). Sie sind <strong>weniger robust</strong>: Bei den guten Checkpoints sterben sie in 6 % bis 46 % der Partien vor 3.000 Steinen, während der geskriptete Agent das nie tut. Mehr Punkte bei schlechterer Überlebensrate sind ein Tausch und kein klarer Sieg, und der Score ist teilweise mein Belohnungsdesign: Ein T-Spin ohne Zeile bringt 400, sodass ein Agent für einen riskanten Stapel gut bezahlt werden kann. Die Punkte der Move-Agenten enthalten T-Spin-Punkte, sind also nicht direkt mit den Platzierungs-Scores vergleichbar.
+@@ 1gx77km
+<strong>Der Teil, den ich nicht überspringen würde: Ein Trainingslauf ist nicht ein Agent.</strong> Das Netz von Seed 2, das bei 80.000 Schritten 285.432 Punkte erzielte, kam bei 100.000 auf 104.800, wobei 8 von 100 Partien das Limit erreichten. Bei Seed 0 war es umgekehrt: Der Checkpoint, den ich nach 10 Validierungspartien gewählt hätte, erzielte 206.816, der letzte 241.493. Über die drei Seeds gemittelt erzielen die Picks mit bester Validierung 243.074 und die finalen Netze 194.422. Die Streuung innerhalb eines Laufs ist so groß wie der Abstand zum geskripteten Agenten, „der gelernte Agent ist besser“ kann ich also über das sagen, was er erreichen kann, nicht über das, was ein gegebener Trainingslauf liefert. Was ich als Nächstes versuchen würde: mehr Validierungspartien, eine abfallende Lernrate und das Mitteln der letzten Checkpoints.
+@@ 1q5398u
+Noch ein Detail, das es wert ist, behalten zu werden. Der Agent mit verstecktem Spielfeld findet T-Spin-Slots nicht durch Hinsehen; ich glaube, er findet sie, weil die Zugliste sie bereits samt Belohnung enthält, aber das habe ich nicht getestet.
+@@ 9tw0d6
+Patches aktuell halten
+@@ 1i2bf10
+Bevor ich das Projekt für fertig erklärte, habe ich <code>govulncheck</code> darauf laufen lassen. Es fand etwa zwei Dutzend Schwachstellen in der Go-Standardbibliothek, alle weil die Toolchain auf meinem Rechner Go 1.25.4 war, dazu einige in <code>golang.org/x/net</code>, das gRPC mitbringt. Der Scan sagt, der Code erreiche einige davon über gRPC und Ebitengine, obwohl der Server nur auf der Loopback-Adresse lauscht, und sie ließen sich leicht beseitigen. Die Lösung war, <code>go.mod</code> auf die neuere Toolchain zu heben (Go 1.27.2, die der <code>go</code>-Befehl selbst herunterlädt) und <code>x/net</code> samt Nachbarn zu aktualisieren. Das neuere <code>x/net</code> braucht Go 1.26, daher stieg die Mindestversion von Go im README von 1.25 auf 1.26. <code>govulncheck</code> meldet jetzt nichts mehr und die Tests bestehen. <code>pip-audit</code> auf der Python-Seite war die ganze Zeit sauber.
+@@ 1ubbv5z
+Grenzen, die man nennen sollte
+@@ 1uxh9i6
+Die Platzierungsagenten schieben nie ein, spinnen nie und halten nie. Sie trainieren schnell und spielen innerhalb einer Obergrenze.
+@@ 1b8uf3c
+Der Move-Agent hat drei Trainings-Seeds, und seine Checkpoints schwanken innerhalb eines Laufs stark. Er endet in bis zur Hälfte der 3.000-Steine-Partien vorzeitig und lernt nur, wenn das Spielfeld versteckt oder um das 100-Fache herunterskaliert wird.
+@@ cf5078
+Die Zugsuche nimmt an, dass sich der Stein nach Belieben steuern lässt, ohne Schwerkraft und ohne Lock Delay, sodass echtes Spiel mit 500 ms Schwerkraft nicht jeden aufgelisteten Zug ausführen könnte.
+@@ fuwxs8
+T-Spins nutzen nur die Drei-Ecken-Regel, ohne Mini-T-Spins, und ein T-Spin ohne Zeile bringt 400. Es gibt keine Combos und keine Back-to-Back-Boni.
+@@ lvoymi
+Die Agenten sehen einen nächsten Stein, obwohl Engine und Viewer jetzt fünf bereithalten.
+@@ 10ydwrp
+Die Platzierungsvarianten haben höchstens drei Trainings-Seeds, die geformte Belohnung einen.
+@@ 14sarlb
+Die Auswertung ist auf 3.000 Steine begrenzt (10.000 für den Überlebenstest), was Unterschiede zwischen den stärksten Agenten weiterhin verdeckt.
+@@ 1salox5
+Getestet unter Windows 11 und Linux.
