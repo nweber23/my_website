@@ -41,19 +41,19 @@ Fokus
 @@ 1t1akg5
 [02 — VON_GRUND_AUF]
 @@ 1mccykx
-Bauen, brechen, neu bauen
+Bauen, kaputt, besser
 @@ 15i6udf
 Bauen
 @@ 17spnvc
-Brechen
+Kaputt
 @@ 15kxlww
-Neubau
+Besser
 @@ ona3pw
 Selbst schreiben.
 @@ 1dzbj8b
-Herausfinden, wo es scheitert.
+Herausfinden, wo es bricht.
 @@ desngb
-Nochmal, besser.
+Noch mal, besser.
 @@ 11vvajk
 VON <span class="circled">GRUND<svg viewBox="0 0 300 120" preserveAspectRatio="none" aria-hidden="true"><path d="M150 8C70 6 10 30 12 62s70 52 146 50 136-24 134-56S226 6 140 12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg></span> AUF IN C &amp; GO
 @@ iof4yi
@@ -89,7 +89,7 @@ Performance wird gemessen, nicht geraten. EXPLAIN ANALYZE, perf, ein Profiler �
 @@ hq99s7
 Zwei Schulen gleichzeitig: Peer-to-Peer-Projekte an der 42 Heilbronn, Softwaretechnik an der Hochschule Heilbronn. Bauen, um zu verstehen – verstehen, um besser zu bauen.
 @@ m4ulu5
-bauen, brechen, neu bauen.
+bauen, kaputt, besser.
 @@ p1r8nd
 Ausgewählte Projekte
 @@ 1jg6tox
@@ -97,7 +97,7 @@ Ausgewählte Projekte
 @@ 1mow5gc
 ZUM_INDEX ↓
 @@ 1kyyjel
-Töte den Leader. Sieh zu, wie er sich erholt.
+Leader abschießen. Zusehen, wie er sich erholt.
 @@ 1ss78hg
 Raft-Konsens von Grund auf in Go, mit replizierter Key-Value-Datenbank und einem Live-Cluster, den man kaputt machen kann. Chaos-Tests mit festem Seed spielen jeden Fehler erneut ab.
 @@ nm8z08
@@ -359,7 +359,7 @@ gRPC gegen REST: Protokollwahl an der Dienstgrenze von Transcendence
 @@ d76tv3
 Beliebige Polygone triangulieren: Ear Clipping über der Newell-Normalenebene
 @@ 1ybnw40
-Am besten lernt man, indem man baut, kaputt macht und neu baut.
+Am besten lernt man, indem man etwas baut, es kaputt macht und es besser neu baut.
 @@ 1kwlci6
 Profil
 @@ 1g7kyaj
