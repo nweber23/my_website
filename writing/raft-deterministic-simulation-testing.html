@@ -8,7 +8,7 @@
 
     <meta name="description" content="How raftlab tests Raft: a seeded chaos test on a fake clock that replays any failure, plus the bug a fake clock misses.">
     <meta name="robots" content="index, follow">
-    <meta name="last-modified" content="2026-11-02">
+    <meta name="last-modified" content="2026-11-18">
     <meta name="theme-color" content="#fcf1d0">
     <link rel="canonical" href="https://nweber.me/writing/raft-deterministic-simulation-testing.html">
 
@@ -59,11 +59,11 @@
         ]
       },
       "datePublished": "2026-11-02",
-      "dateModified": "2026-11-02",
+      "dateModified": "2026-11-18",
       "mainEntityOfPage": "https://nweber.me/writing/raft-deterministic-simulation-testing.html",
       "about": { "@id": "https://nweber.me/#project-raftlab" },
       "image": "https://nweber.me/assets/raftlab.webp",
-      "keywords": "Raft, distributed systems, deterministic simulation testing, chaos testing, fake clock, Go, consensus, fault injection"
+      "keywords": "Raft, distributed systems, deterministic simulation testing, chaos testing, linearizability, fake clock, Go, consensus, fault injection"
     }
     </script>
 </head>
@@ -110,13 +110,25 @@ StateMachine  apply committed commands</code></pre>
                     <p class="imprint__text">Because time and I/O are injected, a whole five-node cluster can run on the fake clock inside a single-threaded test. Nothing sleeps. The test advances virtual time in 10 ms steps and the fake network delivers messages when their virtual delay has passed. A run is then a pure function of its random seed: same seed, same elections, same failures.</p>
 
                     <h2 class="imprint__heading">The chaos test</h2>
-                    <p class="imprint__text">The chaos test runs five nodes for 40 virtual seconds. It randomly crashes and restarts nodes, partitions the network, and injects loss, duplication and delay, while four clients write and read. After every 10 ms step it checks two safety properties: election safety (never two leaders in the same term) and committed-prefix agreement (no two nodes disagree about an entry they have both committed).</p>
-                    <p class="imprint__text">At the end it heals the cluster and checks three more things. The replicas converge, every acknowledged write survived, and every read returned the last acknowledged write. A failure prints its seed, and replaying it is one command:</p>
+                    <p class="imprint__text">The chaos test runs five nodes for 40 virtual seconds. It randomly crashes and restarts nodes, partitions the network, and injects loss, duplication and delay, while four clients set, delete and read two shared keys, half of the reads through the log and half through ReadIndex. After every 10 ms step it checks two safety properties: election safety (never two leaders in the same term) and committed-prefix agreement (no two nodes disagree about an entry they have both committed).</p>
+                    <p class="imprint__text">At the end it heals the cluster, checks that the replicas converge, and hands the complete recorded history to a linearizability checker (more on that below). A failure prints its seed, and replaying it is one command:</p>
                     <pre class="article__code"><code>CHAOS_SEED=17 go test -run Chaos ./internal/kv
 make test-chaos    # 100 seeds</code></pre>
                     <p class="imprint__text">That replay is what makes the test useful. A distributed test that fails once in a hundred runs and never again teaches you nothing. A failing seed can be rerun, stepped through and kept as a regression test.</p>
 
                     <h2 class="imprint__heading">What a fake clock cannot find</h2>
+                    <h2 class="imprint__heading">A checker that gives the test teeth</h2>
+                    <p class="imprint__text">The first version only checked that a read returned the last acknowledged write, which is weaker than linearizability. I replaced it with a real checker, <code>internal/linz</code>, an implementation of the Wing&ndash;Gong/Lowe search with memoization, written for this repo. Every operation is recorded with its call and return time, keys are independent so the history is split per key, and each part must be explainable as one sequential order that respects real time. A seed produces 1,000 to 1,700 operations, and all of them have to fit.</p>
+                    <p class="imprint__text">A checker is only worth something if it fails when it should, so I injected two bugs and restored the code afterwards:</p>
+                    <ul class="imprint__text">
+                        <li>ReadIndex serving a read without confirming leadership: caught by seeds 25 and 39 of the first 40, with the report that a read of an old value cannot be placed.</li>
+                        <li>Request deduplication removed, so a retried delete runs twice: caught by seed 35, naming the delete that cannot be placed.</li>
+                    </ul>
+                    <p class="imprint__text">The first bug initially slipped through all 40 seeds. With PreVote and CheckQuorum on, a deposed leader steps down before a new one can commit anything, so the window for a stale read barely exists. The chaos test now runs odd seeds in the classic protocol, where a deposed leader lingers. A checker can only flag what the system does.</p>
+
+                    <h2 class="imprint__heading">Two tests that proved nothing</h2>
+                    <p class="imprint__text">Mutation testing caught my own tests twice. My first joint-consensus test still passed after I deleted the old-majority requirement from the quorum function, because in that setup the old side could not have committed anyway. I rebuilt the scenario so that only that rule stops the commit. My first packet-loss test for pipelining passed with the stall recovery disabled, because random loss triggers leader changes that reset replication state and hide the bug. The replacement loses a whole burst for 60 ms with nothing new proposed, so only the stall check can recover.</p>
+
                     <p class="imprint__text">The bug that stayed hidden longest was in the clock itself. A real clock can run a callback that fired just before <code>Stop</code> was called. In raftlab that means a stale election timer can still run, start a spurious election and depose a healthy leader. The fake clock cannot reproduce it, because the fake clock never runs a callback concurrently with a stop.</p>
                     <p class="imprint__text">The fix is to replace timers instead of resetting them and to give each one a generation counter, so a callback from an old generation does nothing. A hand-driven clock covers it in tests. The lesson is the limit of the whole approach: deterministic simulation finds the interleavings you modelled, and the concurrency of the clock was not one of them.</p>
 
@@ -128,8 +140,10 @@ make test-chaos    # 100 seeds</code></pre>
                     <h2 class="imprint__heading">A bug only Windows could find</h2>
                     <p class="imprint__text">I found this one while recording the demo, not in a test. Windows cannot rename over an open file, so the first time a node compacted its log it panicked. Compaction writes a new file, fsyncs it and renames it over the old one, so a crash leaves either the old file or the new one and never a mix. The write-ahead log now closes its handles before the rename and reopens them afterwards, and skips the directory fsync on Windows, where directories cannot be opened for sync. It is a reminder that the simulation checks the algorithm and not the operating system.</p>
 
-                    <h2 class="imprint__heading">What it still does not check</h2>
-                    <p class="imprint__text">The read check, that every read returns the last acknowledged write, is weaker than a real linearizability checker, which would verify every ordering the history allows. A Porcupine-style checker is on the roadmap, together with PreVote, CheckQuorum and membership changes through joint consensus. The design trade-offs, including why reads go through the log and cost a full replication round, are written down in the repository.</p>
+                    <h2 class="imprint__heading">What the roadmap turned into</h2>
+                    <p class="imprint__text">Everything this post once listed as future work is built and tested on the same fake clock: PreVote and CheckQuorum, membership changes by joint consensus, ReadIndex reads that skip the log, chunked snapshots, and pipelined replication. Pipelining is the one with a number: a burst of 1,000 proposals sent 2,012,480 entries on the wire before and 2,000 after, exactly one copy per follower, and applied everywhere in 120 ms instead of 670 ms. Server-issued client IDs with deterministic session expiry and mutual TLS between nodes came along too.</p>
+                    <p class="imprint__text">The latest round made membership changes work in the standalone <code>raftnode</code> binary, not just in the visualizer. Configuration entries carry server addresses and the HTTP transport can add peers at runtime. A new server joins with <code>-join</code> and first catches up as a non-voting learner, so a far-behind newcomer cannot stall commits. The leader also tells servers it removed that they are gone. The write-ahead log gained a versioned file header, and older files still open.</p>
+                    <p class="imprint__text">What is left is deliberate: leader leases as a cheaper alternative to ReadIndex. They trade correctness for an assumption about clock drift, and the reasoning is written down with the other trade-offs in the repository.</p>
                     <p class="imprint__text">The source is at <a href="https://github.com/nweber23/raftlab" target="_blank" rel="noopener noreferrer">github.com/nweber23/raftlab</a>.</p>
 
                     <p class="imprint__text"><a href="/projects/raftlab.html">← Back to the raftlab project</a></p>
