@@ -25,3 +25,5 @@ ssl/
 docs/superpowers/
 # Build output
 dist/
+src/i18n/en.txt
+src/i18n/todo.txt
