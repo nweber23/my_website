@@ -38,22 +38,6 @@ Projekte
 7 Projekte, C &amp; Go
 @@ 1g9augj
 Fokus
-@@ 1t1akg5
-[02 — VON_GRUND_AUF]
-@@ 1mccykx
-Bauen, kaputt, besser
-@@ 15i6udf
-Bauen
-@@ 17spnvc
-Kaputt
-@@ 15kxlww
-Besser
-@@ ona3pw
-Selbst schreiben.
-@@ 1dzbj8b
-Herausfinden, wo es bricht.
-@@ desngb
-Noch mal, besser.
 @@ 11vvajk
 VON <span class="circled">GRUND<svg viewBox="0 0 300 120" preserveAspectRatio="none" aria-hidden="true"><path d="M150 8C70 6 10 30 12 62s70 52 146 50 136-24 134-56S226 6 140 12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg></span> AUF IN C &amp; GO
 @@ iof4yi
@@ -66,10 +50,6 @@ DIE SCHICHTEN UNTER DER ABSTRAKTION VERSTEHEN
 Sieben Projekte.<br>Zwei Schulen.<br>Eine Gewohnheit: selbst bauen.
 @@ 1fqw8ng
 Über mich – wie ich arbeite
-@@ 1wofsfp
-Von Null
-@@ 1603ssf
-Messen
 @@ 1bz2zs6
 Die Teile, auf die es ankommt, baue ich von Hand – die Prozessverwaltung einer Shell, einen WebSocket-Hub, einen .obj-Parser – und greife überall sonst zu einer Bibliothek.
 @@ vq94z7
@@ -88,8 +68,6 @@ Beschleunigung
 Performance wird gemessen, nicht geraten. EXPLAIN ANALYZE, perf, ein Profiler – so kam miniRT von 1–5 auf über 120 Bilder pro Sekunde.
 @@ hq99s7
 Zwei Schulen gleichzeitig: Peer-to-Peer-Projekte an der 42 Heilbronn, Softwaretechnik an der Hochschule Heilbronn. Bauen, um zu verstehen – verstehen, um besser zu bauen.
-@@ m4ulu5
-bauen, kaputt, besser.
 @@ p1r8nd
 Ausgewählte Projekte
 @@ 1jg6tox
@@ -358,8 +336,6 @@ Elo-Leaderboard-Queries unter 100 ms: Indizes, Caching und Profiling statt Raten
 gRPC gegen REST: Protokollwahl an der Dienstgrenze von Transcendence
 @@ d76tv3
 Beliebige Polygone triangulieren: Ear Clipping über der Newell-Normalenebene
-@@ 1ybnw40
-Am besten lernt man, indem man etwas baut, es kaputt macht und es besser neu baut.
 @@ 1kwlci6
 Profil
 @@ 1g7kyaj
