@@ -1,4 +1,4 @@
-import '../i18n';
+import { lang, t } from '../i18n';
 import '@fontsource-variable/inter';
 import '@fontsource/anton';
 import '@fontsource/space-mono/400.css';
@@ -22,7 +22,7 @@ const $ = <T extends HTMLElement>(sel: string) => document.querySelector<T>(sel)
 const toast = $('#toast');
 let toastTimer = 0;
 function status(msg: string) {
-  toast.textContent = msg;
+  toast.textContent = t(msg);
   toast.classList.add('is-on');
   window.clearTimeout(toastTimer);
   toastTimer = window.setTimeout(() => toast.classList.remove('is-on'), 3200);
@@ -105,7 +105,7 @@ function renderList() {
   if (!items.length) {
     const li = document.createElement('li');
     li.className = 'olist__empty';
-    li.textContent = 'The scene is empty. Add a shape above.';
+    li.textContent = t('The scene is empty. Add a shape above.');
     olist.append(li);
   }
   for (const it of items) {
@@ -162,7 +162,7 @@ function renderPresets() {
     b.addEventListener('click', () => {
       store.replace(p.build());
       viewport?.resetOrbit();
-      status(`Loaded “${p.name}”. Undo brings your last scene back.`);
+      status(lang === 'de' ? `„${p.name}“ geladen. Mit Rückgängig kommt deine letzte Szene zurück.` : `Loaded “${p.name}”. Undo brings your last scene back.`);
     });
     li.append(b);
     list.append(li);
@@ -186,7 +186,7 @@ function spawnPoint(): Vec3 {
 }
 
 function addItem(kind: Kind) {
-  if (!canAdd(store.scene, kind)) { status(`The shader holds at most ${LIMITS[kind]} of these.`); return; }
+  if (!canAdd(store.scene, kind)) { status(lang === 'de' ? `Der Shader fasst höchstens ${LIMITS[kind]} davon.` : `The shader holds at most ${LIMITS[kind]} of these.`); return; }
   const p = spawnPoint();
   let item: Item;
   if (kind === 'sphere') item = { id: newId(), kind, center: [p[0], 1, p[2]], radius: 1, mat: defaultMat(nextColour()) };

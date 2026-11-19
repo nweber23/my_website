@@ -90,8 +90,10 @@ function buildGraph(days: Day[]) {
     rect.setAttribute('rx', '2');
     rect.setAttribute('fill', LEVELS[d.level] ?? LEVELS[0]);
     const title = document.createElementNS(ns, 'title');
-    const date = new Date(d.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    title.textContent = `${d.count} contribution${d.count === 1 ? '' : 's'} on ${date}`;
+    const date = new Date(d.date + 'T00:00:00').toLocaleDateString(document.documentElement.lang === 'de' ? 'de-DE' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    title.textContent = document.documentElement.lang === 'de'
+      ? `${d.count} Beitrag${d.count === 1 ? '' : 'e'} am ${date}`
+      : `${d.count} contribution${d.count === 1 ? '' : 's'} on ${date}`;
     rect.appendChild(title);
     svg.appendChild(rect);
   });

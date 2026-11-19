@@ -1,7 +1,7 @@
 @@ Language
 Sprache
 @@ 1n70nrm
-Niklas Weber | Go- &amp; C-Systementwickler, Heilbronn
+Niklas Weber | Go- & C-Systementwickler, Heilbronn
 @@ 1nkkpvj
 Niklas Weber, Systementwickler an der 42 Heilbronn. Go- und C-Projekte: Raft-Konsens, ein Echtzeit-Casino, ein SIMD-Raytracer und ein Tetris-RL-Agent.
 @@ 48rzr3
@@ -13,7 +13,7 @@ Systementwickler
 @@ 1oz7yps
 Projekte
 @@ onrqou
-Über mich
+Über
 @@ w3fq2r
 Kontakt
 @@ gqdw4v
@@ -47,7 +47,7 @@ Bauen
 @@ 17spnvc
 Brechen
 @@ 15kxlww
-Neu bauen
+Neubau
 @@ ona3pw
 Selbst schreiben.
 @@ 1dzbj8b
@@ -1332,3 +1332,27 @@ Der trainierte Platzierungsagent spielt Tetris
 Der untrainierte Agent stapelt Steine schlecht
 @@ 19s2rz4
 Der Agent nach 20.000 Trainingsschritten
+@@ READY
+BEREIT
+@@ Copied to clipboard.
+In die Zwischenablage kopiert.
+@@ Select the text and copy it with Ctrl+C.
+Text markieren und mit Strg+C kopieren.
+@@ That file is too large for a scene.
+Diese Datei ist zu groß für eine Szene.
+@@ Downloaded scene.rt.
+scene.rt heruntergeladen.
+@@ The render needs WebGL2.
+Das Rendering benötigt WebGL2.
+@@ Rendering 1920 px wide…
+Rendere mit 1920 px Breite …
+@@ The browser could not encode the image.
+Der Browser konnte das Bild nicht kodieren.
+@@ Saved minirt-studio.png.
+minirt-studio.png gespeichert.
+@@ That share link could not be read. Showing your last scene instead.
+Dieser Link konnte nicht gelesen werden. Stattdessen wird deine letzte Szene angezeigt.
+@@ Scene loaded from the link. Your own scene is untouched until you edit this one.
+Szene aus dem Link geladen. Deine eigene Szene bleibt unberührt, bis du diese bearbeitest.
+@@ The scene is empty. Add a shape above.
+Die Szene ist leer. Oben eine Form hinzufügen.

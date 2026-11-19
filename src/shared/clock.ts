@@ -2,7 +2,7 @@
 export function startClock() {
   const els = document.querySelectorAll<HTMLElement>('[data-clock], .nav__time');
   if (!els.length) return;
-  const fmt = new Intl.DateTimeFormat('en-GB', {
+  const fmt = new Intl.DateTimeFormat(document.documentElement.lang === 'de' ? 'de-DE' : 'en-GB', {
     timeZone: 'Europe/Berlin',
     hour: '2-digit',
     minute: '2-digit',

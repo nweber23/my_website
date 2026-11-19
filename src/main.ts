@@ -1,4 +1,4 @@
-import './i18n';
+import { t } from './i18n';
 import '@fontsource-variable/inter';
 import '@fontsource/anton';
 import '@fontsource/space-mono/400.css';
@@ -125,7 +125,7 @@ function intro(loaderEl: HTMLElement) {
   if (reduced) {
     loaderEl.remove();
     gsap.set(rest, { opacity: 1, y: 0 });
-    status.textContent = 'READY';
+    status.textContent = t('READY');
     return Promise.resolve();
   }
   return new Promise<void>((resolve) => {
@@ -134,7 +134,7 @@ function intro(loaderEl: HTMLElement) {
       .to(loaderEl, { opacity: 0, duration: 0.7, ease: 'power1.inOut' })
       .set(loaderEl, { display: 'none' })
       .call(resolve) // scrolling unlocks while the intro is still settling
-      .call(() => { status.textContent = 'READY'; })
+      .call(() => { status.textContent = t('READY'); })
       .to(rest, { opacity: 1, y: 0, duration: 1, stagger: 0.1, ease: EASE }, '-=0.2');
   });
 }
