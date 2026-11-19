@@ -826,3 +826,199 @@ Warum das über „es rendert“ hinaus zählte
 Das ist die Art Bug, die weder bei einem Würfel noch bei den glatteren Flächen des Utah-Teapots auftaucht – sie zeigt sich an einer einzigen konkaven, leicht nicht planaren Fläche in einem bestimmten Modell und sieht aus wie ein Render-Glitch statt wie ein Geometriefehler. Es ordentlich zu testen bedeutete, bewusst degenerierte und konkave Testfälle zu schreiben, statt den Testmodellen zu vertrauen, die zufällig herumlagen – dieselbe Lehre, die sich durch den Parser, die UV-Generierung und das Frustum Culling im restlichen <a>Renderer</a> zieht: Die Fehlerfälle, die man nicht gezielt konstruiert, sind die, die ausgeliefert werden.
 @@ qnjs9b
 ← Zurück zum Projekt 3D Go Renderer
+@@ w5niyy
+Elo-Leaderboard-Queries unter 100 ms bringen – Niklas Weber
+@@ s331fk
+Wie das 42 Elo Leaderboard 30 ms mittlere Antwortzeit erreichte: zusammengesetzte Indizes passend zur tatsächlichen Query-Form, Redis für abgeleitete Statistiken und EXPLAIN ANALYZE statt Intuition.
+@@ k5kgdb
+Elo-Leaderboard-Queries unter 100 ms bringen
+@@ 1nx43i
+Elo-Leaderboard-Queries unter <em>100 ms</em> bringen
+@@ 15kq6xb
+Für das <a>42 Elo Leaderboard</a> zählte ein Performanceziel mehr als jedes andere: Die öffentliche Rangliste und die Spielerprofile mussten unter 100 ms bleiben, selbst an einem Turnierwochenende, wenn der halbe Campus zwischen den Matches die Tabelle neu lud. Am Ende lag der Mittelwert bei 30 ms. Dorthin zu kommen war kein genialer Trick – es hieß, nicht zu raten und die zwei, drei Query-Formen zu reparieren, die wirklich langsam waren.
+@@ 1xev4j9
+Mit dem anfangen, wie die Queries tatsächlich aussehen
+@@ 1ml0jol
+Die Ranglistenansicht sortiert alle aktiven Spieler absteigend nach Wertung und paginiert. Die Spielerprofil-Ansicht holt die Match-Historie eines einzelnen Spielers, gefiltert nach Spieler-ID und nach Datum sortiert. Beides sieht als SQL trivial aus, und beides war unter Last das Erste, was einknickte, denn eine Standard-Postgres-Tabelle hat nur einen Index auf dem Primärschlüssel – jedes <code>ORDER BY rating DESC</code> oder <code>WHERE player_id = ?</code> machte einen Sequential Scan und sortierte das Ergebnis im Speicher:
+@@ setb5a
+Bei einer Seed-Tabelle mit vierzig Zeilen kein Problem. Ein Problem, sobald sich die Match-Historie über Saisons ansammelt und die Rangliste von Dutzenden offener Tabs gleichzeitig abgefragt wird – die Kosten des Sequential Scans wachsen mit der Tabelle, genau dann, wenn der Turnierverkehr am höchsten ist.
+@@ 31vbim
+EXPLAIN ANALYZE, bevor man irgendetwas anfasst
+@@ 1i1frok
+Der Instinkt bei einer langsamen Query ist, einen Index hinzuzufügen und zu schauen, ob es hilft. Das ist Raten. <code>EXPLAIN ANALYZE</code> zeigt genau, was der Planner tut und wohin die Zeit tatsächlich fließt – der Unterschied zwischen dem Beheben des echten Engpasses und dem Hinzufügen eines Index, der nie benutzt wird:
+@@ 17yc55g
+Ein Sequential Scan mit anschließender Sortierung im Speicher bei jeder Anfrage, auf einer Tabelle, die meist gelesen und selten geschrieben wird, ist genau der Fall, für den es zusammengesetzte Indizes gibt.
+@@ 193yzd0
+Zusammengesetzte Indizes passend zur Query, nicht zur Tabelle
+@@ up86fn
+Ein Einzelspalten-Index allein auf <code>rating</code> lässt den Planner <code>active</code> weiterhin separat filtern. Die Lösung ist ein zusammengesetzter Index in derselben Reihenfolge, in der die Query filtert und sortiert, sodass Postgres ihn direkt ablaufen kann, statt den Heap anzufassen und hinterher zu sortieren:
+@@ mc5v4o
+Beide Male dasselbe Prinzip: Ein Index ist nur so gut wie seine Übereinstimmung mit der tatsächlichen <code>WHERE</code>-/<code>ORDER BY</code>-Form, die eine Ansicht abschickt. Ein erneutes <code>EXPLAIN ANALYZE</code> nach dem Hinzufügen verwandelte die Ranglisten-Query von Sequential Scan plus Sortierung in einen Index Scan, der die Top 50 Zeilen liefert, ohne den Rest der Tabelle anzufassen – der Query-Plan, keine Benchmark-Zahl, bestätigte, dass die Korrektur wirklich funktionierte.
+@@ 1i7k75l
+Nicht jeder Lesezugriff gehört in Postgres
+@@ xrblge
+Sieg-/Niederlagen-Serien und Wertungsänderungen werden aus der Match-Historie abgeleitet – mit einer Aggregat-Query berechenbar, aber es gibt keinen Grund, sie bei jedem Profilaufruf neu zu berechnen, wenn sie sich nur ändern, wenn sich die Match-Historie genau dieses Spielers ändert. Sie kamen nach Redis, einmal auf dem Schreibpfad der Match-Meldung geschrieben und für die Schlüssel der betroffenen Spieler invalidiert, statt über ein TTL:
+@@ 1j6iq0p
+Invalidierung beim Schreiben statt Ablauf per Timer ist hier wichtig, weil eine veraltete Serie auf eine Weise falsch ist, die Spieler direkt nach einem Match bemerken – ein TTL liefert entweder bis zum Ende seines Fensters veraltete Daten oder wird so kurz gesetzt, dass es keine echte Arbeit mehr spart. Die Invalidierung an das Schreiben zu koppeln, das die Daten tatsächlich ändert, bedeutet, dass der Cache nie falsch ist, nur gelegentlich kalt.
+@@ 5hfll6
+Den Schreibpfad vom Lesepfad fernhalten
+@@ e3upd
+Match-Meldungen sind Read-Modify-Write auf einer gemeinsamen Wertung und brauchten Sperren auf Zeilenebene, um bei gleichzeitigen Meldungen korrekt zu bleiben – das ist ein Korrektheitsproblem, ausführlicher auf der <a>Projektseite</a> behandelt. Für die Query-Performance zählt vor allem, dass diese gesperrten, transaktionalen Schreibzugriffe auf den Endpunkt der Match-Meldung beschränkt sind. Die Lese-Anfragen für Rangliste und Profil warten nie auf diese Transaktion, denn sie sind ein eigener Codepfad, der Indizes trifft, die sie ohne jede Sperre bedienen. Den heißen Lesepfad frei von allem zu halten, was der Schreibpfad tut, war für die 30 ms im Mittel ebenso entscheidend wie die Indizes selbst.
+@@ yh1wsj
+Nichts davon erforderte exotisches Werkzeug – ein zusammengesetzter Index passend zur echten Query-Form, ein Cache, der von dem Schreibzugriff invalidiert wird, der seine Daten ändert, statt von einem Timer, und <code>EXPLAIN ANALYZE</code> vor und nach jeder Änderung, statt der Intuition darüber zu trauen, was langsam ist. Dieselbe Disziplin zeigt sich in der SIMD-Arbeit des <a>Raytracers</a>: erst profilieren, eine Sache ändern, erneut messen. Optimierungen zu erraten führt zu einem Index, den niemand benutzt, und einem Engpass, den niemand gefunden hat.
+@@ xak82e
+← Zurück zum Projekt 42 Elo Leaderboard
+@@ 1lv48sm
+For vs. While in C, C++ und Go: identischer Assembler-Code – Niklas Weber
+@@ hv50bm
+Ich habe For- und While-Schleifen in C, C++ und Go auf Maschinencode-Ebene verglichen: identisch. Was die Performance tatsächlich verändert, sind der Zählertyp, Aufrufe in der Schleifenbedingung, Bounds-Checks und die Schleifenausrichtung.
+@@ l6se1v
+For vs. While in C, C++ und Go: identischer Assembler-Code
+@@ 1kzz9z1
+For vs. While in C, C++ und Go: der Assembler-Code ist <em>identisch</em>
+@@ jkp4s9
+„Ist <code>for</code> schneller als <code>while</code>?“ ist eine dieser Fragen, zu der jeder eine Meinung hat und die kaum jemand geprüft hat. Ich schreibe C, C++ und Go, also habe ich es in allen dreien geprüft: dieselbe Schleife auf beide Arten kompiliert, den Maschinencode verglichen und dann gemessen. Die kurze Antwort: Der Compiler kann die beiden nicht unterscheiden. Die lange Antwort: Die Frage hat mich zu vier Dingen geführt, die die Schleifenperformance <em>tatsächlich</em> verändern, und zu einer Benchmark-Falle, die mir drei erfundene Geschwindigkeitsunterschiede lieferte, bevor ich sie verstand.
+@@ eng6vq
+Die Kurzfassung
+@@ 113j8gx
+<code>for</code> und <code>while</code> erzeugen in allen 16 getesteten C/C++-Konfigurationen (gcc und clang, <code>-O0</code> bis <code>-O3</code>) und in jedem getesteten Go-Paar identischen Maschinencode. Der einzige Unterschied überhaupt ist ein <code>xor</code>, das bei gcc <code>-O3</code> einen Slot früher eingeplant wird.
+@@ n7euh9
+Ein 32-Bit-<code>unsigned</code>-Zähler gegen eine 64-Bit-Grenze brachte gcc dazu, nicht mehr zu vektorisieren: <strong>2,4× langsamer</strong>.
+@@ 12scfej
+<code>strlen(s)</code> in der Schleifenbedingung machte eine Schleife <strong>quadratisch</strong>: 835 ms gegenüber 0,19 ms bei 320.000 Zeichen.
+@@ yujs32
+C++-Range-for- und Iterator-Schleifen sind bei <code>-O0</code> 2–3× langsamer als Index-Schleifen und bei <code>-O2</code> identisch.
+@@ 17b43e6
+Der Bounds-Check von Go kostet in einer einfachen Summenschleife nichts, was ich messen konnte.
+@@ 3gwbb8
+Die Falle: Dieselben Instruktionen liefen <strong>2× langsamer</strong>, wenn die Schleife zufällig eine 64-Byte-Grenze überspannte. Das erzeugte Phantomunterschiede zwischen Varianten, die Byte für Byte dieselbe Schleife waren.
+@@ 2a2wnq
+Aufbau
+@@ khvrag
+Der Kernel ist die kleinste Schleife, die sich nicht wegoptimieren lässt: ein Array aus <code>uint32_t</code> in ein <code>uint64_t</code> aufsummieren. Vier Schreibweisen in C, dieselben vier in C++ und Go.
+@@ gn8zws
+Alles lief auf einem Ryzen-5-4500U-Laptop (Zen 2), mit gcc 13.3, clang 18.1.3 und Go 1.27.1, per <code>taskset</code> auf einen Kern festgelegt. Jede Zeit ist ein Median: 15 Samples pro Variante, nach einer Aufwärmrunde reihum verschachtelt, damit Taktdrift alle Varianten gleich trifft, 2<sup>28</sup> Elemente pro Sample, das Ganze fünfmal wiederholt. Das Array hat 4096 Elemente (16 KB), bleibt also im L1, und die Schleife ist das Einzige, was gemessen wird. Der Laptop taktet hoch, daher schwanken absolute Nanosekunden zwischen Läufen: Dieselbe skalare Schleife brauchte 0,26 ns, 0,28 ns und 0,42 ns, als der Takt auf seine 2,4 GHz Basis fiel. Innerhalb eines Laufs sind die Verhältnisse stabil, ihnen traue ich.
+@@ tuo8wz
+Test 1: Ist der Maschinencode derselbe?
+@@ 1cpjv9q
+Eine Schleife zu messen sagt, ob sich zwei Versionen unterschiedlich <em>verhalten</em>. Den Code zu vergleichen sagt, ob sie <em>überhaupt</em> verschieden sind, ein stärkerer und billigerer Test, also kam er zuerst. In eine Objektdatei kompilieren, jede Funktion disassemblieren, Adressen und Sprungziele entfernen (sie unterscheiden sich, weil die Funktionen an verschiedenen Offsets liegen) und vergleichen:
+@@ zupg3k
+Meine erste Version dieses Skripts meldete jedes Paar als verschieden. Das Problem waren die Sprungziele: <code>je 20</code> in der einen und <code>je 50</code> in der anderen Funktion sind derselbe Sprung. Sie zu normalisieren behob es. <code>=</code> heißt nach der Normalisierung Byte für Byte identisch, <code>≈</code> heißt dieselben Instruktionen in anderer Reihenfolge:
+@@ 1jv1bty
+Das einzelne <code>≈</code> ist gcc <code>-O3</code>, wo ein <code>xorl %edx, %edx</code> in <code>sum_for</code> einen Slot früher platziert ist. Das ist der Scheduler, nicht die Schleife. Und es ergibt Sinn, dass die Tabelle so einheitlich ist: Beide Frontends übersetzen <code>for</code> und <code>while</code> in denselben Kontrollflussgraphen, einen Header-Block mit dem Test, einen Rumpf und eine Rückwärtskante. In der IR gibt es kein <code>for</code>, das schnell oder langsam sein könnte. Das hat gcc <code>-O2</code> für beide erzeugt (ohne das führende <code>endbr64</code>); die indizierte Schleife wurde bereits in einen Zeiger-Inkrement umgewandelt:
+@@ 1p8yvtg
+Go liefert dieselbe Antwort. Mit <code>go tool objdump</code> sind <code>for i := 0; i &lt; len(a); i++</code>, <code>for i &lt; len(a)</code> mit manuellem <code>i++</code>, <code>for i := range a</code> und <code>for _, v := range a</code> vier identische Funktionen mit 11 Instruktionen. Selbst bei abgeschalteten Optimierungen (<code>-gcflags='all=-N -l'</code>) behalten <code>for</code> und <code>while</code> dieselben 35 Instruktionen; ein <code>JMP</code> sitzt an anderer Stelle. (Man beachte das <code>all=</code>: Ohne es gilt <code>-gcflags</code> nur für das auf der Kommandozeile genannte Paket. Mein erster <code>-N</code>-Lauf kompilierte die Schleifen stillschweigend mit Optimierungen und „bewies“, dass alles identisch ist.)
+@@ 4le2ai
+Die handgeschriebene Do-while ist die eine Variante, die nicht identisch ist. Selbst <code>if (n == 0) return 0;</code> zu schreiben ist das, was die Schleifeninversion des Compilers bei einem <code>for</code> ohnehin von Hand tut, daher unterscheidet sich der umgebende Code leicht, aber die heiße Schleife ist dieselbe.
+@@ atw053
+Test 2: Was eine Schleife wirklich verändert
+@@ 1qjo8wp
+Wenn das Schlüsselwort egal ist, ist die interessante Frage, was <em>nicht</em> egal ist. Vier Dinge kamen auf.
+@@ ynxbj5
+Der Zählertyp entscheidet, ob die Schleife vektorisiert wird
+@@ 10wrh92
+<code>int i</code> gegen ein <code>int n</code> und <code>size_t i</code> gegen ein <code>size_t n</code> werden beide vektorisiert. <code>unsigned i</code> gegen ein <code>size_t n</code> nicht, in gcc:
+@@ 1oe6fd8
+Wenn <code>n</code> größer als <code>UINT_MAX</code> ist, läuft <code>i</code> auf null über und die Schleife endet nie, das muss der Compiler also erhalten. Signed Overflow ist undefiniertes Verhalten, daher darf der Compiler annehmen, dass ein <code>int</code>-Zähler nie überläuft, weshalb <code>int</code> in Ordnung ist. gcc <code>-O3</code> kompilierte die unsigned-Version zu einer skalaren Funktion mit 17 Instruktionen und gar keinen SIMD-Instruktionen. clang vektorisiert sie trotzdem, mit einer deutlich längeren Funktion (50 Instruktionen statt 17, vermutlich eine Laufzeitprüfung plus skalarer Fallback; ich habe sie nicht genau gelesen). Zeiten in ns pro Element:
+@@ 1bzk7tc
+for
+@@ 19bvx9m
+Zeiger
+@@ 1e34nuy
+int-Zähler
+@@ 5tz85u
+unsigned-Zähler
+@@ 7l15fq
+Für den echten Effekt die <code>gcc -O3</code>-Spalte lesen: Das Vektorisieren bringt die Schleife von 0,257 (gcc <code>-O2</code> ist skalar, ein Element pro Takt) auf 0,116 ns, und der unsigned-Zähler verliert es und landet bei 0,281. Die verstreuten 0,142-Werte in den <code>gcc -O3</code>-Spalten sind <em>kein</em> Befund. Sie sind die Falle aus dem letzten Abschnitt und verschieben sich, wenn ich ändere, wo die Schleifen im Speicher liegen. Vorerst ignorieren.
+@@ fuw4ji
+Die Erkenntnis ist eine Gewohnheit, kein Benchmark-Ergebnis: <code>size_t</code> oder einen vorzeichenbehafteten Typ für den Zähler verwenden und nie einen schmaleren unsigned-Typ als die Grenze, mit der er verglichen wird.
+@@ 1ouw695
+Ein Funktionsaufruf in der Bedingung läuft in jeder Iteration
+@@ a2fob5
+Die Schleifenbedingung wird in jeder Iteration ausgewertet, egal ob sie als <code>for</code> oder <code>while</code> geschrieben ist. Setzt man dort einen Aufruf hin, zahlt man jedes Mal dafür, es sei denn, der Compiler kann beweisen, dass sich das Ergebnis nicht ändert:
+@@ ocieto
+Der Store auf <code>s[i]</code> ist ein <code>char</code>-Schreibzugriff, und <code>char</code> darf alles aliasen, auch den Terminator des Strings selbst. Der Compiler kann also nicht beweisen, dass <code>strlen</code> in der nächsten Iteration denselben Wert liefert. Sowohl gcc als auch clang behalten bei <code>-O2</code> den Aufruf in der Schleife, und die Messung zeigt es:
+@@ 1kpdcfp
+Länge
+@@ kbq83j
+strlen in der Bedingung
+@@ i9im99
+herausgezogen
+@@ sivbxg
+Verhältnis
+@@ 155jnd6
+gcc <code>-O2</code>; clang liegt wenige Prozent daneben (820 ms bei 320.000). Eine Verdopplung der Länge vervierfacht die Zeit, dazu ein Sprung zwischen 20.000 und 40.000 Zeichen, wo der String nicht mehr in L1 passt. Go hat genau diese Falle nicht, weil <code>len(s)</code> ein Feld im Slice-Header ist, aber die Regel gilt in allen drei Sprachen: <code>i &lt; f()</code> ruft <code>f</code> in jeder Iteration auf.
+@@ a367tq
+C++ bei -O0 ist die Quelle der Folklore
+@@ 1bcl7h4
+Mit <code>std::vector</code> leisten die Index-Schleife, das Range-for und die Iterator-Schleife dieselbe Arbeit. Bei <code>-O0</code> kompilieren sie nicht zum Gleichen, weil jedes <code>operator[]</code>, <code>operator*</code>, <code>operator++</code> und <code>operator!=</code> ein echter Funktionsaufruf ist. Verhältnisse zur Index-<code>for</code>-Schleife (4,59 ns/Element bei <code>-O0</code>, 0,258 bei <code>-O2</code>):
+@@ 199irzv
+-O2, ausgerichtet
+@@ 1nmao1g
+Index-for
+@@ 1eq6fnu
+Index-while
+@@ 1at3ba
+Iterator-while
+@@ m9sjpu
+Die <code>-O0</code>-Spalte erklärt, warum Leute, die einen Debug-Build messen, zu dem Schluss kommen, „Range-for ist langsamer“. Das Index-<code>for</code> und -<code>while</code> sind dort weiterhin Byte für Byte identisch, das Schlüsselwort ist also nicht die Ursache; die Abstraktionsschicht ist es. Bei <code>-O2</code> fallen sie alle zur selben Schleife zusammen, bis auf eine Zahl: <code>std::accumulate</code> mit 1,96×. Die ist nicht echt, und die „ausgerichtet“-Spalte ist der Hinweis. Sie ist Thema des letzten Abschnitts.
+@@ 14ihg5r
+Go: Bounds-Checks und die eine Stelle, an der sich for und while unterscheiden
+@@ ujv2nm
+Go prüft jedes <code>a[i]</code> gegen die Slice-Länge, sofern der Compiler nicht beweisen kann, dass es im Bereich liegt. <code>-d=ssa/check_bce/debug=1</code> zeigt, welche Zugriffe ihre Prüfung behalten haben:
+@@ 1nl2o8m
+Sowohl die Form <code>for i &lt; n</code> als auch <code>while i &lt; n</code> behalten die Prüfung, und der Hinweis <code>a = a[:n]</code> entfernt sie bei beiden, das Schleifenschlüsselwort ist also auch hier irrelevant. Der Maschinencode bestätigt es: Die geprüfte Schleife hat ein zusätzliches <code>CMPQ</code>/<code>JA</code>-Paar, das zu <code>runtime.panicBounds</code> springt. Was kostet dieses Paar? Um es von allem anderen zu isolieren, habe ich dieselbe Schleife von Hand in Assembler geschrieben, mit und ohne einen nie genommenen Vergleich-und-Sprung pro Iteration, beides innerhalb einer Cache-Zeile. Die Mediane aus drei Läufen waren 0,2815 und 0,2819 ns pro Element, und die Minima waren mit 0,257 identisch. In einer Summenschleife, wo der kritische Pfad die Additionskette ist und der vorhergesagte Sprung in freie Issue-Slots passt, war ein Bounds-Check nicht messbar. Das ist ein Ergebnis für diese Schleife auf dieser CPU; ein Check kann trotzdem zählen, wenn er eine größere Optimierung verhindert, und der Compiler von Go vektorisiert nicht automatisch, hier blockiert er also keine.
+@@ 1ghk82l
+Der einzige echte semantische Unterschied zwischen <code>for</code> und <code>while</code> in Go ist die Schleifenvariable. Seit Go 1.22 ist eine im <code>for</code>-Header deklarierte Variable pro Iteration eine frische Kopie. Eine Schleife im <code>while</code>-Stil mit außen deklariertem Zähler ist eine einzige gemeinsame Variable:
+@@ 1k6z0d3
+Ich habe beides ausgeführt, um sicherzugehen. Die Kopie pro Iteration kostet nur etwas, wenn ein Closure die Variable einfängt; eine <code>for</code>-Schleife, die nichts einfängt, allokiert nichts (0 Allokationen pro Lauf). Wer je vom alten Bug „alle Closures sehen den letzten Wert“ gebissen wurde: <code>for</code> mit der Variable im Header ist jetzt die sichere Schreibweise.
+@@ pam9nf
+Die Falle: dieselbe Schleife, 2× langsamer
+@@ xlcfmt
+Alles oben ist sauber, weil ich bis dahin gelernt hatte, den Messungen zu misstrauen. Dreimal meldete der Benchmark einen großen Unterschied zwischen Varianten, deren heiße Schleifen Instruktion für Instruktion gleich waren.
+@@ 14fcaag
+<strong>1. gcc -O3 Do-while, 22 % langsamer.</strong> Die <code>do-while</code>-Variante maß 0,142 gegenüber 0,116 ns/Element bei <code>for</code>, reproduzierbar über Läufe hinweg. Der naheliegende Schluss lautet „die Schleife von Hand zu invertieren hat sie verschlechtert“. Aber die innere Vektorschleife in beiden Funktionen besteht aus denselben neun Instruktionen (<code>movdqu</code>, <code>addq</code>, <code>movdqa</code>, zweimal <code>punpck</code>, zweimal <code>paddq</code>, <code>cmpq</code>, <code>jne</code>). Die Schleifen liegen an verschiedenen Adressen, also habe ich mit <code>-falign-loops=32</code> neu gebaut. Die Strafe verschwand nicht: Sie wanderte. Nun war <code>do-while</code> schnell, und <code>while</code> und die Zeiger-Variante waren die langsamen. Das ist die Spalte „gcc -O3, ausgerichtet“ in der Tabelle oben, und es ist auch der Grund, warum die Zeile <code>int-Zähler</code> herumspringt.
+@@ 1nkqamq
+<strong>2. std::accumulate, 2× langsamer.</strong> Bei <code>-O2</code> brauchte <code>std::accumulate</code> in jedem Lauf etwa die doppelte Zeit des Range-for (0,556, 0,555, 0,507 gegenüber 0,28, 0,27, 0,26). Beide kompilieren zur selben Schleife mit fünf Instruktionen und 14 Byte (Laden, zwei Additionen, Vergleich, Sprung). In der gelinkten Binärdatei liegt die Schleife des Range-for bei <code>0x1718</code>–<code>0x1725</code>, innerhalb einer 64-Byte-Zeile. Die von <code>accumulate</code> liegt bei <code>0x1778</code>–<code>0x1785</code> und läuft über die Grenze bei <code>0x1780</code>. Das Erzwingen der Schleifenausrichtung machte alle Varianten gleich (0,99×, in der Tabelle).
+@@ a2dfd3
+<strong>3. Go, zwei Gruppen.</strong> Acht Go-Varianten fielen in zwei Gruppen, ohne etwas dazwischen:
+@@ 10oj09y
+Variante
+@@ oqqg2v
+Prüfung
+@@ 1djbu8b
+Überschreitet Zeile
+@@ r90oai
+nein
+@@ ltbyq8
+ja
+@@ 1k85ywt
+Eine erste Lesart: „Der Bounds-Check kostet 2×.“ Sie hält den letzten beiden Zeilen nicht stand („hint“ ist <code>a = a[:n]</code>). Diese haben <em>keine</em> Prüfung in der Schleife und sind trotzdem genauso langsam. Mein zweiter Verdacht war ein <code>NOPL</code>, das der Assembler von Go in die langsamen Schleifen zwischen <code>INCQ</code> und <code>CMPQ</code> eingefügt hatte. Ich habe es in handgeschriebenem Assembler mit und ohne <code>nop</code> getestet: kein Unterschied. Die Funktionen in der Quelldatei umzusortieren, um zu sehen, ob die langsame Gruppe dem Layout folgt, änderte die Gruppierung ebenfalls nicht. Was die Gruppen tatsächlich trennte, war, wo die heiße Schleife landete. Ich habe den Adressbereich aller acht Schleifen aus der finalen Binärdatei extrahiert. Die vier schnellen (je 14 Byte) liegen alle innerhalb einer einzigen 64-Byte-Zeile, zum Beispiel <code>0x49bb6b</code>–<code>0x49bb78</code>. Die vier langsamen (17 und 22 Byte) überschreiten alle eine Zeilengrenze, zum Beispiel <code>0x49bc74</code>–<code>0x49bc84</code> über <code>0x49bc80</code>. Acht von acht, und die Spalte „Überschreitet Zeile“ ist die einzige, die die Zeit vorhersagt.
+@@ rlyaqb
+Um das zu beweisen, habe ich dieselbe Schleife mit fünf Instruktionen in Assembler geschrieben und von Hand platziert:
+@@ yyd940
+Dieselbe Schleife, von Hand platziert
+@@ pr6bec
+innerhalb einer 64-Byte-Zeile
+@@ 2d57xc
+beginnt 8 Byte vor einer 64-Byte-Grenze
+@@ p6znfv
+beginnt 12 Byte vor einer 64-Byte-Grenze
+@@ twf7r0
+Das sind dieselben zwei Zahlen, in die die Go-Varianten zerfielen, auf drei Stellen genau: 0,258 und 0,508. 0,25 ns ist ein Takt bei etwa 3,9 GHz (der Takt, den eine skalare Schleife mit einem Takt pro Element impliziert; bei der 2,4-GHz-Basis habe ich für dieselbe Schleife 0,42 ns gemessen), eine Schleife, die hier eine 64-Byte-Grenze überspannt, kostet also einen zusätzlichen Takt pro Iteration. Ich habe festgestellt, <em>dass</em> die Platzierung allein das reproduziert; den Front-End-Mechanismus, warum Zen 2 diesen Takt zahlt, habe ich nicht untersucht, und andere CPUs verhalten sich anders. Der Punkt gilt in beiden Fällen.
+@@ 26mwms
+Die erste Spalte der C-Tabelle, skalar <code>gcc -O2</code>, zeigte nichts davon. Jede Variante lag bei 0,257. Ihre Schleifen landeten zufällig alle gut. Das ist das eigentliche Problem: Ob man einen Phantomunterschied sieht, hängt vom Glück ab.
+@@ 1hpfo34
+Mit einem Working Set von 64 MB statt 16 KB, im DRAM-Lauf, verschwinden die Unterschiede der Schleifenform und die Ausrichtungsartefakte in der Speicherbandbreite. Jede gcc-<code>-O3</code>- und clang-Variante mit vorzeichenbehaftetem oder 64-Bit-Zähler läuft mit 0,28 ns pro Element (etwa 14 GB/s), innerhalb von 2 % voneinander, egal ob die Schleife <code>for</code>, <code>while</code>, Do-while oder Zeiger ist, ausgerichtet oder nicht. Sichtbar bleibt die Vektorisierung: Skalares gcc <code>-O2</code> kann den Bus nicht sättigen (0,46 ns), und die <code>unsigned</code>-Zählerschleife, die gcc skalar lässt, ist bei <code>-O3</code> immer noch 1,8× langsamer (0,50 ns). clang ist nicht betroffen (0,28).
+@@ gl0sxm
+Was ich daraus mitnehme
+@@ 4spof0
+<strong>Die Schleife nach dem wählen, was sie aussagt.</strong> <code>for</code>, wenn es einen Zähler gibt, <code>while</code>, wenn die Abbruchbedingung der Punkt ist, <code>range</code> in Go. Es gibt keinen Performance-Grund, eines zu bevorzugen.
+@@ frvnte
+<strong>Stattdessen prüfen:</strong> den Typ des Zählers gegenüber seiner Grenze, Aufrufe in der Bedingung und (in Go), ob der Compiler beweisen kann, dass der Index im Bereich liegt.
+@@ otrca
+<strong>Nie bei <code>-O0</code> benchmarken.</strong> Es misst Aufrufoverhead für Abstraktionen, die es in einem Release-Build nicht gibt.
+@@ 1iucz8m
+<strong>Den Assembler-Code vergleichen, bevor man einem Mikrobenchmark traut.</strong> Wenn der Code derselbe ist und die Zeit abweicht, zuerst die Platzierung verdächtigen, dann den Compiler. <code>-falign-loops=32</code>, verschachtelte Samples und ein zweiter Build mit anders sortierten Funktionen sind billige Wege, es herauszufinden.
+@@ 1drry3l
+All das gilt für einen bestimmten Zen-2-Laptop und diese Toolchain-Versionen. Das Ergebnis des identischen Assemblers sollte übertragbar sein; die Ausrichtungszahlen nicht.
