@@ -1,3 +1,4 @@
+import './i18n';
 import '@fontsource-variable/inter';
 import '@fontsource/anton';
 import '@fontsource/space-mono/400.css';

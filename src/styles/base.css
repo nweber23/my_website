@@ -476,3 +476,36 @@ button {
     navigation: auto;
   }
 }
+
+/* --- Language switch ------------------------------------------------------------ */
+
+.lang {
+  position: fixed;
+  right: max(var(--margin), 12px);
+  bottom: max(14px, env(safe-area-inset-bottom));
+  z-index: 90;
+  display: flex;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1;
+  color: #fff;
+  mix-blend-mode: difference;
+}
+
+.lang button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  opacity: 0.55;
+  cursor: pointer;
+}
+
+.lang button[aria-pressed='true'] {
+  opacity: 1;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
