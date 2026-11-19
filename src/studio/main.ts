@@ -301,8 +301,16 @@ $('#png').addEventListener('click', async () => {
   status('Saved minirt-studio.png.');
 });
 
-for (const d of [dlgImport, dlgExport, dlgShare]) {
-  d.addEventListener('click', (e) => { if (e.target === d) d.close(); });
+// closedby="any" handles light dismiss natively; Safari lacks it, so fall back to a backdrop-click check.
+if (!('closedBy' in HTMLDialogElement.prototype)) {
+  for (const d of [dlgImport, dlgExport, dlgShare]) {
+    d.addEventListener('click', (e) => {
+      if (e.target !== d) return;
+      const r = d.getBoundingClientRect();
+      const inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+      if (!inside) d.close();
+    });
+  }
 }
 
 // --- keyboard ---------------------------------------------------------------------------

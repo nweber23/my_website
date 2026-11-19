@@ -469,3 +469,10 @@ button {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Cross-document page transitions (progressive enhancement; Firefox navigates instantly). */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+}

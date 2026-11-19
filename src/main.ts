@@ -14,6 +14,8 @@ import { githubStats } from './shared/github';
 gsap.registerPlugin(ScrollTrigger);
 
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+/** Native scroll-driven animations (see home.css) replace the GSAP scrubs below; GSAP stays as the fallback. */
+const sda = !reduced && CSS.supports('(animation-timeline: view()) and (animation-range: entry)');
 if (reduced) document.documentElement.classList.add('is-reduced');
 
 const $ = <T extends Element = HTMLElement>(sel: string, root: ParentNode = document) => root.querySelector<T>(sel)!;
@@ -171,7 +173,7 @@ function setupMotion({ lenis }: Stage) {
   // --- 5. Giant text rows -------------------------------------------------------
   const rowsSection = $('[data-rows]');
   if (!reduced) {
-    $$('[data-row]', rowsSection).forEach((row, i) => {
+    if (!sda) $$('[data-row]', rowsSection).forEach((row, i) => {
       const travel = 22 + (i % 3) * 6;
       const left = i % 2 === 0;
       gsap.fromTo(
@@ -198,7 +200,7 @@ function setupMotion({ lenis }: Stage) {
     });
   }
   const circle = $('.circled path', rowsSection);
-  if (circle) {
+  if (circle && !sda) {
     gsap.to(circle, { strokeDashoffset: 0, ease: 'none', scrollTrigger: { trigger: circle.closest('.circled')!, start: 'top 80%', end: 'top 40%', scrub: reduced ? false : true } });
   }
 
@@ -273,8 +275,10 @@ function setupMotion({ lenis }: Stage) {
           { y: 0, clipPath: 'inset(0% 0% 0% 0%)', duration: 1.1, stagger: 0.1, ease: 'expo.out', overwrite: true, clearProps: 'clipPath' }
         ),
     });
-  reveal('[data-reveal]:not(.foot__logo):not(.foot__row)', 'top 85%');
-  reveal('.foot__logo, .foot__row', 'top bottom');
+  if (!sda) {
+    reveal('[data-reveal]:not(.foot__logo):not(.foot__row)', 'top 85%');
+    reveal('.foot__logo, .foot__row', 'top bottom');
+  }
 
   // --- 8. Manifesto video -------------------------------------------------------------
   setupManifesto();
