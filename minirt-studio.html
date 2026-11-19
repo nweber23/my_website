@@ -54,6 +54,7 @@
       ]
     }
     </script>
+    <script type="speculationrules">{"prefetch":[{"where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":"/minirt-studio*"}}]},"eagerness":"conservative"}]}</script>
 </head>
 <body class="studio-page">
     <a href="#studio" class="skip-link">Skip to the studio</a>
@@ -132,7 +133,7 @@
 
     <div class="toast mono-s" id="toast" role="status" aria-live="polite"></div>
 
-    <dialog class="dlg" id="dlg-import" aria-labelledby="dlg-import-title">
+    <dialog class="dlg" closedby="any" id="dlg-import" aria-labelledby="dlg-import-title">
         <form method="dialog" class="dlg__form">
             <h2 class="dlg__title" id="dlg-import-title">Import a <em>.rt</em> scene</h2>
             <p class="dlg__lead">Paste a scene file or choose one. Lines miniRT would reject are skipped and listed below.</p>
@@ -147,7 +148,7 @@
         </form>
     </dialog>
 
-    <dialog class="dlg" id="dlg-export" aria-labelledby="dlg-export-title">
+    <dialog class="dlg" closedby="any" id="dlg-export" aria-labelledby="dlg-export-title">
         <form method="dialog" class="dlg__form">
             <h2 class="dlg__title" id="dlg-export-title">Export <em>.rt</em></h2>
             <p class="dlg__lead">A scene file for the 42 miniRT parser.</p>
@@ -162,7 +163,7 @@
         </form>
     </dialog>
 
-    <dialog class="dlg" id="dlg-share" aria-labelledby="dlg-share-title">
+    <dialog class="dlg" closedby="any" id="dlg-share" aria-labelledby="dlg-share-title">
         <form method="dialog" class="dlg__form">
             <h2 class="dlg__title" id="dlg-share-title">Share this <em>scene</em></h2>
             <p class="dlg__lead">The whole scene lives in the link, so no account or upload is needed. Anyone who opens it gets their own editable copy.</p>

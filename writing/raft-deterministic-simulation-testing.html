@@ -66,6 +66,7 @@
       "keywords": "Raft, distributed systems, deterministic simulation testing, chaos testing, linearizability, fake clock, Go, consensus, fault injection"
     }
     </script>
+    <script type="speculationrules">{"prefetch":[{"where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":"/minirt-studio*"}}]},"eagerness":"moderate"}]}</script>
 </head>
 <body>
     <a href="#main" class="skip-link">Skip to content</a>
@@ -116,7 +117,6 @@ StateMachine  apply committed commands</code></pre>
 make test-chaos    # 100 seeds</code></pre>
                     <p class="imprint__text">That replay is what makes the test useful. A distributed test that fails once in a hundred runs and never again teaches you nothing. A failing seed can be rerun, stepped through and kept as a regression test.</p>
 
-                    <h2 class="imprint__heading">What a fake clock cannot find</h2>
                     <h2 class="imprint__heading">A checker that gives the test teeth</h2>
                     <p class="imprint__text">The first version only checked that a read returned the last acknowledged write, which is weaker than linearizability. I replaced it with a real checker, <code>internal/linz</code>, an implementation of the Wing&ndash;Gong/Lowe search with memoization, written for this repo. Every operation is recorded with its call and return time, keys are independent so the history is split per key, and each part must be explainable as one sequential order that respects real time. A seed produces 1,000 to 1,700 operations, and all of them have to fit.</p>
                     <p class="imprint__text">A checker is only worth something if it fails when it should, so I injected two bugs and restored the code afterwards:</p>
@@ -129,6 +129,7 @@ make test-chaos    # 100 seeds</code></pre>
                     <h2 class="imprint__heading">Two tests that proved nothing</h2>
                     <p class="imprint__text">Mutation testing caught my own tests twice. My first joint-consensus test still passed after I deleted the old-majority requirement from the quorum function, because in that setup the old side could not have committed anyway. I rebuilt the scenario so that only that rule stops the commit. My first packet-loss test for pipelining passed with the stall recovery disabled, because random loss triggers leader changes that reset replication state and hide the bug. The replacement loses a whole burst for 60 ms with nothing new proposed, so only the stall check can recover.</p>
 
+                    <h2 class="imprint__heading">What a fake clock cannot find</h2>
                     <p class="imprint__text">The bug that stayed hidden longest was in the clock itself. A real clock can run a callback that fired just before <code>Stop</code> was called. In raftlab that means a stale election timer can still run, start a spurious election and depose a healthy leader. The fake clock cannot reproduce it, because the fake clock never runs a callback concurrently with a stop.</p>
                     <p class="imprint__text">The fix is to replace timers instead of resetting them and to give each one a generation counter, so a callback from an old generation does nothing. A hand-driven clock covers it in tests. The lesson is the limit of the whole approach: deterministic simulation finds the interleavings you modelled, and the concurrency of the clock was not one of them.</p>
 
