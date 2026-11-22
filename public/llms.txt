@@ -5,8 +5,8 @@
 ## Projects
 
 ### [raftlab](https://nweber.me/projects/raftlab.html)
-Raft consensus implemented from scratch in Go: leader election, log replication, a checksummed write-ahead log, snapshots with InstallSnapshot, and a linearizable replicated key-value store with exactly-once client sessions. A browser visualizer runs five nodes over a fault-injecting network so you can kill nodes, partition the network and watch recovery.
-Key achievements: about 5,100 lines of Go (2,200 of them tests), one dependency, and a seeded deterministic chaos test on a fake clock that checks election safety and committed-prefix agreement and replays any failure from its seed.
+Raft consensus implemented from scratch in Go: leader election with PreVote and CheckQuorum, pipelined log replication, a checksummed write-ahead log, chunked snapshots with InstallSnapshot, membership changes by joint consensus, and a linearizable replicated key-value store with ReadIndex reads and exactly-once client sessions. A browser visualizer runs a resizable cluster (five nodes by default) over a fault-injecting network so you can kill nodes, partition the network, scale the cluster and watch recovery.
+Key achievements: about 8,700 lines of Go (3,900 of them tests), one dependency, and a seeded deterministic chaos test on a fake clock that checks election safety and committed-prefix agreement, feeds every recorded history to a linearizability checker, and replays any failure from its seed.
 - Source: [github.com/nweber23/raftlab](https://github.com/nweber23/raftlab)
 
 ### [Tetris ML](https://nweber.me/writing/tetris-reinforcement-learning.html)

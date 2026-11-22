@@ -104,28 +104,28 @@ Kein system(), keine Abkürzungen.
 POSIX-Shell in C. Eigener Lexer und Parser, fork/execve, dup2-Pipelines, Here-Docs, sigaction.
 @@ gnpjt4
 Raft-Konsens mit Live-Cluster-Visualisierung
-@@ 14kab6g
-Netzwerkpartition: zwei Knoten halten sich für den Leader
+@@ g4gn9m
+Netzwerkpartition: der alte Leader N5 ist zurückgetreten, N4 hat Term 2 gewonnen
 @@ wo1w6y
 Raft-Konsens von Grund auf in Go – Leader-Wahl, Log-Replikation, Snapshots und Absturzwiederherstellung – mit einer linearisierbaren Key-Value-Datenbank darauf und einer Browser-Oberfläche, in der man Knoten töten, das Netzwerk trennen und die Erholung des Clusters beobachten kann.
 @@ 1f5gl08
 Go-Code
-@@ 1rx13b5
-5,1k Zeilen
+@@ u07bqa
+8,7k Zeilen
 @@ jt8624
 Davon Tests
-@@ 2z8mh
-2,2k Zeilen
+@@ 1hp77l3
+3,9k Zeilen
 @@ 1m8sfb4
 Abhängigkeiten
 @@ 1gepi6c
 <strong>Problem:</strong> Raft ist der Algorithmus hinter etcd, Consul und CockroachDB. Man nickt beim Lesen des Papers schnell zustimmend, aber der eigenen Implementierung zu vertrauen ist schwer. Ein Konsensfehler stürzt nicht ab. Er zeigt sich darin, dass zwei Knoten nach einer ganz bestimmten Folge aus Abstürzen, Partitionen und vertauschten Paketen uneins sind. Ich wollte alles implementieren, auch die Teile, die Tutorials überspringen (Persistenz, Log-Kompaktierung, <code>InstallSnapshot</code>, Exactly-once-Clients), und das Verhalten sehen, statt ihm zu vertrauen.
-@@ 1jwv7wn
-<strong>Lösung:</strong> Eine vollständige Raft-Implementierung in Go: Leader-Wahl, Log-Replikation mit Konfliktreparatur, die Wahlbeschränkung, das Committen von Einträgen früherer Terms, ein Write-Ahead-Log mit Prüfsummen und Absturzwiederherstellung sowie Log-Kompaktierung mit <code>InstallSnapshot</code> für Follower, die weit zurückgefallen sind. Darauf sitzt eine replizierte Key-Value-Datenbank. Lesezugriffe laufen durch das Log und sind daher linearisierbar, und Client-Sessions sorgen dafür, dass ein wiederholter Schreibzugriff höchstens einmal angewendet wird. <code>raftnode</code> betreibt ein Mitglied pro Prozess über HTTP. <code>raftlab</code> betreibt fünf in einem Prozess über ein Netzwerk mit Fehlerinjektion und streamt jede Nachricht als animierten Punkt in den Browser, wo man Knoten töten, das Netzwerk partitionieren und Latenz, Verlust und Duplikation einstellen kann.
-@@ 1n1q8k9
-<strong>Technischer Ansatz:</strong> Der Kern <code>raft.Node</code> ist eine reine Zustandsmaschine ohne Goroutinen, Sockets oder Systemzeit. Alles, womit er in Berührung kommt, läuft über vier Interfaces: <code>Transport</code>, <code>Clock</code>, <code>Storage</code> und <code>StateMachine</code>. Weil Zeit und I/O injiziert werden, läuft ein Fünf-Knoten-Cluster in einem Single-Thread-Test auf einer Fake-Uhr, und ein Lauf ist eine reine Funktion seines Zufalls-Seeds. Ein Chaos-Test lässt Knoten abstürzen und neu starten, partitioniert das Netzwerk und injiziert Verlust, Duplikation und Verzögerung für 40 virtuelle Sekunden, während vier Clients schreiben und lesen. Dabei prüft er alle 10 ms Wahlsicherheit und Übereinstimmung des committeten Präfixes. Am Ende prüft er, ob die Replikate konvergieren, ob jeder bestätigte Schreibzugriff überlebt hat und ob jeder Lesezugriff den zuletzt bestätigten Schreibzugriff geliefert hat. Ein Fehlschlag gibt seinen Seed aus, und <code>CHAOS_SEED=17 go test -run Chaos ./internal/kv</code> spielt ihn exakt erneut ab. Der Kern nutzt nur die Standardbibliothek; die einzige Abhängigkeit ist eine WebSocket-Bibliothek für die Visualisierung.
-@@ ojmjsk
-<strong>Ergebnisse &amp; Erkenntnisse:</strong> Rund 5.100 Zeilen Go, davon etwa 2.200 Tests, mit CI, die <code>go test -race</code> und <code>golangci-lint</code> ausführt. Die unterwegs gefundenen Bugs sind die eigentliche Lektion: veraltete Timer-Callbacks, die eine unnötige Wahl auslösen und einen gesunden Leader absetzen, ein verspätetes <code>AppendEntries</code>, das neuere Einträge löscht, vertauschte Antworten, die <code>nextIndex</code> rückwärts bewegen, und ein Absturz nur unter Windows, weil das WAL bei der ersten Kompaktierung nicht über eine geöffnete Datei umbenannt werden konnte. Auch die Grenzen sind dokumentiert: Ein Lesezugriff kostet eine volle Replikationsrunde, Snapshots bestehen aus einer einzigen Nachricht, und die Client-API ist nicht authentifiziert. PreVote, CheckQuorum, Membership-Änderungen per Joint Consensus und ReadIndex-Lesezugriffe stehen auf der Roadmap. Der <a href="writing/raft-deterministic-simulation-testing.html">Artikel</a> erklärt, wie die Fake-Uhr funktioniert und welchen einen Bug sie nicht reproduzieren konnte.
+@@ xah2qv
+<strong>Lösung:</strong> Eine vollständige Raft-Implementierung in Go: Leader-Wahl mit PreVote und CheckQuorum, Log-Replikation mit Konfliktreparatur und Pipelining, die Wahlbeschränkung, das Committen von Einträgen früherer Terms, ein Write-Ahead-Log mit Prüfsummen und Absturzwiederherstellung sowie Log-Kompaktierung mit <code>InstallSnapshot</code>, in Chunks gestreamt, für Follower, die weit zurückgefallen sind. Membership-Änderungen laufen per Joint Consensus, sodass Server hinzukommen und gehen, während der Cluster läuft. Darauf sitzt eine replizierte Key-Value-Datenbank. Lesezugriffe nutzen ReadIndex und sind daher ohne Log-Schreibzugriff linearisierbar, und Client-Sessions sorgen dafür, dass ein wiederholter Schreibzugriff höchstens einmal angewendet wird. <code>raftnode</code> betreibt ein Mitglied pro Prozess über HTTP, optional mit gegenseitigem TLS. <code>raftlab</code> betreibt standardmäßig fünf Knoten, live auf bis zu fünfzehn skalierbar, in einem Prozess über ein Netzwerk mit Fehlerinjektion und streamt jede Nachricht als animierten Punkt in den Browser, wo man Knoten töten, das Netzwerk partitionieren, den Cluster skalieren und Latenz, Verlust und Duplikation einstellen kann.
+@@ 1l3jyhl
+<strong>Technischer Ansatz:</strong> Der Kern <code>raft.Node</code> ist eine reine Zustandsmaschine ohne Goroutinen, Sockets oder Systemzeit. Alles, womit er in Berührung kommt, läuft über vier Interfaces: <code>Transport</code>, <code>Clock</code>, <code>Storage</code> und <code>StateMachine</code>. Weil Zeit und I/O injiziert werden, läuft ein Fünf-Knoten-Cluster in einem Single-Thread-Test auf einer Fake-Uhr, und ein Lauf ist eine reine Funktion seines Zufalls-Seeds. Ein Chaos-Test lässt Knoten abstürzen und neu starten, partitioniert das Netzwerk und injiziert Verlust, Duplikation und Verzögerung für 40 virtuelle Sekunden, während vier Clients schreiben und lesen. Dabei prüft er alle 10 ms Wahlsicherheit und Übereinstimmung des committeten Präfixes. Am Ende prüft er, ob die Replikate konvergieren, und übergibt die komplette aufgezeichnete Historie an einen eigens für dieses Repo geschriebenen Linearisierbarkeits-Checker (Wing–Gong/Lowe). Ein Fehlschlag gibt seinen Seed aus, und <code>CHAOS_SEED=17 go test -run Chaos ./internal/kv</code> spielt ihn exakt erneut ab. Der Kern nutzt nur die Standardbibliothek; die einzige Abhängigkeit ist eine WebSocket-Bibliothek für die Visualisierung.
+@@ 10wec0f
+<strong>Ergebnisse &amp; Erkenntnisse:</strong> Rund 8.700 Zeilen Go, davon etwa 3.900 Tests, mit CI, die <code>go test -race</code> und <code>golangci-lint</code> ausführt. Die unterwegs gefundenen Bugs sind die eigentliche Lektion: veraltete Timer-Callbacks, die eine unnötige Wahl auslösen und einen gesunden Leader absetzen, ein verspätetes <code>AppendEntries</code>, das neuere Einträge löscht, vertauschte Antworten, die <code>nextIndex</code> rückwärts bewegen, und ein Absturz nur unter Windows, weil das WAL bei der ersten Kompaktierung nicht über eine geöffnete Datei umbenannt werden konnte. Auch die Grenzen sind dokumentiert: Die Client-API ist nicht authentifiziert, ein Knoten mit gültigem Zertifikat gilt als voll vertrauenswürdig, und die Steuer-API der Visualisierung ist bewusst offen. Übrig auf der Roadmap bleiben nur Leader Leases als günstigere Alternative zu ReadIndex, die Korrektheit gegen eine Annahme über Uhrendrift eintauschen würden. Der <a href="writing/raft-deterministic-simulation-testing.html">Artikel</a> erklärt, wie die Fake-Uhr funktioniert und welchen einen Bug sie nicht reproduzieren konnte.
 @@ 1402mgp
 Rolle
 @@ 1vlu0hy
@@ -370,8 +370,8 @@ Hauptnavigation
 Auf einen Blick
 @@ apxw10
 Was ich baue
-@@ 149ubcc
-raftlab-Visualisierung während einer Netzwerkpartition: fünf Raft-Knoten im Fünfeck, zwei davon als Leader markiert, mit gestrichelten roten Verbindungen, wo Nachrichten zwischen dem alten Leader und dem Rest verworfen werden
+@@ 439qdj
+raftlab-Visualisierung während einer Netzwerkpartition: fünf Raft-Knoten im Fünfeck, der neue Leader N4 als ausgefüllter dunkler Kreis, und gepunktete rote Verbindungen, wo Nachrichten zwischen dem abgetrennten alten Leader N5 und dem Rest verworfen werden
 @@ w35xea
 Trainierter Agent, der Tetris mit Hold und T-Spins im Ebitengine-Viewer spielt
 @@ 1ad36ss
@@ -1034,8 +1034,8 @@ Raft mit einer Fake-Uhr testen
 Raft mit einer <em>Fake-Uhr</em> testen: deterministisches Chaos in Go
 @@ 8qi6e0
 Raft ist leicht zu lesen und schwer zu vertrauen. Das Paper ist wenige Seiten lang, und die Bugs stecken in den Verschränkungen: eine Nachricht, die nach einem Leader-Wechsel eintrifft, ein Timer, der kurz vor seinem Stopp feuert, ein Absturz mitten in einem Schreibvorgang. Ich habe <a>raftlab</a> geschrieben, eine Raft-Implementierung in Go mit replizierter Key-Value-Datenbank und Browser-Visualisierung, und der Teil, den ich behalten würde, wenn ich den Rest wegwerfen müsste, ist die Art, wie sie getestet wird.
-@@ b26lhs
-Die Visualisierung während einer Partition. Der alte Leader (N2, Term 2) hält sich noch für den Leader, erreicht aber keine Mehrheit. Die andere Seite hat N5 in Term 3 gewählt. Rote gestrichelte Verbindungen sind verworfene Nachrichten.
+@@ 76p18x
+Die Visualisierung während einer Partition. Der alte Leader (N5, Term 1) ist bereits zurückgetreten: CheckQuorum hat ihn bemerken lassen, dass er seine Mehrheit verloren hat. Die andere Seite hat N4 in Term 2 gewählt, dargestellt als ausgefüllter Knoten. Gepunktete rote Verbindungen sind gekappt, rote Punkte sind verworfene Nachrichten.
 @@ 3cdvlw
 Vier Nahtstellen und keine Uhr
 @@ 1ccqv3j
