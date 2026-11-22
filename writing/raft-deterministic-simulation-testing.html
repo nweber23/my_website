@@ -16,14 +16,14 @@
     <meta property="og:description" content="How raftlab tests Raft: a seeded chaos test on a fake clock that replays any failure, plus the bug a fake clock misses.">
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://nweber.me/writing/raft-deterministic-simulation-testing.html">
-    <meta property="og:image" content="https://nweber.me/assets/raftlab_post_og.jpg">
+    <meta property="og:image" content="https://nweber.me/assets/raftlab_post_og.jpg?v=2">
     <meta property="og:site_name" content="Niklas Weber Portfolio">
     <meta property="og:locale" content="en_US">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Testing Raft with a Fake Clock">
     <meta name="twitter:description" content="How raftlab tests Raft: a seeded chaos test on a fake clock that replays any failure, plus the bug a fake clock misses.">
-    <meta name="twitter:image" content="https://nweber.me/assets/raftlab_post_og.jpg">
+    <meta name="twitter:image" content="https://nweber.me/assets/raftlab_post_og.jpg?v=2">
 
 
     <script type="application/ld+json">
@@ -62,7 +62,7 @@
       "dateModified": "2026-11-18",
       "mainEntityOfPage": "https://nweber.me/writing/raft-deterministic-simulation-testing.html",
       "about": { "@id": "https://nweber.me/#project-raftlab" },
-      "image": "https://nweber.me/assets/raftlab.webp",
+      "image": "https://nweber.me/assets/raftlab.webp?v=2",
       "keywords": "Raft, distributed systems, deterministic simulation testing, chaos testing, linearizability, fake clock, Go, consensus, fault injection"
     }
     </script>
@@ -98,7 +98,7 @@
                 <article class="imprint__block">
                     <p class="imprint__text">Raft is easy to read and hard to trust. The paper is a few pages long, and the bugs live in the interleavings: a message that arrives after a leader change, a timer that fires just before it is stopped, a crash halfway through a write. I wrote <a href="/projects/raftlab.html">raftlab</a>, a Raft implementation in Go with a replicated key-value store and a browser visualizer, and the part I would keep if I had to throw the rest away is how it is tested.</p>
 
-                    <figure class="article__figure"><img src="../assets/raftlab.webp" alt="raftlab visualizer during a network partition: five Raft nodes in a pentagon, the new leader N4 drawn as a solid dark circle, and dotted red links where messages are dropped between the cut-off old leader N5 and the rest" width="1600" height="1000" decoding="async">
+                    <figure class="article__figure"><img src="../assets/raftlab.webp?v=2" alt="raftlab visualizer during a network partition: five Raft nodes in a pentagon, the new leader N4 drawn as a solid dark circle, and dotted red links where messages are dropped between the cut-off old leader N5 and the rest" width="1600" height="1000" decoding="async">
                         <figcaption>The visualizer during a partition. The old leader (N5, term 1) has already stepped down: CheckQuorum made it notice it lost its majority. The other side elected N4 in term 2, drawn as the solid node. Dotted red links are cut and red dots are dropped messages.</figcaption></figure>
 
                     <h2 class="imprint__heading">Four seams and no clock</h2>
