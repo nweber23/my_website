@@ -340,7 +340,7 @@ main,
 
 .rows__row--display > span {
   font-family: var(--grotesk);
-  font-size: clamp(64px, 9.4vw, 140px);
+  font-size: max(64px, 9.4vw);
   line-height: 1;
   letter-spacing: -0.04em;
   text-transform: uppercase;
@@ -348,7 +348,7 @@ main,
 
 .rows__row--poster > span {
   font-family: var(--condensed);
-  font-size: clamp(86px, 13vw, 200px);
+  font-size: max(86px, 13vw);
   line-height: 0.88;
   text-transform: uppercase;
 }

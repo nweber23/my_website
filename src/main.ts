@@ -185,7 +185,8 @@ function setupMotion({ lenis }: Stage) {
     });
     // Rows lean into the scroll: skew follows scroll velocity and springs back.
     const skewTo = $$('[data-row]', rowsSection).map((row, i) => {
-      const to = gsap.quickTo(row, 'skewX', { duration: 0.6, ease: 'power3.out' });
+      // Skew the inner span: on the row, GSAP would bake the CSS-animated translate into a permanent offset.
+      const to = gsap.quickTo(row.firstElementChild!, 'skewX', { duration: 0.6, ease: 'power3.out' });
       return (v: number) => to(i % 2 ? -v : v);
     });
     ScrollTrigger.create({
