@@ -63,7 +63,7 @@ body {
 .main {
   max-width: 1100px;
   margin: 0 auto;
-  padding: calc(var(--header-h) + 50px) var(--margin) 140px;
+  padding: calc(var(--header-h) + 50px) min(var(--margin), 40px) 140px;
 }
 
 /* Page heading (writing index, imprint): condensed poster type. */
