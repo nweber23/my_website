@@ -1,0 +1,27 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency: deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy over SSH
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          USER: ${{ secrets.VPS_USER }}
+          KEY: ${{ secrets.VPS_SSH_KEY }}
+          FINGERPRINT: SHA256:CdsNgm+BjDQ96S13cNF7N9XgkNBO8F3cdl7XobAMAls
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$KEY" > ~/.ssh/deploy && chmod 600 ~/.ssh/deploy
+          ssh-keyscan -t ed25519 "$HOST" > ~/.ssh/known_hosts
+          # Fail unless the server's host key matches the pinned fingerprint.
+          ssh-keygen -lf ~/.ssh/known_hosts | grep -qF "$FINGERPRINT"
+          # The key is forced to run the deploy command on the server; the command here is ignored.
+          ssh -i ~/.ssh/deploy -o IdentitiesOnly=yes "$USER@$HOST" deploy
