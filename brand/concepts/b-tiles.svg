@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="N and W as two letter tiles side by side">
+  <title>Tiles: N and W on two tilted tiles</title>
+  <g transform="rotate(-6 72 140)">
+    <rect x="28" y="96" width="112" height="112" rx="28" fill="#16120f"/>
+    <rect x="16" y="84" width="112" height="112" rx="28" fill="#ff8fc2" stroke="#16120f" stroke-width="10"/>
+    <path d="M49 168 V112 L95 168 V112" fill="none" stroke="#16120f" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g transform="rotate(6 182 116)">
+    <rect x="138" y="72" width="112" height="112" rx="28" fill="#16120f"/>
+    <rect x="126" y="60" width="112" height="112" rx="28" fill="#4f6bff" stroke="#16120f" stroke-width="10"/>
+    <path d="M150 90 L166 142 L182 106 L198 142 L214 90" fill="none" stroke="#fff4dc" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

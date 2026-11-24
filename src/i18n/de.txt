@@ -1332,3 +1332,6 @@ Dieser Link konnte nicht gelesen werden. Stattdessen wird deine letzte Szene ang
 Szene aus dem Link geladen. Deine eigene Szene bleibt unberührt, bis du diese bearbeitest.
 @@ The scene is empty. Add a shape above.
 Die Szene ist leer. Oben eine Form hinzufügen.
+
+@@ 13dlxwj
+Von Hand gebaut mit GSAP und Lenis.<br>Jede Kachel, jeder Sticker und jeder Punkt wird im Code erzeugt.

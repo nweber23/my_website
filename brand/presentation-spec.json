@@ -1,0 +1,31 @@
+{
+  "brand": "Niklas Weber",
+  "tagline": "Systems developer, built from scratch",
+  "brief": "A personal mark for the portfolio of a systems developer. It should feel playful and handmade but still technical, match the sticker look of the site, and stay readable as a 16 px favicon.",
+  "adjectives": ["playful", "handmade", "technical", "bold"],
+  "criteria": "Success: unmistakably NW, matches the site's tiles, readable at 16 px, works in one colour, different from the usual terminal-icon developer logos.",
+  "industry": "software",
+  "nav": ["Work", "About", "Contact"],
+  "brand_color": "#ff8fc2",
+  "greyscale": false,
+  "designer": "Claude",
+  "round": 2,
+  "concepts": [
+    {
+      "name": "Tiles",
+      "symbol": "nw-symbol.svg",
+      "lockup": "nw-lockup-horizontal.svg",
+      "symbol_on_tile": "nw-symbol.svg",
+      "lockup_on_dark": "nw-lockup-horizontal-on-dark.svg",
+      "tile_color": "#ffd23f",
+      "idea": "Your initials on two tilted letter tiles, the same tiles that drop in on the site.",
+      "rationale": [
+        "Ties the logo directly to the site's hero and Build/Break/Rebuild tiles",
+        "Reads as NW at a glance and at 16 px, with a one-letter favicon for the smallest sizes",
+        "Hard shadow and thick outline are the site's sticker language, so it reproduces as flat shapes"
+      ]
+    }
+  ],
+  "recommendation": "Tiles, final: built as filled paths on one geometry, with a small-size cut, a one-letter favicon, a one-colour version and an on-dark version.",
+  "next_steps": ["Use the favicon and web icons on the site", "Use the stacked lockup for the README and social image", "Keep the logo guide next to the files"]
+}

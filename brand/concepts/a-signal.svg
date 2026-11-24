@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="NW monogram drawn as one continuous line">
+  <title>Signal: N and W as one continuous line</title>
+  <rect x="34" y="34" width="208" height="208" rx="52" fill="#16120f"/>
+  <rect x="16" y="16" width="208" height="208" rx="52" fill="#ffd23f" stroke="#16120f" stroke-width="10"/>
+  <path d="M52 174 V78 L96 174 V78 L126 174 L150 104 L174 174 L198 78" fill="none" stroke="#16120f" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="198" cy="78" r="11" fill="#ff8fc2" stroke="#16120f" stroke-width="7"/>
+</svg>

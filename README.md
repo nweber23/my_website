@@ -1,20 +1,24 @@
 <div align="center">
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="brand/nw-lockup-horizontal-on-dark.svg">
+  <img src="brand/nw-lockup-horizontal.svg" alt="Niklas Weber" width="420">
+</picture>
+
 # nweber.me
 
 **Portfolio of Niklas Weber — systems developer.**
-An experimental print/poster-brutalist site: crinkled paper, heavy navy type, glossy pearl 3D letters.
+A playful sticker-style site: flat colour sheets, thick outlines, hard shadows and letter tiles that drop, roll and tumble as you scroll.
 
-[![Live](https://img.shields.io/badge/live-nweber.me-010736?style=flat-square)](https://nweber.me)
+[![Live](https://img.shields.io/badge/live-nweber.me-16120f?style=flat-square)](https://nweber.me)
 [![Deploy](https://img.shields.io/github/actions/workflow/status/nweber23/my_website/deploy.yml?branch=main&label=deploy&style=flat-square)](https://github.com/nweber23/my_website/actions/workflows/deploy.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-22396f?style=flat-square)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-4f6bff?style=flat-square)](LICENSE)
 
-![TypeScript](https://img.shields.io/badge/TypeScript-010736?style=flat-square&logo=typescript&logoColor=fcf1d0)
-![Vite](https://img.shields.io/badge/Vite-010736?style=flat-square&logo=vite&logoColor=fcf1d0)
-![three.js](https://img.shields.io/badge/three.js-010736?style=flat-square&logo=threedotjs&logoColor=fcf1d0)
-![GSAP](https://img.shields.io/badge/GSAP-010736?style=flat-square&logo=greensock&logoColor=fcf1d0)
-![Docker](https://img.shields.io/badge/Docker-010736?style=flat-square&logo=docker&logoColor=fcf1d0)
-![nginx](https://img.shields.io/badge/nginx-010736?style=flat-square&logo=nginx&logoColor=fcf1d0)
+![TypeScript](https://img.shields.io/badge/TypeScript-16120f?style=flat-square&logo=typescript&logoColor=ffd23f)
+![Vite](https://img.shields.io/badge/Vite-16120f?style=flat-square&logo=vite&logoColor=ffd23f)
+![GSAP](https://img.shields.io/badge/GSAP-16120f?style=flat-square&logo=greensock&logoColor=ffd23f)
+![Docker](https://img.shields.io/badge/Docker-16120f?style=flat-square&logo=docker&logoColor=ffd23f)
+![nginx](https://img.shields.io/badge/nginx-16120f?style=flat-square&logo=nginx&logoColor=ffd23f)
 
 </div>
 
@@ -23,29 +27,31 @@ An experimental print/poster-brutalist site: crinkled paper, heavy navy type, gl
 ## Highlights
 
 - **Scroll-driven motion.** Lenis inertial scrolling drives GSAP ScrollTrigger timelines; nearly everything is tied to scroll progress.
-- **Procedural 3D.** A three.js hero billboard covered in generated posters, plus pearl 3D letters that rise through the page.
+- **Sticker motion.** The name is a row of letter tiles that drop in and fall off; BUILD, BREAK and REBUILD roll through one set of tiles; text strips are slapped on and lean with scroll speed; the about cards can be dragged around.
 - **miniRT Studio.** A scene builder and live ray tracer in raw WebGL2 (see [below](#minirt-studio)).
 - **Writing.** Technical posts on systems programming, graphics and distributed systems, with EN/DE switching.
-- **Accessible.** `prefers-reduced-motion` removes pins, parallax and 3D motion in favour of simple fades; 3D only renders while on screen.
+- **Accessible.** `prefers-reduced-motion` removes pins, drops and dragging in favour of a plain stacked layout.
 - **No framework.** Vanilla TypeScript, hand-written CSS, self-hosted fonts.
 
 ## Design
 
-Two inks, like a riso print: midnight navy (`#010736`, `#0D1C42`, `#22396F`) on cream (`#FCF1D0`). Other colours only come from project imagery.
+Warm paper (`#FFF4DC`) with loud flat sheets: yellow `#FFD23F`, pink `#FF8FC2`, blue `#4F6BFF`, green `#5BE3A1`, lilac `#C3A6FF`, and ink `#16120F` for thick outlines and hard shadows. Type is Bricolage Grotesque with JetBrains Mono for labels, both self-hosted through Fontsource.
+
+The logo is two tilted letter tiles, a pink N and a blue W. The full kit (SVGs, favicons, one-colour and on-dark versions, lockups, guide) is in [`brand/`](brand/), and `brand/build_logo.py` regenerates it. Usage rules are in [`brand/LOGO-GUIDE.md`](brand/LOGO-GUIDE.md).
 
 <details>
 <summary><b>Motion system, section by section</b></summary>
 
-1. **Loader** — navy screen with a live `BOOTING n%` counter over the real boot work (fonts, poster textures, WebGL); the sheet is then pulled up off the page.
-2. **Header** — fixed mono header with a dashed nav pill whose fill follows the section in view.
-3. **Hero** — a Three.js billboard of procedurally drawn posters; the camera moves over the box until one poster fills the screen.
-4. **Poster wall** — full-bleed crumpled paper, sparkle stars, skewed poster type.
-5. **Giant text rows** — rows slide in alternating directions and lean into the scroll (skew follows velocity).
-6. **Values** — pinned horizontal track with ghost words at 1.3× speed and a rotating text-on-path portrait.
-7. **Projects** — a pinned CSS 3D prism that steps one project per scroll segment.
-8. **Index & field notes** — every case study as expandable rows.
-9. **Manifesto** — navy duotone video with scanlines, RGB split and glitch jitter.
-10. **Footer** — dot-matrix headline that pulses with scroll and ripples around the cursor.
+1. **Loader** — yellow screen with a live `BOOTING n%` counter; the name fills with ink as the page loads.
+2. **Header** — sticker chips: brand with the logo mark, a nav pill whose pink fill follows the section in view, location and language switch.
+3. **Hero** — the name is a row of letter tiles that drop in with a bounce, hop away from the pointer and fall off the screen, fanning out, as you scroll.
+4. **Build / Break / Rebuild** — one row of tiles where each tile is a small reel: the letters roll from BUILD to BREAK, the tiles drift apart, then drift back and roll into REBUILD.
+5. **Text rows** — tilted tape strips that are slapped onto the page, slide along as you scroll and lean with scroll speed.
+6. **About** — three loose cards that drop in and can be dragged with momentum.
+7. **Projects** — a sticky photo pile: the current project's photo lies on top, earlier ones stay underneath.
+8. **Index & field notes** — every case study as an expandable sticker row.
+9. **Video** — the demo plays in a sticker window with a quote and a turning wheel of tech tags.
+10. **Footer** — the name pops up letter by letter.
 
 </details>
 
@@ -84,7 +90,7 @@ The CPU intersection code in `pick.ts` must stay in step with the shader, since 
 
 | Layer | Technologies |
 |-------|--------------|
-| Frontend | HTML, CSS, TypeScript, three.js, GSAP + ScrollTrigger, Lenis, raw WebGL2 |
+| Frontend | HTML, CSS, TypeScript, GSAP (ScrollTrigger, Draggable, Inertia), Lenis, raw WebGL2 for miniRT Studio |
 | Build | Vite (multi-page), self-hosted fonts via Fontsource |
 | Serving | nginx in a multi-stage Docker image, behind a host reverse proxy with Let's Encrypt TLS |
 | CI/CD | GitHub Actions deploys to a VPS over SSH on every push to `main` |
@@ -118,7 +124,7 @@ See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for nginx, TLS and reverse-proxy de
 ## Project structure
 
 ```
-├── index.html            # Home: poster system, projects, writing, about, contact
+├── index.html            # Home: sticker system, projects, writing, about, contact
 ├── writing.html          # Writing index
 ├── writing/              # Posts
 ├── projects/             # Project case-study pages
@@ -128,11 +134,12 @@ See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for nginx, TLS and reverse-proxy de
 │   ├── main.ts           # Home entry: loader, Lenis, ScrollTrigger timelines
 │   ├── pages.ts          # Entry for writing/imprint pages
 │   ├── i18n/             # EN/DE dictionary
-│   ├── poster/           # Paper textures, hero billboard, pearl letters, footer dots
+│   ├── poster/           # Halftone image used in the About section
 │   ├── shared/           # Clock, GitHub stats
 │   ├── studio/           # miniRT Studio
 │   └── styles/           # base, home, pages, project, studio
-├── public/               # Copied as-is: assets, robots.txt, sitemap.xml, llms.txt
+├── brand/                # Logo kit: SVGs, favicons, guide, generator script
+├── public/               # Copied as-is: assets, favicons, manifest, robots.txt, sitemap.xml, llms.txt
 ├── nginx/                # nginx server configuration
 ├── Dockerfile            # Build + serve image
 └── docker-compose.yml

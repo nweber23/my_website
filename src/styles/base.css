@@ -310,10 +310,11 @@ button {
 }
 
 .hdr__stack {
+  position: relative;
   justify-self: start;
   display: flex;
   flex-direction: column;
-  padding: 8px 16px 9px;
+  padding: 8px 16px 9px 68px;
   border: var(--stroke);
   border-radius: 18px;
   background: var(--paper-50);
@@ -321,7 +322,25 @@ button {
   rotate: -2deg;
 }
 
-.hdr__stack span:first-child {
+.hdr__mark {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  width: 52px;
+  height: 52px;
+  translate: 0 -50%;
+  rotate: 2deg;
+  transition: rotate 0.4s var(--pop), scale 0.4s var(--pop);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hdr__stack:hover .hdr__mark {
+    rotate: -6deg;
+    scale: 1.1;
+  }
+}
+
+.hdr__stack span:first-of-type {
   font-family: var(--display);
   font-size: 19px;
   font-weight: 800;
@@ -329,7 +348,7 @@ button {
   text-transform: none;
 }
 
-.hdr__stack span:first-child::after {
+.hdr__stack span:first-of-type::after {
   content: '';
   display: inline-block;
   width: 10px;
@@ -468,16 +487,21 @@ button {
   .hdr__geo {
     display: none;
   }
-  .hdr__stack span:not(:first-child) {
+  .hdr__stack span:not(:first-of-type) {
     display: none;
   }
   .hdr {
     gap: 8px;
   }
   .hdr__stack {
-    padding: 5px 10px 6px;
+    padding: 5px 10px 6px 52px;
   }
-  .hdr__stack span:first-child {
+  .hdr__mark {
+    left: 5px;
+    width: 40px;
+    height: 40px;
+  }
+  .hdr__stack span:first-of-type {
     font-size: 15px;
   }
   .pill {
@@ -675,9 +699,10 @@ button {
 }
 
 @media (max-width: 760px) {
+  /* Under the nav pill, so it never covers the brand chip. */
   .hdr > .lang {
-    right: auto;
-    left: var(--margin);
-    margin-top: -2px;
+    top: calc(var(--header-h) - 14px);
+    right: var(--margin);
+    margin: 0;
   }
 }

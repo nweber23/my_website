@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Shell prompt chevron and cursor on a tilted tile">
+  <title>Prompt: a shell prompt with a cursor</title>
+  <g transform="rotate(-5 128 128)">
+    <rect x="42" y="42" width="204" height="204" rx="56" fill="#16120f"/>
+    <rect x="22" y="22" width="204" height="204" rx="56" fill="#4f6bff" stroke="#16120f" stroke-width="10"/>
+    <path d="M78 92 L124 124 L78 156" fill="none" stroke="#ffd23f" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="136" y="148" width="58" height="22" rx="8" fill="#ff8fc2"/>
+  </g>
+</svg>
