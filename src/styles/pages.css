@@ -71,7 +71,7 @@ body {
 .main {
   position: relative;
   z-index: 1;
-  max-width: 1100px;
+  max-width: calc(1100px + 2 * var(--margin)); /* --margin is huge on wide screens; include it so the content box stays 1100px */
   margin: 0 auto;
   padding: calc(var(--header-h) + 56px) var(--margin) 140px;
 }
