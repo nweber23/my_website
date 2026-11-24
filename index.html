@@ -5,15 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Niklas Weber | Go &amp; C Systems Developer, Heilbronn</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%23010736'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='10.5'%20fill='none'%20stroke='%23fcf1d0'%20stroke-width='1.6'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='6'%20fill='none'%20stroke='%23fcf1d0'%20stroke-opacity='.5'%20stroke-width='1.4'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='2.2'%20fill='%23fcf1d0'/%3E%3C/svg%3E">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%23010736'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='10.5'%20fill='none'%20stroke='%23fcf1d0'%20stroke-width='1.6'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='6'%20fill='none'%20stroke='%23fcf1d0'%20stroke-opacity='.5'%20stroke-width='1.4'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='2.2'%20fill='%23fcf1d0'/%3E%3C/svg%3E">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%23ffd23f'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='10.5'%20fill='none'%20stroke='%2316120f'%20stroke-width='1.6'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='6'%20fill='none'%20stroke='%2316120f'%20stroke-opacity='.5'%20stroke-width='1.4'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='2.2'%20fill='%2316120f'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%23ffd23f'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='10.5'%20fill='none'%20stroke='%2316120f'%20stroke-width='1.6'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='6'%20fill='none'%20stroke='%2316120f'%20stroke-opacity='.5'%20stroke-width='1.4'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='2.2'%20fill='%2316120f'/%3E%3C/svg%3E">
 
     <!-- SEO Meta Tags -->
     <meta name="description" content="Niklas Weber, systems developer at 42 Heilbronn. Go and C projects: Raft consensus, a real-time casino, a SIMD raytracer and a Tetris RL agent.">
     <meta name="author" content="Niklas Weber">
     <meta name="robots" content="index, follow">
     <meta name="last-modified" content="2026-11-02">
-    <meta name="theme-color" content="#fcf1d0">
+    <meta name="theme-color" content="#ffd23f">
     <meta name="color-scheme" content="light">
     <link rel="canonical" href="https://nweber.me/">
 
@@ -309,6 +309,7 @@
     </div>
 
     <div class="progress" aria-hidden="true"></div>
+    <div class="hud" aria-hidden="true"><span><b data-hud-pct>000</b>%</span><span class="hud__bar"><i data-hud-bar></i></span><span data-hud-name>Intro</span></div>
     <div class="grain" aria-hidden="true"></div>
     <svg class="sr-only" aria-hidden="true" focusable="false">
         <!-- Analog RGB split for the manifesto video. -->
@@ -335,9 +336,10 @@
             <a href="#work" data-nav="work">Work</a>
             <a href="#about" data-nav="about">About</a>
             <a href="#contact" data-nav="contact">Contact</a>
+            <a href="writing.html">Writing</a>
             <span class="pill__slide" aria-hidden="true"></span>
         </nav>
-        <a class="hdr__mid is-secondary link" href="writing.html">Writing</a>
+        <span class="hdr__mid" aria-hidden="true"></span>
         <span class="hdr__geo"><svg class="globe" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="20" cy="20" r="18"/><ellipse cx="20" cy="20" rx="8" ry="18"/><ellipse cx="20" cy="20" rx="14" ry="18"/><path d="M2 20h36M5 11h30M5 29h30M20 2v36"/></g></svg><span>Heilbronn,_DE</span></span>
     </header>
 
@@ -374,6 +376,7 @@
                     <div><dt>Focus</dt><dd>SIMD · gRPC · Raft · Cloud · K3s</dd></div>
                 </dl>
             </div>
+            <span class="hero__scroll" aria-hidden="true">↓</span>
         </section>
 
         <!-- 4. First principles: build, break, rebuild — one pinned beat, scrubbed by scroll ---- -->

@@ -1,9 +1,9 @@
-// A photo printed as a navy halftone on cream. The dot screen is coarse while
+// A photo printed as an ink halftone on paper. The dot screen is coarse while
 // its panel slides in and resolves to a fine screen once it is centred; a lens
 // under the cursor shows the original full-colour render.
 
-const INK = '#010736';
-const PAPER = '#fcf1d0';
+const INK = '#16120f';
+const PAPER = '#fff4dc';
 const FINE = 5;
 const COARSE = 22;
 

@@ -1,4 +1,4 @@
-/* Standalone project pages: the case-study blocks from the home index rows. */
+/* Standalone project pages (Signal): the case-study blocks from the home index rows. */
 .project__body {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
@@ -135,3 +135,66 @@
   content: '→ ';
 }
 
+
+/* --- Stickers overrides ------------------------------------------------------------------ */
+.project__figure img,
+.project__figure video {
+  border: var(--stroke);
+  border-radius: 16px;
+  box-shadow: var(--lift);
+}
+.project__figure figcaption { font-weight: 600; margin-top: 14px; }
+.project__figure blockquote {
+  border: var(--stroke);
+  border-radius: 16px;
+  background: var(--lilac);
+  font-family: var(--display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.project__summary {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(24px, 2.2vw, 34px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+.project__metrics { gap: 12px; }
+.project__metrics div {
+  padding: 12px 14px 14px;
+  border: var(--stroke);
+  border-radius: 16px;
+  background: var(--yellow);
+  box-shadow: var(--lift-s);
+}
+.project__metrics div:nth-child(2) { background: var(--pink); rotate: 1.2deg; }
+.project__metrics div:nth-child(3) { background: var(--green); }
+.project__metrics dt,
+.project__details dt {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.project__metrics dd {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 32px;
+  text-transform: none;
+  letter-spacing: -0.03em;
+}
+.project__prose { line-height: 1.55; font-weight: 500; }
+.project__prose a, .project__details a, .project__related a {
+  font-weight: 700;
+  text-decoration-thickness: 3px;
+  text-decoration-color: var(--pink);
+  text-underline-offset: 3px;
+}
+.project__prose code, .project__text code {
+  font-weight: 600;
+  padding: 1px 6px;
+  border: 1.5px solid var(--ink-900);
+  border-radius: 6px;
+  background: var(--yellow);
+}
+.project__details div { border-top: 2px dashed var(--ink-900); font-weight: 600; }
+.project__related li::before { content: '↗ '; }

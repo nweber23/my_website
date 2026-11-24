@@ -1,18 +1,18 @@
 import { t } from './i18n';
 import '@fontsource-variable/inter';
-import '@fontsource/anton';
-import '@fontsource/space-mono/400.css';
-import '@fontsource/rock-salt';
+import '@fontsource-variable/bricolage-grotesque';
+import '@fontsource-variable/jetbrains-mono';
 import './styles/base.css';
 import './styles/home.css';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Draggable } from 'gsap/Draggable';
+import { InertiaPlugin } from 'gsap/InertiaPlugin';
 import Lenis from 'lenis';
-import { paperCanvas } from './poster/textures';
 import { Halftone } from './poster/halftone';
 import { githubStats } from './shared/github';
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, Draggable, InertiaPlugin);
 
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 /** Native scroll-driven animations (see home.css) replace the GSAP scrubs below; GSAP stays as the fallback. */
@@ -34,6 +34,9 @@ function dwell(x: number, n: number) {
 }
 
 const nextFrame = () => new Promise<void>((r) => setTimeout(r, 0));
+
+/** Set by setupHero: drops the name's tiles onto the sheet. */
+let heroDrop: (() => void) | null = null;
 
 const header = $('[data-header]');
 const hero = $('[data-hero]');
@@ -58,11 +61,11 @@ class Loader {
     this.target = (this.done / this.total) * 100;
   }
   private tick = () => {
-    // Never faster than ~1.4 s overall, so the counter is readable.
+    // Never faster than ~1.1 s overall, so the counter is readable.
     const now = performance.now();
     const dt = Math.min(0.1, (now - this.last) / 1000);
     this.last = now;
-    const cap = Math.min(100, ((now - this.start) / 1400) * 100);
+    const cap = Math.min(100, ((now - this.start) / 1100) * 100);
     this.shown += (Math.min(this.target, cap) - this.shown) * (1 - Math.exp(-dt * 9));
     if (this.target >= 100 && cap >= 100 && this.shown > 99.4) this.shown = 100;
     this.pct.textContent = String(Math.floor(this.shown));
@@ -80,25 +83,14 @@ class Loader {
 
 async function boot() {
   const loaderEl = $('[data-loader]');
-  // Steps: fonts, paper, WebGL, dot matrix.
+  // Steps: display font, mono font, first frame.
   const loader = new Loader(3);
 
-  // Fonts the canvases need.
-  await Promise.all([
-    document.fonts.load('400 40px "Anton"'),
-    document.fonts.load('400 16px "Space Mono"'),
-    document.fonts.load('400 20px "Rock Salt"'),
-  ]).catch(() => {});
+  await document.fonts.load('800 40px "Bricolage Grotesque Variable"').catch(() => {});
   loader.step();
-
-  // Full-bleed crinkled paper for the poster wall and the values section.
+  await document.fonts.load('500 16px "JetBrains Mono Variable"').catch(() => {});
+  loader.step();
   await nextFrame();
-  const paper = paperCanvas(1600, 1000, 19).toDataURL('image/jpeg', 0.86);
-  $('[data-paper]').style.backgroundImage = `url(${paper})`;
-  $('[data-values]').style.backgroundImage = `url(${paper})`;
-  $('[data-values]').style.backgroundSize = 'cover';
-  loader.step();
-
   loader.step();
 
   const lenis = reduced ? null : new Lenis({ lerp: 0.09, wheelMultiplier: 1 });
@@ -131,7 +123,8 @@ function intro(loaderEl: HTMLElement) {
   return new Promise<void>((resolve) => {
     gsap
       .timeline()
-      .to(loaderEl, { opacity: 0, duration: 0.7, ease: 'power1.inOut' })
+      .call(() => heroDrop?.(), [], 0.15)
+      .to(loaderEl, { opacity: 0, duration: 0.7, ease: 'power1.inOut' }, 0)
       .set(loaderEl, { display: 'none' })
       .call(resolve) // scrolling unlocks while the intro is still settling
       .call(() => { status.textContent = t('READY'); })
@@ -171,95 +164,64 @@ function setupMotion({ lenis }: Stage) {
   // --- 4. First principles: build, break, rebuild ---------------------------------
   setupWall();
 
-  // --- 5. Giant text rows -------------------------------------------------------
+  // --- 5. Text rows: tape strips slapped onto the page, their text sliding along ------------------
   const rowsSection = $('[data-rows]');
-  if (!reduced) {
-    if (!sda) $$('[data-row]', rowsSection).forEach((row, i) => {
-      const travel = 22 + (i % 3) * 6;
-      const left = i % 2 === 0;
-      gsap.fromTo(
-        row,
-        { xPercent: left ? 0 : -travel },
-        { xPercent: left ? -travel : 0, ease: 'none', scrollTrigger: { trigger: rowsSection, start: 'top bottom', end: 'bottom top', scrub: 1 } }
-      );
+  const rnd = gsap.utils.random;
+  $$('[data-row]', rowsSection).forEach((row, i) => {
+    if (reduced) return;
+    const text = row.firstElementChild!;
+    const travel = 14 + (i % 3) * 6;
+    const left = i % 2 === 0;
+    gsap.fromTo(
+      text,
+      { xPercent: left ? 0 : -travel },
+      { xPercent: left ? -travel : 0, ease: 'none', scrollTrigger: { trigger: row, start: 'top bottom', end: 'bottom top', scrub: 0.8 } }
+    );
+    gsap.from(row, {
+      scale: 1.4,
+      y: 90,
+      opacity: 0,
+      duration: 0.75,
+      ease: 'back.out(2.2)',
+      scrollTrigger: { trigger: row, start: 'top 92%', toggleActions: 'play none none reverse' },
     });
-    // Rows lean into the scroll: skew follows scroll velocity and springs back.
-    const skewTo = $$('[data-row]', rowsSection).map((row, i) => {
-      // Skew the inner span: on the row, GSAP would bake the CSS-animated translate into a permanent offset.
-      const to = gsap.quickTo(row.firstElementChild!, 'skewX', { duration: 0.6, ease: 'power3.out' });
-      return (v: number) => to(i % 2 ? -v : v);
-    });
-    ScrollTrigger.create({
-      trigger: rowsSection,
-      start: 'top bottom',
-      end: 'bottom top',
-      onUpdate: (s) => {
-        const v = gsap.utils.clamp(-9, 9, s.getVelocity() / 260);
-        skewTo.forEach((to) => to(v));
-      },
-      onLeave: () => skewTo.forEach((to) => to(0)),
-      onLeaveBack: () => skewTo.forEach((to) => to(0)),
-    });
-  }
+  });
   const circle = $('.circled path', rowsSection);
   if (circle && !sda) {
     gsap.to(circle, { strokeDashoffset: 0, ease: 'none', scrollTrigger: { trigger: circle.closest('.circled')!, start: 'top 80%', end: 'top 40%', scrub: reduced ? false : true } });
   }
 
-  // --- 6. Values: pinned horizontal track ---------------------------------------
+  // --- 6. About: loose cards that drop in and can be dragged around -------------------------------
   const halftone = new Halftone($<HTMLCanvasElement>('[data-halftone]'), '/assets/minirt.webp', reduced);
+  halftone.setDistance(0);
   const values = $('[data-values]');
-  const track = $('[data-values-track]');
-  const fadeLayer = document.createElement('div');
-  fadeLayer.style.cssText = 'position:absolute;inset:0;background:var(--bg-gradient);opacity:0;pointer-events:none;';
-  values.prepend(fadeLayer);
   if (!reduced) {
-    // Scroll sets a target position in panel units; one ticker eases toward it.
-    // Each panel gets a dwell zone, so it settles centred before the next slides in.
     const panels = $$('[data-panel]', values);
-    const ghosts = $('[data-ghosts]');
-    const marks = $$('[data-values-progress] span', values);
-    const bar = $('[data-values-progress] i', values);
-    const n = panels.length;
-    const dist = () => track.offsetWidth - innerWidth; // offsetWidth: scrollWidth also counts overflowing ghosts
-    const st = { pos: 0, target: 0, last: -1 };
-    panels.forEach((panel) => [...panel.children].forEach((c, j) => (c as HTMLElement).style.setProperty('--px', String(36 + j * 26))));
-    ScrollTrigger.create({
-      trigger: values,
-      pin: true,
-      start: 'top top',
-      end: () => `+=${innerHeight * (n - 1) * 1.5}`,
-      invalidateOnRefresh: true,
-      onUpdate: (s) => {
-        st.target = dwell(s.progress * (n - 1), n);
-        fadeLayer.style.opacity = s.progress.toFixed(3);
-      },
-      onRefresh: () => (st.last = -1),
-    });
-    gsap.ticker.add((_t, dtMs) => {
-      st.pos += (st.target - st.pos) * (1 - Math.exp((-dtMs / 1000) * 7));
-      if (Math.abs(st.target - st.pos) < 1e-4) st.pos = st.target;
-      if (st.pos === st.last) return;
-      st.last = st.pos;
-      const x = -(st.pos / (n - 1)) * dist();
-      track.style.transform = `translate3d(${x}px,0,0)`;
-      // Ghost words sit inside the track: an extra 0.3× makes them run at 1.3×.
-      ghosts.style.transform = `translate3d(${x * 0.3}px,0,0)`;
-      panels.forEach((panel, i) => {
-        const d = i - st.pos;
-        panel.style.setProperty('--d', d.toFixed(4));
-        panel.style.setProperty('--a', Math.min(1, Math.abs(d)).toFixed(4));
-        // The halftone screen resolves from coarse to fine as its panel centres.
-        if (panel.contains(halftone.element)) halftone.setDistance(Math.abs(d) * 1.4);
-      });
-      const active = Math.round(st.pos);
-      marks.forEach((m, i) => m.classList.toggle('is-active', i === active));
-      bar.style.transform = `scaleX(${(st.pos / (n - 1)).toFixed(4)})`;
-    });
-  } else {
-    $$('[data-panel]', values).forEach((panel) =>
-      gsap.from(panel.children, { opacity: 0, y: 30, duration: 1, stagger: 0.12, ease: EASE, scrollTrigger: { trigger: panel, start: 'top 75%' } })
+    panels.forEach((panel) =>
+      gsap.from(panel, {
+        y: -460,
+        rotation: () => rnd(-28, 28),
+        opacity: 0,
+        duration: 1.5,
+        ease: 'bounce.out',
+        scrollTrigger: { trigger: panel, start: 'top 90%' },
+      })
     );
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      Draggable.create(panels, {
+        type: 'x,y',
+        inertia: true,
+        edgeResistance: 0.9,
+        bounds: values,
+        zIndexBoost: true,
+        onPress: function (this: Draggable) {
+          gsap.to(this.target, { scale: 1.06, duration: 0.3, ease: 'back.out(3)' });
+        },
+        onRelease: function (this: Draggable) {
+          gsap.to(this.target, { scale: 1, duration: 0.9, ease: 'elastic.out(1, 0.45)' });
+        },
+      });
+    }
   }
   // --- 7. Projects: sticky preview ------------------------------------------------
   setupWork();
@@ -273,8 +235,8 @@ function setupMotion({ lenis }: Stage) {
       onEnter: (batch) =>
         gsap.fromTo(
           batch,
-          { opacity: 1, y: 14, clipPath: 'inset(100% 0% 0% 0%)' },
-          { y: 0, clipPath: 'inset(0% 0% 0% 0%)', duration: 1.1, stagger: 0.1, ease: 'expo.out', overwrite: true, clearProps: 'clipPath' }
+          { opacity: 0, y: 80, scale: 0.9 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.9, stagger: 0.1, ease: 'back.out(1.8)', overwrite: true }
         ),
     });
   if (!sda) {
@@ -294,6 +256,7 @@ function setupMotion({ lenis }: Stage) {
 
   // Nav pill follows the section in view.
   setupNav();
+  setupHud();
 
   // GitHub numbers (static fallbacks in the markup).
   const gh = $('[data-github-stats]');
@@ -302,7 +265,18 @@ function setupMotion({ lenis }: Stage) {
 }
 
 // --- 3. Hero ----------------------------------------------------------------------------------
+// The name is a row of letter tiles. They drop in with a bounce when the loader lifts, hop away from the
+// pointer, and fall off the bottom of the screen one after another as you scroll.
 function setupHero() {
+  const title = $('.hero__title');
+  const letters = [...title.textContent!].map((ch) => {
+    const el = document.createElement('span');
+    if (ch === ' ') el.className = 'sp';
+    el.textContent = ch === ' ' ? '\u00a0' : ch;
+    return el;
+  });
+  title.replaceChildren(...letters);
+
   if (reduced) {
     ScrollTrigger.create({
       trigger: hero,
@@ -312,51 +286,48 @@ function setupHero() {
     });
     return;
   }
-  const title = $('.hero__title');
-  gsap.set(title, { transformOrigin: '50% 100%' });
-  // One span per letter so each can move on its own.
-  const letters = [...title.textContent!].map((ch) => {
-    const el = document.createElement('span');
-    el.textContent = ch === ' ' ? '\u00a0' : ch;
-    return el;
-  });
-  title.replaceChildren(...letters);
 
-  // Idle wave plus a lift toward the pointer, only while the hero is on screen.
   const pointer = { x: -9999, y: -9999 };
   window.addEventListener('pointermove', (e) => { pointer.x = e.clientX; pointer.y = e.clientY; }, { passive: true });
   let on = true;
   new IntersectionObserver(([e]) => (on = e.isIntersecting)).observe(hero);
-  const cur = letters.map(() => ({ y: 0, r: 0 }));
   const type = $('[data-hero-type]');
-  const easeIO = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
   const range = (a: number, b: number, x: number) => Math.min(1, Math.max(0, (x - a) / (b - a)));
-  // The scroll position is eased once, here, so the exit glides instead of following every wheel tick.
+  // Per-tile state: the intro drop (dy, dr), the pointer hop (y, r) and the spin it picks up on the way down.
+  const st = letters.map(() => ({ dy: -innerHeight * 1.4, dr: gsap.utils.random(-70, 70), y: 0, r: 0, spin: gsap.utils.random(-38, 38) }));
+  heroDrop = () => {
+    gsap.to(
+      st.filter((_, i) => !letters[i].classList.contains('sp')),
+      { dy: 0, dr: 0, duration: 1.6, ease: 'bounce.out', stagger: 0.075 }
+    );
+  };
+  // The scroll position is eased once, here, so the fall glides instead of following every wheel tick.
   let target = 0; // the hero's scroll progress, 0..1
   let eased = 0;
-  gsap.ticker.add((t, dtMs) => {
-    eased += (target - eased) * (1 - Math.exp((-dtMs / 1000) * 7));
+  gsap.ticker.add((_t, dtMs) => {
+    eased += (target - eased) * (1 - Math.exp((-dtMs / 1000) * 8));
     if (!on) return;
     const hits = letters.map((el) => el.getBoundingClientRect());
-    const mid = (letters.length - 1) / 2;
     letters.forEach((el, i) => {
       const r = hits[i];
+      const s = st[i];
       const dx = pointer.x - (r.left + r.width / 2);
       const dy = pointer.y - (r.top + r.height / 2);
-      const k = Math.max(0, 1 - Math.hypot(dx, dy) / 280);
-      const wave = Math.sin(t * 1.6 + i * 0.55) * 0.02;
-      cur[i].y += (-k * k * 0.08 + wave - cur[i].y) * 0.12;
-      cur[i].r += (Math.sign(dx) * k * 2.5 - cur[i].r) * 0.12;
-      // The paper edge sweeps through the name between about 38% and 62% of the scroll, inking it.
-      // Only afterwards do the letters leave, up through the mask, centre letters first.
-      const f = Math.abs(i - mid) / mid;
-      const q = easeIO(range(0.64 + f * 0.1, 0.86 + f * 0.1, eased));
-      el.style.transform = `translateY(${(cur[i].y * 100 - q * 118).toFixed(2)}%) rotate(${(cur[i].r + q * -4).toFixed(2)}deg)`;
+      const k = eased > 0.02 ? 0 : Math.max(0, 1 - Math.hypot(dx, dy) / 240);
+      // Tiles hop up and tilt away when the pointer comes close.
+      s.y += (-k * k * r.height * 0.28 - s.y) * 0.18;
+      s.r += (-Math.sign(dx) * k * 16 - s.r) * 0.18;
+      // Gravity: each tile lets go a little after its neighbour and accelerates downwards.
+      const q = range(0.04 + i * 0.03, 0.62 + i * 0.03, eased);
+      const fall = q * q * innerHeight * 1.5;
+      // The tiles fan out a little as they fall, outer letters furthest, so they never pile into one clump.
+      const fan = ((i - (letters.length - 1) / 2) / letters.length) * q * innerWidth * 0.35;
+      el.style.transform = `translate(${fan.toFixed(1)}px, ${(s.dy + s.y + fall).toFixed(1)}px) rotate(${(s.dr + s.r + q * s.spin).toFixed(2)}deg)`;
     });
   });
 
   // Scroll: the status line clears first. The facts and the intro need no fade at all, since the
-  // poster wall slides up over the pinned hero and covers them.
+  // next section slides up over the pinned hero and covers them.
   const tl = gsap.timeline({ defaults: { ease: 'power1.inOut' } });
   tl.to('[data-hero-status]', { opacity: 0, duration: 0.14 }, 0);
   tl.to({}, { duration: 1 }, 0); // the timeline spans the whole pin
@@ -365,15 +336,13 @@ function setupHero() {
     start: 'top top',
     end: '+=100%',
     pin: true,
-    pinSpacing: false, // the poster wall slides up over the pinned hero: no empty scroll
+    pinSpacing: false, // the next section slides up over the pinned hero: no empty scroll
     scrub: 0.6,
     animation: tl,
-    onUpdate: (st) => {
-      target = st.progress;
-      header.classList.toggle('is-dark', st.progress < 0.9);
-      type.classList.toggle('is-gone', st.progress > 0.985);
+    onUpdate: (s) => {
+      target = s.progress;
+      type.classList.toggle('is-gone', s.progress > 0.985);
     },
-    onLeaveBack: () => header.classList.add('is-dark'),
   });
 }
 
@@ -382,12 +351,16 @@ function setupHero() {
 // REBUILD flies back together. Scroll scrubs the whole thing, so it never plays faster than you scroll.
 function setupWall() {
   const pin = $('[data-wall-pin]');
+  const stage = $('.wall__stage', pin);
   const words = $$('[data-word]', pin);
   const notes = $$('.wall__note span', pin);
-  words.forEach((w) => {
-    const text = w.textContent ?? '';
+  const texts = words.map((w) => [...(w.textContent ?? '')]);
+
+  // Plain tiles for the no-motion layout: every word stacked, each letter its own tile.
+  words.forEach((w, k) => {
     w.textContent = '';
-    [...text].forEach((c) => {
+    w.style.setProperty('--n', String(texts[k].length));
+    texts[k].forEach((c) => {
       const s = document.createElement('span');
       s.className = 'ch';
       s.textContent = c;
@@ -396,50 +369,94 @@ function setupWall() {
   });
   if (reduced) return;
 
-  const [build, brk, rebuild] = words.map((w) => $$('.ch', w));
-  const r = gsap.utils.random;
-  gsap.set(build, { yPercent: 110 });
-  gsap.set([...brk, ...rebuild], { opacity: 0 });
+  // With motion, one row of tiles does all three words. Each tile is a little reel holding that
+  // position's letter from BUILD, BREAK and REBUILD; scroll rolls every reel to the next word.
+  const mk = (cls: string) => {
+    const e = document.createElement('span');
+    e.className = cls;
+    return e;
+  };
+  const N = Math.max(...texts.map((t) => t.length));
+  words.forEach((w) => (w.style.display = 'none'));
+  const reel = document.createElement('div');
+  reel.className = 'reel';
+  reel.style.setProperty('--n', String(N));
+  const tiles = Array.from({ length: N }, (_, i) => {
+    const tile = mk('tile');
+    const face = mk('tile__face');
+    const win = mk('tile__win');
+    const strip = mk('tile__strip');
+    texts.forEach((t) => {
+      const c = mk('tile__ch');
+      c.textContent = t[i] ?? '\u00a0';
+      strip.append(c);
+    });
+    win.append(strip);
+    face.append(win);
+    tile.append(face);
+    reel.append(tile);
+    return { tile, face, strip };
+  });
+  stage.append(reel);
 
-  const T_BREAK = 1.8; // BUILD hands over to BREAK
-  const T_REBUILD = 3.9; // the pieces start finding each other again
+  const here = (i: number, phase: number) => texts[phase]?.[i] !== undefined;
+  const faces = tiles.map((t) => t.face);
+  const r = gsap.utils.random;
+  const TW = '0.9em';
+
+  // Tiles the first word does not use start collapsed.
+  tiles.forEach(({ tile, face }, i) => {
+    if (!here(i, 0)) gsap.set(tile, { width: 0 });
+    if (!here(i, 0)) gsap.set(face, { scale: 0, opacity: 0 });
+  });
+
+  const T_BREAK = 2.0; // BUILD rolls into BREAK
+  const T_REBUILD = 5.0; // the pieces roll into REBUILD
   const tl = gsap.timeline({ defaults: { ease: 'none' } });
-  tl.to(build, { yPercent: 0, duration: 0.8, stagger: 0.1, ease: 'power3.out' }, 0);
-  tl.to(build, { opacity: 0, duration: 0.05 }, T_BREAK);
-  tl.to(brk, { opacity: 1, duration: 0.05 }, T_BREAK);
-  tl.to(
-    brk,
-    {
-      y: () => r(140, 320),
-      x: () => r(-70, 70),
-      rotation: () => r(-55, 55),
-      opacity: 0,
-      duration: 1,
-      stagger: 0.07,
-      ease: 'power2.in',
-    },
-    T_BREAK + 0.9
+
+  // Enter: the tiles rise into place one after another.
+  tl.from(
+    tiles.filter((_, i) => here(i, 0)).map((t) => t.face),
+    { yPercent: 70, scale: 0.6, opacity: 0, rotation: () => r(-10, 10), duration: 1, stagger: 0.12, ease: 'power3.out' },
+    0
   );
-  tl.fromTo(
-    rebuild,
-    { opacity: 0, x: () => r(-260, 260), y: () => r(120, 280), rotation: () => r(-50, 50) },
-    { opacity: 1, x: 0, y: 0, rotation: 0, duration: 1, stagger: 0.07, ease: 'power3.out' },
-    T_REBUILD
-  );
-  tl.to({}, { duration: 0.5 }, '>'); // hold the finished word
+
+  // Roll every reel to the next word; tiles that appear or vanish between words grow or shrink.
+  const roll = (phase: number, at: number) => {
+    tiles.forEach(({ tile, face, strip }, i) => {
+      const delay = i * 0.07;
+      tl.to(strip, { yPercent: -(100 / texts.length) * phase, duration: 1, ease: 'power2.inOut' }, at + delay);
+      const was = here(i, phase - 1);
+      const now = here(i, phase);
+      if (now && !was) {
+        tl.to(tile, { width: TW, duration: 0.9, ease: 'power2.inOut' }, at + delay);
+        tl.to(face, { scale: 1, opacity: 1, duration: 0.9, ease: 'power2.inOut' }, at + delay);
+      } else if (was && !now) {
+        tl.to(tile, { width: 0, duration: 0.9, ease: 'power2.inOut' }, at + delay);
+        tl.to(face, { scale: 0, opacity: 0, duration: 0.9, ease: 'power2.inOut' }, at + delay);
+      }
+    });
+  };
+  roll(1, T_BREAK);
+  // BREAK: the tiles drift apart and tilt, slowly, as if the word was losing its grip.
+  tl.to(faces, { x: () => r(-26, 26), y: () => r(18, 70), rotation: () => r(-9, 9), duration: 1.5, stagger: { each: 0.06, from: 'random' }, ease: 'power2.inOut' }, T_BREAK + 1.2);
+  // REBUILD: they drift back together while the reels roll to the new word.
+  tl.to(faces, { x: 0, y: 0, rotation: 0, duration: 1.4, stagger: { each: 0.05, from: 'center' }, ease: 'power3.inOut' }, T_REBUILD - 0.3);
+  roll(2, T_REBUILD);
+  tl.to({}, { duration: 0.8 }, '>'); // hold the finished word
 
   const total = tl.duration();
   let note = 0;
   ScrollTrigger.create({
     trigger: pin,
     start: 'top top',
-    end: '+=160%',
+    end: '+=230%',
     pin: true,
-    scrub: 0.6,
+    scrub: 1,
     animation: tl,
     invalidateOnRefresh: true,
-    onUpdate: (s) => {
-      const t = s.progress * total;
+    onUpdate: (st) => {
+      const t = st.progress * total;
       const next = t < T_BREAK ? 0 : t < T_REBUILD ? 1 : 2;
       if (next === note) return;
       note = next;
@@ -458,15 +475,42 @@ function setupWork() {
   const bar = $('[data-work-bar]');
   let index = 0;
 
+  // The photos form a neat pile: the current one lies on top, the ones already seen stay underneath,
+  // each turned a few degrees the other way and nudged aside; the ones to come wait above and drop in.
+  const lay = () => {
+    shots.forEach((s, k) => {
+      const d = index - k; // > 0: already seen, 0: current, < 0: still to come
+      let x = 0, y = 0, r = 0, sc = 1, o = 1;
+      if (d > 0) {
+        const side = k % 2 ? 1 : -1;
+        x = side * (5 + d * 3);
+        y = d * 6;
+        r = side * (1.2 + d * 1);
+        sc = 1 - d * 0.015;
+        o = d > 4 ? 0 : 1;
+      } else if (d < 0) {
+        y = -120;
+        r = (k % 2 ? 1 : -1) * 14;
+        sc = 1.08;
+        o = 0;
+      } else r = k % 2 ? 0.8 : -0.8;
+      s.style.setProperty('--x', `${x}px`);
+      s.style.setProperty('--y', d < 0 ? `${y}%` : `${y}px`);
+      s.style.setProperty('--r', `${r}deg`);
+      s.style.setProperty('--s', String(sc));
+      s.style.opacity = String(o);
+      s.style.zIndex = String(10 - Math.abs(d) + (d >= 0 ? 10 : 0));
+      s.classList.toggle('is-active', d === 0);
+    });
+  };
+  lay();
+
   const show = (i: number) => {
     if (i === index) return;
-    shots.forEach((s) => s.classList.remove('is-prev'));
-    shots[index].classList.remove('is-active');
-    shots[index].classList.add('is-prev');
-    shots[i].classList.add('is-active');
+    index = i;
+    lay();
     items.forEach((it, k) => it.classList.toggle('is-active', k === i));
     counter.textContent = String(i + 1).padStart(2, '0');
-    index = i;
   };
 
   // The reading line sits a little below the middle. Whichever item it crosses is current;
@@ -508,8 +552,6 @@ function setupManifesto() {
   const video = $<HTMLVideoElement>('[data-manifesto-video]');
   const drum = $('[data-wheel]');
   const words = $$('.wheel__word', drum);
-  const splitR = $('[data-split-r]');
-  const splitB = $('[data-split-b]');
 
   // Load and play only near the viewport.
   new IntersectionObserver(([e]) => {
@@ -526,22 +568,11 @@ function setupManifesto() {
 
   if (reduced) return;
 
-  // Analog glitch: a short horizontal jitter and wider RGB split every 2–4 s.
-  const glitch = () => {
-    const dx = 6 + Math.random() * 10;
-    gsap.timeline()
-      .to(video, { x: () => (Math.random() - 0.5) * 18, duration: 0.05, repeat: 5, yoyo: true, ease: 'steps(1)' })
-      .call(() => { splitR.setAttribute('dx', String(dx)); splitB.setAttribute('dx', String(-dx)); }, [], 0)
-      .call(() => { splitR.setAttribute('dx', '3'); splitB.setAttribute('dx', '-3'); }, [], 0.3)
-      .set(video, { x: 0 });
-    window.setTimeout(glitch, 2000 + Math.random() * 2000);
-  };
-  window.setTimeout(glitch, 2500);
-
   // Tag words on a drum: each word is placed from its offset to the centre, so the
   // centre word is full size and its neighbours squash, shrink and fade toward the
   // rim. Scroll sets a target (with a dwell per word); a ticker eases toward it.
-  const WHEEL_END = 0.62;
+  const WHEEL_START = 0.04;
+  const WHEEL_END = 0.74;
   const wheel = { pos: 0, target: 0, last: -1 };
   const n = words.length;
   const placeWords = () => {
@@ -554,7 +585,7 @@ function setupManifesto() {
       if (!vis) return;
       const c = Math.cos(a);
       w.style.transform = `translate3d(0, ${(Math.sin(a) * R).toFixed(2)}px, 0) scale(${(0.72 + 0.28 * c).toFixed(4)}, ${Math.max(0.05, c).toFixed(4)})`;
-      w.style.opacity = Math.max(0, c * c - 0.05 * Math.abs(d)).toFixed(3);
+      w.style.opacity = '1'; // full strength; the wheel's edge mask does the fading
       w.classList.toggle('is-active', Math.abs(d) < 0.5);
     });
   };
@@ -568,16 +599,36 @@ function setupManifesto() {
   });
   window.addEventListener('resize', placeWords);
 
+  // 1. Entrance, on time, not on scroll: the window swings in and the quote drops beside it as the
+  //    section comes into view, so both have settled by the time the section pins.
+  const quote = '.manifesto__quote';
+  gsap.fromTo(frame, { scale: 0.8, rotation: 6, y: 110, opacity: 0 }, {
+    scale: 1, rotation: -2, y: 0, opacity: 1, duration: 1.1, ease: 'power3.out',
+    scrollTrigger: { trigger: section, start: 'top 75%', toggleActions: 'play none none reverse' },
+  });
+  gsap.fromTo(quote, { y: -80, opacity: 0, rotation: -5 }, {
+    y: 0, opacity: 1, rotation: 0, duration: 0.9, delay: 0.2, ease: 'power3.out',
+    scrollTrigger: { trigger: section, start: 'top 75%', toggleActions: 'play none none reverse' },
+  });
+
+  // 2. Scroll-scrubbed: the whole pin is one clock from 0 to 1.
+  //    0.04 to 0.74  the tag wheel turns through its words, one settling at a time
+  //    0.76 to 0.84  quote and wheel leave
+  //    0.78 to 1.00  the window turns away and shrinks while the profile rises over it
   const tl = gsap.timeline({ defaults: { ease: 'none' } });
-  tl.to({}, { duration: WHEEL_END }, 0)
-    .to(['.manifesto__label', '.manifesto__quote', '.wheel'], { opacity: 0, duration: 0.06 }, WHEEL_END)
-    // Exit: the screen shrinks to a small portrait while it bleaches to the cream page.
-    .to(frame, {
-      clipPath: () => `inset(${Math.max(0, (innerHeight - 245) / 2)}px ${Math.max(0, (innerWidth - 160) / 2)}px)`,
-      duration: 0.3,
-      ease: 'power2.inOut',
-    }, 0.66)
-    .to('[data-manifesto-bleach]', { opacity: 0.8, duration: 0.3 }, 0.66);
+  tl.to({}, { duration: 1 }, 0)
+    .fromTo(
+      [quote, '.wheel'],
+      { opacity: 1, y: 0 },
+      { opacity: 0, y: -40, duration: 0.08, ease: 'power2.in', immediateRender: false },
+      0.76
+    )
+    .fromTo(
+      frame,
+      { scale: 1, rotation: -2, y: 0 },
+      { scale: 0.7, rotation: -9, y: -30, duration: 0.22, ease: 'power2.inOut', immediateRender: false },
+      0.78
+    );
 
   ScrollTrigger.create({
     trigger: section,
@@ -588,15 +639,7 @@ function setupManifesto() {
     scrub: 1,
     animation: tl,
     invalidateOnRefresh: true,
-    onUpdate: (st) => (wheel.target = dwell(Math.min(1, st.progress / WHEEL_END) * (n - 1), n)),
-  });
-  // Header turns light while the video is dark.
-  ScrollTrigger.create({
-    trigger: section,
-    start: 'top 6%',
-    end: () => `top+=${(section.offsetHeight - innerHeight) * 0.68} top`,
-    toggleClass: { targets: header, className: 'is-dark' },
-    invalidateOnRefresh: true,
+    onUpdate: (st) => (wheel.target = dwell(Math.min(1, Math.max(0, (st.progress - WHEEL_START) / (WHEEL_END - WHEEL_START))) * (n - 1), n)),
   });
 }
 
@@ -638,5 +681,31 @@ function setupNav() {
   }
 }
 
+// --- HUD: scroll position and the section in view ---------------------------------------------------
+function setupHud() {
+  const pct = document.querySelector<HTMLElement>('[data-hud-pct]');
+  const name = document.querySelector<HTMLElement>('[data-hud-name]');
+  const bar = document.querySelector<HTMLElement>('[data-hud-bar]');
+  if (!pct || !name || !bar) return;
+  const sections: [string, string][] = [
+    ['[data-hero]', 'Intro'], ['[data-wall]', 'Principles'], ['[data-rows]', 'Index'], ['[data-values]', 'About'],
+    ['[data-projects]', 'Work'], ['.index', 'Case studies'], ['.notes', 'Notes'], ['[data-manifesto]', 'Manifesto'],
+    ['.profile', 'Profile'], ['[data-foot]', 'Contact'],
+  ];
+  const els = sections.map(([sel]) => document.querySelector<HTMLElement>(sel));
+  ScrollTrigger.create({
+    start: 0,
+    end: 'max',
+    onUpdate: (s) => {
+      pct.textContent = String(Math.round(s.progress * 100)).padStart(3, '0');
+      bar.style.transform = `scaleX(${s.progress.toFixed(4)})`;
+      let label = sections[0][1];
+      els.forEach((el, i) => {
+        if (el && el.getBoundingClientRect().top < innerHeight * 0.5) label = sections[i][1];
+      });
+      if (name.textContent !== label) name.textContent = label;
+    },
+  });
+}
 
 boot();
