@@ -698,14 +698,21 @@ function setupNav() {
   const pill = $('[data-pill]');
   const slide = $('.pill__slide', pill);
   const links = $$<HTMLAnchorElement>('[data-nav]', pill);
-  const owners: Record<string, string[]> = {
-    work: ['[data-projects]', '.index', '.notes'],
-    about: ['[data-values]', '.profile'],
-    contact: ['[data-foot]'],
-  };
-  const live = new Set<string>();
-  const paint = () => {
-    const key = (['contact', 'about', 'work'] as const).find((k) => [...live].some((l) => l.startsWith(k)));
+  // Page order -> nav key; the last section whose top is above mid-screen wins (same rule as the HUD).
+  const sections: [string, string][] = [
+    ['[data-values]', 'about'], ['[data-projects]', 'work'], ['.index', 'work'], ['.notes', 'work'],
+    ['[data-manifesto]', 'about'], ['.profile', 'about'], ['[data-foot]', 'contact'],
+  ];
+  const els = sections.map(([sel]) => $(sel));
+  let current: string | undefined | null = null;
+  const paint = (force = false) => {
+    let key: string | undefined;
+    els.forEach((el, i) => {
+      if (el.getBoundingClientRect().top < innerHeight * 0.5) key = sections[i][1];
+    });
+    if (scrollY + innerHeight >= document.documentElement.scrollHeight - 2) key = 'contact';
+    if (key === current && !force) return;
+    current = key;
     links.forEach((l) => l.classList.toggle('is-active', l.dataset.nav === key));
     const active = links.find((l) => l.dataset.nav === key);
     pill.classList.toggle('has-active', !!active);
@@ -714,21 +721,9 @@ function setupNav() {
       slide.style.transform = `translateX(${active.offsetLeft}px)`;
     }
   };
-  for (const [key, sels] of Object.entries(owners)) {
-    sels.forEach((sel, i) => {
-      const el = $(sel);
-      const target = el.parentElement?.classList.contains('pin-spacer') ? el.parentElement : el;
-      ScrollTrigger.create({
-        trigger: target,
-        start: 'top 55%',
-        end: 'bottom 45%',
-        onToggle: (s) => {
-          s.isActive ? live.add(`${key}${i}`) : live.delete(`${key}${i}`);
-          paint();
-        },
-      });
-    });
-  }
+  ScrollTrigger.create({ start: 0, end: 'max', onUpdate: () => paint() });
+  ScrollTrigger.addEventListener('refresh', () => paint(true));
+  paint(true);
 }
 
 // --- HUD: scroll position and the section in view ---------------------------------------------------
