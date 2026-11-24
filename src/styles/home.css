@@ -1711,6 +1711,20 @@ main,
   line-height: 1.5;
 }
 
+/* Letters of split headings. Each one hops when the pointer passes over it. The hop uses the
+   individual translate and rotate properties so it never fights the transform GSAP writes. */
+.pop {
+  display: inline-block;
+  transition: translate 0.35s var(--pop), rotate 0.35s var(--pop);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pop:hover {
+    translate: 0 -0.12em;
+    rotate: -6deg;
+  }
+}
+
 /* --- Motion polish: scroll progress, smooth project rows -------------------------------------- */
 
 :root {

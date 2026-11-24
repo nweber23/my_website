@@ -186,6 +186,27 @@ function setupMotion({ lenis }: Stage) {
       scrollTrigger: { trigger: row, start: 'top 92%', toggleActions: 'play none none reverse' },
     });
   });
+  if (!reduced) {
+    // The strips lean into the scroll like tape being pulled, then settle back when you stop.
+    const lean = $$('[data-row]', rowsSection).map((row, i) => {
+      const to = gsap.quickTo(row, 'rotation', { duration: 0.7, ease: 'power3.out' });
+      return (v: number) => to((i % 2 ? -1 : 1) * v);
+    });
+    let settle = 0;
+    ScrollTrigger.create({
+      trigger: rowsSection,
+      start: 'top bottom',
+      end: 'bottom top',
+      onUpdate: (st) => {
+        const v = gsap.utils.clamp(-3.5, 3.5, st.getVelocity() / 500);
+        lean.forEach((to) => to(v));
+        window.clearTimeout(settle);
+        settle = window.setTimeout(() => lean.forEach((to) => to(0)), 140);
+      },
+      onLeave: () => lean.forEach((to) => to(0)),
+      onLeaveBack: () => lean.forEach((to) => to(0)),
+    });
+  }
   const circle = $('.circled path', rowsSection);
   if (circle && !sda) {
     gsap.to(circle, { strokeDashoffset: 0, ease: 'none', scrollTrigger: { trigger: circle.closest('.circled')!, start: 'top 80%', end: 'top 40%', scrub: reduced ? false : true } });
@@ -225,6 +246,35 @@ function setupMotion({ lenis }: Stage) {
   }
   // --- 7. Projects: sticky preview ------------------------------------------------
   setupWork();
+
+  // Section titles and the footer name: letters pop up one after another, springing into place.
+  const letters = (el: HTMLElement) => {
+    const text = el.textContent ?? '';
+    el.setAttribute('aria-label', text);
+    el.textContent = '';
+    return [...text].map((ch) => {
+      const sp = document.createElement('span');
+      sp.className = 'pop';
+      sp.setAttribute('aria-hidden', 'true');
+      sp.textContent = ch === ' ' ? '\u00a0' : ch;
+      el.append(sp);
+      return sp;
+    });
+  };
+  $$('.sec-head__title, .foot__logo').forEach((h) => {
+    const chars = letters(h);
+    if (reduced) return;
+    gsap.from(chars, {
+      yPercent: 110,
+      rotation: () => gsap.utils.random(-22, 22),
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.04,
+      ease: 'back.out(2.2)',
+      clearProps: 'transform',
+      scrollTrigger: { trigger: h, start: 'top 90%' },
+    });
+  });
 
   // Reveal for the index, notes and profile blocks.
   $$('.sec-head, .row, .notes__list li, .card, .foot__logo, .foot__row').forEach((el) => el.setAttribute('data-reveal', ''));
