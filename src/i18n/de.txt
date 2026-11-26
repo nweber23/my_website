@@ -75,7 +75,7 @@ Ausgewählte Projekte
 @@ 1mow5gc
 ZUM_INDEX ↓
 @@ 1kyyjel
-Leader abschießen. Zusehen, wie er sich erholt.
+Leader killen. Zusehen, wie sich der Cluster erholt.
 @@ 1ss78hg
 Raft-Konsens von Grund auf in Go, mit replizierter Key-Value-Datenbank und einem Live-Cluster, den man kaputt machen kann. Chaos-Tests mit festem Seed spielen jeden Fehler erneut ab.
 @@ nm8z08
@@ -93,7 +93,7 @@ OpenGL-4.1-Renderer in Go von Grund auf. Eigener .obj-Parser, Ear Clipping, 0,06
 @@ 1wobokp
 Zeilensperren statt Race Conditions.
 @@ 1hxnok7
-Ranking-System für die 42 Heilbronn in Go und PostgreSQL. 30 ms mittlere Antwortzeit, 99,9 % Verfügbarkeit.
+Ranking-System an der 42 Heilbronn in Go und PostgreSQL. 30 ms mittlere Antwortzeit, 99,9 % Verfügbarkeit.
 @@ 15k2ovq
 Von 1–5 auf über 120 Bilder pro Sekunde.
 @@ tsq7px
@@ -121,9 +121,9 @@ Abhängigkeiten
 @@ 1gepi6c
 <strong>Problem:</strong> Raft ist der Algorithmus hinter etcd, Consul und CockroachDB. Man nickt beim Lesen des Papers schnell zustimmend, aber der eigenen Implementierung zu vertrauen ist schwer. Ein Konsensfehler stürzt nicht ab. Er zeigt sich darin, dass zwei Knoten nach einer ganz bestimmten Folge aus Abstürzen, Partitionen und vertauschten Paketen uneins sind. Ich wollte alles implementieren, auch die Teile, die Tutorials überspringen (Persistenz, Log-Kompaktierung, <code>InstallSnapshot</code>, Exactly-once-Clients), und das Verhalten sehen, statt ihm zu vertrauen.
 @@ xah2qv
-<strong>Lösung:</strong> Eine vollständige Raft-Implementierung in Go: Leader-Wahl mit PreVote und CheckQuorum, Log-Replikation mit Konfliktreparatur und Pipelining, die Wahlbeschränkung, das Committen von Einträgen früherer Terms, ein Write-Ahead-Log mit Prüfsummen und Absturzwiederherstellung sowie Log-Kompaktierung mit <code>InstallSnapshot</code>, in Chunks gestreamt, für Follower, die weit zurückgefallen sind. Membership-Änderungen laufen per Joint Consensus, sodass Server hinzukommen und gehen, während der Cluster läuft. Darauf sitzt eine replizierte Key-Value-Datenbank. Lesezugriffe nutzen ReadIndex und sind daher ohne Log-Schreibzugriff linearisierbar, und Client-Sessions sorgen dafür, dass ein wiederholter Schreibzugriff höchstens einmal angewendet wird. <code>raftnode</code> betreibt ein Mitglied pro Prozess über HTTP, optional mit gegenseitigem TLS. <code>raftlab</code> betreibt standardmäßig fünf Knoten, live auf bis zu fünfzehn skalierbar, in einem Prozess über ein Netzwerk mit Fehlerinjektion und streamt jede Nachricht als animierten Punkt in den Browser, wo man Knoten töten, das Netzwerk partitionieren, den Cluster skalieren und Latenz, Verlust und Duplikation einstellen kann.
+<strong>Lösung:</strong> Eine vollständige Raft-Implementierung in Go: Leader-Wahl mit PreVote und CheckQuorum, Log-Replikation mit Konfliktreparatur und Pipelining, die Wahlbeschränkung, das Committen von Einträgen früherer Terms, ein Write-Ahead-Log mit Prüfsummen und Absturzwiederherstellung sowie Log-Kompaktierung mit <code>InstallSnapshot</code>, in Chunks gestreamt, für Follower, die weit zurückgefallen sind. Membership-Änderungen laufen per Joint Consensus, sodass Server hinzukommen und gehen, während der Cluster läuft. Obendrauf läuft eine replizierte Key-Value-Datenbank. Lesezugriffe nutzen ReadIndex und sind daher ohne Log-Schreibzugriff linearisierbar, und Client-Sessions sorgen dafür, dass ein wiederholter Schreibzugriff höchstens einmal angewendet wird. <code>raftnode</code> betreibt ein Mitglied pro Prozess über HTTP, optional mit gegenseitigem TLS. <code>raftlab</code> betreibt standardmäßig fünf Knoten, live auf bis zu fünfzehn skalierbar, in einem Prozess über ein Netzwerk mit Fehlerinjektion und streamt jede Nachricht als animierten Punkt in den Browser, wo man Knoten töten, das Netzwerk partitionieren, den Cluster skalieren und Latenz, Verlust und Duplikation einstellen kann.
 @@ 1l3jyhl
-<strong>Technischer Ansatz:</strong> Der Kern <code>raft.Node</code> ist eine reine Zustandsmaschine ohne Goroutinen, Sockets oder Systemzeit. Alles, womit er in Berührung kommt, läuft über vier Interfaces: <code>Transport</code>, <code>Clock</code>, <code>Storage</code> und <code>StateMachine</code>. Weil Zeit und I/O injiziert werden, läuft ein Fünf-Knoten-Cluster in einem Single-Thread-Test auf einer Fake-Uhr, und ein Lauf ist eine reine Funktion seines Zufalls-Seeds. Ein Chaos-Test lässt Knoten abstürzen und neu starten, partitioniert das Netzwerk und injiziert Verlust, Duplikation und Verzögerung für 40 virtuelle Sekunden, während vier Clients schreiben und lesen. Dabei prüft er alle 10 ms Wahlsicherheit und Übereinstimmung des committeten Präfixes. Am Ende prüft er, ob die Replikate konvergieren, und übergibt die komplette aufgezeichnete Historie an einen eigens für dieses Repo geschriebenen Linearisierbarkeits-Checker (Wing–Gong/Lowe). Ein Fehlschlag gibt seinen Seed aus, und <code>CHAOS_SEED=17 go test -run Chaos ./internal/kv</code> spielt ihn exakt erneut ab. Der Kern nutzt nur die Standardbibliothek; die einzige Abhängigkeit ist eine WebSocket-Bibliothek für die Visualisierung.
+<strong>Technischer Ansatz:</strong> Der Kern <code>raft.Node</code> ist eine reine Zustandsmaschine ohne Goroutinen, Sockets oder Systemzeit. Alles, worauf er zugreift, läuft über vier Interfaces: <code>Transport</code>, <code>Clock</code>, <code>Storage</code> und <code>StateMachine</code>. Weil Zeit und I/O injiziert werden, läuft ein Fünf-Knoten-Cluster in einem Single-Thread-Test auf einer Fake-Uhr, und ein Lauf ist eine reine Funktion seines Zufalls-Seeds. Ein Chaos-Test lässt Knoten abstürzen und neu starten, partitioniert das Netzwerk und injiziert Verlust, Duplikation und Verzögerung für 40 virtuelle Sekunden, während vier Clients schreiben und lesen. Dabei prüft er alle 10 ms Wahlsicherheit und Übereinstimmung des committeten Präfixes. Am Ende prüft er, ob die Replikate konvergieren, und übergibt die komplette aufgezeichnete Historie an einen eigens für dieses Repo geschriebenen Linearisierbarkeits-Checker (Wing–Gong/Lowe). Schlägt ein Lauf fehl, gibt er seinen Seed aus, und <code>CHAOS_SEED=17 go test -run Chaos ./internal/kv</code> spielt ihn exakt erneut ab. Der Kern nutzt nur die Standardbibliothek; die einzige Abhängigkeit ist eine WebSocket-Bibliothek für die Visualisierung.
 @@ 10wec0f
 <strong>Ergebnisse &amp; Erkenntnisse:</strong> Rund 8.700 Zeilen Go, davon etwa 3.900 Tests, mit CI, die <code>go test -race</code> und <code>golangci-lint</code> ausführt. Die unterwegs gefundenen Bugs sind die eigentliche Lektion: veraltete Timer-Callbacks, die eine unnötige Wahl auslösen und einen gesunden Leader absetzen, ein verspätetes <code>AppendEntries</code>, das neuere Einträge löscht, vertauschte Antworten, die <code>nextIndex</code> rückwärts bewegen, und ein Absturz nur unter Windows, weil das WAL bei der ersten Kompaktierung nicht über eine geöffnete Datei umbenannt werden konnte. Auch die Grenzen sind dokumentiert: Die Client-API ist nicht authentifiziert, ein Knoten mit gültigem Zertifikat gilt als voll vertrauenswürdig, und die Steuer-API der Visualisierung ist bewusst offen. Übrig auf der Roadmap bleiben nur Leader Leases als günstigere Alternative zu ReadIndex, die Korrektheit gegen eine Annahme über Uhrendrift eintauschen würden. Der <a href="writing/raft-deterministic-simulation-testing.html">Artikel</a> erklärt, wie die Fake-Uhr funktioniert und welchen einen Bug sie nicht reproduzieren konnte.
 @@ 1402mgp
@@ -157,7 +157,7 @@ ggü. Heuristik
 @@ 1pp9uk
 T-Spins / Spiel
 @@ uidivl
-<strong>Problem:</strong> Reinforcement Learning lässt sich im Tutorial leicht nachvollziehen und in der Praxis schwer vertrauen. Ich wollte es lernen, indem ich die ganze Pipeline baue: ein Spiel mit so exakten Regeln, dass Agenten auf identischen Partien verglichen werden können, eine Baseline, die zu schlagen sich lohnt, und eine Möglichkeit zu sehen, was der Agent tatsächlich gelernt hat.
+<strong>Problem:</strong> Reinforcement Learning lässt sich im Tutorial leicht nachvollziehen, aber in der Praxis schwer wirklich vertrauen. Ich wollte es lernen, indem ich die ganze Pipeline baue: ein Spiel mit so exakten Regeln, dass Agenten auf identischen Partien verglichen werden können, eine Baseline, die zu schlagen sich lohnt, und eine Möglichkeit zu sehen, was der Agent tatsächlich gelernt hat.
 @@ 1bwzsbt
 <strong>Lösung:</strong> Eine deterministische, seedbare Tetris-Engine in Go (7-Bag, SRS-Rotation und Kicks, kein Rendering-Code), die über einen gRPC-Stream bereitgestellt wird, ein Spiel pro Stream. Darauf sitzt eine Python-Gymnasium-Umgebung, die ein DQN in PyTorch trainiert. Ein separater Ebitengine-Viewer spielt menschliche Partien, Agenten-Replays und Trainingsläufe ab und führt die exportierten Netze selbst ohne Python aus.
 @@ 74nivy
@@ -219,9 +219,9 @@ Nebenläufig
 @@ 14wpnm2
 UV-Modi
 @@ 1ltcsdo
-<strong>Problem:</strong> scop ist das OpenGL-Projekt der 42 – ein 3D-<code>.obj</code>-Modell rendern, mit nur einer Mathematikbibliothek und rohen OpenGL-Bindings als externen Abhängigkeiten. Es gibt keinen Szenengraphen, keine Asset-Pipeline, keinen glTF-Loader, auf den man sich stützen könnte: Der Datei-Parser, die Vektor- und Matrixmathematik, die Triangulierung und die Kamera müssen alle aus ersten Prinzipien gebaut werden.
+<strong>Problem:</strong> scop ist das OpenGL-Projekt der 42 – ein 3D-<code>.obj</code>-Modell rendern, mit nur einer Mathematikbibliothek und rohen OpenGL-Bindings als externen Abhängigkeiten. Es gibt keinen Szenengraphen, keine Asset-Pipeline, keinen glTF-Loader, auf den man sich stützen könnte: Der Datei-Parser, die Vektor- und Matrixmathematik, die Triangulierung und die Kamera müssen alle von Grund auf gebaut werden.
 @@ 9hv7l1
-<strong>Lösung:</strong> Das Ergebnis ist ein Go-Renderer auf <strong>OpenGL 4.1 Core</strong> mit GLFW für die Fensterverwaltung. Eigene <code>.obj</code>- und <code>.mtl</code>-Parser verarbeiten Geometrie und Materialeigenschaften (Ka/Kd/Ks/Ns/map_Kd) und fallen elegant zurück, wenn Texturdateien fehlen, und drei automatische UV-Generierungsmodi – planar, zylindrisch, sphärisch – decken Modelle ab, die ohne Texturkoordinaten kommen. Eine Orbit- und eine Free-Fly-Kamera sitzen auf handgeschriebenen vec2/3/4-Typen und spaltenweiser mat4-Mathematik, einschließlich Perspektiv- und lookAt-Transformationen, ganz ohne externe Mathematikabhängigkeit.
+<strong>Lösung:</strong> Das Ergebnis ist ein Go-Renderer auf <strong>OpenGL 4.1 Core</strong> mit GLFW für die Fensterverwaltung. Eigene <code>.obj</code>- und <code>.mtl</code>-Parser verarbeiten Geometrie und Materialeigenschaften (Ka/Kd/Ks/Ns/map_Kd) und fallen elegant zurück, wenn Texturdateien fehlen, und drei automatische UV-Generierungsmodi – planar, zylindrisch, sphärisch – decken Modelle ab, die ohne Texturkoordinaten kommen. Eine Orbit- und eine Free-Fly-Kamera bauen auf handgeschriebenen vec2/3/4-Typen und spaltenweiser mat4-Mathematik, einschließlich Perspektiv- und lookAt-Transformationen, ganz ohne externe Mathematikabhängigkeit.
 @@ 2k486n
 <strong>Technischer Ansatz:</strong> Zwei Probleme brauchten echte Lösungen. Beliebige Polygone – auch konkave, nicht ebene und degenerierte – werden per <strong>Ear Clipping über der Newell-Normalenebene jeder Fläche</strong> trianguliert, sodass die Geometrie unabhängig davon korrekt bleibt, wie die Quell-.obj erstellt wurde. Und die Render-Schleife ist im eingeschwungenen Zustand allokationsfrei: ein einziges VAO/VBO/EBO pro Modell mit Vertex-Deduplizierung, Gribb-Hartmann-Frustum-Culling und Batching des Texturzustands bringen sie unter <code>-debug</code> auf 0,06 Allokationen/Frame. Auch das Parsen ist parallelisiert – Worker-Goroutinen parsen Vertex- und Flächendaten vorab pro zeilenbündigem Chunk, dieselbe Nebenläufigkeitsdisziplin wie hinter der Match-Verarbeitung des <a href="#project-elo">ELO Leaderboards</a>.
 @@ 1k85750
@@ -237,7 +237,7 @@ miniRT – Rasterisierung vs. Raytracing, Grafikarbeit in der C-Familie
 @@ 9yqhtz
 Artikel: Polygone mit Ear Clipping triangulieren
 @@ akii9k
-Wettkampf-Ranglistensystem für die 42 Heilbronn
+Wettkampf-Ranglistensystem an der 42 Heilbronn
 @@ lgqvrr
 Leaderboard-Oberfläche
 @@ 1srl22r
@@ -251,7 +251,7 @@ Archiviert
 @@ 12ml4a4
 Query-Ziel
 @@ 192p3dh
-<strong>Problem:</strong> In der Community der 42 Heilbronn gab es Kicker- und Tischtennisturniere, aber keine gemeinsame Möglichkeit festzuhalten, wer wirklich gut war. Neben dem reinen Speichern der Ergebnisse konnten zwei Studierende denselben Match-Slot innerhalb weniger Sekunden melden – eine naive Neuberechnung der Wertung ist ein klassischer Race Condition, denn ein Elo-Update ist ein Read-Modify-Write auf einem gemeinsamen Wert, und zwei gleichzeitige Meldungen dürfen nicht dieselbe veraltete Wertung lesen und beide zurückschreiben.
+<strong>Problem:</strong> In der Community der 42 Heilbronn gab es Kicker- und Tischtennisturniere, aber keine gemeinsame Möglichkeit festzuhalten, wer wirklich gut war. Neben dem reinen Speichern der Ergebnisse konnten zwei Studierende denselben Match-Slot innerhalb weniger Sekunden melden – eine naive Neuberechnung der Wertung ist eine klassische Race Condition, denn ein Elo-Update ist ein Read-Modify-Write auf einem gemeinsamen Wert, und zwei gleichzeitige Meldungen dürfen nicht dieselbe veraltete Wertung lesen und beide zurückschreiben.
 @@ 18hl7fd
 <strong>Lösung:</strong> Ich habe ein vollständiges Elo-Ranglistensystem in Go mit PostgreSQL gebaut, von Grund auf auf Performance optimiert. Match-Meldungen laufen in einer Transaktion, die die Zeilen beider Spieler sperrt, bevor die Wertung aktualisiert wird, sodass gleichzeitige Meldungen nacheinander abgearbeitet werden, statt sich zu überschreiben, während Lesezugriffe – die öffentliche Rangliste, Spielerprofile, Match-Historie – auf einem separaten schnellen Pfad bleiben. Das Backend bediente ein React-Frontend mit Live-Ranglisten, detaillierten Spielerprofilen und historischen Match-Daten.
 @@ 14x98r1
@@ -305,7 +305,7 @@ Primitive
 @@ 177ed2m
 Signale
 @@ 1lhkjpu
-<strong>Problem:</strong> Zu verstehen, wie eine Unix-Shell funktioniert, erfordert tiefes Wissen über die Grundlagen von Betriebssystemen, und das Projekt minishell der 42 verbietet es, sich dafür auf eine Bibliothek zu stützen – keine Shell-Bibliotheken, nur rohe libc und Systemaufrufe. Das heißt: Quoting, Expansion, Umleitung und Pipelines müssen alle aus ersten Prinzipien gebaut werden, und wenn eines davon unterschwellig falsch ist (ein Heredoc, der Begrenzer in Anführungszeichen nicht beachtet, ein <code>unset</code>, das eine veraltete Umgebungsvariable für ein Kind sichtbar lässt), fällt das erst auf, wenn ein bestimmter Befehl scheitert.
+<strong>Problem:</strong> Zu verstehen, wie eine Unix-Shell funktioniert, erfordert tiefes Wissen über die Grundlagen von Betriebssystemen, und das Projekt minishell der 42 verbietet es, sich dafür auf eine Bibliothek zu stützen – keine Shell-Bibliotheken, nur rohe libc und Systemaufrufe. Das heißt: Quoting, Expansion, Umleitung und Pipelines müssen alle von Grund auf gebaut werden, und wenn eines davon unterschwellig falsch ist (ein Heredoc, der Begrenzer in Anführungszeichen nicht beachtet, ein <code>unset</code>, das eine veraltete Umgebungsvariable für einen Kindprozess sichtbar lässt), fällt das erst auf, wenn ein bestimmter Befehl scheitert.
 @@ 1b7pl5j
 <strong>Lösung:</strong> Eine POSIX-konforme Shell in C, die das Kernverhalten der Bash nachbildet. Ein handgeschriebener Lexer und ein Recursive-Descent-Parser wandeln die rohe Eingabe in einen Token-Strom um, der die Semantik einfacher und doppelter Anführungszeichen und Here-Doc-Grenzen respektiert; anschließend durchläuft eine Ausführungs-Engine diese Struktur mit echten Unix-<strong>Systemaufrufen</strong> – kein <code>system()</code>, keine Abkürzungen.
 @@ 19k4dnl
@@ -589,7 +589,7 @@ Teilbarer Link
 @@ hwqqj5
 Hochperformantes ELO-Ranglistensystem in Go und PostgreSQL mit Match-Meldungen in Echtzeit, Live-Ranglisten und 30 ms mittlerer Antwortzeit.
 @@ 10m49v5
-Wettkampf-Ranglistensystem für die 42 Heilbronn · 2026
+Wettkampf-Ranglistensystem an der 42 Heilbronn · 2026
 @@ 1wb5fhu
 3D Go Renderer: OpenGL-Renderer in Go von Grund auf | Niklas Weber
 @@ 1a18ktr
@@ -1037,7 +1037,7 @@ Die Visualisierung während einer Partition. Der alte Leader (N5, Term 1) ist be
 @@ 3cdvlw
 Vier Nahtstellen und keine Uhr
 @@ 1ccqv3j
-Der Kern <code>raft.Node</code> setzt Figure 2 des Raft-Papers um und sonst nichts. Er hat keine Goroutinen und kein Wissen über Sockets oder Systemzeit. Alles, womit er in Berührung kommt, läuft über eines von vier Interfaces:
+Der Kern <code>raft.Node</code> setzt Figure 2 des Raft-Papers um und sonst nichts. Er hat keine Goroutinen und kein Wissen über Sockets oder Systemzeit. Alles, worauf er zugreift, läuft über eines von vier Interfaces:
 @@ tfrcxy
 Jedes hat eine echte und eine Test-Implementierung. <code>Transport</code> ist HTTP in einem echten Cluster, ein In-Process-Netzwerk mit Fehlerinjektion in der Visualisierung und ein manuelles In-Memory-Netzwerk in Unit-Tests. <code>Clock</code> ist die Systemuhr oder eine Fake-Uhr. <code>Storage</code> ist ein Write-Ahead-Log mit Prüfsummen. <code>StateMachine</code> ist die Key-Value-Datenbank oder in Tests ein Recorder.
 @@ 14vpgak
@@ -1047,7 +1047,7 @@ Der Chaos-Test
 @@ 8ykkia
 Der Chaos-Test lässt fünf Knoten 40 virtuelle Sekunden laufen. Er lässt zufällig Knoten abstürzen und neu starten, partitioniert das Netzwerk und injiziert Verlust, Duplikation und Verzögerung, während vier Clients zwei gemeinsame Schlüssel setzen, löschen und lesen, die Hälfte der Lesezugriffe über das Log und die Hälfte über ReadIndex. Nach jedem 10-ms-Schritt prüft er zwei Sicherheitseigenschaften: Wahlsicherheit (nie zwei Leader im selben Term) und Übereinstimmung des committeten Präfixes (keine zwei Knoten sind sich uneins über einen Eintrag, den beide committet haben).
 @@ 117lzs5
-Am Ende heilt er den Cluster, prüft, ob die Replikate konvergieren, und übergibt die vollständig aufgezeichnete Historie an einen Linearisierbarkeits-Checker (dazu unten mehr). Ein Fehlschlag gibt seinen Seed aus, und das erneute Abspielen ist ein einziger Befehl:
+Am Ende heilt er den Cluster, prüft, ob die Replikate konvergieren, und übergibt die vollständig aufgezeichnete Historie an einen Linearisierbarkeits-Checker (dazu unten mehr). Schlägt ein Lauf fehl, gibt er seinen Seed aus, und das erneute Abspielen ist ein einziger Befehl:
 @@ gxzqo8
 Dieses Replay macht den Test nützlich. Ein verteilter Test, der in einem von hundert Läufen fehlschlägt und nie wieder, lehrt einen nichts. Ein fehlschlagender Seed lässt sich erneut ausführen, Schritt für Schritt durchgehen und als Regressionstest behalten.
 @@ 11pqmc1
