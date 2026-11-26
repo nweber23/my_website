@@ -32,8 +32,6 @@ Standort
 Studium
 @@ 1hxhouj
 Softwaretechnik
-@@ 12fqnbp
-Projekte
 @@ 12s6fyu
 7 Projekte, C &amp; Go
 @@ 1g9augj
@@ -82,8 +80,6 @@ Raft-Konsens von Grund auf in Go, mit replizierter Key-Value-Datenbank und einem
 44 % besser als die Heuristik.
 @@ ewazxo
 Tetris-Engine in Go, DQN-Agenten in PyTorch, Live-Trainingsviewer. Dazu T-Spins.
-@@ 1n5is9z
-Drei Spiele, ein Protobuf-Vertrag.
 @@ 1mf9ktz
 Echtzeit-Multiplayer-Casino. Go-Backend, C++-Engine über gRPC, React-Frontend, selbstgebauter WebSocket-Hub.
 @@ zczivk
@@ -140,8 +136,6 @@ Quellcode
 Vollständige Fallstudie lesen
 @@ 1ddv00a
 Tetris ML – derselbe deterministische, seedbare Testansatz
-@@ 1ne45om
-Transcendence Casino – Go-Dienste, die über einen typisierten Vertrag kommunizieren
 @@ 1u8rtno
 Artikel: Raft mit einer Fake-Uhr testen
 @@ 8sefid
@@ -300,8 +294,6 @@ POSIX-konforme Shell in C
 „Die Shell ist ein Fenster in die Seele des Betriebssystems.“
 @@ 1pdhhjk
 Unix-Shell von Grund auf – Prozessverwaltung, Dateideskriptoren, Pipes, I/O-Umleitung, Umgebungsvariablen-Expansion, Signalbehandlung.
-@@ x36xdr
-Primitive
 @@ 177ed2m
 Signale
 @@ 1lhkjpu
@@ -346,12 +338,8 @@ AUSBILDUNG
 Kern
 @@ vi3shw
 OpenGL 4.1 · Raytracing
-@@ 26z2di
-Sterne
 @@ 1uzvgu4
 Follower
-@@ 6ojpbe
-Commits (1 J.)
 @@ 1bfdo2f
 JETZT
 @@ hak8dd
@@ -406,8 +394,6 @@ Elo-Leaderboard-Queries unter 100 ms
 Beliebige Polygone mit Ear Clipping triangulieren
 @@ 1m0no7i
 © 2026 · Niklas Weber
-@@ 120dz8u
-Von Hand gebaut mit three.js und reinem HTML
 @@ 1048uqr
 ← Startseite
 @@ ucow8a
@@ -1330,4 +1316,113 @@ Dieser Link konnte nicht gelesen werden. Stattdessen wird deine letzte Szene ang
 Szene aus dem Link geladen. Deine eigene Szene bleibt unberührt, bis du diese bearbeitest.
 @@ The scene is empty. Add a shape above.
 Die Szene ist leer. Oben eine Form hinzufügen.
-
+@@ o1jg9q
+STARTET <span data-loader-pct="">0</span>%
+@@ 6z47bi
+STARTET <span>100</span>%
+@@ 1t1akg5
+[02 — GRUNDPRINZIPIEN]
+@@ 1mccykx
+Bauen, brechen, neu bauen
+@@ 15i6udf
+Bauen
+@@ 17spnvc
+Brechen
+@@ 15kxlww
+Neu bauen
+@@ ona3pw
+Schreib es selbst.
+@@ 1dzbj8b
+Finde heraus, wo es scheitert.
+@@ desngb
+Mach es nochmal, besser.
+@@ 1wofsfp
+Von null
+@@ 1603ssf
+Messen
+@@ m4ulu5
+bauen, brechen, neu bauen.
+@@ 1kax5xn
+[Term 1 vs. 2]
+@@ 1ybnw40
+Am besten lernt man, indem man baut, kaputtmacht und neu baut.
+@@ 1so87mt
+Softwaretechnik<br><a>Hochschule Heilbronn</a>
+@@ mzmspq
+<strong>40-Zeilen-Sprint:</strong> Ein zweites Ziel, 40 Zeilen mit möglichst wenigen Tastendrücken zu löschen, trainierte einen Bot, der 100 von 100 ungesehenen Partien im Mittel mit 418 Tasten abschließt (schnellste 386, etwa 6,4 s bei einer Taste pro Frame). Das Weltrekord-Replay, an dem ich ihn gemessen habe, brauchte 272 Tasten, er erreicht also nicht die Eingaben des Rekordspielers; der Artikel nennt die Details und die Grenzen.
+@@ 5ag6ug
+ns/Element
+@@ xphk55
+0,437 ms
+@@ hcua90
+0,0052 ms
+@@ sjhc6
+14,4 ms
+@@ 1c5x588
+0,0214 ms
+@@ 6nijaz
+204 ms
+@@ 1xpyp3l
+0,0934 ms
+@@ 1y5hh3m
+836 ms
+@@ 9a06fl
+0,190 ms
+@@ uqpb1m
+Ein Sprint-Bot für 40 Zeilen
+@@ kks0mz
+Das nächste Ziel war ein anderes: 40 Zeilen so schnell wie möglich löschen, so wie der Modus 40 LINES von TETR.IO gewertet wird. Die Engine hat keine Uhr, also musste ich entscheiden, was „schnell“ bedeutet. Ich habe mich für Tastendrücke entschieden: Ein Zug kostet die Tasten, die er braucht (jede Rotation, jedes Hold und der letzte Hard Drop zählt als einer, ein gehaltener Soft Drop als einer, und ein Rutschen gegen eine Wand oder den Stapel als einer, wie bei einem DAS-Slide, während Anhalten im freien Raum einen Druck pro Schritt kostet), und der Agent minimiert die Summe. Ein Spiel endet bei 40 Zeilen. Weil die Kosten jedes Zugs mit derselben Anzahl Sekunden pro Taste skalieren, ändert diese Zahl nur, was die Uhr anzeigt, nicht, welche Züge die besten sind. Der Agent lernt mit geformter Belohnung: minus die Tastenzeit jedes Zugs plus eine feste Gutschrift pro gelöschter Zeile, sodass jeder Sieg dieselbe Gutschrift erhält und die Zeilengutschrift nie ändert, welcher Sieg der schnellste ist; sie macht nur das Gewinnen mehr wert als das Sterben.
+@@ kztmx7
+Ich habe das Replay des aktuellen Weltrekords für 40 LINES heruntergeladen und seine Zahlen ausgelesen: 13,263 s, 100 Steine, 272 Eingaben (2,72 pro Stein, 30 davon Holds). Das sind 0,0488 s pro Eingabe, womit sich Tastenzahlen in eine menschliche Uhr umrechnen lassen. Bei einem Bot sind nicht die Finger die Grenze, daher gebe ich auch eine Bot-Uhr mit einer Taste pro Spiel-Frame (1/60 s) an. Diese beiden Uhren sind keine Zahlen derselben Art, also ist die Tastenzahl der ehrliche Vergleich.
+@@ 7kfdfb
+Die schnellste Partie des Sprint-Agenten auf den 100 Test-Seeds (Seed 47): 40 Zeilen in 103 Steinen und 386 Tastendrücken, 6,43 s auf der Bot-Uhr, in Echtzeit abgespielt.
+@@ cr69as
+<strong>Er hat gelernt, zu gewinnen, und dann langsam, schneller zu werden.</strong> Nach 10.000 Schritten löschte er in 3 von 10 Validierungspartien 40 Zeilen. Ab 20.000 Schritten schaffte er jede, mit etwa 450 Tastendrücken, und bei 80.000 Schritten waren es etwa 406; danach blieb er zwischen 406 und 427. Auf den 100 Seeds, auf denen er nie trainiert hat, und mit weiterhin vor dem Netz verstecktem Spielfeld, schaffte das Netz mit der besten Validierung (80.000 Schritte) 100 von 100 Partien mit <strong>im Mittel 418,4 Tasten</strong> (Median 415, schnellste 386, langsamste 479) und 108 Steinen, wobei 100 das Minimum sind. Das finale Netz schaffte 99 von 100 mit 419,1. Go und Python stimmen exakt überein (100/100, 418,4, Minimum 386), der Viewer zeigt also das, was gemessen wurde.
+@@ qolp7x
+Tasten
+@@ aa7pg2
+Tasten / Stein
+@@ j7vq4y
+Bot-Uhr (1/60 s pro Taste)
+@@ qkrhui
+Menschen-Uhr (0,0488 s pro Taste)
+@@ 11lr1be
+Weltrekord-Replay
+@@ 7r30k3
+4,5 s
+@@ talfi3
+13,3 s
+@@ qvges8
+Sprint-Agent, Durchschnitt über 100 Partien
+@@ wt06b5
+7,0 s
+@@ 1yqfms4
+20,4 s
+@@ bdk8go
+Sprint-Agent, schnellste Partie
+@@ md29y6
+6,4 s
+@@ 1o4j3jb
+18,8 s
+@@ sv5mo5
+<strong>Er schlägt die Eingaben des Rekordspielers nicht.</strong> Der Agent braucht etwa 54 % mehr Tasten und 8 Steine mehr. Seine schnelle Zeit auf der Bot-Uhr stammt aus der Annahme einer Taste pro Frame, nicht aus besserem Spiel, deshalb nenne ich ihn nicht den schnellsten Bot; er ist ein Bot, der unter einem einfachen Modell ohne Schwerkraft, Lock Delay oder DAS-Timing zuverlässig ans Ziel kommt. Meine Tastenzählung kann außerdem leicht von der Definition einer Eingabe bei TETR.IO abweichen, die 20-s-Angabe ist also eine Schätzung. Jede Validierung nutzte nur 10 Partien, und die Kurve ist nach 60.000 Schritten flach, ich lese sie daher als Plateau bei 410 bis 420 Tasten, nicht als Trend.
+@@ 1nmf39c
+Zwei Fehler im Viewer lohnte es sich unterwegs zu beheben. Die Zugsuche speichert einen geraden Drop als etwa 20 einzelne Soft Drops um eine Zeile, sodass der Viewer den Stein nach unten kriechen und erst im letzten Moment drehen ließ; jetzt spielt er eine Soft-Drop-Folge als eine einzige sofortige Aktion ab, und die Suche setzt Rutschen und Rotationen vor den Drop, wenn das auf denselben Zellen landet. Der zweite Lauf, der gerade trainiert, gibt dem Netz statt der 200 rohen Zellen, aus denen es nicht lernen konnte, zwei kompakte Spielfeldform-Eingaben: die Höhe jeder Spalte und die Tiefe des Schachts, den sie jeweils bildet.
+@@ phg7kx
+Zuerst die Instabilität der Checkpoints beheben (mehr Validierungspartien, eine abfallende Lernrate, Mittelung der letzten Checkpoints), dann dem Move-Agenten sein Spielfeld zurückgeben, ohne es kaputtzumachen, etwa mit kompakten Slot-Merkmalen wie Spaltenhöhen und Schächten statt 200 roher Zellen (ein Sprint-Lauf mit genau diesen Eingaben trainiert gerade, ein Ergebnis habe ich noch nicht). Danach: PPO als wirklich anderen Algorithmus statt einer weiteren DQN-Variation, ein auf Überleben ausgerichtetes Maß und die anderen Trainings-Seeds für die Platzierungsmessungen oben.
+@@ 1b9u7my
+Der untrainierte Move-Agent spielt mit Hold und Tucks
+@@ zf9fu9
+Der Move-Agent nach 20.000 Trainingsschritten
+@@ 5q17tg
+Der Move-Agent nach 100.000 Trainingsschritten beim Spielen von T-Spins
+@@ qcn9cx
+Der Sprint-Agent löscht 40 Zeilen mit 386 Tastendrücken
+@@ 1n5is9z
+Drei Spiele, ein Protobuf-Contract.
+@@ 1ne45om
+Transcendence Casino – Go-Dienste, die über einen typisierten Contract kommunizieren
+@@ 12fqnbp
+Gebaut
+@@ 6ojpbe
+Commits (1 Jahr)
