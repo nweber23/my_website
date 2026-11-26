@@ -481,7 +481,7 @@ Zum Studio springen
 @@ vmlwpb
 Rückgängig
 @@ w7fg15
-Wiederholen
+Wiederherstellen
 @@ 16p5wug
 .rt importieren
 @@ oxd5ub
@@ -571,7 +571,7 @@ Szenenaktionen
 @@ 18a25w2
 Rückgängig (Strg+Z)
 @@ 1ck73l9
-Wiederholen (Strg+Umschalt+Z)
+Wiederherstellen (Strg+Umschalt+Z)
 @@ 1gtmeqq
 Bereiche
 @@ xb5ywa
@@ -723,7 +723,7 @@ Alles bisher steuert, was ein Container <em>sehen</em> kann. Nichts davon steuer
 @@ 1wqrenw
 Das zu verifizieren wurde die ergiebigste Debugging-Kette des ganzen Projekts. Der erste Speicher-Stresstest, <code>head -c 50000000 /dev/zero | tr '\0' x</code>, scheiterte sofort – im minimalen Busybox-Rootfs war nie ein <code>/dev</code> eingerichtet, kein devtmpfs, keine Geräteknoten. Stattdessen habe ich Busyboxs eigenes <code>yes</code>-Builtin genommen. Der zweite Versuch führte den Stresstest ohne Erfassung der Ausgabe aus, sodass die <code>x</code>-Zeichen nur das Terminal fluteten, statt sich im Speicher aufzubauen – <code>memory.current</code> blieb bei etwa 5 MB und <code>memory.events</code> zeigte <code>oom 0</code>, der Beweis, dass sich nichts ansammelte. Ich wechselte zu einer pipe- und substitutionsfreien Shell-Verdopplungsschleife, die an Quoting nicht scheitern kann:
 @@ 7w5jat
-Auch <em>dieser</em> erste Lauf starb nicht. <code>memory.current</code> blieb dauerhaft genau am Limit – kein OOM-Kill. Die eigentliche Ursache ist eine wohlbekannte und schlecht dokumentierte Falle von cgroups v2: <code>memory.max</code> begrenzt nur den Speicher, nicht den Swap, der separat ist. Ist auf dem Host Swap aktiviert, schiebt der Kernel Seiten in den Swap, sobald die cgroup ihre Speichergrenze erreicht, statt den OOM-Killer aufzurufen – der Prozess stirbt nicht, er trasht. Die Lösung ist das <code>memory.swap.max = 0</code> oben, das den Kernel zum OOM-Kill zwingt, statt im Swap zu stocken, weil es keinen Überlauf mehr gibt. Nach dieser Korrektur löste derselbe Test einen echten Kill aus – verifiziert mit dem richtigen Diagnosewerkzeug, <em>nicht</em> mit <code>dmesg | tail</code> (voller unzusammenhängendem AppArmor-Rauschen anderer laufender Apps, das das eigentliche Signal übertönt), sondern mit der Buchführung der cgroup selbst:
+Auch <em>dieser</em> erste Lauf starb nicht. <code>memory.current</code> blieb dauerhaft genau am Limit – kein OOM-Kill. Die eigentliche Ursache ist eine wohlbekannte und schlecht dokumentierte Falle von cgroups v2: <code>memory.max</code> begrenzt nur den Speicher, nicht den Swap, der separat ist. Ist auf dem Host Swap aktiviert, schiebt der Kernel Seiten in den Swap, sobald die cgroup ihre Speichergrenze erreicht, statt den OOM-Killer aufzurufen – der Prozess stirbt nicht, er „thrasht“. Die Lösung ist das <code>memory.swap.max = 0</code> oben, das den Kernel zum OOM-Kill zwingt, statt im Swap zu stocken, weil es keinen Überlauf mehr gibt. Nach dieser Korrektur löste derselbe Test einen echten Kill aus – verifiziert mit dem richtigen Diagnosewerkzeug, <em>nicht</em> mit <code>dmesg | tail</code> (voller unzusammenhängendem AppArmor-Rauschen anderer laufender Apps, das das eigentliche Signal übertönt), sondern mit der Buchführung der cgroup selbst:
 @@ 14jh29a
 Das CPU-Throttling brauchte kein Debugging: Eine <code>while true; do :; done</code>-Busy-Loop im Inneren, vom Host mit <code>ps aux | grep sh</code> geprüft, zeigte <strong>8,2 %</strong> CPU – nahe der konfigurierten 10-%-Quote gedeckelt, statt einen ganzen Kern auszulasten.
 @@ 1vju6rm
@@ -737,7 +737,7 @@ Fertig: <code>ip addr</code> zeigt im Inneren nur <code>lo</code>, deaktiviert; 
 @@ 10wvu6q
 Stufe 7 – OverlayFS und drei unabhängige Bugs im selben Gewand
 @@ 1ee5f2m
-Das ist die Belohnungsstufe für „wie funktionieren Image-Layer eigentlich“. Jede bisherige Stufe pivotierte in ein einziges flaches Rootfs-Verzeichnis. Echte Images bestehen aus gestapelten Schichten – einer Basis, einer Installationsschicht, einer App-Schicht –, und zwei Container desselben Images teilen sich die Blöcke der Basisschicht auf der Platte, statt je eine volle Kopie zu bekommen; die Schreibzugriffe eines Containers berühren die geteilte Basis nie. Deshalb ist <code>docker run</code> aus einem vorhandenen Image fast sofort da statt eine Dateisystemkopie, und deshalb funktioniert Layer-Caching. OverlayFS kombiniert Verzeichnisse über vier Rollen zu einer Sicht: <code>lowerdir</code> (schreibgeschützte Schichten, nie beschrieben), <code>upperdir</code> (die einzige beschreibbare Schicht, in der jeder Schreibzugriff landet), <code>workdir</code> (interner Arbeitsbereich für atomare Umbenennungen, muss leer sein und auf demselben Dateisystem wie <code>upperdir</code> liegen) und <code>merged</code> (der eigentliche Mountpunkt – in diesen wird per <code>pivot_root</code> gewechselt, von innen nicht von einem gewöhnlichen Dateisystem zu unterscheiden). Eine im Container gelöschte Datei, die in der unteren Schicht existiert, wird nicht wirklich gelöscht – sie wird in <code>upperdir</code> als Whiteout festgehalten, ein Zeichengerät mit Major/Minor 0/0.
+Das ist die Belohnungsstufe für „wie funktionieren Image-Layer eigentlich“. Jede bisherige Stufe pivotierte in ein einziges flaches Rootfs-Verzeichnis. Echte Images bestehen aus gestapelten Schichten – einer Basis, einer Installationsschicht, einer App-Schicht –, und zwei Container desselben Images teilen sich die Blöcke der Basisschicht auf der Platte, statt je eine volle Kopie zu bekommen; die Schreibzugriffe eines Containers berühren die geteilte Basis nie. Deshalb ist <code>docker run</code> aus einem vorhandenen Image fast sofort da statt einer Dateisystemkopie, und deshalb funktioniert Layer-Caching. OverlayFS kombiniert Verzeichnisse über vier Rollen zu einer Sicht: <code>lowerdir</code> (schreibgeschützte Schichten, nie beschrieben), <code>upperdir</code> (die einzige beschreibbare Schicht, in der jeder Schreibzugriff landet), <code>workdir</code> (interner Arbeitsbereich für atomare Umbenennungen, muss leer sein und auf demselben Dateisystem wie <code>upperdir</code> liegen) und <code>merged</code> (der eigentliche Mountpunkt – in diesen wird per <code>pivot_root</code> gewechselt, von innen nicht von einem gewöhnlichen Dateisystem zu unterscheiden). Eine im Container gelöschte Datei, die in der unteren Schicht existiert, wird nicht wirklich gelöscht – sie wird in <code>upperdir</code> als Whiteout festgehalten, ein Zeichengerät mit Major/Minor 0/0.
 @@ qo73lx
 Diese Debugging-Kette lohnt sich in voller Länge, weil es selten eine saubere Grundursache gibt und es auch hier keine gab – drei verschiedene, größtenteils unabhängige Bugs, die alle als dasselbe Symptom auftraten, Mount-Fehler, und jeweils eine andere Diagnose zur Eingrenzung brauchten:
 @@ grjzf6
@@ -769,17 +769,17 @@ Keiner der einzelnen Mechanismen hier ist geheim – sie stehen in Man-Pages und
 @@ 1ts4kze
 Polygone mit Ear Clipping triangulieren – Niklas Weber
 @@ mmaexk
-Wie der 3D Go Renderer beliebige .obj-Flächen – auch konkave, nicht ebene und degenerierte Polygone – mit Ear Clipping triangulieren kann, projiziert auf die Newell-Normale jeder Fläche.
+Wie der 3D Go Renderer beliebige .obj-Flächen – auch konkave, nicht ebene und degenerierte Polygone – trianguliert: mit Ear Clipping, projiziert auf die Newell-Normale jeder Fläche.
 @@ 1834wtr
 Polygone mit Ear Clipping triangulieren
 @@ 1uxiyfo
 Beliebige Polygone mit <em>Ear Clipping</em> triangulieren
 @@ 2pdcx8
-Der <a>3D Go Renderer</a> bedeutete, einen <code>.obj</code>-Parser ohne Scene-Graph-Bibliothek zu schreiben – und <code>.obj</code>-Dateien versprechen keine Dreiecke. Eine Flächenzeile kann beliebig viele Vertices auflisten, und es gibt keine Garantie, dass sie konvex, planar oder auch nur nicht degeneriert sind. OpenGL wiederum zeichnet nur Dreiecke. Irgendetwas muss ein beliebiges N-Eck in einen Dreiecksfächer verwandeln, der identisch zur ursprünglichen Fläche rendert, für jedes N-Eck, das ein Modellierungswerkzeug exportieren könnte.
+Der Bau des <a>3D Go Renderers</a> bedeutete, einen <code>.obj</code>-Parser ohne Scene-Graph-Bibliothek zu schreiben – und <code>.obj</code>-Dateien versprechen keine Dreiecke. Eine Flächenzeile kann beliebig viele Vertices auflisten, und es gibt keine Garantie, dass sie konvex, planar oder auch nur nicht degeneriert sind. OpenGL wiederum zeichnet nur Dreiecke. Irgendetwas muss ein beliebiges N-Eck in einen Dreiecksfächer verwandeln, der identisch zur ursprünglichen Fläche rendert, für jedes N-Eck, das ein Modellierungswerkzeug exportieren könnte.
 @@ 13k8j0f
 Der naive Ansatz scheitert sofort
 @@ 15e7gvx
-Der naheliegende erste Zug – ein Dreiecksfächer von Vertex 0 zu jedem folgenden Paar, <code>(v0, v1, v2), (v0, v2, v3), (v0, v3, v4)…</code> – funktioniert nur für konvexe Polygone. Bei einer konkaven Fläche zeichnet ein Fächer von einem „eingedellten“ Vertex aus Dreiecke, die über den Rand des Polygons hinausragen. Bei einem Würfel sieht das richtig aus und bei allem Handmodellierten unauffällig falsch, was die meisten echten Assets sind.
+Der naheliegende erste Zug – ein Dreiecksfächer von Vertex 0 zu jedem folgenden Paar, <code>(v0, v1, v2), (v0, v2, v3), (v0, v3, v4)…</code> – funktioniert nur für konvexe Polygone. Bei einer konkaven Fläche zeichnet ein Fächer von einem „eingedellten“ Vertex aus Dreiecke, die über den Rand des Polygons hinausragen. Bei einem Würfel sieht das richtig aus und bei allem Handmodellierten unauffällig falsch, und das betrifft die meisten echten Assets.
 @@ p1c7le
 Ear Clipping im Überblick
 @@ 1u5je65
@@ -793,7 +793,7 @@ Was wirklich Iteration brauchte: welche Ebene?
 @@ 117ard
 Die Lösung ist, vor dem Triangulieren eine Flächennormale mit der <strong>Methode von Newell</strong> zu berechnen, statt eine achsenparallele Projektion anzunehmen:
 @@ ey3tpj
-Die Methode von Newell liefert selbst für fast planare oder leicht verrauschte Polygone eine stabile Normale, weil sie den Beitrag jeder Kante mittelt, statt einem einzelnen Kreuzprodukt zu trauen. Ear Clipping läuft dann in dem durch diese Normale definierten 2D-Koordinatensystem – man wählt die beiden Achsen mit der größten Projektion oder baut eine explizite Tangentenbasis –, sodass die Konvexitäts- und Enthaltenseinstests unabhängig davon korrekt bleiben, wie die Quellfläche im Weltraum ausgerichtet ist.
+Die Methode von Newell liefert selbst für fast planare oder leicht verrauschte Polygone eine stabile Normale, weil sie den Beitrag jeder Kante mittelt, statt einem einzelnen Kreuzprodukt zu trauen. Ear Clipping läuft dann in dem durch diese Normale definierten 2D-Koordinatensystem – man wählt die beiden Achsen mit der größten Projektion oder baut eine explizite Tangentenbasis –, sodass die Konvexitäts- und Einschlusstests unabhängig davon korrekt bleiben, wie die Quellfläche im Weltraum ausgerichtet ist.
 @@ 17r92cw
 Warum das über „es rendert“ hinaus zählte
 @@ 1iixj2o
@@ -851,7 +851,7 @@ For vs. While in C, C++ und Go: identischer Assembler-Code
 @@ 1kzz9z1
 For vs. While in C, C++ und Go: der Assembler-Code ist <em>identisch</em>
 @@ jkp4s9
-„Ist <code>for</code> schneller als <code>while</code>?“ ist eine dieser Fragen, zu der jeder eine Meinung hat und die kaum jemand geprüft hat. Ich schreibe C, C++ und Go, also habe ich es in allen dreien geprüft: dieselbe Schleife auf beide Arten kompiliert, den Maschinencode verglichen und dann gemessen. Die kurze Antwort: Der Compiler kann die beiden nicht unterscheiden. Die lange Antwort: Die Frage hat mich zu vier Dingen geführt, die die Schleifenperformance <em>tatsächlich</em> verändern, und zu einer Benchmark-Falle, die mir drei erfundene Geschwindigkeitsunterschiede lieferte, bevor ich sie verstand.
+„Ist <code>for</code> schneller als <code>while</code>?“ ist eine dieser Fragen, zu der jeder eine Meinung hat und die kaum jemand geprüft hat. Ich schreibe C, C++ und Go, also habe ich es in allen dreien geprüft: dieselbe Schleife auf beide Arten kompiliert, den Maschinencode verglichen und dann gemessen. Die kurze Antwort: Der Compiler kann die beiden nicht unterscheiden. Die lange Antwort: Die Frage hat mich zu vier Dingen geführt, die die Schleifenperformance <em>tatsächlich</em> verändern, und zu einer Benchmark-Falle, die mir drei scheinbare Geschwindigkeitsunterschiede lieferte, bevor ich sie verstand.
 @@ eng6vq
 Die Kurzfassung
 @@ 113j8gx
@@ -869,7 +869,7 @@ Die Falle: Dieselben Instruktionen liefen <strong>2× langsamer</strong>, wenn d
 @@ 2a2wnq
 Aufbau
 @@ khvrag
-Der Kernel ist die kleinste Schleife, die sich nicht wegoptimieren lässt: ein Array aus <code>uint32_t</code> in ein <code>uint64_t</code> aufsummieren. Vier Schreibweisen in C, dieselben vier in C++ und Go.
+Der Testkern ist die kleinste Schleife, die sich nicht wegoptimieren lässt: ein Array aus <code>uint32_t</code> in ein <code>uint64_t</code> aufsummieren. Vier Schreibweisen in C, dieselben vier in C++ und Go.
 @@ gn8zws
 Alles lief auf einem Ryzen-5-4500U-Laptop (Zen 2), mit gcc 13.3, clang 18.1.3 und Go 1.27.1, per <code>taskset</code> auf einen Kern festgelegt. Jede Zeit ist ein Median: 15 Samples pro Variante, nach einer Aufwärmrunde reihum verschachtelt, damit Taktdrift alle Varianten gleich trifft, 2<sup>28</sup> Elemente pro Sample, das Ganze fünfmal wiederholt. Das Array hat 4096 Elemente (16 KB), bleibt also im L1, und die Schleife ist das Einzige, was gemessen wird. Der Laptop taktet hoch, daher schwanken absolute Nanosekunden zwischen Läufen: Dieselbe skalare Schleife brauchte 0,26 ns, 0,28 ns und 0,42 ns, als der Takt auf seine 2,4 GHz Basis fiel. Innerhalb eines Laufs sind die Verhältnisse stabil, ihnen traue ich.
 @@ tuo8wz
@@ -879,7 +879,7 @@ Eine Schleife zu messen sagt, ob sich zwei Versionen unterschiedlich <em>verhalt
 @@ zupg3k
 Meine erste Version dieses Skripts meldete jedes Paar als verschieden. Das Problem waren die Sprungziele: <code>je 20</code> in der einen und <code>je 50</code> in der anderen Funktion sind derselbe Sprung. Sie zu normalisieren behob es. <code>=</code> heißt nach der Normalisierung Byte für Byte identisch, <code>≈</code> heißt dieselben Instruktionen in anderer Reihenfolge:
 @@ 1jv1bty
-Das einzelne <code>≈</code> ist gcc <code>-O3</code>, wo ein <code>xorl %edx, %edx</code> in <code>sum_for</code> einen Slot früher platziert ist. Das ist der Scheduler, nicht die Schleife. Und es ergibt Sinn, dass die Tabelle so einheitlich ist: Beide Frontends übersetzen <code>for</code> und <code>while</code> in denselben Kontrollflussgraphen, einen Header-Block mit dem Test, einen Rumpf und eine Rückwärtskante. In der IR gibt es kein <code>for</code>, das schnell oder langsam sein könnte. Das hat gcc <code>-O2</code> für beide erzeugt (ohne das führende <code>endbr64</code>); die indizierte Schleife wurde bereits in einen Zeiger-Inkrement umgewandelt:
+Das einzelne <code>≈</code> ist gcc <code>-O3</code>, wo ein <code>xorl %edx, %edx</code> in <code>sum_for</code> einen Slot früher platziert ist. Das ist der Scheduler, nicht die Schleife. Und es ergibt Sinn, dass die Tabelle so einheitlich ist: Beide Frontends übersetzen <code>for</code> und <code>while</code> in denselben Kontrollflussgraphen, einen Header-Block mit dem Test, einen Rumpf und eine Rückwärtskante. In der IR gibt es kein <code>for</code>, das schnell oder langsam sein könnte. Das hat gcc <code>-O2</code> für beide erzeugt (ohne das führende <code>endbr64</code>); die indizierte Schleife wurde bereits in ein Zeiger-Inkrement umgewandelt:
 @@ 1p8yvtg
 Go liefert dieselbe Antwort. Mit <code>go tool objdump</code> sind <code>for i := 0; i &lt; len(a); i++</code>, <code>for i &lt; len(a)</code> mit manuellem <code>i++</code>, <code>for i := range a</code> und <code>for _, v := range a</code> vier identische Funktionen mit 11 Instruktionen. Selbst bei abgeschalteten Optimierungen (<code>-gcflags='all=-N -l'</code>) behalten <code>for</code> und <code>while</code> dieselben 35 Instruktionen; ein <code>JMP</code> sitzt an anderer Stelle. (Man beachte das <code>all=</code>: Ohne es gilt <code>-gcflags</code> nur für das auf der Kommandozeile genannte Paket. Mein erster <code>-N</code>-Lauf kompilierte die Schleifen stillschweigend mit Optimierungen und „bewies“, dass alles identisch ist.)
 @@ 4le2ai
@@ -987,7 +987,7 @@ Mit einem Working Set von 64 MB statt 16 KB, im DRAM-Lauf, verschwinden die Unte
 @@ gl0sxm
 Was ich daraus mitnehme
 @@ 4spof0
-<strong>Die Schleife nach dem wählen, was sie aussagt.</strong> <code>for</code>, wenn es einen Zähler gibt, <code>while</code>, wenn die Abbruchbedingung der Punkt ist, <code>range</code> in Go. Es gibt keinen Performance-Grund, eines zu bevorzugen.
+<strong>Die Schleife danach wählen, was sie aussagt.</strong> <code>for</code>, wenn es einen Zähler gibt, <code>while</code>, wenn die Abbruchbedingung der Punkt ist, <code>range</code> in Go. Es gibt keinen Performance-Grund, eines zu bevorzugen.
 @@ frvnte
 <strong>Stattdessen prüfen:</strong> den Typ des Zählers gegenüber seiner Grenze, Aufrufe in der Bedingung und (in Go), ob der Compiler beweisen kann, dass der Index im Bereich liegt.
 @@ otrca
@@ -995,7 +995,7 @@ Was ich daraus mitnehme
 @@ 1iucz8m
 <strong>Den Assembler-Code vergleichen, bevor man einem Mikrobenchmark traut.</strong> Wenn der Code derselbe ist und die Zeit abweicht, zuerst die Platzierung verdächtigen, dann den Compiler. <code>-falign-loops=32</code>, verschachtelte Samples und ein zweiter Build mit anders sortierten Funktionen sind billige Wege, es herauszufinden.
 @@ 1drry3l
-All das gilt für einen bestimmten Zen-2-Laptop und diese Toolchain-Versionen. Das Ergebnis des identischen Assemblers sollte übertragbar sein; die Ausrichtungszahlen nicht.
+All das gilt für einen bestimmten Zen-2-Laptop und diese Toolchain-Versionen. Dass der Assembler-Code identisch ist, sollte sich übertragen lassen; die Ausrichtungszahlen nicht.
 @@ nlk4yr
 gRPC gegen REST an einer Dienstgrenze – Niklas Weber
 @@ 1rzi2yf
@@ -1031,7 +1031,7 @@ Raft mit einer Fake-Uhr testen
 @@ 12tcwbu
 Raft mit einer <em>Fake-Uhr</em> testen: deterministisches Chaos in Go
 @@ 8qi6e0
-Raft ist leicht zu lesen und schwer zu vertrauen. Das Paper ist wenige Seiten lang, und die Bugs stecken in den Verschränkungen: eine Nachricht, die nach einem Leader-Wechsel eintrifft, ein Timer, der kurz vor seinem Stopp feuert, ein Absturz mitten in einem Schreibvorgang. Ich habe <a>raftlab</a> geschrieben, eine Raft-Implementierung in Go mit replizierter Key-Value-Datenbank und Browser-Visualisierung, und der Teil, den ich behalten würde, wenn ich den Rest wegwerfen müsste, ist die Art, wie sie getestet wird.
+Raft ist leicht zu lesen, aber schwer der eigenen Implementierung zu trauen. Das Paper ist wenige Seiten lang, und die Bugs stecken in den Verschränkungen: eine Nachricht, die nach einem Leader-Wechsel eintrifft, ein Timer, der kurz vor seinem Stopp feuert, ein Absturz mitten in einem Schreibvorgang. Ich habe <a>raftlab</a> geschrieben, eine Raft-Implementierung in Go mit replizierter Key-Value-Datenbank und Browser-Visualisierung, und der Teil, den ich behalten würde, wenn ich den Rest wegwerfen müsste, ist die Art, wie sie getestet wird.
 @@ 76p18x
 Die Visualisierung während einer Partition. Der alte Leader (N5, Term 1) ist bereits zurückgetreten: CheckQuorum hat ihn bemerken lassen, dass er seine Mehrheit verloren hat. Die andere Seite hat N4 in Term 2 gewählt, dargestellt als ausgefüllter Knoten. Gepunktete rote Verbindungen sind gekappt, rote Punkte sind verworfene Nachrichten.
 @@ 3cdvlw
@@ -1057,9 +1057,9 @@ Die erste Version prüfte nur, ob ein Lesezugriff den zuletzt bestätigten Schre
 @@ 1vuji5e
 Ein Checker ist nur etwas wert, wenn er fehlschlägt, wenn er soll, also habe ich zwei Bugs injiziert und den Code danach wiederhergestellt:
 @@ 3qrxz8
-ReadIndex liefert einen Lesezugriff, ohne die Leaderschaft zu bestätigen: gefangen von den Seeds 25 und 39 der ersten 40, mit der Meldung, dass ein Lesezugriff auf einen alten Wert nicht platziert werden kann.
+ReadIndex liefert einen Lesezugriff, ohne die Leaderschaft zu bestätigen: entdeckt von den Seeds 25 und 39 der ersten 40, mit der Meldung, dass ein Lesezugriff auf einen alten Wert nicht platziert werden kann.
 @@ u5s2o8
-Request-Deduplizierung entfernt, sodass ein wiederholtes Löschen zweimal läuft: gefangen von Seed 35, mit Nennung des Löschens, das nicht platziert werden kann.
+Request-Deduplizierung entfernt, sodass ein wiederholtes Löschen zweimal läuft: entdeckt von Seed 35, mit Nennung des Löschens, das nicht platziert werden kann.
 @@ qppc7t
 Der erste Bug rutschte zunächst durch alle 40 Seeds. Mit aktivierten PreVote und CheckQuorum tritt ein abgesetzter Leader zurück, bevor ein neuer etwas committen kann, sodass das Fenster für einen veralteten Lesezugriff kaum existiert. Der Chaos-Test fährt nun ungerade Seeds im klassischen Protokoll, in dem ein abgesetzter Leader verweilt. Ein Checker kann nur markieren, was das System tut.
 @@ 1yh0q38
@@ -1103,7 +1103,7 @@ Eine Tetris-Engine in Go, ein DQN-Agent in PyTorch und ein Viewer, der ihm beim 
 @@ qa3val
 Einem neuronalen Netz Tetris beibringen, <em>Schicht für Schicht</em>
 @@ 14qmsjy
-Ich wollte Reinforcement Learning lernen, indem ich jede Schicht selbst baue: das Spiel, die zu schlagende Baseline, die Brücke zu Python, den Agenten und eine Möglichkeit, ihm zuzusehen. Das Ergebnis ist <a>Tetris ML</a> (<a>Quellcode</a>), eine Tetris-Engine in Go, ein mit PyTorch trainierter DQN-Agent und ein Viewer, der den Agenten beim Spielen und Lernen zeigt. Dieser Artikel geht es der Reihe nach durch und widmet dem, was nicht funktionierte, ebenso viel Raum wie dem, was funktionierte.
+Ich wollte Reinforcement Learning lernen, indem ich jede Schicht selbst baue: das Spiel, die zu schlagende Baseline, die Brücke zu Python, den Agenten und eine Möglichkeit, ihm zuzusehen. Das Ergebnis ist <a>Tetris ML</a> (<a>Quellcode</a>), eine Tetris-Engine in Go, ein mit PyTorch trainierter DQN-Agent und ein Viewer, der den Agenten beim Spielen und Lernen zeigt. Dieser Artikel geht das Ganze der Reihe nach durch und widmet dem, was nicht funktionierte, ebenso viel Raum wie dem, was funktionierte.
 @@ txwyuf
 Der finale Platzierungsagent spielt einen Baseline-Seed.
 @@ 8wz2f0
@@ -1193,7 +1193,7 @@ Die Spalten der Clear-Größen sind der Anteil aller gelöschten Zeilen, der aus
 @@ 1c9n7du
 Was nicht funktionierte oder nicht zählte
 @@ 1llxs3x
-<strong>Die geformte Belohnung half nicht, und es wurde erst schlechter, bevor es besser wurde.</strong> In ihrem einzelnen Lauf fiel der Validierungsscore zwischen 20.000 und 60.000 Schritten auf etwa null (rund 20 Steine pro Partie) und erholte sich erst, nachdem Epsilon bei 50.000 seinen Boden erreicht hatte. Beim Limit von 1000 Steinen lagen die Endwerte bei 58.539 (roh) und 57.692 (geformt), also im Rauschen. Ich habe eine Vermutung, warum (die Lochstrafe belohnt sicher aussehende Platzierungen, solange die Wertschätzungen noch falsch sind), habe sie aber nicht getestet.
+<strong>Die geformte Belohnung half nicht, und sie wurde erst schlechter, bevor sie besser wurde.</strong> In ihrem einzelnen Lauf fiel der Validierungsscore zwischen 20.000 und 60.000 Schritten auf etwa null (rund 20 Steine pro Partie) und erholte sich erst, nachdem Epsilon bei 50.000 seinen Boden erreicht hatte. Beim Limit von 1000 Steinen lagen die Endwerte bei 58.539 (roh) und 57.692 (geformt), also im Rauschen. Ich habe eine Vermutung, warum (die Lochstrafe belohnt sicher aussehende Platzierungen, solange die Wertabschätzungen noch falsch sind), habe sie aber nicht getestet.
 @@ 9diihj
 <strong>Double DQN machte keinen messbaren Unterschied.</strong> Über je drei Seeds lag es 0,4 % vorn bei den Punkten (+632), bei einer Streuung von etwa 2.400 Punkten zwischen Seeds derselben Variante. Ein wahrscheinlicher, ebenfalls ungetesteter Grund: Der Wert hängt nur von vier Merkmalen ab, es gibt also wenig Überschätzung zu korrigieren. Dueling-Heads habe ich bewusst ausgelassen, weil das Netz keine Ausgaben pro Aktion hat, die man aufteilen könnte.
 @@ l8se1j
@@ -1211,7 +1211,7 @@ Der Viewer führt das exportierte Netz selbst aus JSON aus, ganz ohne Python. Je
 @@ l3clp
 Spielbar machen
 @@ 1vedqt0
-Der Platzierungsagent wählt nur eine endgültige Spalte und Rotation, er brauchte also nie die Teile, die Tetris nach Tetris anfühlen lassen. Ich habe sie zur Engine und zum Menschenmodus des Viewers hinzugefügt, um gegen das Gebaute spielen zu können:
+Der Platzierungsagent wählt nur eine endgültige Spalte und Rotation, er brauchte also nie die Teile, durch die sich Tetris wie Tetris anfühlt. Ich habe sie zur Engine und zum Menschenmodus des Viewers hinzugefügt, um gegen meine eigene Entwicklung spielen zu können:
 @@ 1cozh1q
 <strong>Hold.</strong> Den aktuellen Stein gegen einen gespeicherten tauschen, einmal pro Stein.
 @@ aoux8f
@@ -1331,5 +1331,3 @@ Szene aus dem Link geladen. Deine eigene Szene bleibt unberührt, bis du diese b
 @@ The scene is empty. Add a shape above.
 Die Szene ist leer. Oben eine Form hinzufügen.
 
-@@ 13dlxwj
-Von Hand gebaut mit GSAP und Lenis.<br>Jede Kachel, jeder Sticker und jeder Punkt wird im Code erzeugt.
