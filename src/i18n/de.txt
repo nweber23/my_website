@@ -360,8 +360,6 @@ Nebenläufigkeitsmuster in Go. Verteilte Systeme. Cloud. K3s. Ich schreibe gerad
 Offen für Zusammenarbeit
 @@ 1yf78m2
 Impressum
-@@ 1y7huos
-Von Hand gebaut mit three.js, GSAP und Lenis.<br>Jedes Poster, jedes Glyph und jeder Punkt wird im Code erzeugt.
 @@ 1enbwax
 Niklas Weber – Startseite
 @@ 1iucaq2
